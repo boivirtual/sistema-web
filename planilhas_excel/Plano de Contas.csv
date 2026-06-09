@@ -1,0 +1,75 @@
+1010001;Venda de Descarte;C;A
+1010002;Venda de Receptoras;C;A
+1010003;Venda de Bezerros;C;A
+1010004;Venda de Outras Categorias;C;A
+1020001;Outras Receitas;C;A
+1020002;Receitas não operacionais;C;A
+1020003;Aluguel de Lavoura;C;A
+1020004;Venda de Soja;C;A
+1030001;Entradas de movimentações Bancárias;C;A
+1030002;Entrada de capital de novos financiamento/empréstimo;C;A
+2010001;Impostos sobre venda da pecuária (Funrural);D;A
+2010002;Fretes Externos;D;A
+2010003;Comissão de Vendas;D;A
+3010001;Mão de Obra;D;A
+3010002;Mão de Obra Terceiros;D;A
+3010003;Encargos - Folha de pagamento;D;A
+3020001;Manutenção de pastagem;D;A
+3020002;Manutenção máquinas;D;A
+3020003;Manutenção veículos;D;A
+3020004;Combustíveis e lubrificantes;D;A
+3020005;Manutenção benfeitorias;D;A
+3020006;Manutenção Currais e Cochos;D;A
+3020007;Manutenção Cercas;D;A
+3020008;Manutenção Estradas e Pontes;D;A
+3020009;Manutenção Pontes e Aguadas;D;A
+3020010;Energia elétrica;D;A
+3020011;Telefone;D;A
+3020012;Tributos e taxas (cna, sind, guia, ITR, ambiental);D;A
+3020013;Ferramentas;D;A
+3020014;Fretes Internos;D;A
+3020015;Diversos;D;A
+3020016;Despesas com Cavalos;D;A
+3020017;Compra de Tropa;D;A
+3020018;Seguro;D;A
+3030001;Nutrição mineral;D;A
+3030002;Concentrado/Ração;D;A
+3030003;Silagem;D;A
+3030004;Preparo de Novilhas - Reprodução;D;A
+3030005;TE - Reprodução;D;A
+3030006;Adubos e corretivos;D;A
+3030007;Defensivos e Herbicidas;D;A
+3030008;Sementes;D;A
+3030009;Arrendamento/Aluguel de pastagens;D;A
+3040001;T&D;D;A
+3040002;Assessoria Contabil;D;A
+3040003;Assessoria Juridica;D;A
+3040004;Assessoria Pecuária;D;A
+3040005;Parceiros;D;A
+3040006;Prolabore;D;A
+3040007;Doações;D;A
+3040008;Despesas com Casa Escritório;D;A
+3040009;Despesas Administrativas;D;A
+3050001;Marketing;D;A
+3050002;Comercial;D;A
+3050003;Patrocínio;D;A
+3070001;Saídas de movimentações Bancarias;D;A
+3070002;Financiamento/Dividas pagamento;D;A
+3070005;Imposto de renda;D;A
+3080001;Retirada para Sócios;D;A
+4010001;Compra Veículos/Tratores;D;A
+4010002;Compra Implementos ou equipamentos;D;A
+4010003;Construção de benfeitorias;D;A
+4010004;Construção de aguadas;D;A
+4010005;Construção de cochos;D;A
+4010006;Construção cerca;D;A
+4010007;Construção de estradas;D;A
+4010008;Formação de Pastagens;D;A
+4010009;Abertura de área de Lavoura;D;A
+4010010;Compra de Novilha;D;A
+4010011;Compra de Embrião;D;A
+4010012;Compra de novas área;D;A
+5010001;Compra de machos;D;A
+5010002;Compra de fêmeas;D;A
+5010003;Frete de compra de gado;D;A
+5010004;Comissão de compra de gado;D;A
