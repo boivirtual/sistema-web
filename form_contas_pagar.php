@@ -256,19 +256,19 @@ if ($num_rows_usuario != 0) {
                                         <fieldset class="scheduler-border" id="dados_consulta">
                                             <legend class="scheduler-border fonte-legend">Consultar Contas a Pagar</legend>
 
-                                            <div class="row digitar_filtros" style="display: flex; align-items: flex-end; gap: 15px; margin-bottom: 20px;">
-                                                <div style="flex: 0 0 auto;">
-                                                    <label class="control-label" style="display: block; margin-bottom: 5px; font-size: 13px;">Período</label>
-                                                    <div class="btn-group" style="display: flex; gap: 2px;">
-                                                        <button type="button" class="btn btn-default" style="width: 40px; height: 34px; padding: 0; font-size: 12px;" onclick="navegarMesAnterior()"><i class="fas fa-chevron-left"></i></button>
-                                                        <button type="button" class="btn btn-default" id="btnMesAno" style="width: 130px; height: 34px; text-align: center; font-size: 12px; line-height: 34px;" onclick="abrirSeletorData()">Maio 2026</button>
-                                                        <button type="button" class="btn btn-default" style="width: 40px; height: 34px; padding: 0; font-size: 12px;" onclick="navegarMesProximo()"><i class="fas fa-chevron-right"></i></button>
+                                            <div class="row">
+                                                <div class="form-group col-md-3">
+                                                    <label class="control-label">Período</label>
+                                                    <div class="btn-group" style="width: 100%;">
+                                                        <button type="button" class="btn btn-default" style="width: 35px; height: 34px; padding: 0;" onclick="navegarMesAnterior()"><i class="fas fa-chevron-left"></i></button>
+                                                        <button type="button" class="btn btn-default" id="btnMesAno" style="flex: 1; text-align: center; height: 34px;" onclick="abrirSeletorData()">Maio 2026</button>
+                                                        <button type="button" class="btn btn-default" style="width: 35px; height: 34px; padding: 0;" onclick="navegarMesProximo()"><i class="fas fa-chevron-right"></i></button>
                                                     </div>
                                                 </div>
 
-                                                <div style="flex: 1; min-width: 150px;">
-                                                    <label for="codigo_fazenda" class="control-label" style="display: block; margin-bottom: 5px; font-size: 13px;">Local</label>
-                                                    <select class="form-control selectpicker" id="codigo_fazenda" multiple data-live-search="true" name="codigo_fazenda" style="height: 34px;">
+                                                <div class="form-group col-md-3">
+                                                    <label for="codigo_fazenda" class="control-label">Local</label>
+                                                    <select class="form-control selectpicker" id="codigo_fazenda" multiple data-live-search="true" name="codigo_fazenda">
                                                         <option value="">Todos</option>
                                                         <?php
                                                         while ($reg_local = mysqli_fetch_object($tbl_local)) {
@@ -285,9 +285,9 @@ if ($num_rows_usuario != 0) {
                                                     </select>
                                                 </div>
 
-                                                <div style="flex: 1; min-width: 150px;">
-                                                    <label for="razao_nome" class="control-label" style="display: block; margin-bottom: 5px; font-size: 13px;">Fornecedor</label>
-                                                    <select class="form-control selectpicker" multiple data-live-search="true" name="razao_nome" id="razao_nome" data-size="6" style="height: 34px;">
+                                                <div class="form-group col-md-3">
+                                                    <label for="razao_nome" class="control-label">Fornecedor</label>
+                                                    <select class="form-control selectpicker" multiple data-live-search="true" name="razao_nome" id="razao_nome" data-size="6">
                                                         <option value="">Todos</option>
                                                         <?php
                                                         while ($reg_for = mysqli_fetch_object($fornecedor)) {
@@ -297,8 +297,9 @@ if ($num_rows_usuario != 0) {
                                                     </select>
                                                 </div>
 
-                                                <div style="flex: 0 0 auto;">
-                                                    <button type="button" class="btn btn-info" style="height: 34px; padding: 6px 16px; font-size: 12px; white-space: nowrap;" data-toggle='tooltip' data-placement='top' title="Mais Filtros"><i class="fas fa-filter"></i> + Filtros</button>
+                                                <div class="form-group col-md-3">
+                                                    <label class="control-label">&nbsp;</label>
+                                                    <button type="button" class="btn btn-info" style="width: 100%; height: 34px; padding: 6px 12px; font-size: 12px;" data-toggle='tooltip' data-placement='top' title="Mais Filtros"><i class="fas fa-filter"></i> + Filtros</button>
                                                 </div>
                                             </div>
 
