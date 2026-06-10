@@ -650,10 +650,11 @@ if ($num_rows_usuario != 0) {
 <script>
     let dataSelecionada = new Date();
 
-    // Inicializar com mês/ano atual
+    // Inicializar com mês/ano atual e carregar listagem
     $(document).ready(function() {
         atualizarMesAno();
         $('[data-toggle="tooltip"]').tooltip();
+        consultar_ctp();
     });
 
     function atualizarMesAno() {
