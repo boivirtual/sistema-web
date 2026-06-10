@@ -402,22 +402,22 @@ if ($num_rows_usuario != 0) {
                                         <h5 style="margin-bottom: 15px; font-weight: 600;">Períodos Rápidos</h5>
                                         <div class="list-group">
                                             <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('hoje')">
-                                                <i class="fa fa-calendar-o fa-fw"></i> Hoje
+                                                Hoje
                                             </button>
                                             <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('semana')">
-                                                <i class="fa fa-calendar-o fa-fw"></i> Esta Semana
+                                                Esta Semana
                                             </button>
                                             <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('mes')">
-                                                <i class="fa fa-calendar-o fa-fw"></i> Este Mês
+                                                Este Mês
                                             </button>
                                             <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('30dias')">
-                                                <i class="fa fa-clock-o fa-fw"></i> Últimos 30 Dias
+                                                Últimos 30 Dias
                                             </button>
                                             <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('mes_passado')">
-                                                <i class="fa fa-arrow-left fa-fw"></i> Mês Passado
+                                                Mês Passado
                                             </button>
                                             <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('trimestre')">
-                                                <i class="fa fa-bar-chart-o fa-fw"></i> Este Trimestre
+                                                Este Trimestre
                                             </button>
                                         </div>
                                     </div>
