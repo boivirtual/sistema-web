@@ -83,26 +83,7 @@ if ($num_rows_usuario != 0) {
 
     <style type="text/css">
         .bootstrap-select {
-          width: 340px !important;
-        }
-
-        /* 1. Alinha o container de texto à direita */
-        .bootstrap-select .bs-actionsbox {
-            text-align: right;
-            padding: 5px 5px 5px 5px; /* Ajusta o padding para melhor visualização */
-        }
-
-        /* 2. Garante que o link de deselect seja um bloco de texto que se mova */
-        .bootstrap-select .bs-actionsbox .bs-deselect-all {
-            display: inline-block; /* Garante que o link se comporte como um bloco inline */
-            float: none; /* Garante que não haja float de versões antigas do Bootstrap */
-            border: none;
-            padding: 0; /* Remove padding interno que possa atrapalhar */
-            color: #007aff;
-            background: transparent;
-            font-size: 13px;
-            font-weight: 500;
-            width: 30%;
+          width: 100% !important;
         }
 
         /* Estilo para navegação de período */
@@ -259,10 +240,10 @@ if ($num_rows_usuario != 0) {
                                             <div class="row">
                                                 <div class="form-group col-md-3">
                                                     <label class="control-label">Período</label>
-                                                    <div class="btn-group" style="width: 100%;">
-                                                        <button type="button" class="btn btn-default" style="width: 35px; height: 34px; padding: 0;" onclick="navegarMesAnterior()"><i class="fas fa-chevron-left"></i></button>
-                                                        <button type="button" class="btn btn-default" id="btnMesAno" style="flex: 1; text-align: center; height: 34px;" onclick="abrirSeletorData()">Maio 2026</button>
-                                                        <button type="button" class="btn btn-default" style="width: 35px; height: 34px; padding: 0;" onclick="navegarMesProximo()"><i class="fas fa-chevron-right"></i></button>
+                                                    <div class="btn-group" style="width: 100%; display: flex; gap: 0;">
+                                                        <button type="button" class="btn btn-default" style="width: 35px; height: 34px; padding: 0; flex-shrink: 0;" onclick="navegarMesAnterior()"><i class="fas fa-chevron-left"></i></button>
+                                                        <button type="button" class="btn btn-default" id="btnMesAno" style="flex: 1; text-align: center; height: 34px; border-left: none; border-right: none;" onclick="abrirSeletorData()">Maio 2026</button>
+                                                        <button type="button" class="btn btn-default" style="width: 35px; height: 34px; padding: 0; flex-shrink: 0;" onclick="navegarMesProximo()"><i class="fas fa-chevron-right"></i></button>
                                                     </div>
                                                 </div>
 
@@ -297,9 +278,12 @@ if ($num_rows_usuario != 0) {
                                                     </select>
                                                 </div>
 
-                                                <div class="form-group col-md-3">
+                                                <div class="form-group col-md-2">
                                                     <label class="control-label">&nbsp;</label>
-                                                    <button type="button" class="btn btn-info" style="width: 100%; height: 34px; padding: 6px 12px; font-size: 12px;" data-toggle='tooltip' data-placement='top' title="Mais Filtros"><i class="fas fa-filter"></i> + Filtros</button>
+
+                                                    <button type="button" class="form-control btn btn-info pull-right" onclick="filtros()"
+                                                    data-toggle='tooltip' data-placement='top' title="Mais Filtros"><i class="fas fa-filter"></i> + Filtros</button>
+
                                                 </div>
                                             </div>
 
