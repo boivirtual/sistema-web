@@ -1038,6 +1038,7 @@ function limpa_contas_selecionadas() {
 }
 
 function consultar_ctp() {
+    $('#btn_consultar_filtro').hide();
     var data_inicial = $("#data_inicial").val();
     var data_final = $("#data_final").val();
     var tipo_data = $("#tipo_data").val();
