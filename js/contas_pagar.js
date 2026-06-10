@@ -1172,7 +1172,6 @@ function consultar_ctp() {
     var mes_fim = data_fim[1];
     var ano_fim = data_fim[0];
     periodo =
-        "Período: de " +
         dia_ini +
         "/" +
         mes_ini +
