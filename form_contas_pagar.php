@@ -112,25 +112,15 @@ if ($num_rows_usuario != 0) {
             color: #555;
         }
 
-        /* Remove bordas e background dos ícones no modal de período */
-        #modal_seletor_periodo .list-group-item i,
-        #modal_seletor_periodo .list-group-item i::before,
-        #modal_seletor_periodo .list-group-item i::after {
-            padding: 0 !important;
-            margin: 0 8px 0 0 !important;
-            background: none !important;
+        /* Botões do seletor de período sem bordas */
+        #modal_seletor_periodo .list-group-item {
             border: none !important;
-            border-radius: 0 !important;
+            border-radius: 4px !important;
+            margin-bottom: 2px !important;
+        }
+        #modal_seletor_periodo .list-group {
+            border: none !important;
             box-shadow: none !important;
-            outline: none !important;
-            width: auto !important;
-            height: auto !important;
-            min-width: auto !important;
-            min-height: auto !important;
-            line-height: inherit !important;
-            display: inline !important;
-            vertical-align: middle !important;
-            font-size: inherit !important;
         }
     </style>
 </head>
