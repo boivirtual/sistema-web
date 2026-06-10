@@ -1214,26 +1214,13 @@ function consultar_ctp() {
 
     $("#aguardar").modal("show");
 
-    if (tipo_data=='P') {
-        $('#lista_contas_pagar').load('form_lista_contas_pagar_pagas.php?data_inicial=' + data_inicial +
-         '&data_final=' + data_final + 
-         '&tipo_data=' + tipo_data + 
-         '&array_fornecedor=' + array_fornecedor  + 
-         '&array_conta=' + array_conta  + 
-         '&array_fazenda=' + array_fazenda + 
-         '&array_cc=' + array_cc);
-        return;
-    }
-    else {
-        $('#lista_contas_pagar').load('form_lista_contas_pagar.php?data_inicial=' + data_inicial +
-         '&data_final=' + data_final + 
-         '&tipo_data=' + tipo_data + 
-         '&array_fornecedor=' + array_fornecedor  + 
-         '&array_conta=' + array_conta  + 
-         '&array_fazenda=' + array_fazenda + 
-         '&array_cc=' + array_cc);
-        return;
-    }
+    $('#lista_contas_pagar').load('form_lista_contas_pagar.php?data_inicial=' + data_inicial +
+     '&data_final=' + data_final +
+     '&tipo_data=' + tipo_data +
+     '&array_fornecedor=' + array_fornecedor  +
+     '&array_conta=' + array_conta  +
+     '&array_fazenda=' + array_fazenda +
+     '&array_cc=' + array_cc);
 }
 
 function exibe_mais_filtros() {
