@@ -382,6 +382,63 @@ if ($num_rows_usuario != 0) {
                     </div>
                 </div>
 
+                <!-- modal seletor de período -->
+                <div class="modal fade" id="modal_seletor_periodo" tabindex="-1" role="dialog" aria-labelledby="modalSeletorPeriodoLabel" aria-hidden="true" data-backdrop="static">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="modalSeletorPeriodoLabel">Selecione o Período</h4>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5 style="margin-bottom: 15px; font-weight: 600;">Períodos Rápidos</h5>
+                                        <div class="list-group">
+                                            <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('hoje')">
+                                                <i class="fas fa-calendar-day"></i> Hoje
+                                            </button>
+                                            <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('semana')">
+                                                <i class="fas fa-calendar-week"></i> Esta Semana
+                                            </button>
+                                            <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('mes')">
+                                                <i class="fas fa-calendar-alt"></i> Este Mês
+                                            </button>
+                                            <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('30dias')">
+                                                <i class="fas fa-calendar"></i> Últimos 30 Dias
+                                            </button>
+                                            <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('mes_passado')">
+                                                <i class="fas fa-calendar"></i> Mês Passado
+                                            </button>
+                                            <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('trimestre')">
+                                                <i class="fas fa-calendar"></i> Este Trimestre
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <h5 style="margin-bottom: 15px; font-weight: 600;">Período Customizado</h5>
+                                        <div class="form-group">
+                                            <label for="data_inicio_custom" class="control-label" style="font-size: 12px;">Data Inicial</label>
+                                            <input type="date" class="form-control" id="data_inicio_custom">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="data_fim_custom" class="control-label" style="font-size: 12px;">Data Final</label>
+                                            <input type="date" class="form-control" id="data_fim_custom">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" onclick="aplicarPeriodoCustomizado()">Aplicar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- modal baixa das contas selecionadas-->
                 <div class="modal fade dados_baixa" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
                     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -624,9 +681,96 @@ if ($num_rows_usuario != 0) {
     }
 
     function abrirSeletorData() {
-        // Aqui você pode adicionar uma modal ou datepicker para selecionar período específico
-        console.log('Abrir seletor de data');
+        $('#modal_seletor_periodo').modal('show');
     }
+
+    function selecionarPeriodoRapido(tipo) {
+        const hoje = new Date();
+        let dataInicio, dataFim;
+
+        switch(tipo) {
+            case 'hoje':
+                dataInicio = hoje;
+                dataFim = hoje;
+                break;
+            case 'semana':
+                const primeiroDiaSemana = new Date(hoje.setDate(hoje.getDate() - hoje.getDay()));
+                const ultimoDiaSemana = new Date(primeiroDiaSemana);
+                ultimoDiaSemana.setDate(ultimoDiaSemana.getDate() + 6);
+                dataInicio = primeiroDiaSemana;
+                dataFim = ultimoDiaSemana;
+                break;
+            case 'mes':
+                dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+                dataFim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+                break;
+            case '30dias':
+                dataFim = new Date();
+                dataInicio = new Date(dataFim);
+                dataInicio.setDate(dataInicio.getDate() - 30);
+                break;
+            case 'mes_passado':
+                const mesPassado = new Date(hoje.getFullYear(), hoje.getMonth() - 1);
+                dataInicio = new Date(mesPassado.getFullYear(), mesPassado.getMonth(), 1);
+                dataFim = new Date(mesPassado.getFullYear(), mesPassado.getMonth() + 1, 0);
+                break;
+            case 'trimestre':
+                const mesAtual = hoje.getMonth();
+                const primeiraMesDoTrimestre = mesAtual - (mesAtual % 3);
+                dataInicio = new Date(hoje.getFullYear(), primeiraMesDoTrimestre, 1);
+                dataFim = new Date(hoje.getFullYear(), primeiraMesDoTrimestre + 3, 0);
+                break;
+        }
+
+        aplicarPeriodo(dataInicio, dataFim);
+    }
+
+    function aplicarPeriodoCustomizado() {
+        const dataInicio = document.getElementById('data_inicio_custom').value;
+        const dataFim = document.getElementById('data_fim_custom').value;
+
+        if (!dataInicio || !dataFim) {
+            alert('Por favor, preencha as duas datas');
+            return;
+        }
+
+        if (new Date(dataInicio) > new Date(dataFim)) {
+            alert('A data inicial deve ser menor que a data final');
+            return;
+        }
+
+        aplicarPeriodo(new Date(dataInicio), new Date(dataFim));
+    }
+
+    function aplicarPeriodo(dataInicio, dataFim) {
+        $('#data_inicial').val(formatarData(dataInicio));
+        $('#data_final').val(formatarData(dataFim));
+        atualizarMesAnoFromDates(dataInicio, dataFim);
+        $('#modal_seletor_periodo').modal('hide');
+        consultar_ctp();
+    }
+
+    function formatarData(data) {
+        const d = new Date(data);
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${year}-${month}-${day}`;
+    }
+
+    function atualizarMesAnoFromDates(dataInicio, dataFim) {
+        // Se o período é do mesmo mês, mostrar esse mês
+        if (dataInicio.getMonth() === dataFim.getMonth() &&
+            dataInicio.getFullYear() === dataFim.getFullYear()) {
+            dataSelecionada = new Date(dataInicio);
+            atualizarMesAno();
+        } else {
+            // Mostrar mês da data inicial
+            dataSelecionada = new Date(dataInicio);
+            atualizarMesAno();
+        }
+    }
+
 
     function atualizarPeriodo() {
         const ano = dataSelecionada.getFullYear();
