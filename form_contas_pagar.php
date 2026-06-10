@@ -251,45 +251,24 @@ if ($num_rows_usuario != 0) {
 
                                         <input type="hidden" id="data_inicial" name="data_inicial" <?php echo "value='" . $data_inicial . "'"; ?>>
                                         <input type="hidden" id="data_final" name="data_final" <?php echo "value='" . $data_final . "'"; ?>>
+                                        <input type="hidden" id="tipo_data" name="tipo_data" value="V">
 
                                         <fieldset class="scheduler-border" id="dados_consulta">
                                             <legend class="scheduler-border fonte-legend">Consultar Contas a Pagar</legend>
 
-                                            <div class="row digitar_filtros">
-                                                <div class="form-group col-md-4">
-                                                    <label class="control-label">Período</label>
-                                                    <div class="btn-group" style="width: 100%; display: flex; gap: 2px;">
-                                                        <button type="button" class="btn btn-default" style="width: 50px; padding: 0;" onclick="navegarMesAnterior()"><i class="fas fa-chevron-left"></i></button>
-                                                        <button type="button" class="btn btn-default" id="btnMesAno" style="flex: 1; text-align: center;" onclick="abrirSeletorData()">Maio 2026</button>
-                                                        <button type="button" class="btn btn-default" style="width: 50px; padding: 0;" onclick="navegarMesProximo()"><i class="fas fa-chevron-right"></i></button>
+                                            <div class="row digitar_filtros" style="display: flex; align-items: flex-end; gap: 15px; margin-bottom: 20px;">
+                                                <div style="flex: 0 0 auto;">
+                                                    <label class="control-label" style="display: block; margin-bottom: 5px; font-size: 13px;">Período</label>
+                                                    <div class="btn-group" style="display: flex; gap: 2px;">
+                                                        <button type="button" class="btn btn-default" style="width: 40px; height: 34px; padding: 0; font-size: 12px;" onclick="navegarMesAnterior()"><i class="fas fa-chevron-left"></i></button>
+                                                        <button type="button" class="btn btn-default" id="btnMesAno" style="width: 130px; height: 34px; text-align: center; font-size: 12px; line-height: 34px;" onclick="abrirSeletorData()">Maio 2026</button>
+                                                        <button type="button" class="btn btn-default" style="width: 40px; height: 34px; padding: 0; font-size: 12px;" onclick="navegarMesProximo()"><i class="fas fa-chevron-right"></i></button>
                                                     </div>
                                                 </div>
 
-                                                <div class="form-group col-md-4">
-                                                    <label for="tipo_data" class="control-label">Tipo de Data</label>
-                                                    <div>
-                                                        <label class="radio-inline" style="margin-right: 15px;">
-                                                            <input type="radio" name="tipo_data" value="V" checked="true" <?php if ($tipo_data == 'V') { echo "checked"; } ?>> Vencimento
-                                                        </label>
-                                                        <label class="radio-inline" style="margin-right: 15px;">
-                                                            <input type="radio" name="tipo_data" value="E" <?php if ($tipo_data == 'E') { echo "checked"; } ?>> Emissão
-                                                        </label>
-                                                        <label class="radio-inline">
-                                                            <input type="radio" name="tipo_data" value="P" <?php if ($tipo_data == 'P') { echo "checked"; } ?>> Pagamento
-                                                        </label>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4">
-                                                    <label class="control-label">&nbsp;</label>
-                                                    <button type="button" class="form-control btn btn-info pull-right" data-toggle='tooltip' data-placement='top' title="Mais Filtros"><i class="fas fa-filter"></i> + Filtros</button>
-                                                </div>
-                                            </div>
-
-                                            <div class="row digitar_filtros" style="margin-top: 15px;">
-                                                <div class="form-group col-md-3">
-                                                    <label for="codigo_fazenda" class="control-label">Local</label>
-                                                    <select class="form-control selectpicker" id="codigo_fazenda" multiple data-live-search="true" name="codigo_fazenda">
+                                                <div style="flex: 1; min-width: 150px;">
+                                                    <label for="codigo_fazenda" class="control-label" style="display: block; margin-bottom: 5px; font-size: 13px;">Local</label>
+                                                    <select class="form-control selectpicker" id="codigo_fazenda" multiple data-live-search="true" name="codigo_fazenda" style="height: 34px;">
                                                         <option value="">Todos</option>
                                                         <?php
                                                         while ($reg_local = mysqli_fetch_object($tbl_local)) {
@@ -306,9 +285,9 @@ if ($num_rows_usuario != 0) {
                                                     </select>
                                                 </div>
 
-                                                <div class="form-group col-md-3">
-                                                    <label for="razao_nome" class="control-label">Fornecedor</label>
-                                                    <select class="form-control selectpicker" multiple data-live-search="true" name="razao_nome" id="razao_nome" data-size="6">
+                                                <div style="flex: 1; min-width: 150px;">
+                                                    <label for="razao_nome" class="control-label" style="display: block; margin-bottom: 5px; font-size: 13px;">Fornecedor</label>
+                                                    <select class="form-control selectpicker" multiple data-live-search="true" name="razao_nome" id="razao_nome" data-size="6" style="height: 34px;">
                                                         <option value="">Todos</option>
                                                         <?php
                                                         while ($reg_for = mysqli_fetch_object($fornecedor)) {
@@ -318,25 +297,11 @@ if ($num_rows_usuario != 0) {
                                                     </select>
                                                 </div>
 
-                                                <div class="form-group col-md-3">
-                                                    <label for="codigo_cc" class="control-label">Centro de Custo</label>
-                                                    <select class="form-control selectpicker" id="codigo_cc" name="codigo_cc" multiple data-live-search="true">
-                                                        <option value="">Todos</option>
-                                                        <?php
-                                                        mysqli_data_seek($c_custo, 0);
-                                                        while ($registo_cc = mysqli_fetch_object($c_custo)) { ?>
-                                                        <option value="<?php echo $registo_cc->tbl_cc_codigo_id ?>">
-                                                        <?php echo $registo_cc->tbl_cc_descricao;?>
-                                                        </option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group col-md-3">
-                                                    <label class="control-label">&nbsp;</label>
-                                                    <button type="button" class="form-control btn btn-primary consultar" onclick="consultar_ctp()" style="width: 100%;">Consultar</button>
+                                                <div style="flex: 0 0 auto;">
+                                                    <button type="button" class="btn btn-info" style="height: 34px; padding: 6px 16px; font-size: 12px; white-space: nowrap;" data-toggle='tooltip' data-placement='top' title="Mais Filtros"><i class="fas fa-filter"></i> + Filtros</button>
                                                 </div>
                                             </div>
+
 
                                             <div class="row filtros" hidden>
                                                 <div class="col-md-11">
