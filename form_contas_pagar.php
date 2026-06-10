@@ -111,6 +111,19 @@ if ($num_rows_usuario != 0) {
             background-color: #efefef;
             color: #555;
         }
+
+        /* Remove bordas e background dos ícones no modal */
+        .list-group-item i {
+            padding: 0 !important;
+            margin: 0 !important;
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            width: auto !important;
+            height: auto !important;
+            line-height: inherit !important;
+            vertical-align: text-bottom !important;
+        }
     </style>
 </head>
 
