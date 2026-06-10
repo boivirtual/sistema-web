@@ -112,17 +112,25 @@ if ($num_rows_usuario != 0) {
             color: #555;
         }
 
-        /* Remove bordas e background dos ícones no modal */
-        .list-group-item i {
+        /* Remove bordas e background dos ícones no modal de período */
+        #modal_seletor_periodo .list-group-item i,
+        #modal_seletor_periodo .list-group-item i::before,
+        #modal_seletor_periodo .list-group-item i::after {
             padding: 0 !important;
-            margin: 0 !important;
+            margin: 0 8px 0 0 !important;
             background: none !important;
             border: none !important;
+            border-radius: 0 !important;
             box-shadow: none !important;
+            outline: none !important;
             width: auto !important;
             height: auto !important;
+            min-width: auto !important;
+            min-height: auto !important;
             line-height: inherit !important;
-            vertical-align: text-bottom !important;
+            display: inline !important;
+            vertical-align: middle !important;
+            font-size: inherit !important;
         }
     </style>
 </head>
