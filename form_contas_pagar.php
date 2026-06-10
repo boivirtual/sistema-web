@@ -381,22 +381,22 @@ if ($num_rows_usuario != 0) {
                                         <h5 style="margin-bottom: 15px; font-weight: 600;">Períodos Rápidos</h5>
                                         <div class="list-group">
                                             <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('hoje')">
-                                                <i class="fas fa-calendar-day" style="border: none; margin-right: 8px;"></i> Hoje
+                                                <i class="fas fa-calendar-day" style="border: none !important; background: transparent !important; box-shadow: none !important; margin-right: 8px;"></i> Hoje
                                             </button>
                                             <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('semana')">
-                                                <i class="fas fa-calendar-week" style="border: none; margin-right: 8px;"></i> Esta Semana
+                                                <i class="fas fa-calendar-week" style="border: none !important; background: transparent !important; box-shadow: none !important; margin-right: 8px;"></i> Esta Semana
                                             </button>
                                             <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('mes')">
-                                                <i class="fas fa-calendar-alt" style="border: none; margin-right: 8px;"></i> Este Mês
+                                                <i class="fas fa-calendar-alt" style="border: none !important; background: transparent !important; box-shadow: none !important; margin-right: 8px;"></i> Este Mês
                                             </button>
                                             <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('30dias')">
-                                                <i class="fas fa-calendar" style="border: none; margin-right: 8px;"></i> Últimos 30 Dias
+                                                <i class="fas fa-calendar" style="border: none !important; background: transparent !important; box-shadow: none !important; margin-right: 8px;"></i> Últimos 30 Dias
                                             </button>
                                             <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('mes_passado')">
-                                                <i class="fas fa-calendar" style="border: none; margin-right: 8px;"></i> Mês Passado
+                                                <i class="fas fa-calendar" style="border: none !important; background: transparent !important; box-shadow: none !important; margin-right: 8px;"></i> Mês Passado
                                             </button>
                                             <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('trimestre')">
-                                                <i class="fas fa-calendar" style="border: none; margin-right: 8px;"></i> Este Trimestre
+                                                <i class="fas fa-calendar" style="border: none !important; background: transparent !important; box-shadow: none !important; margin-right: 8px;"></i> Este Trimestre
                                             </button>
                                         </div>
                                     </div>
