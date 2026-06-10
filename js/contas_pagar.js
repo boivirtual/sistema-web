@@ -1194,11 +1194,11 @@ function consultar_ctp() {
     }
 
     var descricao_filtro =
-        codigo_local_filtro +
-        codigo_cc_filtro +
         periodo +
         opc_data_filtro +
+        codigo_local_filtro +
         fornecedor_filtro +
+        codigo_cc_filtro +
         conta_filtro;
 
     $(".digitar_filtros").hide();
