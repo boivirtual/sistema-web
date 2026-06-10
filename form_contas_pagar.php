@@ -300,28 +300,11 @@ if ($num_rows_usuario != 0) {
 
 
                                             <div class="row filtros" hidden>
-                                                <div class="col-md-11">
-                                                    <p style="font-size: 12px; color: #829c9c">Filtros: 
+                                                <div class="col-md-12">
+                                                    <p style="font-size: 12px; color: #829c9c">Filtros:
                                                         <span class="descricao_filtro" style="font-weight: normal;">
                                                         </span>
-
-                                                        <span class="mais_filtros" hidden>&nbsp;
-                                                            <a href="#" data-toggle='tooltip' data-placement='top' title="Exibir Filtros" onclick="exibe_mais_filtros()"> 
-                                                            <i class="fas fa-filter"></i> +
-                                                            </a>
-                                                        </span>
-
-                                                        <span class="menos_filtros" hidden>&nbsp;
-                                                            <a href="#" data-toggle='tooltip' data-placement='top' title="Esconder Filtros" onclick="exibe_menos_filtros()"> 
-                                                            <i class="fas fa-filter"></i> -
-                                                            </a>
-                                                        </span>
                                                     </p>
-                                                </div>
-
-                                                <div class="form-group col-md-1 voltar">
-                                                        <!--<label class="control-label">&nbsp;</label>-->
-                                                    <button type="button" class="form-control btn btn-info pull-right" onclick="exibe_mais_filtros()">Voltar</button>
                                                 </div>
                                             </div>
                                             
