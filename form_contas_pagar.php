@@ -668,11 +668,13 @@ if ($num_rows_usuario != 0) {
     function navegarMesAnterior() {
         dataSelecionada.setMonth(dataSelecionada.getMonth() - 1);
         atualizarMesAno();
+        consultar_ctp();
     }
 
     function navegarMesProximo() {
         dataSelecionada.setMonth(dataSelecionada.getMonth() + 1);
         atualizarMesAno();
+        consultar_ctp();
     }
 
     function abrirSeletorData() {
