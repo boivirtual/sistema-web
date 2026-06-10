@@ -291,10 +291,13 @@ if ($num_rows_usuario != 0) {
 
                                                 <div class="form-group col-md-2">
                                                     <label class="control-label">&nbsp;</label>
-
-                                                    <button type="button" class="form-control btn btn-info pull-right" onclick="filtros()"
-                                                    data-toggle='tooltip' data-placement='top' title="Mais Filtros"><i class="fas fa-filter"></i> + Filtros</button>
-
+                                                    <div style="display: flex; gap: 6px;">
+                                                        <button type="button" id="btn_consultar_filtro" class="form-control btn btn-primary" onclick="consultar_ctp()" style="display:none;">
+                                                            <i class="fas fa-search"></i> Consultar
+                                                        </button>
+                                                        <button type="button" class="form-control btn btn-info" onclick="filtros()"
+                                                        data-toggle='tooltip' data-placement='top' title="Mais Filtros"><i class="fas fa-filter"></i> + Filtros</button>
+                                                    </div>
                                                 </div>
                                             </div>
 
