@@ -115,7 +115,7 @@ $(window).load(function(){
         });
     }
     else {
-        consultar_ctp();
+        // auto-load feito pelo document.ready em form_contas_pagar.php
     }
 
     // Fim exibe filtros 
