@@ -110,20 +110,12 @@ $(window).load(function(){
 
                 $("#contas_selecionadas").val(conta_filtro);
 
-                var lista_ctp_automatico = $("#lista_ctp_automatico").val();
-
-                if (lista_ctp_automatico=="S") {
-                    consultar_ctp();
-                }
+                consultar_ctp();
             },
         });
     }
     else {
-        var lista_ctp_automatico = $("#lista_ctp_automatico").val();
-
-        if (lista_ctp_automatico=="S") {
-            consultar_ctp();
-        }
+        consultar_ctp();
     }
 
     // Fim exibe filtros 
