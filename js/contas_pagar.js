@@ -1128,10 +1128,10 @@ function consultar_ctp() {
         fornecedor_filtro.push(desc.trim());
     });
 
-    if (fornecedor_filtro != "") {
-        fornecedor_filtro = fornecedor_filtro + "->";
+    if (fornecedor_filtro.length > 0 && fornecedor_filtro[0] != "") {
+        fornecedor_filtro = "Fornecedor: " + fornecedor_filtro + "->";
     } else {
-        fornecedor_filtro = "";
+        fornecedor_filtro = "Fornecedor: Todos->";
     }
 
     var options = $("#codigo_fazenda option:selected");
