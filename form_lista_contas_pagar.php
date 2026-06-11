@@ -409,6 +409,9 @@
                                         if ($data_vencimento < $data_sistema) {
                                             $total_vencidos= $total_vencidos + $vlr_parcela - $total_pago;
                                         }
+                                        elseif ($data_vencimento == $data_sistema) {
+                                            $total_vencem_hoje= $total_vencem_hoje + $vlr_parcela - $total_pago;
+                                        }
                                         else {
                                             $total_avencer= $total_avencer + $vlr_parcela - $total_pago;
                                         }
