@@ -659,12 +659,14 @@ if ($num_rows_usuario != 0) {
     }
 
     function navegarMesAnterior() {
+        $('#periodo_label').val('');
         dataSelecionada.setMonth(dataSelecionada.getMonth() - 1);
         atualizarMesAno();
         consultar_ctp();
     }
 
     function navegarMesProximo() {
+        $('#periodo_label').val('');
         dataSelecionada.setMonth(dataSelecionada.getMonth() + 1);
         atualizarMesAno();
         consultar_ctp();
