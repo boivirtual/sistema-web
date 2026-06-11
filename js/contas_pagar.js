@@ -1108,6 +1108,10 @@ function limpa_contas_selecionadas() {
 }
 
 function consultar_ctp() {
+    // Reset do filtro de card ao fazer nova consulta
+    ctpFiltroAtivo = null;
+    $('#ctp-cards-container .ctp-card-total').removeClass('ativo');
+
     $('#btn_consultar_filtro').hide();
     var data_inicial = $("#data_inicial").val();
     var data_final = $("#data_final").val();
