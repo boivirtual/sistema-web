@@ -486,9 +486,13 @@ $(document).ready(function(){
             null
         ],
 
-        "dom": "<'row'<'col-lg-6 col-md-6 col-sm-6'i><'col-lg-6 col-md-6 col-sm-6'f>>",
+        "dom": "<'row'<'col-lg-6 col-md-6 col-sm-6'i><'col-lg-6 col-md-6 col-sm-6'f>><'#ctp-cards-container'>t",
         initComplete: function () {
             $("table.dataTable").css("width", "100%");
+            var cardsHtml = $('#ctp-cards-source').html();
+            if (cardsHtml) {
+                $('#ctp-cards-container').html(cardsHtml);
+            }
         },
 
     });
