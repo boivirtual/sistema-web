@@ -199,13 +199,13 @@
 
                     if ($tipo_conta=='S') {
                         if ($data_inicial!=0 && $data_final!=0 && $tipo_data=="V" ){
-                            $criterio = 
+                            $criterio =
                             " WHERE ctp_data_vencimento >='$data_inicial' and
-                                    ctp_data_vencimento <='$data_final' and 
-                                    ctp_codigo_conta >='$conta_inicial' and 
-                                    ctp_codigo_conta <='$conta_final'" . 
+                                    ctp_data_vencimento <='$data_final' and
+                                    ctp_codigo_conta >='$conta_inicial' and
+                                    ctp_codigo_conta <='$conta_final'" .
                                     $wfornecedor . $wfazenda . $wcc .
-                            " ORDER BY ctp_situacao, ctp_data_vencimento, ctp_numero_doc ASC";
+                            " ORDER BY IF(ctp_aceite='S',1,0) ASC, IF(ctp_situacao='P' OR ctp_situacao='C',1,0) ASC, ctp_data_vencimento ASC, ctp_numero_doc ASC";
                         }
                         else if ($data_inicial!=0 && $data_final!=0 && $tipo_data=="E"){
                             $criterio = 
