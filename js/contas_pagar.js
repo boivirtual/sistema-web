@@ -34,7 +34,7 @@ $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
     if (ctpFiltroAtivo === 'vencem_hoje') {
         return !foiPago && dtVenc !== null && dtVenc.getTime() === hoje.getTime();
     }
-    if (ctpFiltroAtivo === 'avencer') {
+    if (ctpFiltroAtivo === 'a_vencer') {
         return !foiPago && dtVenc !== null && dtVenc > hoje;
     }
     if (ctpFiltroAtivo === 'pagos') {
