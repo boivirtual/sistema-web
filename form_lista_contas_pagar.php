@@ -216,6 +216,7 @@
     .ctp-texto-vermelho { color: #d9534f !important; }
     .ctp-texto-azul     { color: #005ecb !important; }
     .ctp-texto-verde    { color: #00b050 !important; }
+    #tabela_contas_pagar thead tr:first-child th { border-top: none !important; }
   </style>
 
 </head>
