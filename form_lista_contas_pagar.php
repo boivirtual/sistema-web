@@ -184,6 +184,27 @@
   <title>Fazendas Agrolandes</title>
 
   <!-- Bootstrap CSS -->
+  <style>
+    .ctp-card-total {
+        border: 1px solid #c8c8c8;
+        height: 52px;
+        padding-top: 5px;
+        text-align: center;
+        color: #777;
+        font-size: 13px;
+        cursor: default;
+        transition: all .2s ease;
+        background: #fff;
+    }
+    .ctp-card-total .valor {
+        font-size: 15px;
+        margin-top: -2px;
+        font-weight: 500;
+    }
+    .ctp-texto-vermelho { color: #d9534f; }
+    .ctp-texto-azul     { color: #005ecb; }
+    .ctp-texto-verde    { color: #00b050; }
+  </style>
 
 </head>
 
