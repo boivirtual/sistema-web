@@ -658,37 +658,44 @@
                 ?>
             </tbody>
 
+            <!-- Cards de totais — inseridos pelo DataTable initComplete -->
+            <div id="ctp-cards-source" style="display:none">
+                <div style="display:flex; width:100%; margin-bottom:8px;">
+                    <div style="width:20%">
+                        <div class="ctp-card-total vermelho">
+                            <div>Vencidos R$</div>
+                            <div class="valor ctp-texto-vermelho"><?php echo number_format($total_vencidos, 2, ",", "."); ?></div>
+                        </div>
+                    </div>
+                    <div style="width:20%">
+                        <div class="ctp-card-total vermelho">
+                            <div>Vencem Hoje R$</div>
+                            <div class="valor ctp-texto-vermelho"><?php echo number_format($total_vencem_hoje, 2, ",", "."); ?></div>
+                        </div>
+                    </div>
+                    <div style="width:20%">
+                        <div class="ctp-card-total azul">
+                            <div>A Vencer R$</div>
+                            <div class="valor ctp-texto-azul"><?php echo number_format($total_avencer, 2, ",", "."); ?></div>
+                        </div>
+                    </div>
+                    <div style="width:20%">
+                        <div class="ctp-card-total verde">
+                            <div>Pagos R$</div>
+                            <div class="valor ctp-texto-verde"><?php echo number_format($total_pagos, 2, ",", "."); ?></div>
+                        </div>
+                    </div>
+                    <div style="width:20%">
+                        <div class="ctp-card-total azul">
+                            <div>Total do Período R$</div>
+                            <div class="valor ctp-texto-azul"><?php echo number_format($total_geral, 2, ",", "."); ?></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <thead>
                 <tr>
-                    <div class="row col-md-12" id="total_contas">
-                        <div class="form-group col-md-2">
-                            <label class="control-label">Total no período</label>
-                            <input class="form-control form-control-sm" type="text" readonly=""
-                            <?php echo "value='".number_format($total_geral, 2, ",", ".")."'";?>>
-                        </div>
-
-                        <div class="form-group col-md-2">
-                            <label class="control-label">Vencidos</label>
-                            <input class="form-control form-control-sm" type="text" readonly=""
-                            <?php echo "value='".number_format($total_vencidos, 2, ",", ".")."'";?>>
-                        </div>
-
-                        <div class="form-group col-md-2">
-                            <label class="control-label">A Vencer</label>
-                            <input class="form-control form-control-sm" type="text" readonly=""
-                            <?php echo "value='".number_format($total_avencer, 2, ",", ".")."'";?>>
-                        </div>
-
-                        <div class="form-group col-md-2">
-                            <label class="control-label">Pagos</label>
-                            <input class="form-control form-control-sm" type="text" readonly=""
-                            <?php echo "value='".number_format($total_pagos, 2, ",", ".")."'";?>>
-                        </div>
-
-                        <div class="form-group col-md-2"></div>
-
-                    </div>
-                </tr>
                 <tr>
                     <div class="row col-md-8 confirmar_baixa_selecionados" hidden="">
                         <div class="form-group col-md-3">
