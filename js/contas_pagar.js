@@ -2,6 +2,47 @@
 const idConta = [];
 const selectedConta = [];
 
+// Filtro ativo pelos cards de resumo (null = sem filtro = Total do Período)
+var ctpFiltroAtivo = null;
+
+// Converte dd/mm/yyyy para objeto Date (sem problema de fuso horário)
+function ctpParseDate(str) {
+    if (!str) return null;
+    var s = str.replace(/<[^>]*>/g, '').trim();
+    var p = s.split('/');
+    if (p.length < 3) return null;
+    return new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0]));
+}
+
+// Registra filtro customizado do DataTables para os cards
+$.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+    // Aplica somente na tabela de contas a pagar
+    if (settings.nTable.id !== 'tabela_contas_pagar') return true;
+    if (!ctpFiltroAtivo) return true;
+
+    var hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    // Col 7 = Vencimento (índice 7), Col 9 = Pagamento (índice 9)
+    var dtVenc    = ctpParseDate(data[7]);
+    var dtPgto    = ctpParseDate(data[9]);
+    var foiPago   = (dtPgto !== null);
+
+    if (ctpFiltroAtivo === 'vencidos') {
+        return !foiPago && dtVenc !== null && dtVenc < hoje;
+    }
+    if (ctpFiltroAtivo === 'vencem_hoje') {
+        return !foiPago && dtVenc !== null && dtVenc.getTime() === hoje.getTime();
+    }
+    if (ctpFiltroAtivo === 'avencer') {
+        return !foiPago && dtVenc !== null && dtVenc > hoje;
+    }
+    if (ctpFiltroAtivo === 'pagos') {
+        return foiPago;
+    }
+    return true;
+});
+
 $(window).load(function(){
     // Exibe filtros quando faz reload
     var filtro_local = $("#exibe_local").val();
