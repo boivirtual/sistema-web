@@ -187,11 +187,10 @@
   <style>
     .ctp-card-total {
         border: 1px solid #c8c8c8;
-        border-top: 3px solid #c8c8c8;
         height: 52px;
         padding-top: 4px;
         text-align: center;
-        color: #333;
+        color: #688a7e;
         font-size: 11px;
         font-weight: bold;
         cursor: pointer;
@@ -205,17 +204,18 @@
         font-size: 14px;
         margin-top: 1px;
         font-weight: 400;
+        color: #555;
     }
     .ctp-card-total.ativo .valor {
         font-weight: 700;
         font-size: 17px;
     }
-    .ctp-card-total.ativo.vermelho { border-top: 3px solid #d9534f; }
-    .ctp-card-total.ativo.azul     { border-top: 3px solid #4a90e2; }
-    .ctp-card-total.ativo.verde    { border-top: 3px solid #5cb85c; }
-    .ctp-texto-vermelho { color: #d9534f; }
-    .ctp-texto-azul     { color: #005ecb; }
-    .ctp-texto-verde    { color: #00b050; }
+    .ctp-card-total.ativo.vermelho { border-top: 2px solid #d9534f; }
+    .ctp-card-total.ativo.azul     { border-top: 2px solid #4a90e2; }
+    .ctp-card-total.ativo.verde    { border-top: 2px solid #5cb85c; }
+    .ctp-texto-vermelho { color: #d9534f !important; }
+    .ctp-texto-azul     { color: #005ecb !important; }
+    .ctp-texto-verde    { color: #00b050 !important; }
   </style>
 
 </head>
