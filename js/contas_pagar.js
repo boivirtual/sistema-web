@@ -460,6 +460,7 @@ $(document).ready(function(){
     $('#tabela_contas_pagar').DataTable({
         "paging":   false,
         "ordering": true,
+        "order":    [],
         "info":     true,
         "language": {
           "sSearch": "Buscar na lista:",
