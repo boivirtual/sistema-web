@@ -367,7 +367,11 @@ jQuery.extend( jQuery.fn.dataTableExt.oSort, {
   if (a == null || a == "") {
    return 0;
   }
-  var brDatea = a.split('/');
+  // Remove HTML tags e espaços extras para garantir somente "dd/mm/aaaa"
+  var text = a.replace(/<[^>]*>/g, '').trim();
+  if (text == "") return 0;
+  var brDatea = text.split('/');
+  if (brDatea.length < 3) return 0;
   return (brDatea[2] + brDatea[1] + brDatea[0]) * 1;
  },
 
