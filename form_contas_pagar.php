@@ -123,6 +123,11 @@ if ($num_rows_usuario != 0) {
             border: none !important;
             box-shadow: none !important;
         }
+
+        /* Remove borda do topo do thead do DataTable (entre os cards e as colunas) */
+        table#tabela_contas_pagar { border-top: none !important; }
+        table#tabela_contas_pagar thead > tr:first-child > th,
+        table#tabela_contas_pagar thead > tr:first-child > td { border-top: none !important; }
     </style>
 </head>
 
