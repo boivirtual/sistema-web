@@ -187,20 +187,32 @@
   <style>
     .ctp-card-total {
         border: 1px solid #c8c8c8;
+        border-top: 3px solid #c8c8c8;
         height: 52px;
-        padding-top: 5px;
+        padding-top: 4px;
         text-align: center;
-        color: #777;
-        font-size: 13px;
-        cursor: default;
+        color: #333;
+        font-size: 11px;
+        font-weight: bold;
+        cursor: pointer;
         transition: all .2s ease;
         background: #fff;
     }
-    .ctp-card-total .valor {
-        font-size: 15px;
-        margin-top: -2px;
-        font-weight: 500;
+    .ctp-card-total:hover {
+        background: #f8f9fa;
     }
+    .ctp-card-total .valor {
+        font-size: 14px;
+        margin-top: 1px;
+        font-weight: 400;
+    }
+    .ctp-card-total.ativo .valor {
+        font-weight: 700;
+        font-size: 17px;
+    }
+    .ctp-card-total.ativo.vermelho { border-top: 3px solid #d9534f; }
+    .ctp-card-total.ativo.azul     { border-top: 3px solid #4a90e2; }
+    .ctp-card-total.ativo.verde    { border-top: 3px solid #5cb85c; }
     .ctp-texto-vermelho { color: #d9534f; }
     .ctp-texto-azul     { color: #005ecb; }
     .ctp-texto-verde    { color: #00b050; }
