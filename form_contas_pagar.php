@@ -377,24 +377,24 @@ if ($num_rows_usuario != 0) {
                                     <div class="col-md-6">
                                         <h5 style="margin-bottom: 15px; font-weight: 600;">Períodos Rápidos</h5>
                                         <div class="list-group">
-                                            <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('hoje')">
-                                                <i class="fa fa-angle-right fa-fw"></i> Hoje
-                                            </button>
-                                            <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('semana')">
-                                                <i class="fa fa-angle-right fa-fw"></i> Esta Semana
-                                            </button>
-                                            <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('mes')">
-                                                <i class="fa fa-angle-right fa-fw"></i> Este Mês
-                                            </button>
-                                            <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('30dias')">
-                                                <i class="fa fa-angle-right fa-fw"></i> Últimos 30 Dias
-                                            </button>
-                                            <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('mes_passado')">
-                                                <i class="fa fa-angle-right fa-fw"></i> Mês Passado
-                                            </button>
-                                            <button type="button" class="list-group-item list-group-item-action text-left" onclick="selecionarPeriodoRapido('trimestre')">
-                                                <i class="fa fa-angle-right fa-fw"></i> Este Trimestre
-                                            </button>
+                                            <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                                <input type="radio" name="periodo_rapido" value="hoje"> &nbsp; Hoje
+                                            </label>
+                                            <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                                <input type="radio" name="periodo_rapido" value="semana"> &nbsp; Esta Semana
+                                            </label>
+                                            <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                                <input type="radio" name="periodo_rapido" value="mes"> &nbsp; Este Mês
+                                            </label>
+                                            <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                                <input type="radio" name="periodo_rapido" value="30dias"> &nbsp; Últimos 30 Dias
+                                            </label>
+                                            <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                                <input type="radio" name="periodo_rapido" value="mes_passado"> &nbsp; Mês Passado
+                                            </label>
+                                            <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                                <input type="radio" name="periodo_rapido" value="trimestre"> &nbsp; Este Trimestre
+                                            </label>
                                         </div>
                                     </div>
 
