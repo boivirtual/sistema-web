@@ -695,31 +695,31 @@
             <div id="ctp-cards-source" style="display:none">
                 <div style="display:flex; width:100%; margin-bottom:8px;">
                     <div style="width:20%">
-                        <div class="ctp-card-total vermelho">
+                        <div class="ctp-card-total vermelho" data-filtro="vencidos">
                             <div>Vencidos R$</div>
                             <div class="valor ctp-texto-vermelho"><?php echo number_format($total_vencidos, 2, ",", "."); ?></div>
                         </div>
                     </div>
                     <div style="width:20%">
-                        <div class="ctp-card-total vermelho">
+                        <div class="ctp-card-total vermelho" data-filtro="vencem_hoje">
                             <div>Vencem Hoje R$</div>
                             <div class="valor ctp-texto-vermelho"><?php echo number_format($total_vencem_hoje, 2, ",", "."); ?></div>
                         </div>
                     </div>
                     <div style="width:20%">
-                        <div class="ctp-card-total azul">
+                        <div class="ctp-card-total azul" data-filtro="a_vencer">
                             <div>A Vencer R$</div>
                             <div class="valor ctp-texto-azul"><?php echo number_format($total_avencer, 2, ",", "."); ?></div>
                         </div>
                     </div>
                     <div style="width:20%">
-                        <div class="ctp-card-total verde">
+                        <div class="ctp-card-total verde" data-filtro="pagos">
                             <div>Pagos R$</div>
                             <div class="valor ctp-texto-verde"><?php echo number_format($total_pagos, 2, ",", "."); ?></div>
                         </div>
                     </div>
                     <div style="width:20%">
-                        <div class="ctp-card-total azul">
+                        <div class="ctp-card-total azul" data-filtro="total_periodo">
                             <div>Total do Período R$</div>
                             <div class="valor ctp-texto-azul"><?php echo number_format($total_geral, 2, ",", "."); ?></div>
                         </div>
