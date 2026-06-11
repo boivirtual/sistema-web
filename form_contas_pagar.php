@@ -712,15 +712,31 @@ if ($num_rows_usuario != 0) {
         return { inicio: dataInicio, fim: dataFim };
     }
 
+    function parseDateLocal(strData) {
+        // Evita problema de fuso: "2026-01-01" interpretado como UTC vira 31/12/2025 no fuso BR
+        var p = strData.split('-');
+        return new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
+    }
+
+    var labelsRapido = {
+        'hoje':        'Hoje',
+        'semana':      'Esta Semana',
+        'mes':         'Este Mês',
+        '30dias':      'Últimos 30 Dias',
+        'mes_passado': 'Mês Passado',
+        'trimestre':   'Este Trimestre'
+    };
+
     function aplicarSelecaoPeriodo() {
         var radioSelecionado = $('input[name="periodo_rapido"]:checked').val();
-        var dataInicio, dataFim;
+        var dataInicio, dataFim, label;
 
         if (radioSelecionado) {
             // Período rápido selecionado
             var datas = calcularDatasRapido(radioSelecionado);
             dataInicio = datas.inicio;
             dataFim = datas.fim;
+            label = labelsRapido[radioSelecionado] || '';
         } else {
             // Tenta usar período customizado
             var customInicio = $('#data_inicio_custom').val();
@@ -731,14 +747,18 @@ if ($num_rows_usuario != 0) {
                 return;
             }
 
-            if (new Date(customInicio) > new Date(customFim)) {
+            dataInicio = parseDateLocal(customInicio);
+            dataFim = parseDateLocal(customFim);
+
+            if (dataInicio > dataFim) {
                 alert('A data inicial deve ser menor ou igual à data final.');
                 return;
             }
 
-            dataInicio = new Date(customInicio);
-            dataFim = new Date(customFim);
+            label = 'Período Customizado';
         }
+
+        $('#periodo_label').val(label);
 
         // atualizarMesAnoFromDates chama atualizarPeriodo() internamente,
         // que sobrescreveria as datas — por isso setamos DEPOIS
