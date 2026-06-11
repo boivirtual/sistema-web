@@ -492,6 +492,12 @@ $(document).ready(function(){
             var cardsHtml = $('#ctp-cards-source').html();
             if (cardsHtml) {
                 $('#ctp-cards-container').html(cardsHtml);
+
+                // Efeito de seleção ao clicar nos cards
+                $(document).on('click', '#ctp-cards-container .ctp-card-total', function () {
+                    $('#ctp-cards-container .ctp-card-total').removeClass('ativo');
+                    $(this).addClass('ativo');
+                });
             }
         },
 
