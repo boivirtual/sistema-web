@@ -217,6 +217,12 @@
     .ctp-texto-azul     { color: #005ecb !important; }
     .ctp-texto-verde    { color: #00b050 !important; }
     #tabela_contas_pagar thead tr:first-child th { border-top: none !important; }
+    #tabela_contas_pagar,
+    #tabela_contas_pagar_wrapper .dataTables_scroll,
+    div#tabela_contas_pagar_wrapper { border-top: none !important; }
+    #tabela_contas_pagar { border-top: none !important; }
+    #ctp-cards-container + * table,
+    #ctp-cards-container ~ * table { border-top: none !important; }
   </style>
 
 </head>
