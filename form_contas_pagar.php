@@ -739,9 +739,11 @@ if ($num_rows_usuario != 0) {
             dataFim = new Date(customFim);
         }
 
+        // atualizarMesAnoFromDates chama atualizarPeriodo() internamente,
+        // que sobrescreveria as datas — por isso setamos DEPOIS
+        atualizarMesAnoFromDates(dataInicio, dataFim);
         $('#data_inicial').val(formatarData(dataInicio));
         $('#data_final').val(formatarData(dataFim));
-        atualizarMesAnoFromDates(dataInicio, dataFim);
 
         // Limpar seleções para a próxima abertura
         $('input[name="periodo_rapido"]').prop('checked', false);
