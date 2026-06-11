@@ -414,7 +414,7 @@ if ($num_rows_usuario != 0) {
 
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-primary" onclick="aplicarPeriodoCustomizado()">Aplicar</button>
+                                <button type="button" class="btn btn-primary" onclick="aplicarSelecaoPeriodo()">Aplicar</button>
                             </div>
                         </div>
                     </div>
