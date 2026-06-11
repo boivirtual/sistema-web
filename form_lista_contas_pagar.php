@@ -734,7 +734,7 @@
                     <th> Parcela</th>
                     <th> Local</th>
                     <th> Conta</th>
-                    <th> Razão Social/Nome</th>
+                    <th> Fornecedor</th>
                     <th> Emissão</th>
                     <th> Vencimento</th>
                     <th> Valor Parcela</th>
