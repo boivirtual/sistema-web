@@ -673,21 +673,20 @@ if ($num_rows_usuario != 0) {
         $('#modal_seletor_periodo').modal('show');
     }
 
-    function selecionarPeriodoRapido(tipo) {
+    function calcularDatasRapido(tipo) {
         const hoje = new Date();
         let dataInicio, dataFim;
 
         switch(tipo) {
             case 'hoje':
-                dataInicio = hoje;
-                dataFim = hoje;
+                dataInicio = new Date(hoje);
+                dataFim = new Date(hoje);
                 break;
             case 'semana':
-                const primeiroDiaSemana = new Date(hoje.setDate(hoje.getDate() - hoje.getDay()));
-                const ultimoDiaSemana = new Date(primeiroDiaSemana);
-                ultimoDiaSemana.setDate(ultimoDiaSemana.getDate() + 6);
-                dataInicio = primeiroDiaSemana;
-                dataFim = ultimoDiaSemana;
+                dataInicio = new Date(hoje);
+                dataInicio.setDate(hoje.getDate() - hoje.getDay());
+                dataFim = new Date(dataInicio);
+                dataFim.setDate(dataInicio.getDate() + 6);
                 break;
             case 'mes':
                 dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
@@ -699,42 +698,56 @@ if ($num_rows_usuario != 0) {
                 dataInicio.setDate(dataInicio.getDate() - 30);
                 break;
             case 'mes_passado':
-                const mesPassado = new Date(hoje.getFullYear(), hoje.getMonth() - 1);
-                dataInicio = new Date(mesPassado.getFullYear(), mesPassado.getMonth(), 1);
-                dataFim = new Date(mesPassado.getFullYear(), mesPassado.getMonth() + 1, 0);
+                dataInicio = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1);
+                dataFim = new Date(hoje.getFullYear(), hoje.getMonth(), 0);
                 break;
             case 'trimestre':
-                const mesAtual = hoje.getMonth();
-                const primeiraMesDoTrimestre = mesAtual - (mesAtual % 3);
-                dataInicio = new Date(hoje.getFullYear(), primeiraMesDoTrimestre, 1);
-                dataFim = new Date(hoje.getFullYear(), primeiraMesDoTrimestre + 3, 0);
+                var primMes = hoje.getMonth() - (hoje.getMonth() % 3);
+                dataInicio = new Date(hoje.getFullYear(), primMes, 1);
+                dataFim = new Date(hoje.getFullYear(), primMes + 3, 0);
                 break;
         }
 
-        aplicarPeriodo(dataInicio, dataFim);
+        return { inicio: dataInicio, fim: dataFim };
     }
 
-    function aplicarPeriodoCustomizado() {
-        const dataInicio = document.getElementById('data_inicio_custom').value;
-        const dataFim = document.getElementById('data_fim_custom').value;
+    function aplicarSelecaoPeriodo() {
+        var radioSelecionado = $('input[name="periodo_rapido"]:checked').val();
+        var dataInicio, dataFim;
 
-        if (!dataInicio || !dataFim) {
-            alert('Por favor, preencha as duas datas');
-            return;
+        if (radioSelecionado) {
+            // Período rápido selecionado
+            var datas = calcularDatasRapido(radioSelecionado);
+            dataInicio = datas.inicio;
+            dataFim = datas.fim;
+        } else {
+            // Tenta usar período customizado
+            var customInicio = $('#data_inicio_custom').val();
+            var customFim = $('#data_fim_custom').val();
+
+            if (!customInicio || !customFim) {
+                alert('Selecione um período rápido ou preencha as duas datas do período customizado.');
+                return;
+            }
+
+            if (new Date(customInicio) > new Date(customFim)) {
+                alert('A data inicial deve ser menor ou igual à data final.');
+                return;
+            }
+
+            dataInicio = new Date(customInicio);
+            dataFim = new Date(customFim);
         }
 
-        if (new Date(dataInicio) > new Date(dataFim)) {
-            alert('A data inicial deve ser menor que a data final');
-            return;
-        }
-
-        aplicarPeriodo(new Date(dataInicio), new Date(dataFim));
-    }
-
-    function aplicarPeriodo(dataInicio, dataFim) {
         $('#data_inicial').val(formatarData(dataInicio));
         $('#data_final').val(formatarData(dataFim));
         atualizarMesAnoFromDates(dataInicio, dataFim);
+
+        // Limpar seleções para a próxima abertura
+        $('input[name="periodo_rapido"]').prop('checked', false);
+        $('#data_inicio_custom').val('');
+        $('#data_fim_custom').val('');
+
         $('#modal_seletor_periodo').modal('hide');
         consultar_ctp();
     }
