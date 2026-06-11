@@ -1,4 +1,5 @@
 <?php
+// Contas a Pagar
 include "valida_sessao.inc";
 include "conecta_mysql.inc";
 
