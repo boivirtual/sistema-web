@@ -503,6 +503,9 @@ $(document).ready(function(){
                     $(this).addClass('ativo');
                 });
             }
+            // Remove borda do topo do thead (entre cards e cabeçalho das colunas)
+            $('#tabela_contas_pagar thead tr:first-child th').css('border-top', '0');
+            $('#tabela_contas_pagar').css('margin-top', '0');
         },
 
     });
