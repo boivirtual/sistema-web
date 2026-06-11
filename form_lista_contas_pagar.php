@@ -304,6 +304,7 @@
                         $total_pagos = 0;
                         $total_pagos_parcial=0;
                         $total_vencidos=0;
+                        $total_vencem_hoje=0;
                         $total_avencer=0;
                         $data_sistema = date("Y-m-d");
 
