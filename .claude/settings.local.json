@@ -14,7 +14,7 @@
           {
             "type": "command",
             "shell": "powershell",
-            "command": "cd 'C:\\wamp64\\www\\reproducao\\sistema'; $status = git status --porcelain; if ($status) { git add -A; git commit -m 'Auto-commit: ajuste realizado pelo Claude Code'; git push origin master }",
+            "command": "cd 'C:\\wamp64\\www\\reproducao\\sistema'; $status = git status --porcelain; if ($status) { $files = ($status -split \"`n\" | ForEach-Object { $_.Substring(3).Trim() }) -join ', '; git add -A; git commit -m \"Ajuste: $files\"; git push origin master }",
             "timeout": 60,
             "statusMessage": "Enviando alterações para o GitHub..."
           }
