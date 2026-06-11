@@ -1172,19 +1172,10 @@ function consultar_ctp() {
     var dia_fim = data_fim[2];
     var mes_fim = data_fim[1];
     var ano_fim = data_fim[0];
-    periodo =
-        dia_ini +
-        "/" +
-        mes_ini +
-        "/" +
-        ano_ini +
-        " ate " +
-        dia_fim +
-        "/" +
-        mes_fim +
-        "/" +
-        ano_fim +
-        "->";
+
+    var periodo_label = $("#periodo_label").val();
+    var datas_str = dia_ini + "/" + mes_ini + "/" + ano_ini + " ate " + dia_fim + "/" + mes_fim + "/" + ano_fim + "->";
+    periodo = (periodo_label ? periodo_label + "-> " : "") + datas_str;
 
     if (tipo_data == "V") {
         opc_data_filtro = "Dt Vencimento->";
