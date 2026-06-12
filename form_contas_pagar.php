@@ -678,9 +678,21 @@ if ($num_rows_usuario != 0) {
             $('#btn_consultar_filtro').show();
         });
 
-        // Inicializa selectpicker do CC quando o modal abre
+        // Inicializa selectpicker do CC e restaura seleções ao abrir o modal
         $('#modal_seletor_periodo').on('shown.bs.modal', function() {
             $('#codigo_cc').selectpicker('refresh');
+
+            // Restaura radio button
+            if (ctpFiltroModal.radio) {
+                $('input[name="periodo_rapido"][value="' + ctpFiltroModal.radio + '"]').prop('checked', true);
+            }
+            // Restaura datas customizadas
+            if (ctpFiltroModal.dataInicio) {
+                $('#data_inicio_custom').val(ctpFiltroModal.dataInicio);
+            }
+            if (ctpFiltroModal.dataFim) {
+                $('#data_fim_custom').val(ctpFiltroModal.dataFim);
+            }
         });
 
         // Traz #modal_conta para frente quando aberto sobre outro modal
