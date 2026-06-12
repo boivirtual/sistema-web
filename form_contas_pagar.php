@@ -704,6 +704,49 @@ if ($num_rows_usuario != 0) {
         });
     });
 
+    // Guarda o último estado dos filtros do modal para restaurar ao reabrir
+    var ctpFiltroModal = { radio: null, dataInicio: null, dataFim: null };
+
+    // Verifica se há filtros do modal ativos e exibe/oculta o link "Limpar Filtros"
+    function atualizarLinkLimparFiltros() {
+        var temCC    = $('#codigo_cc').val() && $('#codigo_cc').val().length > 0;
+        var temConta = $('#contas_selecionadas').val() !== 'Todas ou (Clique p/ selecionar contas)';
+        var temPeriodo = ctpFiltroModal.radio !== null || ctpFiltroModal.dataInicio !== null;
+
+        if (temCC || temConta || temPeriodo) {
+            $('#link_limpar_filtros').show();
+        } else {
+            $('#link_limpar_filtros').hide();
+        }
+    }
+
+    // Limpa todos os filtros do modal e volta ao mês atual
+    function limparFiltrosModal() {
+        // Limpa CC
+        $('#codigo_cc').selectpicker('deselectAll');
+
+        // Limpa conta contábil
+        $('#contas_selecionadas').val('Todas ou (Clique p/ selecionar contas)');
+        $('#exibe_conta').val('');
+        $('input[name="conta_option"]').prop('checked', false);
+
+        // Limpa período do modal
+        ctpFiltroModal = { radio: null, dataInicio: null, dataFim: null };
+        $('input[name="periodo_rapido"]').prop('checked', false);
+        $('#data_inicio_custom').val('');
+        $('#data_fim_custom').val('');
+
+        // Volta ao mês atual
+        dataSelecionada = new Date();
+        $('#periodo_label').val('');
+        atualizarMesAno();
+
+        // Oculta o link
+        $('#link_limpar_filtros').hide();
+
+        consultar_ctp();
+    }
+
     function atualizarMesAno() {
         const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
                       'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
