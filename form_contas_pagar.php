@@ -707,21 +707,27 @@ if ($num_rows_usuario != 0) {
     // Guarda o último estado dos filtros do modal para restaurar ao reabrir
     var ctpFiltroModal = { radio: null, dataInicio: null, dataFim: null };
 
-    // Verifica se há filtros do modal ativos e exibe/oculta o link "Limpar Filtros"
+    // Verifica se há filtros ativos e exibe/oculta o link "Limpar Filtros"
     function atualizarLinkLimparFiltros() {
-        var temCC    = $('#codigo_cc').val() && $('#codigo_cc').val().length > 0;
-        var temConta = $('#contas_selecionadas').val() !== 'Todas ou (Clique p/ selecionar contas)';
-        var temPeriodo = ctpFiltroModal.radio !== null || ctpFiltroModal.dataInicio !== null;
+        var temCC       = $('#codigo_cc').val() && $('#codigo_cc').val().length > 0;
+        var temConta    = $('#contas_selecionadas').val() !== 'Todas ou (Clique p/ selecionar contas)';
+        var temPeriodo  = ctpFiltroModal.radio !== null || ctpFiltroModal.dataInicio !== null;
+        var temLocal    = $('#codigo_fazenda').val() && $('#codigo_fazenda').val().length > 0;
+        var temFornec   = $('#razao_nome').val() && $('#razao_nome').val().length > 0;
 
-        if (temCC || temConta || temPeriodo) {
+        if (temCC || temConta || temPeriodo || temLocal || temFornec) {
             $('#link_limpar_filtros').show();
         } else {
             $('#link_limpar_filtros').hide();
         }
     }
 
-    // Limpa todos os filtros do modal e volta ao mês atual
+    // Limpa todos os filtros e volta ao mês atual
     function limparFiltrosModal() {
+        // Limpa Local e Fornecedor
+        $('#codigo_fazenda').selectpicker('deselectAll');
+        $('#razao_nome').selectpicker('deselectAll');
+
         // Limpa CC
         $('#codigo_cc').selectpicker('deselectAll');
 
