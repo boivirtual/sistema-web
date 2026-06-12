@@ -537,23 +537,6 @@ $(document).ready(function(){
             var cardsHtml = $('#ctp-cards-source').html();
             if (cardsHtml) {
                 $('#ctp-cards-container').html(cardsHtml);
-
-                // Filtro por card: ao clicar aplica filtro no DataTable
-                $(document).on('click', '#ctp-cards-container .ctp-card-total', function () {
-                    var filtro = $(this).data('filtro');
-
-                    // Se clicar no mesmo card ativo ou no Total, remove o filtro
-                    if (ctpFiltroAtivo === filtro || filtro === 'total_periodo') {
-                        ctpFiltroAtivo = null;
-                        $('#ctp-cards-container .ctp-card-total').removeClass('ativo');
-                    } else {
-                        ctpFiltroAtivo = filtro;
-                        $('#ctp-cards-container .ctp-card-total').removeClass('ativo');
-                        $(this).addClass('ativo');
-                    }
-
-                    $('#tabela_contas_pagar').DataTable().draw();
-                });
             }
             // Remove borda do topo do thead (entre cards e cabeçalho das colunas)
             $('#tabela_contas_pagar thead tr:first-child th').css('border-top', '0');
