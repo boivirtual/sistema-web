@@ -461,7 +461,18 @@
 
                             $total_a_pagar = $vlr_parcela - $total_pago;
 
-                            echo "<tr>";
+                            // Define categoria da linha para filtro client-side
+                            if ($situacao == "P" || $situacao == "C") {
+                                $categoria_linha = "pago";
+                            } elseif ($data_vencimento < $data_sistema) {
+                                $categoria_linha = "vencido";
+                            } elseif ($data_vencimento == $data_sistema) {
+                                $categoria_linha = "vencem_hoje";
+                            } else {
+                                $categoria_linha = "a_vencer";
+                            }
+
+                            echo "<tr data-categoria='" . $categoria_linha . "'>";
                             if ($aceite==""){
                                 echo "<td width='2%'></td>";
                                 echo "<td width='4%'>";
