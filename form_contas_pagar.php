@@ -372,7 +372,7 @@ if ($num_rows_usuario != 0) {
 
                 <!-- modal seletor de período -->
                 <div class="modal fade" id="modal_seletor_periodo" tabindex="-1" role="dialog" aria-labelledby="modalSeletorPeriodoLabel" aria-hidden="true" data-backdrop="static">
-                    <div class="modal-dialog" role="document">
+                    <div class="modal-dialog" role="document" style="width: 780px;">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -381,7 +381,7 @@ if ($num_rows_usuario != 0) {
 
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <h5 style="margin-bottom: 15px; font-weight: 600;">Períodos Rápidos</h5>
                                         <div class="list-group">
                                             <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
@@ -405,7 +405,7 @@ if ($num_rows_usuario != 0) {
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <h5 style="margin-bottom: 15px; font-weight: 600;">Período Customizado</h5>
                                         <div class="form-group">
                                             <label for="data_inicio_custom" class="control-label" style="font-size: 12px;">Data Inicial</label>
@@ -415,7 +415,10 @@ if ($num_rows_usuario != 0) {
                                             <label for="data_fim_custom" class="control-label" style="font-size: 12px;">Data Final</label>
                                             <input type="date" class="form-control" id="data_fim_custom">
                                         </div>
+                                    </div>
 
+                                    <div class="col-md-4">
+                                        <h5 style="margin-bottom: 15px; font-weight: 600;">Outros Filtros</h5>
                                         <div class="form-group">
                                             <label for="codigo_cc" class="control-label" style="font-size: 12px;">Centro de Custo</label>
                                             <select class="form-control selectpicker" id="codigo_cc" name="codigo_cc" multiple data-live-search="true" data-size="6" data-container="body">
@@ -426,7 +429,6 @@ if ($num_rows_usuario != 0) {
                                                 <?php } ?>
                                             </select>
                                         </div>
-
                                         <div class="form-group">
                                             <label for="contas_selecionadas" class="control-label" style="font-size: 12px;">Conta Contábil</label>
                                             <input type="text" name="contas_selecionadas" id="contas_selecionadas" class="form-control" value="Todas ou (Clique p/ selecionar contas)" style="cursor: pointer;" readonly>
