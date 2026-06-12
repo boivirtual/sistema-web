@@ -279,8 +279,8 @@ $data_sistema = date("Y-m-d");
                                                         <?php } ?>
                                                     </select>
                                                 </div>
-                                                <a href="form_cliente_fornecedor_incluir.php?voltar=3" style="line-height: 34px;">
-                                                    <i class="fas fa-plus" style="font-size: 20px; color: #337ab7;" data-toggle='tooltip' data-placement='top' title='Cadastrar novo fornecedor'></i>
+                                                <a href="form_cliente_fornecedor_incluir.php?voltar=3" style="line-height: 34px;" data-toggle='tooltip' data-placement='top' title='Cadastrar novo fornecedor'>
+                                                    <i class="far fa-plus-square" style="font-size: 16px; color: #337ab7;"></i>
                                                 </a>
                                             </div>
                                         </div>
