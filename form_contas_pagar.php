@@ -87,6 +87,25 @@ if ($num_rows_usuario != 0) {
           width: 100% !important;
         }
 
+        /* 1. Alinha o container de texto à direita */
+        .bootstrap-select .bs-actionsbox {
+            text-align: right; 
+            padding: 5px 5px 5px 5px; /* Ajusta o padding para melhor visualização */
+        }
+
+        /* 2. Garante que o link de deselect seja um bloco de texto que se mova */
+        .bootstrap-select .bs-actionsbox .bs-deselect-all {
+            display: inline-block; /* Garante que o link se comporte como um bloco inline */
+            float: none; /* Garante que não haja float de versões antigas do Bootstrap */
+            border: none;
+            padding: 0; /* Remove padding interno que possa atrapalhar */
+            color: #007aff;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 500; 
+            width: 40%;       
+        }
+
         /* Estilo para navegação de período */
         #btnMesAno {
             background-color: #f5f5f5;
