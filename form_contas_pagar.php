@@ -676,6 +676,14 @@ if ($num_rows_usuario != 0) {
         $('#modal_seletor_periodo').on('shown.bs.modal', function() {
             $('#codigo_cc').selectpicker('refresh');
         });
+
+        // Traz #modal_conta para frente quando aberto sobre outro modal
+        $('#modal_conta').on('show.bs.modal', function() {
+            $(this).css('z-index', 1100);
+        });
+        $('#modal_conta').on('shown.bs.modal', function() {
+            $('.modal-backdrop').not(':first').css('z-index', 1090);
+        });
     });
 
     function atualizarMesAno() {
