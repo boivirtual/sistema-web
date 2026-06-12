@@ -492,6 +492,9 @@ $data_sistema = date("Y-m-d");
                                         </div>
                                     </div>
 
+                                    </div><!-- tab-pane #dados -->
+                                    </div><!-- tab-content -->
+
                                 </div><!--panel-body-->
                             </div><!--panel-->
                         </form>
