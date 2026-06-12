@@ -374,7 +374,6 @@ $data_sistema = date("Y-m-d");
                                                     <label class="toggle-switch">
                                                         <input type="checkbox" id="repetir_lancamento" name="repetir_lancamento">
                                                         <span class="toggle-track"></span>
-                                                        <span class="toggle-label" id="label_repetir">X</span>
                                                     </label>
                                                 </div>
                                             </div>
