@@ -376,7 +376,7 @@ if ($num_rows_usuario != 0) {
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                <h4 class="modal-title" id="modalSeletorPeriodoLabel">Selecione o Período</h4>
+                                <h4 class="modal-title" id="modalSeletorPeriodoLabel">Mais Filtros</h4>
                             </div>
 
                             <div class="modal-body">
