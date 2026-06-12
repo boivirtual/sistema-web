@@ -567,20 +567,6 @@ $data_sistema = date("Y-m-d");
         </section><!--main-content-->
 
         <script>
-            // Toggle: label X / ✓
-            function atualizarToggle(id, labelId) {
-                var checked = document.getElementById(id).checked;
-                document.getElementById(labelId).textContent = checked ? '✓' : 'X';
-            }
-
-            document.getElementById('habilitar_rateio').addEventListener('change', function() {
-                atualizarToggle('habilitar_rateio', 'label_rateio');
-            });
-
-            document.getElementById('repetir_lancamento').addEventListener('change', function() {
-                atualizarToggle('repetir_lancamento', 'label_repetir');
-            });
-
             // Adicionar campos de anexo dinamicamente
             var contadorAnexo = 0;
             function adicionarAnexo() {
