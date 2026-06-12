@@ -325,6 +325,7 @@ if ($num_rows_usuario != 0) {
                                             
                                             <div class="row filtros" hidden>
                                                 <div class="col-md-12">
+                                                    <a href="#" id="link_limpar_filtros" onclick="limparFiltrosModal(); return false;" style="font-size: 0.9em; font-weight: 500; color: #d9534f; float: left; display: none;"><i class="fas fa-times"></i> Limpar Filtros</a>
                                                     <a href="#" style="font-size: 0.9em; font-weight: 500; text-align: right; color: #128cb8; float: right;" onclick="mais_relatorios()" data-toggle='tooltip' data-placement='top' title="Análise de Pagamentos" class="pull-right"><i class="fa fa-plus"></i> Relatórios</a>
                                                 </div>
                                             </div> 
