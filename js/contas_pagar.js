@@ -22,7 +22,7 @@ $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
 
     // Lê a categoria calculada pelo PHP no atributo data-categoria da linha
     var row = settings.aoData[dataIndex].nTr;
-    var categoria = row ? $(row).data('categoria') : null;
+    var categoria = row ? $(row).attr('data-categoria') : null;
 
     if (ctpFiltroAtivo === 'vencidos')    return categoria === 'vencido';
     if (ctpFiltroAtivo === 'vencem_hoje') return categoria === 'vencem_hoje';
