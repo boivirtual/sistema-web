@@ -113,6 +113,11 @@ if ($num_rows_usuario != 0) {
             color: #555;
         }
 
+        /* Selectpicker dentro do modal: dropdown visível acima dos outros elementos */
+        #modal_seletor_periodo .bootstrap-select .dropdown-menu {
+            z-index: 9999 !important;
+        }
+
         /* Botões do seletor de período sem bordas */
         #modal_seletor_periodo .list-group-item {
             border: none !important;
