@@ -253,6 +253,15 @@ $data_sistema = date("Y-m-d");
 
                                     <div class="row" id="errors"></div>
 
+                                    <ul class="nav nav-tabs m-bot15">
+                                        <li class="active">
+                                            <a data-toggle="tab" href="#dados">Dados</a>
+                                        </li>
+                                    </ul>
+
+                                    <div class="tab-content">
+                                    <div id="dados" class="tab-pane active">
+
                                     <!-- ===== LINHA 1: Fornecedor | Emissão | Descrição | Valor | Nº Documento ===== -->
                                     <div class="row">
 
