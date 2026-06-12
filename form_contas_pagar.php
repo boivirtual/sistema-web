@@ -867,12 +867,19 @@ if ($num_rows_usuario != 0) {
             // Se nenhum período foi selecionado, mantém as datas já ativas (apenas aplica outros filtros)
         }
 
-        // Limpar seleções para a próxima abertura
+        // Salva estado para restaurar ao reabrir o modal
+        ctpFiltroModal.radio      = radioSelecionado || null;
+        ctpFiltroModal.dataInicio = radioSelecionado ? null : ($('#data_inicio_custom').val() || null);
+        ctpFiltroModal.dataFim    = radioSelecionado ? null : ($('#data_fim_custom').val()    || null);
+
+        // Limpa campos do modal (serão restaurados pelo shown.bs.modal)
         $('input[name="periodo_rapido"]').prop('checked', false);
         $('#data_inicio_custom').val('');
         $('#data_fim_custom').val('');
 
         $('#modal_seletor_periodo').modal('hide');
+
+        atualizarLinkLimparFiltros();
         consultar_ctp();
     }
 
