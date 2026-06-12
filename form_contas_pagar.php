@@ -669,6 +669,11 @@ if ($num_rows_usuario != 0) {
         $('#codigo_fazenda, #razao_nome').on('changed.bs.select', function() {
             $('#btn_consultar_filtro').show();
         });
+
+        // Inicializa selectpicker do CC quando o modal abre
+        $('#modal_seletor_periodo').on('shown.bs.modal', function() {
+            $('#codigo_cc').selectpicker('refresh');
+        });
     });
 
     function atualizarMesAno() {
