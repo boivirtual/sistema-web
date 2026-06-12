@@ -776,34 +776,35 @@ if ($num_rows_usuario != 0) {
             dataInicio = datas.inicio;
             dataFim = datas.fim;
             label = labelsRapido[radioSelecionado] || '';
+
+            $('#periodo_label').val(label);
+            atualizarMesAnoFromDates(dataInicio, dataFim);
+            $('#data_inicial').val(formatarData(dataInicio));
+            $('#data_final').val(formatarData(dataFim));
+
         } else {
-            // Tenta usar período customizado
             var customInicio = $('#data_inicio_custom').val();
             var customFim = $('#data_fim_custom').val();
 
-            if (!customInicio || !customFim) {
-                alert('Selecione um período rápido ou preencha as duas datas do período customizado.');
-                return;
+            if (customInicio && customFim) {
+                // Período customizado preenchido
+                dataInicio = parseDateLocal(customInicio);
+                dataFim = parseDateLocal(customFim);
+
+                if (dataInicio > dataFim) {
+                    alert('A data inicial deve ser menor ou igual à data final.');
+                    return;
+                }
+
+                label = 'Período Customizado';
+                $('#periodo_label').val(label);
+                atualizarMesAnoFromDates(dataInicio, dataFim);
+                $('#data_inicial').val(formatarData(dataInicio));
+                $('#data_final').val(formatarData(dataFim));
+
             }
-
-            dataInicio = parseDateLocal(customInicio);
-            dataFim = parseDateLocal(customFim);
-
-            if (dataInicio > dataFim) {
-                alert('A data inicial deve ser menor ou igual à data final.');
-                return;
-            }
-
-            label = 'Período Customizado';
+            // Se nenhum período foi selecionado, mantém as datas já ativas (apenas aplica outros filtros)
         }
-
-        $('#periodo_label').val(label);
-
-        // atualizarMesAnoFromDates chama atualizarPeriodo() internamente,
-        // que sobrescreveria as datas — por isso setamos DEPOIS
-        atualizarMesAnoFromDates(dataInicio, dataFim);
-        $('#data_inicial').val(formatarData(dataInicio));
-        $('#data_final').val(formatarData(dataFim));
 
         // Limpar seleções para a próxima abertura
         $('input[name="periodo_rapido"]').prop('checked', false);
