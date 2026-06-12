@@ -502,8 +502,8 @@ $(document).ready(function(){
       });
     });
 
-    // Filtro por card — registrado UMA vez para evitar handlers duplicados a cada consulta
-    $(document).on('click', '#ctp-cards-container .ctp-card-total', function () {
+    // Filtro por card — .off().on() garante apenas UM handler mesmo com múltiplos reloads do script
+    $(document).off('click.ctpCard').on('click.ctpCard', '#ctp-cards-container .ctp-card-total', function () {
         var filtro = $(this).data('filtro');
 
         if (ctpFiltroAtivo === filtro || filtro === 'total_periodo') {
