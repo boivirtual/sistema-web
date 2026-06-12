@@ -20,26 +20,14 @@ $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
     if (settings.nTable.id !== 'tabela_contas_pagar') return true;
     if (!ctpFiltroAtivo) return true;
 
-    var hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
+    // Lê a categoria calculada pelo PHP no atributo data-categoria da linha
+    var row = settings.aoData[dataIndex].nTr;
+    var categoria = row ? $(row).data('categoria') : null;
 
-    // Col 7 = Vencimento (índice 7), Col 9 = Pagamento (índice 9)
-    var dtVenc    = ctpParseDate(data[7]);
-    var dtPgto    = ctpParseDate(data[9]);
-    var foiPago   = (dtPgto !== null);
-
-    if (ctpFiltroAtivo === 'vencidos') {
-        return !foiPago && dtVenc !== null && dtVenc < hoje;
-    }
-    if (ctpFiltroAtivo === 'vencem_hoje') {
-        return !foiPago && dtVenc !== null && dtVenc.getTime() === hoje.getTime();
-    }
-    if (ctpFiltroAtivo === 'a_vencer') {
-        return !foiPago && dtVenc !== null && dtVenc > hoje;
-    }
-    if (ctpFiltroAtivo === 'pagos') {
-        return foiPago;
-    }
+    if (ctpFiltroAtivo === 'vencidos')    return categoria === 'vencido';
+    if (ctpFiltroAtivo === 'vencem_hoje') return categoria === 'vencem_hoje';
+    if (ctpFiltroAtivo === 'a_vencer')    return categoria === 'a_vencer';
+    if (ctpFiltroAtivo === 'pagos')       return categoria === 'pago';
     return true;
 });
 
