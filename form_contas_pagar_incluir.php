@@ -588,7 +588,7 @@ $data_sistema = date("Y-m-d");
                 div.innerHTML =
                     '<input type="file" name="anexo[]" class="form-control" style="max-width:320px;">' +
                     '<button type="button" class="btn-anexo-add" onclick="removerAnexo(this)" title="Remover">' +
-                    '<i class="fas fa-times" style="color:#c0392b;"></i></button>';
+                    '<i class="far fa-times-circle" style="font-size:16px; color:#c0392b;"></i></button>';
                 document.getElementById('lista_anexos').appendChild(div);
             }
 
