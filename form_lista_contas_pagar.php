@@ -462,7 +462,8 @@
                             $total_a_pagar = $vlr_parcela - $total_pago;
 
                             // Define categoria da linha para filtro client-side
-                            if ($situacao == "P" || $situacao == "C") {
+                            // Registros sem aceite nunca são "pago" — sempre caem na verificação de data
+                            if ($aceite == "S" && ($situacao == "P" || $situacao == "C")) {
                                 $categoria_linha = "pago";
                             } elseif ($data_vencimento < $data_sistema) {
                                 $categoria_linha = "vencido";
