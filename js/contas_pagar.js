@@ -502,6 +502,22 @@ $(document).ready(function(){
       });
     });
 
+    // Filtro por card — registrado UMA vez para evitar handlers duplicados a cada consulta
+    $(document).on('click', '#ctp-cards-container .ctp-card-total', function () {
+        var filtro = $(this).data('filtro');
+
+        if (ctpFiltroAtivo === filtro || filtro === 'total_periodo') {
+            ctpFiltroAtivo = null;
+            $('#ctp-cards-container .ctp-card-total').removeClass('ativo');
+        } else {
+            ctpFiltroAtivo = filtro;
+            $('#ctp-cards-container .ctp-card-total').removeClass('ativo');
+            $(this).addClass('ativo');
+        }
+
+        $('#tabela_contas_pagar').DataTable().draw();
+    });
+
     $('#tabela_contas_pagar').DataTable({
         "paging":   false,
         "ordering": true,
