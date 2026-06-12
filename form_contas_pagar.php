@@ -421,7 +421,7 @@ if ($num_rows_usuario != 0) {
                                         <h5 style="margin-bottom: 15px; font-weight: 600;">Outros Filtros</h5>
                                         <div class="form-group">
                                             <label for="codigo_cc" class="control-label" style="font-size: 12px;">Centro de Custo</label>
-                                            <select class="form-control selectpicker" id="codigo_cc" name="codigo_cc" multiple data-live-search="true" data-size="6" data-container="body">
+                                            <select class="form-control selectpicker" id="codigo_cc" name="codigo_cc" multiple data-live-search="true" data-size="6">
                                                 <?php while ($registo_cc = mysqli_fetch_object($c_custo)) { ?>
                                                 <option value="<?php echo $registo_cc->tbl_cc_codigo_id ?>">
                                                     <?php echo $registo_cc->tbl_cc_descricao; ?>
