@@ -302,7 +302,7 @@ if ($num_rows_usuario != 0) {
                                                         <button type="button" id="btn_consultar_filtro" class="form-control btn btn-primary" onclick="consultar_ctp()" style="display:none;">
                                                             <i class="fas fa-search"></i> Consultar
                                                         </button>
-                                                        <button type="button" class="form-control btn btn-info" onclick="filtros()"
+                                                        <button type="button" class="form-control btn btn-info" onclick="abrirSeletorData()"
                                                         data-toggle='tooltip' data-placement='top' title="Mais Filtros"><i class="fas fa-filter"></i> + Filtros</button>
                                                     </div>
                                                 </div>
