@@ -261,7 +261,7 @@ $data_sistema = date("Y-m-d");
                                             <div style="display: flex; align-items: flex-start; gap: 6px;">
                                                 <div style="flex: 1;">
                                                     <select class="form-control selectpicker" id="codigo_cli_for" name="codigo_cli_for" data-live-search="true" data-size="8">
-                                                        <option value="999999999" selected="selected">Selecione...</option>
+                                                        <option value="999999999" selected="selected">...</option>
                                                         <?php while ($registo_cli_for = mysqli_fetch_object($cli_for)) { ?>
                                                             <option value="<?php echo $registo_cli_for->tbl_pessoa_id; ?>"
                                                                 <?php if ($registo_cli_for->tbl_pessoa_id == $ultimo_fornecedor_cadastrado) echo 'selected'; ?>>
@@ -308,7 +308,6 @@ $data_sistema = date("Y-m-d");
                                                 <label class="toggle-switch">
                                                     <input type="checkbox" id="habilitar_rateio" name="habilitar_rateio">
                                                     <span class="toggle-track"></span>
-                                                    <span class="toggle-label" id="label_rateio">X</span>
                                                 </label>
                                             </div>
                                         </div>
@@ -329,7 +328,7 @@ $data_sistema = date("Y-m-d");
                                             </select>
                                         </div>
 
-                                        <div class="form-group col-md-4">
+                                        <div class="form-group col-md-3">
                                             <label for="codigo_conta" class="control-label"><span class="required">*</span> Conta Contábil</label>
                                             <select class="form-control selectpicker" id="codigo_conta" name="codigo_conta" data-live-search="true" data-size="8">
                                                 <option value="0000000">...</option>
