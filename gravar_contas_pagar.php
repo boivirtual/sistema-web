@@ -87,22 +87,7 @@
 
 	include "conecta_mysql.inc";
 
-	if (($numero_doc==0 || $numero_doc=='') && $tipo_operacao==1){
-		do {
-			$data_sistema = date("y/m/d");
-			$numero_randomico = mt_rand();
-			$numero_quatro_digitos = substr($numero_randomico, 0, 4);
-			$numero_doc=sonumero($data_sistema).$numero_quatro_digitos;
-
-	        $rs = mysqli_query ($conector, "SELECT *
-	        	FROM contas_pagar 
-	        	WHERE ctp_numero_doc ='$numero_doc' and
-					  ctp_codigo_fornecedor='$codigo_for'");
-						
-			$num_rows_ctp = mysqli_num_rows($rs);
-
-		} while ($num_rows_ctp==1);
-	}
+	// Número do documento: usa o informado pelo usuário ou deixa em branco
 
     if (empty($descricao_compra)) {
 	    header('Content-type: application/json');
