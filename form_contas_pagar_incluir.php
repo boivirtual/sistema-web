@@ -293,7 +293,7 @@ $data_sistema = date("Y-m-d");
 
                                         <div class="form-group col-md-2">
                                             <label for="number_doc" class="control-label">Número Documento</label>
-                                            <input name="number_doc" type="number" class="form-control" id="number_doc" maxlength="15" data-toggle='tooltip' data-placement='top' title="Caso não tenha o Nº, o sistema irá criar um automaticamente">
+                                            <input name="number_doc" type="number" class="form-control" id="number_doc" maxlength="15">
                                         </div>
 
                                     </div>
