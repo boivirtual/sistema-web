@@ -381,9 +381,9 @@ if ($num_rows_usuario != 0) {
 
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <h5 style="margin-bottom: 10px; font-weight: 600;">Período</h5>
-                                        <div class="list-group" style="margin-bottom: 20px;">
+                                    <div class="col-md-6">
+                                        <h5 style="margin-bottom: 15px; font-weight: 600;">Períodos Rápidos</h5>
+                                        <div class="list-group">
                                             <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
                                                 <input type="radio" name="periodo_rapido" value="hoje"> &nbsp; Hoje
                                             </label>
@@ -403,21 +403,17 @@ if ($num_rows_usuario != 0) {
                                                 <input type="radio" name="periodo_rapido" value="trimestre"> &nbsp; Este Trimestre
                                             </label>
                                         </div>
+                                    </div>
 
-                                        <h5 style="margin-bottom: 10px; font-weight: 600;">Período Customizado</h5>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="data_inicio_custom" class="control-label" style="font-size: 12px;">Data Inicial</label>
-                                                    <input type="date" class="form-control" id="data_inicio_custom">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="data_fim_custom" class="control-label" style="font-size: 12px;">Data Final</label>
-                                                    <input type="date" class="form-control" id="data_fim_custom">
-                                                </div>
-                                            </div>
+                                    <div class="col-md-6">
+                                        <h5 style="margin-bottom: 15px; font-weight: 600;">Período Customizado</h5>
+                                        <div class="form-group">
+                                            <label for="data_inicio_custom" class="control-label" style="font-size: 12px;">Data Inicial</label>
+                                            <input type="date" class="form-control" id="data_inicio_custom">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="data_fim_custom" class="control-label" style="font-size: 12px;">Data Final</label>
+                                            <input type="date" class="form-control" id="data_fim_custom">
                                         </div>
                                     </div>
                                 </div>
