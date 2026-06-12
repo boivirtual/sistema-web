@@ -334,11 +334,11 @@ $data_sistema = date("Y-m-d");
                                                 <option value="0000000">...</option>
                                                 <?php while ($registro_pcontas = mysqli_fetch_object($plano_contas)) {
                                                     if ($registro_pcontas->tbl_plano_contas_nivel == 1) {
-                                                        echo "<option value='{$registro_pcontas->tbl_plano_contas_codigo_id}' disabled>
-                                                            {$registro_pcontas->tbl_plano_contas_descricao}
-                                                        </option>";
+                                                        echo "<option value='{$registro_pcontas->tbl_plano_contas_codigo_id}' disabled style='color:#777; font-weight:600;'>" .
+                                                            $registro_pcontas->tbl_plano_contas_descricao .
+                                                            "</option>";
                                                     } elseif ($registro_pcontas->tbl_plano_contas_nivel == 2) {
-                                                        echo "<option value='{$registro_pcontas->tbl_plano_contas_codigo_id}' disabled>" .
+                                                        echo "<option value='{$registro_pcontas->tbl_plano_contas_codigo_id}' disabled style='color:#888;'>" .
                                                             str_repeat('&nbsp;', 4) . $registro_pcontas->tbl_plano_contas_descricao .
                                                             "</option>";
                                                     } else {
