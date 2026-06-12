@@ -673,9 +673,10 @@ if ($num_rows_usuario != 0) {
         $('[data-toggle="tooltip"]').tooltip();
         consultar_ctp();
 
-        // Exibir botão Consultar ao alterar Local ou Fornecedor
+        // Exibir botão Consultar e verificar link Limpar Filtros ao alterar Local ou Fornecedor
         $('#codigo_fazenda, #razao_nome').on('changed.bs.select', function() {
             $('#btn_consultar_filtro').show();
+            atualizarLinkLimparFiltros();
         });
 
         // Inicializa selectpicker do CC e restaura seleções ao abrir o modal
