@@ -631,9 +631,9 @@
                                     }
                                     echo "<td width='4%'>".$doc_parcela."</td>";
                                     echo "<td width='2%'>".$numero_parcela."</td>";
+                                    echo "<td width='14%'>".$razao."</td>";
                                     echo "<td width='14%'>".$desc_fazenda."</td>";
                                     echo "<td width='15%'>".$desc_conta."</td>";
-                                    echo "<td width='14%'>".$razao."</td>";
                                     echo "<td width='6%'>".$emissao_edi->format('d/m/Y')."</td>";
                                     echo "<td width='6%'>".$vencimento_edi->format('d/m/Y')."</td>";
                                     echo "<td width='6%'>".number_format($vlr_parcela, 2, ",", ".")."</td>";
@@ -651,11 +651,11 @@
                                         echo "<td width='19%'>";
                                         echo "<div class='btn-group'>";
                                         echo "<a class='btn' style='font-size: 11px;' href='form_contas_pagar_editar.php?id=".$ctp_id."'><i class='icon_pencil' data-toggle='tooltip' data-placement='left' title='Editar esse registro' ></i></a>";
-                                        echo "<a class='btn' style='font-size: 11px;' href='#'><i class='icon_trash_alt' data-toggle='tooltip' data-placement='left' title='Excluir esse registro' onClick='enviar_lixeira(\"{$ctp_id}\",\"{$doc_parcela}\",\"{$numero_parcela}\",1)' ></i></a>"; 
+                                        echo "<a class='btn' style='font-size: 11px;' href='#'><i class='icon_trash_alt' data-toggle='tooltip' data-placement='left' title='Excluir esse registro' onClick='enviar_lixeira(\"{$ctp_id}\",\"{$doc_parcela}\",\"{$numero_parcela}\",1)' ></i></a>";
 
-                                        echo '<a class="btn" style="font-size: 11px;" href="#" 
-                                                  data-toggle="modal" 
-                                                  data-target="#modal_baixar" 
+                                        echo '<a class="btn" style="font-size: 11px;" href="#"
+                                                  data-toggle="modal"
+                                                  data-target="#modal_baixar"
                                                   data-wdoc="'.$numero_doc.'"
                                                   data-wparcela="'.$numero_parcela.'"
                                                   data-wctpid="'.$ctp_id.'"
@@ -672,9 +672,9 @@
                                         echo "<td width='19%'>";
                                         echo "<div class='btn-group'>";
                                         echo "<a class='btn' style='font-size: 11px;' href='form_contas_pagar_editar.php?id=".$ctp_id."'><i class='icon_search' data-toggle='tooltip' data-placement='left' title='Consultar esse registro' ></i></a>";
-                                        echo '<a class="btn" style="font-size: 11px;" href="#" 
-                                                  data-toggle="modal" 
-                                                  data-target="#modal_baixar" 
+                                        echo '<a class="btn" style="font-size: 11px;" href="#"
+                                                  data-toggle="modal"
+                                                  data-target="#modal_baixar"
                                                   data-wdoc="'.$numero_doc.'"
                                                   data-wparcela="'.$numero_parcela.'"
                                                   data-wctpid="'.$ctp_id.'"
