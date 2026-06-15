@@ -1001,5 +1001,116 @@ $data_sistema = date("Y-m-d");
     $javascript_file_name = 'contas_pagar.js';
     require 'rodape.php';
     ?>
+
+    <!-- ================================================================
+         Override de gravar_conta — usa FormData para incluir arquivos.
+         Este bloco DEVE ficar após rodape.php (que carrega contas_pagar.js).
+    ================================================================ -->
+    <script>
+    (function () {
+        // Aguarda o DOM estar pronto para garantir que contas_pagar.js já definiu gravar_conta
+        window.gravar_conta = function () {
+
+            // ── Coleta dados do modal de rateio por fazenda (igual ao original) ──
+            var array_fazendas_arr = [];
+            var grupo_itens        = '';
+            var total_percentual   = 0;
+
+            var vlr_pp = $('#vlr_primeira_parcela').val();
+            if (typeof verifica_virgula === 'function' && verifica_virgula(vlr_pp) === ',') {
+                vlr_pp = replace_valor(vlr_pp);
+            }
+            vlr_pp = parseFloat(vlr_pp) || 0;
+
+            var ocorrencias   = $('#qtd_parcelas').val();
+            var tipo_inclusao = $("input[name='tipo_inclusao']:checked").val();
+            var parc_restantes = 0;
+
+            if (tipo_inclusao === 'F') {
+                parc_restantes = $('#vlr_parcela_fixa').val();
+                if (typeof verifica_virgula === 'function' && verifica_virgula(parc_restantes) === ',') {
+                    parc_restantes = replace_valor(parc_restantes);
+                }
+            } else if (tipo_inclusao === 'P') {
+                var vlr_compra = $('#vlr_compra').val();
+                if (typeof verifica_virgula === 'function' && verifica_virgula(vlr_compra) === ',') {
+                    vlr_compra = replace_valor(vlr_compra);
+                }
+                parc_restantes = (parseFloat(vlr_compra) - vlr_pp) / parseFloat(ocorrencias);
+            }
+
+            var total_pp   = 0;
+            var total_parc = 0;
+
+            $('#tabela_fazendas tbody tr').each(function () {
+                var codigo     = $(this).find('.codigo_id').html();
+                var percentual = $(this).find('.percentual').val();
+                var pp         = $(this).find('.primeira_parcela').val();
+                var pr         = $(this).find('.parcela_restante').val();
+
+                if (typeof verifica_virgula === 'function') {
+                    if (verifica_virgula(pp) === ',') pp = replace_valor(pp);
+                    if (verifica_virgula(pr) === ',') pr = replace_valor(pr);
+                }
+
+                if (percentual !== '') total_percentual += parseFloat(percentual);
+                total_pp   += parseFloat(pp)  || 0;
+                total_parc += parseFloat(pr)  || 0;
+
+                if (codigo !== undefined && codigo != 0) {
+                    array_fazendas_arr.push([codigo, percentual, pp, pr].join('|'));
+                    grupo_itens = array_fazendas_arr.join('<|>');
+                }
+            });
+
+            if (total_percentual !== 100 && total_percentual !== 0) {
+                $('#mensagem_erro').modal();
+                $('#mensagem_erro .modal-body').html('Total do Percentual das Fazendas inválido.');
+                return;
+            }
+            if (total_pp !== vlr_pp && total_pp !== 0 && total_percentual === 0) {
+                $('#mensagem_erro').modal();
+                $('#mensagem_erro .modal-body').html('Total da Primeira Parcela das Fazendas inválido.');
+                return;
+            }
+            if (total_parc !== parc_restantes && total_parc !== 0 && total_percentual === 0) {
+                $('#mensagem_erro').modal();
+                $('#mensagem_erro .modal-body').html('Total do Valor das Parcelas das Fazendas inválido.');
+                return;
+            }
+
+            // Grava array_fazendas no input hidden antes de montar o FormData
+            $('#array_fazendas').val(grupo_itens);
+
+            // ── FormData captura TODOS os campos inclusive inputs file ──
+            var formData = new FormData(document.getElementById('form_gravar_contas_pagar'));
+
+            $(".confirmar_gravar").attr("disabled", true);
+
+            $.ajax({
+                type        : 'POST',
+                url         : 'gravar_contas_pagar.php',
+                data        : formData,
+                processData : false,   // NÃO deixa o jQuery serializar
+                contentType : false,   // NÃO define Content-Type (browser coloca multipart/form-data)
+                success: function (data) {
+                    $(".confirmar_gravar").attr("disabled", false);
+                    if (data.error) {
+                        $('#mensagem_erro').modal();
+                        $('#mensagem_erro .modal-body').html(data.message);
+                    } else {
+                        $('#mensagem_retorno').modal();
+                        $('#mensagem_retorno .modal-body').html(data.message);
+                    }
+                },
+                error: function (xhr) {
+                    $(".confirmar_gravar").attr("disabled", false);
+                    $('#mensagem_erro').modal();
+                    $('#mensagem_erro .modal-body').html('Erro na requisição: ' + xhr.status);
+                }
+            });
+        };
+    })();
+    </script>
 </body>
 </html>
