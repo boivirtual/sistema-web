@@ -1461,7 +1461,7 @@ $data_sistema = date("Y-m-d");
         }
 
         function rtAtualizarTabLocais() {
-            var vlrTotal = ctpParseMoney($('#valor_total').val());
+            var vlrTotal = ctpGetValorTotal();
             var $tbody = $('#rt_tab_locais tbody');
             $tbody.empty();
             RT.locais.forEach(function(loc, idx) {
