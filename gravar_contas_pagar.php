@@ -227,10 +227,6 @@
         $codigo_conta_n   = mysqli_real_escape_string($conector, $codigo_conta);
         $codigo_ccusto_n  = isset($_POST['codigo_cc']) ? mysqli_real_escape_string($conector, $_POST['codigo_cc']) : '';
         $observacoes_n    = isset($_POST['observacoes']) ? mysqli_real_escape_string($conector, $_POST['observacoes']) : '';
-        // Quando rateio ativo, Local/Conta/CC vão como NULL no banco
-        $sql_local_val  = '';  // será definido por bloco
-        $sql_conta_val  = ($tem_rateio && ($codigo_conta_n == '0000000' || $codigo_conta_n == '')) ? 'NULL' : "'$codigo_conta_n'";
-        $sql_ccusto_val = ($tem_rateio && $codigo_ccusto_n == '') ? 'NULL' : "'$codigo_ccusto_n'";
 
         // Resolve local (fazenda) — pode ser array
         $cod_local_raw = isset($_POST['codigo_fazenda']) ? $_POST['codigo_fazenda'] : [];
