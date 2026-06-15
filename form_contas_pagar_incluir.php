@@ -1352,39 +1352,7 @@ $data_sistema = date("Y-m-d");
         // ================================================================
         // HABILITAR RATEIO — alterna Local entre select simples e selectpicker múltiplo
         // ================================================================
-        $('#habilitar_rateio').on('change', function () {
-            var $sel = $('#codigo_fazenda');
-            if ($(this).is(':checked')) {
-                // Rateio ON → selectpicker com múltipla seleção
-                $sel.attr('multiple', 'multiple')
-                    .attr('data-live-search', 'true')
-                    .attr('data-size', '8')
-                    .addClass('selectpicker');
-                $sel.selectpicker();
-                $('#btn_configurar_rateio').show();
-                // Abre modal automaticamente ao ligar o rateio (se ainda não configurado)
-                var jsonAtual = $('#rateio_json').val();
-                console.log('[RATEIO] toggle ON, rateio_json=', jsonAtual);
-                if (!jsonAtual) {
-                    console.log('[RATEIO] abrindo modal...');
-                    setTimeout(function(){ rtAbrirModal(); }, 200);
-                }
-            } else {
-                // Rateio OFF → destrói selectpicker, volta ao select simples
-                if ($sel.hasClass('selectpicker')) {
-                    $sel.selectpicker('destroy');
-                }
-                $sel.removeAttr('multiple')
-                    .removeAttr('data-live-search')
-                    .removeAttr('data-size')
-                    .removeClass('selectpicker')
-                    .addClass('form-control');
-                $('#btn_configurar_rateio').hide();
-                $('#rateio_badge').hide();
-                $('#rateio_json').val('');
-                RT.reset();
-            }
-        });
+        // Handler do toggle Rateio — registrado após jQuery carregar (ver bloco pós-rodape.php)
 
         // ================================================================
         // RATEIO — Wizard em 4 painéis
