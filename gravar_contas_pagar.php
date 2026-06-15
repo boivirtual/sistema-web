@@ -217,7 +217,7 @@
             $numero_doc, $codigo_for, $numero_parcela, $tipo_doc, $razao,
             $qtd_total_parcelas, $data_emissao, $data_vencimento, $vlr_parcela,
             $codigo_local, $codigo_ccusto, $codigo_conta, $conta_pagamento,
-            $descricao, $nomeusuario, $data_sistema, $conector
+            $descricao, $observacoes, $nomeusuario, $data_sistema, $conector
         ) {
             $sql = "INSERT INTO contas_pagar (
                 ctp_numero_doc, ctp_codigo_fornecedor, ctp_parcela,
@@ -233,7 +233,7 @@
                 ctp_aceite, ctp_data_aceite, ctp_usuario_aceite,
                 ctp_incluido_em, ctp_incluido_por,
                 ctp_alterado_em, ctp_alterado_por,
-                ctp_descricao_compra
+                ctp_descricao_compra, ctp_observacoes
             ) VALUES (
                 '$numero_doc', '$codigo_for', '$numero_parcela',
                 '$tipo_doc', '$razao', '$numero_doc',
@@ -248,7 +248,7 @@
                 '', null, null,
                 '$data_sistema', '$nomeusuario',
                 null, null,
-                '$descricao'
+                '$descricao', '$observacoes'
             )";
             return mysqli_query($conector, $sql);
         };
