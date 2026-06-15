@@ -561,10 +561,10 @@
                                         echo "<td style='color:#B22222' width='2%'></td>";
                                     }
                                     echo "<td style='color:#B22222' width='4%'>".$doc_parcela."</td>";
-                                    echo "<td style='color:#B22222'width='2%'>".$numero_parcela."</td>";
-                                    echo "<td style='color:#B22222'width='14%'>".$desc_fazenda."</td>";
-                                    echo "<td style='color:#B22222'width='15%'>".$desc_conta."</td>";
-                                    echo "<td style='color:#B22222'width='14%'>".$razao."</td>";
+                                    echo "<td style='color:#B22222' width='2%'>".$numero_parcela."</td>";
+                                    echo "<td style='color:#B22222' width='14%'>".$razao."</td>";
+                                    echo "<td style='color:#B22222' width='14%'>".$desc_fazenda."</td>";
+                                    echo "<td style='color:#B22222' width='15%'>".$desc_conta."</td>";
                                     echo "<td style='color:#B22222'width='6%'>".$emissao_edi->format('d/m/Y')."</td>";
                                     echo "<td style='color:#B22222'width='6%'>".$vencimento_edi->format('d/m/Y')."</td>";
                                     echo "<td style='color:#B22222'width='6%'>".number_format($vlr_parcela, 2, ",", ".")."</td>";
