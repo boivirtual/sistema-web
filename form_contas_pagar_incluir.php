@@ -382,7 +382,7 @@ $data_sistema = date("Y-m-d");
                                                     <span class="toggle-track"></span>
                                                 </label>
                                                 <button type="button" id="btn_configurar_rateio" class="btn btn-xs btn-info" style="display:none;" onclick="rtAbrirModal()">
-                                                    <i class="fas fa-sliders-h"></i> Ratear
+                                                    <i class="fas fa-edit"></i> Editar Rateio
                                                 </button>
                                                 <span id="rateio_badge"><i class="fas fa-check-circle"></i> Configurado</span>
                                             </div>
