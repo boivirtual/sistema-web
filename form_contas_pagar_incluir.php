@@ -389,12 +389,24 @@ $data_sistema = date("Y-m-d");
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="area-toggles">
-                                                <div>
-                                                    <label class="toggle-label" style="margin-right: 8px;">Repetir Lançamento?</label>
+                                                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                                    <label class="toggle-label" style="margin-right: 4px;">Repetir Lançamento?</label>
                                                     <label class="toggle-switch">
-                                                        <input type="checkbox" id="repetir_lancamento" name="repetir_lancamento">
+                                                        <input type="checkbox" id="repetir_lancamento" name="repetir_lancamento" onchange="onRepetirLancamentoChange()">
                                                         <span class="toggle-track"></span>
                                                     </label>
+                                                    <!-- Resumo e link editar (aparecem após confirmar modal) -->
+                                                    <span id="rep_resumo_wrap" style="display:none; align-items:center; gap:8px;">
+                                                        <span style="font-size:13px; color:#555; font-weight:500;">Repetição *</span>
+                                                        <span id="rep_resumo_texto" style="font-size:13px; background:#eaf2ff; color:#2471a3; border:1px solid #aed6f1; border-radius:4px; padding:3px 10px; font-weight:600;"></span>
+                                                        <a href="#" onclick="abrirModalRepeticao(); return false;" style="font-size:12px; color:#888;">
+                                                            <i class="far fa-edit"></i> Editar
+                                                        </a>
+                                                    </span>
+                                                    <!-- Campos hidden que serão enviados ao backend -->
+                                                    <input type="hidden" id="rep_cada_hidden"   name="rep_cada">
+                                                    <input type="hidden" id="rep_freq_hidden"   name="rep_frequencia">
+                                                    <input type="hidden" id="rep_ocorr_hidden"  name="rep_ocorrencias" value="0">
                                                 </div>
                                             </div>
                                         </div>
