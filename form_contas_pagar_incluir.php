@@ -984,7 +984,7 @@ $data_sistema = date("Y-m-d");
                                     <div>
                                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                                         <button type="button" id="rt_btn_avancar" class="btn btn-primary" onclick="rtAvancar()">
-                                            Avançar <i class="fas fa-arrow-right"></i>
+                                            Avançar
                                         </button>
                                         <button type="button" id="rt_btn_confirmar" class="btn btn-primary" onclick="rtConfirmar()" style="display:none;">
                                             <i class="fas fa-check"></i> Confirmar Rateio
