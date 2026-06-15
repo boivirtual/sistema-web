@@ -705,10 +705,31 @@ $data_sistema = date("Y-m-d");
         }
 
         // ----------------------------------------------------------------
+        // Replica valor para parcelas seguintes (com confirmação)
+        // ----------------------------------------------------------------
+        function replicarSeDesejado(tipo, el, idx) {
+            var n = parseInt($('#parcelamento').val());
+            if (idx >= n - 1) return; // já é a última parcela, nada a replicar
+
+            var resposta = confirm('Deseja replicar esta seleção para as ' + (n - idx - 1) + ' parcela(s) seguinte(s)?');
+            if (!resposta) return;
+
+            for (var i = idx + 1; i < n; i++) {
+                if (tipo === 'banco') {
+                    $('#parc_banco_' + i).val($(el).val());
+                } else if (tipo === 'tipodoc') {
+                    $('#parc_tipodoc_' + i).val($(el).val());
+                } else if (tipo === 'pago') {
+                    $('#parc_pago_' + i).prop('checked', $(el).is(':checked'));
+                }
+            }
+        }
+
+        // ----------------------------------------------------------------
         // Monta o HTML de um <select> de bancos
         // ----------------------------------------------------------------
-        function buildSelectBanco(name, id, val) {
-            var html = '<select class="form-control" name="' + name + '" id="' + id + '" style="height:30px;font-size:13px;padding:2px 6px;">';
+        function buildSelectBanco(name, id, val, idx) {
+            var html = '<select class="form-control" name="' + name + '" id="' + id + '" style="height:30px;font-size:13px;padding:2px 6px;" onchange="replicarSeDesejado(\'banco\', this, ' + idx + ')">';
             html += '<option value="0">...</option>';
             CTP_BANCOS.forEach(function(b) {
                 var sel = (val && String(val) === String(b.id)) ? ' selected' : '';
@@ -721,8 +742,8 @@ $data_sistema = date("Y-m-d");
         // ----------------------------------------------------------------
         // Monta o HTML de um <select> de tipo documento
         // ----------------------------------------------------------------
-        function buildSelectTipoDoc(name, id, val) {
-            var html = '<select class="form-control" name="' + name + '" id="' + id + '" style="height:30px;font-size:13px;padding:2px 6px;">';
+        function buildSelectTipoDoc(name, id, val, idx) {
+            var html = '<select class="form-control" name="' + name + '" id="' + id + '" style="height:30px;font-size:13px;padding:2px 6px;" onchange="replicarSeDesejado(\'tipodoc\', this, ' + idx + ')">';
             html += '<option value="00">...</option>';
             CTP_TIPODOCS.forEach(function(t) {
                 var sel = (val && String(val) === String(t.id)) ? ' selected' : '';
