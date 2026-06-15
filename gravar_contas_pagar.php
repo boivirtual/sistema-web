@@ -548,6 +548,13 @@
         $partes_local_r = explode(',', $codigo_local_r);
         $codigo_local_r = mysqli_real_escape_string($conector, trim($partes_local_r[0]));
 
+        // Quando rateio ativo: local/conta/cc vão NULL no banco
+        if ($tem_rateio) {
+            $codigo_local_r  = '';
+            $codigo_ccusto_r = '';
+            $codigo_conta_r  = '';
+        }
+
         // Resolve nome do fornecedor
         if ($codigo_for_r != '999999999') {
             $rs_for_r = mysqli_query($conector, "SELECT tbl_pessoa_nome FROM tbl_pessoa WHERE tbl_pessoa_id='$codigo_for_r'");
