@@ -1944,9 +1944,43 @@ $data_sistema = date("Y-m-d");
 
     <!-- ================================================================
          Override de gravar_conta — usa FormData para incluir arquivos.
-         Este bloco DEVE ficar após rodape.php (que carrega contas_pagar.js).
+         Handlers que dependem de jQuery — DEVE ficar após rodape.php.
     ================================================================ -->
     <script>
+    // ── Handler do toggle Rateio (requer jQuery já carregado) ──
+    $(document).ready(function () {
+        $('#habilitar_rateio').on('change', function () {
+            var $sel = $('#codigo_fazenda');
+            if ($(this).is(':checked')) {
+                // Rateio ON → selectpicker com múltipla seleção
+                $sel.attr('multiple', 'multiple')
+                    .attr('data-live-search', 'true')
+                    .attr('data-size', '8')
+                    .addClass('selectpicker');
+                $sel.selectpicker();
+                $('#btn_configurar_rateio').show();
+                // Abre modal automaticamente se ainda não configurado
+                if (!$('#rateio_json').val()) {
+                    setTimeout(function(){ rtAbrirModal(); }, 200);
+                }
+            } else {
+                // Rateio OFF → destrói selectpicker, volta ao select simples
+                if ($sel.hasClass('selectpicker')) {
+                    $sel.selectpicker('destroy');
+                }
+                $sel.removeAttr('multiple')
+                    .removeAttr('data-live-search')
+                    .removeAttr('data-size')
+                    .removeClass('selectpicker')
+                    .addClass('form-control');
+                $('#btn_configurar_rateio').hide();
+                $('#rateio_badge').hide();
+                $('#rateio_json').val('');
+                RT.reset();
+            }
+        });
+    });
+
     (function () {
         // Aguarda o DOM estar pronto para garantir que contas_pagar.js já definiu gravar_conta
         window.gravar_conta = function () {
