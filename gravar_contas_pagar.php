@@ -637,6 +637,7 @@
             if ($primeiro_id_r === null) {
                 $primeiro_id_r = $novo_id_r;
                 salvar_anexos($primeiro_id_r, $conector, $nomeusuario, $data_sistema);
+                salvar_rateio($primeiro_id_r, $conector, $nomeusuario, $data_sistema);
             }
         }
 
