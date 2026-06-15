@@ -136,9 +136,11 @@
     // =========================================================
     // NOVO SISTEMA — parcelamento dinâmico (parcelamento >= 0)
     // =========================================================
-    $parcelamento = isset($_POST['parcelamento']) ? intval($_POST['parcelamento']) : -1;
+    $parcelamento    = isset($_POST['parcelamento'])   ? intval($_POST['parcelamento'])   : -1;
+    $rep_ocorrencias = isset($_POST['rep_ocorrencias']) ? intval($_POST['rep_ocorrencias']) : 0;
 
-    if ($tipo_operacao == 1 && $parcelamento >= 0) {
+    // Quando repetição está ativa (rep_ocorrencias >= 2), pula o bloco de parcelamento
+    if ($tipo_operacao == 1 && $parcelamento >= 0 && $rep_ocorrencias < 2) {
 
         // --- Leitura dos campos do novo form ---
         $data_emissao_n   = isset($_POST['data_emissao'])   ? mysqli_real_escape_string($conector, $_POST['data_emissao'])   : '';
