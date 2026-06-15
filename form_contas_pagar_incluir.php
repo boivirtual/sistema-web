@@ -1363,7 +1363,10 @@ $data_sistema = date("Y-m-d");
                 $sel.selectpicker();
                 $('#btn_configurar_rateio').show();
                 // Abre modal automaticamente ao ligar o rateio (se ainda não configurado)
-                if (!$('#rateio_json').val()) {
+                var jsonAtual = $('#rateio_json').val();
+                console.log('[RATEIO] toggle ON, rateio_json=', jsonAtual);
+                if (!jsonAtual) {
+                    console.log('[RATEIO] abrindo modal...');
                     setTimeout(function(){ rtAbrirModal(); }, 200);
                 }
             } else {
