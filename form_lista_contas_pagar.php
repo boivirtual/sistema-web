@@ -754,11 +754,11 @@
                     <th>
                         <input type="checkbox" class='checkbox2' id="seleciona_todos_somar" data-toggle="tooltip" data-placement="right" title="Selecione um registro para baixar ou clique aqui para selecionar todos">
                     </th> 
-                    <th> Documento</th> 
+                    <th> Documento</th>
                     <th> Parcela</th>
+                    <th> Fornecedor</th>
                     <th> Local</th>
                     <th> Conta</th>
-                    <th> Fornecedor</th>
                     <th> Emissão</th>
                     <th> Vencimento</th>
                     <th> Valor Parcela</th>
