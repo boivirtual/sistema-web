@@ -978,7 +978,7 @@ $data_sistema = date("Y-m-d");
                                 <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
                                     <div>
                                         <button type="button" id="rt_btn_voltar" class="btn btn-default" onclick="rtVoltar()" style="display:none;">
-                                            <i class="fas fa-arrow-left"></i> Voltar
+                                            Voltar
                                         </button>
                                     </div>
                                     <div>
