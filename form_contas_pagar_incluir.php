@@ -635,6 +635,47 @@ $data_sistema = date("Y-m-d");
                     </div><!--col-lg-12-->
                 </div><!--row-->
 
+                <!-- Modal: Repetir Lançamento -->
+                <div class="modal fade" id="modal_repetir_lancamento" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+                    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:480px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title"><i class="fas fa-redo" style="color:#337ab7;"></i> Repetir Lançamento</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label class="control-label"><span class="required">*</span> Repetir a Cada</label>
+                                        <input type="number" class="form-control" id="rep_cada" min="1" value="1" style="text-align:center;">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label class="control-label"><span class="required">*</span> Frequência</label>
+                                        <select class="form-control" id="rep_freq">
+                                            <option value="1">Diária</option>
+                                            <option value="2">Semanal</option>
+                                            <option value="3">Quinzenal</option>
+                                            <option value="4" selected>Mensal</option>
+                                            <option value="5">Bimestral</option>
+                                            <option value="6">Trimestral</option>
+                                            <option value="7">Semestral</option>
+                                            <option value="8">Anual</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label class="control-label"><span class="required">*</span> Ocorrências</label>
+                                        <input type="number" class="form-control" id="rep_ocorr" min="2" value="3" style="text-align:center;">
+                                    </div>
+                                </div>
+                                <div id="rep_modal_erro" style="display:none; color:#c0392b; font-size:13px; margin-top:6px;"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-primary" type="button" onclick="confirmarRepeticao()">Confirmar</button>
+                                <button class="btn btn-default" type="button" onclick="cancelarRepeticao()">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Modal: Totais por Fazenda (rateio) -->
                 <div class="modal fade" id="modal_fazendas" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
                     <div class="modal-dialog modal-dialog-centered" role="document">
