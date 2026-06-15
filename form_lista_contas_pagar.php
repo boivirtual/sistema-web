@@ -521,9 +521,9 @@
                                 echo "<td width='2%'><i class='btn icon_check' style='color:green' data-toggle='tooltip' data-placement='right' title='Pago' ></i></td>";
                                 echo "<td width='4%'>".$doc_parcela."</td>";
                                 echo "<td width='2%'>".$numero_parcela."</td>";
+                                echo "<td width='14%'>".$razao."</td>";
                                 echo "<td width='14%'>".$desc_fazenda."</td>";
                                 echo "<td width='15%'>".$desc_conta."</td>";
-                                echo "<td width='14%'>".$razao."</td>";
                                 echo "<td width='6%'>".$emissao_edi->format('d/m/Y')."</td>";
                                 echo "<td width='6%'>".$vencimento_edi->format('d/m/Y')."</td>";
                                 echo "<td width='6%'>".number_format($vlr_parcela, 2, ",", ".")."</td>";
