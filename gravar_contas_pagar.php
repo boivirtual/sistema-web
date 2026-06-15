@@ -484,6 +484,7 @@
                     if ($primeiro_id_n === null) {
                         $primeiro_id_n = mysqli_insert_id($conector);
                         salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                        salvar_rateio($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
                     }
                 }
             }
