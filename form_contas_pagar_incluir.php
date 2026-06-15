@@ -278,23 +278,20 @@ $data_sistema = date("Y-m-d");
                                     <div class="row">
 
                                         <div class="form-group col-md-3">
-                                            <label for="codigo_cli_for" class="control-label"><span class="required">*</span> Fornecedor</label>
-                                            <div style="display: flex; align-items: flex-start; gap: 6px;">
-                                                <div style="flex: 1;">
-                                                    <select class="form-control selectpicker" id="codigo_cli_for" name="codigo_cli_for" data-live-search="true" data-size="8">
-                                                        <option value="999999999" selected="selected">...</option>
-                                                        <?php while ($registo_cli_for = mysqli_fetch_object($cli_for)) { ?>
-                                                            <option value="<?php echo $registo_cli_for->tbl_pessoa_id; ?>"
-                                                                <?php if ($registo_cli_for->tbl_pessoa_id == $ultimo_fornecedor_cadastrado) echo 'selected'; ?>>
-                                                                <?php echo $registo_cli_for->tbl_pessoa_nome; ?>
-                                                            </option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                                <a href="form_cliente_fornecedor_incluir.php?voltar=3" style="line-height: 34px;" data-toggle='tooltip' data-placement='top' title='Cadastrar novo fornecedor'>
+                                            <label for="codigo_cli_for" class="control-label"><span class="required">*</span> Fornecedor
+                                                <a href="form_cliente_fornecedor_incluir.php?voltar=3" style="margin-left: 6px;" data-toggle='tooltip' data-placement='top' title='Cadastrar novo fornecedor'>
                                                     <i class="far fa-plus-square" style="font-size: 16px; color: #337ab7;"></i>
                                                 </a>
-                                            </div>
+                                            </label>
+                                            <select class="form-control selectpicker" id="codigo_cli_for" name="codigo_cli_for" data-live-search="true" data-size="8">
+                                                <option value="999999999" selected="selected">...</option>
+                                                <?php while ($registo_cli_for = mysqli_fetch_object($cli_for)) { ?>
+                                                    <option value="<?php echo $registo_cli_for->tbl_pessoa_id; ?>"
+                                                        <?php if ($registo_cli_for->tbl_pessoa_id == $ultimo_fornecedor_cadastrado) echo 'selected'; ?>>
+                                                        <?php echo $registo_cli_for->tbl_pessoa_nome; ?>
+                                                    </option>
+                                                <?php } ?>
+                                            </select>
                                         </div>
 
                                         <div class="form-group col-md-2">
