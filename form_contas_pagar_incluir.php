@@ -1538,7 +1538,7 @@ $data_sistema = date("Y-m-d");
                          '<span class="input-group-addon">%</span>' +
                     '</div></td>' +
                     '<td><span class="rt-cc-val">' + ctpFormatMoney(cc.valor) + '</span></td>' +
-                    '<td><button type="button" class="btn btn-xs" onclick="rtRemoverCC(' + locIdx + ',' + ci + ')"><i class="icon_trash_alt"></i></button></td>' +
+                    '<td><button type="button" class="btn btn-xs" style="background:transparent;border:none;box-shadow:none;padding:2px 4px;" onclick="rtRemoverCC(' + locIdx + ',' + ci + ')"><i class="icon_trash_alt"></i></button></td>' +
                     '</tr>'
                 );
             });
