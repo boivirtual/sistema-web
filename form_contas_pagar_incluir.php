@@ -1103,6 +1103,228 @@ $data_sistema = date("Y-m-d");
             confirmar_fazendas(); // função de contas_pagar.js (já disponível no clique)
         }
 
+        // ================================================================
+        // REPETIR LANÇAMENTO
+        // ================================================================
+
+        var REP_FREQ_LABELS = {
+            '1': 'dia(s)',  '2': 'semana(s)', '3': 'quinzena(s)',
+            '4': 'mês(es)', '5': 'bimestre(s)', '6': 'trimestre(s)',
+            '7': 'semestre(s)', '8': 'ano(s)'
+        };
+
+        // Abre modal ao ligar o toggle
+        function onRepetirLancamentoChange() {
+            if ($('#repetir_lancamento').is(':checked')) {
+                // Só abre modal se ainda não foi confirmado
+                if (!$('#rep_ocorr_hidden').val() || $('#rep_ocorr_hidden').val() == '0') {
+                    abrirModalRepeticao();
+                } else {
+                    mostrarBlocoRecorrente();
+                }
+            } else {
+                cancelarRepeticao();
+            }
+        }
+
+        function abrirModalRepeticao() {
+            $('#rep_modal_erro').hide();
+            $('#modal_repetir_lancamento').modal('show');
+        }
+
+        function cancelarRepeticao() {
+            $('#modal_repetir_lancamento').modal('hide');
+            // Desliga toggle e limpa
+            $('#repetir_lancamento').prop('checked', false);
+            $('#rep_ocorr_hidden').val('0');
+            $('#rep_resumo_wrap').hide();
+            // Volta a exibir condição normal
+            $('#secao_condicao_normal').show();
+            $('#secao_condicao_recorrente').hide();
+            $('#tbody_recorrencias').empty();
+        }
+
+        function confirmarRepeticao() {
+            var cada  = parseInt($('#rep_cada').val());
+            var freq  = $('#rep_freq').val();
+            var ocorr = parseInt($('#rep_ocorr').val());
+
+            if (!cada || cada < 1) {
+                $('#rep_modal_erro').text('Informe "Repetir a Cada" (mínimo 1).').show();
+                return;
+            }
+            if (!ocorr || ocorr < 2) {
+                $('#rep_modal_erro').text('Informe as Ocorrências (mínimo 2).').show();
+                return;
+            }
+
+            // Salva nos hiddens
+            $('#rep_cada_hidden').val(cada);
+            $('#rep_freq_hidden').val(freq);
+            $('#rep_ocorr_hidden').val(ocorr);
+
+            // Monta texto resumo
+            var label = REP_FREQ_LABELS[freq] || '';
+            $('#rep_resumo_texto').text('A cada ' + cada + ' ' + label + ' por ' + ocorr + ' ' + label);
+
+            $('#modal_repetir_lancamento').modal('hide');
+            mostrarBlocoRecorrente();
+        }
+
+        function mostrarBlocoRecorrente() {
+            $('#rep_resumo_wrap').css('display', 'inline-flex');
+            $('#secao_condicao_normal').hide();
+            $('#secao_condicao_recorrente').show();
+            // Inicializa selectpicker no bloco recorrente (pode ter sido ocultado antes)
+            $('#secao_condicao_recorrente .selectpicker').selectpicker('refresh');
+            gerarPreviewRecorrencias();
+        }
+
+        // ----------------------------------------------------------------
+        // Gera preview da tabela "Recorrências Previstas"
+        // ----------------------------------------------------------------
+        function gerarPreviewRecorrencias() {
+            var cada      = parseInt($('#rep_cada_hidden').val()) || 1;
+            var freq      = $('#rep_freq_hidden').val() || '4';
+            var ocorr     = parseInt($('#rep_ocorr_hidden').val()) || 0;
+            var primVenc  = $('#rep_primeiro_venc').val();
+            var emissao   = $('#data_emissao').val();
+            var descricao = $('#descricao_compra').val() || '—';
+            var vlr       = ctpParseMoney($('#vlr_primeira_parcela').val());
+            var cobrar    = $('#rep_cobrar_no').val() || 'dia_vencimento';
+
+            var tbody = $('#tbody_recorrencias');
+            tbody.empty();
+
+            if (!primVenc || !emissao || ocorr < 1) return;
+
+            // Dia base para cálculo de vencimento
+            var diaBase = null;
+            if (cobrar === 'dia_vencimento') {
+                diaBase = parseInt(primVenc.split('-')[2]);
+            } else if (cobrar === 'dia_emissao') {
+                diaBase = parseInt(emissao.split('-')[2]);
+            } else if (cobrar === 'ultimo') {
+                diaBase = null; // calculado por mês
+            } else {
+                diaBase = parseInt(cobrar);
+            }
+
+            for (var i = 0; i < ocorr; i++) {
+                var dataEmissaoI  = repAvancarData(emissao,  freq, cada, i);
+                var dataVencI     = repCalcularVencimento(primVenc, freq, cada, i, cobrar, diaBase);
+                var descI         = descricao + (ocorr > 1 ? ' (' + (i+1) + '/' + ocorr + ')' : '');
+
+                var tr = '<tr>';
+                tr += '<td style="color:#888; font-size:12px;">' + (i+1) + '</td>';
+                tr += '<td>' + repFormatDate(dataEmissaoI) + '</td>';
+                tr += '<td>' + repFormatDate(dataVencI)    + '</td>';
+                tr += '<td style="font-size:12px;">' + descI + '</td>';
+                tr += '<td style="text-align:right;">R$ ' + ctpFormatMoney(vlr) + '</td>';
+                tr += '</tr>';
+                tbody.append(tr);
+            }
+        }
+
+        // Avança data de emissão conforme frequência (YYYY-MM-DD)
+        function repAvancarData(baseStr, freq, cada, n) {
+            if (n === 0) return baseStr;
+            var p = baseStr.split('-');
+            var d = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+            var total = cada * n;
+            switch (freq) {
+                case '1': d.setDate(d.getDate() + total);        break; // diária
+                case '2': d.setDate(d.getDate() + total * 7);    break; // semanal
+                case '3': d.setDate(d.getDate() + total * 15);   break; // quinzenal
+                case '4': d.setMonth(d.getMonth() + total);      break; // mensal
+                case '5': d.setMonth(d.getMonth() + total * 2);  break; // bimestral
+                case '6': d.setMonth(d.getMonth() + total * 3);  break; // trimestral
+                case '7': d.setMonth(d.getMonth() + total * 6);  break; // semestral
+                case '8': d.setFullYear(d.getFullYear() + total); break; // anual
+            }
+            return repDateToStr(d);
+        }
+
+        // Calcula vencimento de cada ocorrência respeitando "Cobrar Sempre No"
+        function repCalcularVencimento(primVencStr, freq, cada, n, cobrar, diaBase) {
+            if (n === 0) return primVencStr;
+            var p = primVencStr.split('-');
+            var d = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+            var total = cada * n;
+
+            // Avança meses/semanas/dias conforme frequência
+            switch (freq) {
+                case '1': d.setDate(d.getDate() + total);        break;
+                case '2': d.setDate(d.getDate() + total * 7);    break;
+                case '3': d.setDate(d.getDate() + total * 15);   break;
+                case '4': d.setMonth(d.getMonth() + total);      break;
+                case '5': d.setMonth(d.getMonth() + total * 2);  break;
+                case '6': d.setMonth(d.getMonth() + total * 3);  break;
+                case '7': d.setMonth(d.getMonth() + total * 6);  break;
+                case '8': d.setFullYear(d.getFullYear() + total); break;
+            }
+
+            // Ajusta dia conforme "Cobrar Sempre No"
+            if (cobrar === 'ultimo') {
+                // Último dia do mês atual de d
+                d = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+            } else if (diaBase !== null && (cobrar === 'dia_vencimento' || cobrar === 'dia_emissao' || parseInt(cobrar) > 0)) {
+                var ultimoDia = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+                d.setDate(Math.min(diaBase, ultimoDia));
+            }
+
+            return repDateToStr(d);
+        }
+
+        function repDateToStr(d) {
+            var mm = String(d.getMonth() + 1).padStart(2, '0');
+            var dd = String(d.getDate()).padStart(2, '0');
+            return d.getFullYear() + '-' + mm + '-' + dd;
+        }
+
+        function repFormatDate(str) {
+            if (!str) return '';
+            var p = str.split('-');
+            return p[2] + '/' + p[1] + '/' + p[0];
+        }
+
+        // Regatilha preview quando descrição ou valor mudam
+        $(document).on('blur', '#descricao_compra, #vlr_primeira_parcela', function() {
+            if ($('#repetir_lancamento').is(':checked')) gerarPreviewRecorrencias();
+        });
+
+        // ================================================================
+        // VALIDAÇÃO EXTRA: inclui repetição na confirmação
+        // ================================================================
+        var _validarParcelamento_original = window.validarParcelamento;
+        window.validarParcelamento_completo = function() {
+            // Se repetição ativa, pula validação de parcelamento
+            if ($('#repetir_lancamento').is(':checked')) {
+                var banco = $('#rep_banco').val();
+                var venc  = $('#rep_primeiro_venc').val();
+                if (!venc) {
+                    $('#mensagem_erro').modal();
+                    $('#mensagem_erro .modal-body').html('Informe o 1º Vencimento da recorrência.');
+                    return false;
+                }
+                if (!banco || banco === '0') {
+                    $('#mensagem_erro').modal();
+                    $('#mensagem_erro .modal-body').html('Informe o Banco/Conta Pagamento da recorrência.');
+                    return false;
+                }
+                return true;
+            }
+            return typeof _validarParcelamento_original === 'function'
+                ? _validarParcelamento_original()
+                : true;
+        };
+
+        // Ponto de entrada do botão Confirmar
+        function confirmar_incluir() {
+            if (!validarParcelamento_completo()) return;
+            confirmar_fazendas();
+        }
+
         // ----------------------------------------------------------------
         // Anexos
         // ----------------------------------------------------------------
