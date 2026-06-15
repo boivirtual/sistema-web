@@ -1361,6 +1361,7 @@ $data_sistema = date("Y-m-d");
                     .attr('data-size', '8')
                     .addClass('selectpicker');
                 $sel.selectpicker();
+                $('#btn_configurar_rateio').show();
             } else {
                 // Rateio OFF → destrói selectpicker, volta ao select simples
                 if ($sel.hasClass('selectpicker')) {
@@ -1371,8 +1372,352 @@ $data_sistema = date("Y-m-d");
                     .removeAttr('data-size')
                     .removeClass('selectpicker')
                     .addClass('form-control');
+                $('#btn_configurar_rateio').hide();
+                $('#rateio_badge').hide();
+                $('#rateio_json').val('');
+                RT.reset();
             }
         });
+
+        // ================================================================
+        // RATEIO — Wizard em 4 painéis
+        // ================================================================
+        var RT = {
+            painel: 1,
+            // Estrutura: locais[{id, nome, perc, valor, ccs:[{id,nome,perc,valor,contas:[{id,nome,perc,valor}]}]}]
+            locais: [],
+            localAtivo: 0,   // índice do local na aba do painel 2
+            ccAtivoIdx: 0,   // índice do CC na aba do painel 3
+
+            reset: function() {
+                this.painel = 1;
+                this.locais = [];
+                this.localAtivo = 0;
+                this.ccAtivoIdx = 0;
+            }
+        };
+
+        function rtAbrirModal() {
+            RT.painel = 1;
+            rtIrPainel(1);
+            $('#modal_rateio').modal('show');
+            // inicializa selectpickers do modal
+            setTimeout(function(){
+                $('#rt_sel_locais').selectpicker('refresh');
+                $('#rt_sel_cc').selectpicker('refresh');
+                $('#rt_sel_conta').selectpicker('refresh');
+            }, 300);
+        }
+
+        function rtIrPainel(n) {
+            RT.painel = n;
+            $('.rt-painel').hide();
+            $('#rt_painel_' + n).show();
+            // steps
+            $('.rt-step').removeClass('ativo concluido');
+            for (var i = 1; i <= 4; i++) {
+                if (i < n) $('[data-painel="' + i + '"]').addClass('concluido');
+                else if (i === n) $('[data-painel="' + i + '"]').addClass('ativo');
+            }
+            // botões
+            $('#rt_btn_voltar').toggle(n > 1);
+            if (n === 4) {
+                $('#rt_btn_avancar').hide();
+                $('#rt_btn_confirmar').show();
+            } else {
+                $('#rt_btn_avancar').show();
+                $('#rt_btn_confirmar').hide();
+            }
+            // renderiza
+            if (n === 1) rtAtualizarTabLocais();
+            if (n === 2) rtRenderizarTabsCC();
+            if (n === 3) rtRenderizarTabsConta();
+            if (n === 4) rtGerarResumo();
+        }
+
+        function rtVoltar() { if (RT.painel > 1) rtIrPainel(RT.painel - 1); }
+
+        function rtAvancar() {
+            if (RT.painel === 1) {
+                // Valida % locais = 100
+                var tot = RT.locais.reduce(function(s,l){return s + parseFloat(l.perc||0);}, 0);
+                if (RT.locais.length === 0) { alert('Adicione ao menos um Local.'); return; }
+                if (Math.abs(tot - 100) > 0.01) { alert('O total do % dos Locais deve ser 100%. Atual: ' + tot.toFixed(2) + '%'); return; }
+                // garante que cada local tem ao menos array de CCs
+                RT.locais.forEach(function(l){ if(!l.ccs) l.ccs=[]; });
+                rtIrPainel(2);
+            } else if (RT.painel === 2) {
+                // Valida cada local tem CCs e soma 100%
+                for (var i = 0; i < RT.locais.length; i++) {
+                    var l = RT.locais[i];
+                    if (!l.ccs || l.ccs.length === 0) { alert('Local "' + l.nome + '" sem Centro de Custo.'); return; }
+                    var tot2 = l.ccs.reduce(function(s,c){return s+parseFloat(c.perc||0);},0);
+                    if (Math.abs(tot2 - 100) > 0.01) { alert('CCs do Local "' + l.nome + '" devem totalizar 100%. Atual: ' + tot2.toFixed(2) + '%'); return; }
+                    l.ccs.forEach(function(c){ if(!c.contas) c.contas=[]; });
+                }
+                rtIrPainel(3);
+            } else if (RT.painel === 3) {
+                // Valida cada CC tem contas e soma 100%
+                for (var i = 0; i < RT.locais.length; i++) {
+                    var l = RT.locais[i];
+                    for (var j = 0; j < l.ccs.length; j++) {
+                        var cc = l.ccs[j];
+                        if (!cc.contas || cc.contas.length === 0) { alert('CC "' + cc.nome + '" (Local "' + l.nome + '") sem Conta Contábil.'); return; }
+                        var tot3 = cc.contas.reduce(function(s,c){return s+parseFloat(c.perc||0);},0);
+                        if (Math.abs(tot3 - 100) > 0.01) { alert('Contas do CC "' + cc.nome + '" devem totalizar 100%. Atual: ' + tot3.toFixed(2) + '%'); return; }
+                    }
+                }
+                rtIrPainel(4);
+            }
+        }
+
+        // ---- Painel 1: Locais ----
+        function rtAdicionarLocais() {
+            var vals = $('#rt_sel_locais').val();
+            if (!vals || vals.length === 0) { alert('Selecione ao menos um Local.'); return; }
+            vals.forEach(function(id) {
+                var existe = RT.locais.some(function(l){ return String(l.id) === String(id); });
+                if (!existe) {
+                    var $opt = $('#rt_sel_locais option[value="' + id + '"]');
+                    RT.locais.push({ id: id, nome: $opt.data('nome') || $opt.text(), perc: 0, valor: 0, ccs: [] });
+                }
+            });
+            rtAtualizarTabLocais();
+        }
+
+        function rtAtualizarTabLocais() {
+            var vlrTotal = ctpParseMoney($('#valor_total').val());
+            var $tbody = $('#rt_tab_locais tbody');
+            $tbody.empty();
+            RT.locais.forEach(function(loc, idx) {
+                $tbody.append(
+                    '<tr>' +
+                    '<td>' + loc.nome + '</td>' +
+                    '<td><div class="input-group input-group-sm">' +
+                         '<input type="number" min="0" max="100" step="0.01" class="form-control rt-loc-perc" data-idx="' + idx + '" value="' + (loc.perc||'') + '" placeholder="0,00">' +
+                         '<span class="input-group-addon">%</span>' +
+                    '</div></td>' +
+                    '<td><span class="rt-loc-val">' + ctpFormatMoney(loc.valor) + '</span></td>' +
+                    '<td><button type="button" class="btn btn-danger btn-xs" onclick="rtRemoverLocal(' + idx + ')"><i class="fas fa-trash"></i></button></td>' +
+                    '</tr>'
+                );
+            });
+            // bind perc input
+            $('#rt_tab_locais .rt-loc-perc').off('input').on('input', function() {
+                var idx2 = $(this).data('idx');
+                var perc = parseFloat($(this).val()) || 0;
+                RT.locais[idx2].perc = perc;
+                RT.locais[idx2].valor = vlrTotal * perc / 100;
+                $(this).closest('tr').find('.rt-loc-val').text(ctpFormatMoney(RT.locais[idx2].valor));
+                rtAtualizarTotaisLocais(vlrTotal);
+            });
+            rtAtualizarTotaisLocais(vlrTotal);
+        }
+
+        function rtAtualizarTotaisLocais(vlrTotal) {
+            var totP = 0, totV = 0;
+            RT.locais.forEach(function(l){ totP += parseFloat(l.perc||0); totV += parseFloat(l.valor||0); });
+            $('#rt_tot_perc_loc').text(totP.toFixed(2) + '%');
+            $('#rt_tot_val_loc').text('R$ ' + ctpFormatMoney(totV));
+        }
+
+        function rtRemoverLocal(idx) {
+            RT.locais.splice(idx, 1);
+            rtAtualizarTabLocais();
+        }
+
+        // ---- Painel 2: CCs por Local ----
+        function rtRenderizarTabsCC() {
+            var $tabs = $('#rt_tabs_cc');
+            $tabs.empty();
+            RT.locais.forEach(function(loc, idx) {
+                $tabs.append('<button type="button" class="rt-tab-btn' + (idx===RT.localAtivo?' ativo':'') + '" onclick="rtSelecionarTabCC(' + idx + ')">' + loc.nome + '</button>');
+            });
+            rtCarregarTabCC(RT.localAtivo);
+        }
+
+        function rtSelecionarTabCC(idx) {
+            RT.localAtivo = idx;
+            $('.rt-tab-btn').removeClass('ativo');
+            $('#rt_tabs_cc .rt-tab-btn').eq(idx).addClass('ativo');
+            rtCarregarTabCC(idx);
+        }
+
+        function rtCarregarTabCC(locIdx) {
+            var loc = RT.locais[locIdx];
+            var $tbody = $('#rt_tab_cc tbody');
+            $tbody.empty();
+            (loc.ccs || []).forEach(function(cc, ci) {
+                $tbody.append(
+                    '<tr>' +
+                    '<td>' + cc.nome + '</td>' +
+                    '<td><div class="input-group input-group-sm">' +
+                         '<input type="number" min="0" max="100" step="0.01" class="form-control rt-cc-perc" data-loc="' + locIdx + '" data-ci="' + ci + '" value="' + (cc.perc||'') + '" placeholder="0,00">' +
+                         '<span class="input-group-addon">%</span>' +
+                    '</div></td>' +
+                    '<td><span class="rt-cc-val">' + ctpFormatMoney(cc.valor) + '</span></td>' +
+                    '<td><button type="button" class="btn btn-danger btn-xs" onclick="rtRemoverCC(' + locIdx + ',' + ci + ')"><i class="fas fa-trash"></i></button></td>' +
+                    '</tr>'
+                );
+            });
+            $('#rt_tab_cc .rt-cc-perc').off('input').on('input', function() {
+                var li = $(this).data('loc'), ci2 = $(this).data('ci');
+                var perc = parseFloat($(this).val()) || 0;
+                RT.locais[li].ccs[ci2].perc = perc;
+                RT.locais[li].ccs[ci2].valor = RT.locais[li].valor * perc / 100;
+                $(this).closest('tr').find('.rt-cc-val').text(ctpFormatMoney(RT.locais[li].ccs[ci2].valor));
+                rtAtualizarTotaisCC(locIdx);
+            });
+            rtAtualizarTotaisCC(locIdx);
+        }
+
+        function rtAdicionarCCs() {
+            var vals = $('#rt_sel_cc').val();
+            if (!vals || vals.length === 0) { alert('Selecione ao menos um Centro de Custo.'); return; }
+            var loc = RT.locais[RT.localAtivo];
+            if (!loc.ccs) loc.ccs = [];
+            vals.forEach(function(id) {
+                var existe = loc.ccs.some(function(c){ return String(c.id) === String(id); });
+                if (!existe) {
+                    var $opt = $('#rt_sel_cc option[value="' + id + '"]');
+                    loc.ccs.push({ id: id, nome: $opt.data('nome') || $opt.text(), perc: 0, valor: 0, contas: [] });
+                }
+            });
+            rtCarregarTabCC(RT.localAtivo);
+        }
+
+        function rtRemoverCC(locIdx, ci) {
+            RT.locais[locIdx].ccs.splice(ci, 1);
+            rtCarregarTabCC(locIdx);
+        }
+
+        function rtAtualizarTotaisCC(locIdx) {
+            var ccs = RT.locais[locIdx].ccs || [];
+            var totP = ccs.reduce(function(s,c){return s+parseFloat(c.perc||0);},0);
+            var totV = ccs.reduce(function(s,c){return s+parseFloat(c.valor||0);},0);
+            $('#rt_tot_perc_cc').text(totP.toFixed(2) + '%');
+            $('#rt_tot_val_cc').text('R$ ' + ctpFormatMoney(totV));
+        }
+
+        // ---- Painel 3: Contas por Local×CC ----
+        function rtRenderizarTabsConta() {
+            // gera tabs: Local > CC
+            var $tabs = $('#rt_tabs_conta');
+            $tabs.empty();
+            RT.locais.forEach(function(loc, li) {
+                loc.ccs.forEach(function(cc, ci) {
+                    var key = li + '_' + ci;
+                    var isAtivo = (li === 0 && ci === 0);
+                    $tabs.append('<button type="button" class="rt-tab-btn' + (isAtivo?' ativo':'') + '" onclick="rtSelecionarTabConta(' + li + ',' + ci + ')">' + loc.nome + ' › ' + cc.nome + '</button>');
+                });
+            });
+            // ativa o primeiro
+            if (RT.locais.length > 0 && RT.locais[0].ccs.length > 0) {
+                RT.localAtivo = 0; RT.ccAtivoIdx = 0;
+                rtCarregarTabConta(0, 0);
+            }
+        }
+
+        function rtSelecionarTabConta(li, ci) {
+            RT.localAtivo = li; RT.ccAtivoIdx = ci;
+            $('#rt_tabs_conta .rt-tab-btn').removeClass('ativo');
+            // marca o botão correto
+            var btnIdx = 0;
+            RT.locais.forEach(function(loc, lx) {
+                loc.ccs.forEach(function(cc, cx) {
+                    if (lx===li && cx===ci) $('#rt_tabs_conta .rt-tab-btn').eq(btnIdx).addClass('ativo');
+                    btnIdx++;
+                });
+            });
+            rtCarregarTabConta(li, ci);
+        }
+
+        function rtCarregarTabConta(li, ci) {
+            var cc = RT.locais[li].ccs[ci];
+            var $tbody = $('#rt_tab_conta tbody');
+            $tbody.empty();
+            (cc.contas || []).forEach(function(ct, ti) {
+                $tbody.append(
+                    '<tr>' +
+                    '<td>' + ct.nome + '</td>' +
+                    '<td><div class="input-group input-group-sm">' +
+                         '<input type="number" min="0" max="100" step="0.01" class="form-control rt-conta-perc" data-li="' + li + '" data-ci="' + ci + '" data-ti="' + ti + '" value="' + (ct.perc||'') + '" placeholder="0,00">' +
+                         '<span class="input-group-addon">%</span>' +
+                    '</div></td>' +
+                    '<td><span class="rt-conta-val">' + ctpFormatMoney(ct.valor) + '</span></td>' +
+                    '<td><button type="button" class="btn btn-danger btn-xs" onclick="rtRemoverConta(' + li + ',' + ci + ',' + ti + ')"><i class="fas fa-trash"></i></button></td>' +
+                    '</tr>'
+                );
+            });
+            $('#rt_tab_conta .rt-conta-perc').off('input').on('input', function() {
+                var li2=$(this).data('li'), ci2=$(this).data('ci'), ti=$(this).data('ti');
+                var perc = parseFloat($(this).val()) || 0;
+                RT.locais[li2].ccs[ci2].contas[ti].perc = perc;
+                RT.locais[li2].ccs[ci2].contas[ti].valor = RT.locais[li2].ccs[ci2].valor * perc / 100;
+                $(this).closest('tr').find('.rt-conta-val').text(ctpFormatMoney(RT.locais[li2].ccs[ci2].contas[ti].valor));
+                rtAtualizarTotaisConta(li, ci);
+            });
+            rtAtualizarTotaisConta(li, ci);
+        }
+
+        function rtAdicionarContas() {
+            var vals = $('#rt_sel_conta').val();
+            if (!vals || vals.length === 0) { alert('Selecione ao menos uma Conta Contábil.'); return; }
+            var cc = RT.locais[RT.localAtivo].ccs[RT.ccAtivoIdx];
+            if (!cc.contas) cc.contas = [];
+            vals.forEach(function(id) {
+                var existe = cc.contas.some(function(c){ return String(c.id) === String(id); });
+                if (!existe) {
+                    var $opt = $('#rt_sel_conta option[value="' + id + '"]');
+                    cc.contas.push({ id: id, nome: $opt.data('nome') || $opt.text(), perc: 0, valor: 0 });
+                }
+            });
+            rtCarregarTabConta(RT.localAtivo, RT.ccAtivoIdx);
+        }
+
+        function rtRemoverConta(li, ci, ti) {
+            RT.locais[li].ccs[ci].contas.splice(ti, 1);
+            rtCarregarTabConta(li, ci);
+        }
+
+        function rtAtualizarTotaisConta(li, ci) {
+            var contas = RT.locais[li].ccs[ci].contas || [];
+            var totP = contas.reduce(function(s,c){return s+parseFloat(c.perc||0);},0);
+            var totV = contas.reduce(function(s,c){return s+parseFloat(c.valor||0);},0);
+            $('#rt_tot_perc_conta').text(totP.toFixed(2) + '%');
+            $('#rt_tot_val_conta').text('R$ ' + ctpFormatMoney(totV));
+        }
+
+        // ---- Painel 4: Resumo ----
+        function rtGerarResumo() {
+            var $tbody = $('#rt_tab_resumo tbody');
+            $tbody.empty();
+            RT.locais.forEach(function(loc) {
+                loc.ccs.forEach(function(cc) {
+                    cc.contas.forEach(function(ct) {
+                        $tbody.append(
+                            '<tr>' +
+                            '<td>' + loc.nome + '</td>' +
+                            '<td>' + parseFloat(loc.perc).toFixed(2) + '%</td>' +
+                            '<td>R$ ' + ctpFormatMoney(loc.valor) + '</td>' +
+                            '<td>' + cc.nome + '</td>' +
+                            '<td>' + parseFloat(cc.perc).toFixed(2) + '%</td>' +
+                            '<td>R$ ' + ctpFormatMoney(cc.valor) + '</td>' +
+                            '<td>' + ct.nome + '</td>' +
+                            '<td>' + parseFloat(ct.perc).toFixed(2) + '%</td>' +
+                            '<td>R$ ' + ctpFormatMoney(ct.valor) + '</td>' +
+                            '</tr>'
+                        );
+                    });
+                });
+            });
+        }
+
+        function rtConfirmar() {
+            $('#rateio_json').val(JSON.stringify(RT.locais));
+            $('#rateio_badge').show();
+            $('#modal_rateio').modal('hide');
+        }
 
         // ================================================================
         // REPETIR LANÇAMENTO
