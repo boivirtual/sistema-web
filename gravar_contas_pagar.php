@@ -147,7 +147,7 @@
         $codigo_for_n     = mysqli_real_escape_string($conector, $codigo_for);
         $codigo_conta_n   = mysqli_real_escape_string($conector, $codigo_conta);
         $codigo_ccusto_n  = isset($_POST['codigo_cc']) ? mysqli_real_escape_string($conector, $_POST['codigo_cc']) : '';
-        $observacoes_n    = isset($_POST['observacoes'])     ? mysqli_real_escape_string($conector, $_POST['observacoes'])    : '';
+        $observacoes_n    = isset($_POST['observacoes']) ? mysqli_real_escape_string($conector, $_POST['observacoes']) : '';
 
         // Resolve local (fazenda) — pode ser array
         $cod_local_raw = isset($_POST['codigo_fazenda']) ? $_POST['codigo_fazenda'] : [];
