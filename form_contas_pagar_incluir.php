@@ -1362,6 +1362,10 @@ $data_sistema = date("Y-m-d");
                     .addClass('selectpicker');
                 $sel.selectpicker();
                 $('#btn_configurar_rateio').show();
+                // Abre modal automaticamente ao ligar o rateio (se ainda não configurado)
+                if (!$('#rateio_json').val()) {
+                    setTimeout(function(){ rtAbrirModal(); }, 200);
+                }
             } else {
                 // Rateio OFF → destrói selectpicker, volta ao select simples
                 if ($sel.hasClass('selectpicker')) {
