@@ -523,6 +523,78 @@ $data_sistema = date("Y-m-d");
                                         <div id="parc_totais"></div>
                                     </div>
                                     <!-- FIM Condição de Pagamento -->
+                                    </div><!-- /secao_condicao_normal -->
+
+                                    <!-- ===== SEÇÃO: Condição de Pagamento — RECORRENTE ===== -->
+                                    <div id="secao_condicao_recorrente" style="display:none;">
+                                        <div class="secao-titulo">Condição de Pagamento — Recorrente</div>
+                                        <div class="row">
+                                            <div class="form-group col-md-3">
+                                                <label for="rep_cobrar_no" class="control-label"><span class="required">*</span> Cobrar Sempre No</label>
+                                                <select class="form-control selectpicker" id="rep_cobrar_no" name="rep_cobrar_no" onchange="gerarPreviewRecorrencias()">
+                                                    <option value="dia_vencimento" selected>Mesmo dia do 1º Vencimento</option>
+                                                    <option value="dia_emissao">Mesmo dia da Emissão</option>
+                                                    <option value="01">Todo dia 1</option>
+                                                    <option value="05">Todo dia 5</option>
+                                                    <option value="10">Todo dia 10</option>
+                                                    <option value="15">Todo dia 15</option>
+                                                    <option value="20">Todo dia 20</option>
+                                                    <option value="25">Todo dia 25</option>
+                                                    <option value="ultimo">Último dia do mês</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <label for="rep_primeiro_venc" class="control-label"><span class="required">*</span> 1º Vencimento</label>
+                                                <input type="date" class="form-control" id="rep_primeiro_venc" name="rep_primeiro_venc" onchange="gerarPreviewRecorrencias()">
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="rep_banco" class="control-label"><span class="required">*</span> Banco/Conta Pagamento</label>
+                                                <select class="form-control selectpicker" id="rep_banco" name="rep_banco" data-live-search="true" data-size="8">
+                                                    <option value="0">...</option>
+                                                    <?php
+                                                    // Re-query banco para o bloco recorrente
+                                                    $conta_rep = mysqli_query($conector, "select tbl_conta_pagamento_id, tbl_conta_pagamento_descricao, tbl_conta_pagamento_agencia, tbl_conta_pagamento_conta from tbl_conta_pagamento where tbl_conta_pagamento_lixeira=0 order by tbl_conta_pagamento_descricao ASC");
+                                                    while ($ln = mysqli_fetch_object($conta_rep)) {
+                                                        $dc = $ln->tbl_conta_pagamento_descricao . ' (Age: ' . $ln->tbl_conta_pagamento_agencia . ' Cta: ' . $ln->tbl_conta_pagamento_conta . ')';
+                                                        echo '<option value="' . $ln->tbl_conta_pagamento_id . '">' . $dc . '</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label for="rep_tipodoc" class="control-label">Tipo Documento</label>
+                                                <select class="form-control selectpicker" id="rep_tipodoc" name="rep_tipodoc" data-live-search="true" data-size="8">
+                                                    <option value="00">...</option>
+                                                    <?php
+                                                    $tdoc_rep = mysqli_query($conector, "select tbl_tipo_doc_id, tbl_tipo_doc_descricao from tbl_tipo_documento where tbl_tipo_doc_lixeira=0");
+                                                    while ($r = mysqli_fetch_object($tdoc_rep)) {
+                                                        echo '<option value="' . $r->tbl_tipo_doc_id . '">' . $r->tbl_tipo_doc_descricao . '</option>';
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Tabela preview recorrências -->
+                                        <div style="margin-top:10px; overflow-x:auto;">
+                                            <div style="font-size:13px; font-weight:600; color:#555; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #e0e0e0;">
+                                                Recorrências Previstas
+                                            </div>
+                                            <table class="tbl-parcelas">
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Data Emissão</th>
+                                                        <th>Vencimento</th>
+                                                        <th>Descrição</th>
+                                                        <th style="text-align:right;">Valor</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbody_recorrencias"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <!-- FIM Condição de Pagamento Recorrente -->
 
                                     <!-- ===== OBSERVAÇÕES ===== -->
                                     <div class="row" style="margin-top: 12px;">
