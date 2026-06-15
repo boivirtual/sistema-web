@@ -280,7 +280,7 @@
                     $numero_doc_n, $codigo_for_n, 1, $tipo_doc_n, $razao_n,
                     1, $data_emissao_n, $data_vencimento_n, $vlr_total_n,
                     $cod_loc_esc, $codigo_ccusto_n, $codigo_conta_n, $banco_n,
-                    $descricao_n, $nomeusuario, $data_sistema, $conector
+                    $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
                 );
                 if (!$ok) {
                     header('Content-type: application/json');
@@ -288,6 +288,8 @@
                     mysqli_close($conector); exit;
                 }
                 $novo_id = mysqli_insert_id($conector);
+                // Salva anexos vinculados ao primeiro (e único) registro
+                salvar_anexos($novo_id, $conector, $nomeusuario, $data_sistema);
                 if ($pago_n == 'S') {
                     $novo_id_fmt = str_pad($novo_id, 9, '0', STR_PAD_LEFT);
                     $hist = mysqli_real_escape_string($conector, 'Pag total do doc para: ' . $razao_n);
@@ -295,7 +297,8 @@
                     mysqli_query($conector, "UPDATE contas_pagar SET ctp_situacao='P' WHERE ctp_id='$novo_id'");
                 }
             } else {
-                // Múltiplas fazendas (rateio)
+                // Múltiplas fazendas (rateio) — À Vista
+                $primeiro_id_n = null;
                 $matriz_n = explode('<|>', $array_valores_fazendas_n);
                 foreach ($matriz_n as $item) {
                     $partes = explode('|', $item);
@@ -305,12 +308,17 @@
                         $numero_doc_n, $codigo_for_n, 1, $tipo_doc_n, $razao_n,
                         1, $data_emissao_n, $data_vencimento_n, $vlr_i,
                         $loc_i, $codigo_ccusto_n, $codigo_conta_n, $banco_n,
-                        $descricao_n, $nomeusuario, $data_sistema, $conector
+                        $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
                     );
                     if (!$ok) {
                         header('Content-type: application/json');
                         echo json_encode(array('error' => true, 'message' => 'Erro ao gravar fazenda: ' . mysqli_error($conector)));
                         mysqli_close($conector); exit;
+                    }
+                    if ($primeiro_id_n === null) {
+                        $primeiro_id_n = mysqli_insert_id($conector);
+                        // Vincula anexos ao primeiro registro do lote
+                        salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
                     }
                 }
             }
@@ -331,7 +339,8 @@
             mysqli_close($conector); exit;
         }
 
-        $qtd_total_n = count($parcelas_post);
+        $qtd_total_n  = count($parcelas_post);
+        $primeiro_id_n = null; // para vincular anexos na 1ª parcela
 
         if ($qtd_fazendas_n == 1) {
             $cod_loc_esc = mysqli_real_escape_string($conector, trim($codigo_local_str));
@@ -347,7 +356,7 @@
                     $numero_doc_n, $codigo_for_n, $p_num, $p_tdoc, $razao_n,
                     $qtd_total_n, $data_emissao_n, $p_data, $p_vlr,
                     $cod_loc_esc, $codigo_ccusto_n, $codigo_conta_n, $p_banco,
-                    $descricao_n, $nomeusuario, $data_sistema, $conector
+                    $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
                 );
                 if (!$ok) {
                     header('Content-type: application/json');
@@ -355,6 +364,11 @@
                     mysqli_close($conector); exit;
                 }
                 $novo_id = mysqli_insert_id($conector);
+                // Vincula anexos apenas à 1ª parcela
+                if ($primeiro_id_n === null) {
+                    $primeiro_id_n = $novo_id;
+                    salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                }
                 if ($p_pago == 'S') {
                     $novo_id_fmt = str_pad($novo_id, 9, '0', STR_PAD_LEFT);
                     $hist = mysqli_real_escape_string($conector, 'Pag parcela ' . $p_num . ' para: ' . $razao_n);
@@ -363,7 +377,7 @@
                 }
             }
         } else {
-            // Múltiplas fazendas com parcelamento: cada fazenda ganha N parcelas com valor proporcional
+            // Múltiplas fazendas com parcelamento
             $matriz_n = explode('<|>', $array_valores_fazendas_n);
             foreach ($matriz_n as $item) {
                 $partes    = explode('|', $item);
@@ -381,12 +395,16 @@
                         $numero_doc_n, $codigo_for_n, $p_num, $p_tdoc, $razao_n,
                         $qtd_total_n, $data_emissao_n, $p_data, $p_vlr,
                         $loc_i, $codigo_ccusto_n, $codigo_conta_n, $p_banco,
-                        $descricao_n, $nomeusuario, $data_sistema, $conector
+                        $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
                     );
                     if (!$ok) {
                         header('Content-type: application/json');
                         echo json_encode(array('error' => true, 'message' => 'Erro ao gravar parcela ' . $p_num . ' da fazenda: ' . mysqli_error($conector)));
                         mysqli_close($conector); exit;
+                    }
+                    if ($primeiro_id_n === null) {
+                        $primeiro_id_n = mysqli_insert_id($conector);
+                        salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
                     }
                 }
             }
