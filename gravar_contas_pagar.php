@@ -645,7 +645,7 @@
                 '$rep_ocorrencias', '$data_emissao_i', '$data_vencto_i',
                 '$vlr_r', 0.00, 0.00,
                 null, '',
-                '$codigo_local_r', '$codigo_ccusto_r', '$codigo_conta_r',
+                " . ($codigo_local_r  === '' ? 'NULL' : "'$codigo_local_r'")  . ", " . ($codigo_ccusto_r === '' ? 'NULL' : "'$codigo_ccusto_r'") . ", " . ($codigo_conta_r  === '' ? 'NULL' : "'$codigo_conta_r'")  . ",
                 '$rep_banco',
                 '$data_sistema', '$nomeusuario',
                 '$descricao_i', '$observacoes_r',
