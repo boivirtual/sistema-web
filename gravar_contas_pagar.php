@@ -1,7 +1,51 @@
-<?php 
-	 function sonumero($str) { 
-		return preg_replace("/[^0-9]/", "", $str); 
-	} 
+<?php
+	 function sonumero($str) {
+		return preg_replace("/[^0-9]/", "", $str);
+	}
+
+    /**
+     * Processa os arquivos do input name="anexo[]" e grava na tbl_ctp_anexos.
+     * Retorna array com erros (vazio = sucesso).
+     */
+    function salvar_anexos($ctp_id, $conector, $nomeusuario, $data_sistema) {
+        $erros = [];
+        if (!isset($_FILES['anexo']) || empty($_FILES['anexo']['name'][0])) {
+            return $erros; // sem anexos
+        }
+
+        $pasta = __DIR__ . '/uploads/ctp/';
+        if (!is_dir($pasta)) { mkdir($pasta, 0755, true); }
+
+        $total = count($_FILES['anexo']['name']);
+        for ($i = 0; $i < $total; $i++) {
+            if ($_FILES['anexo']['error'][$i] !== UPLOAD_ERR_OK) continue;
+            if (empty($_FILES['anexo']['name'][$i])) continue;
+
+            $nome_original = basename($_FILES['anexo']['name'][$i]);
+            $ext           = strtolower(pathinfo($nome_original, PATHINFO_EXTENSION));
+            $nome_arquivo  = uniqid('ctp_', true) . '.' . $ext;
+            $destino       = $pasta . $nome_arquivo;
+            $tamanho       = $_FILES['anexo']['size'][$i];
+
+            if (!move_uploaded_file($_FILES['anexo']['tmp_name'][$i], $destino)) {
+                $erros[] = 'Erro ao mover arquivo: ' . $nome_original;
+                continue;
+            }
+
+            $nome_esc    = mysqli_real_escape_string($conector, $nome_original);
+            $arq_esc     = mysqli_real_escape_string($conector, $nome_arquivo);
+            $usuario_esc = mysqli_real_escape_string($conector, $nomeusuario);
+
+            $sql = "INSERT INTO tbl_ctp_anexos
+                        (anexo_ctp_id, anexo_nome, anexo_arquivo, anexo_tamanho, anexo_incluido_em, anexo_incluido_por)
+                    VALUES
+                        ('$ctp_id', '$nome_esc', '$arq_esc', '$tamanho', '$data_sistema', '$usuario_esc')";
+            if (!mysqli_query($conector, $sql)) {
+                $erros[] = 'Erro BD anexo: ' . mysqli_error($conector);
+            }
+        }
+        return $erros;
+    }
 
 	$quantidade_prazos = 0;
 	$descricao_compra = $_POST['descricao_compra'];
