@@ -531,7 +531,7 @@
                 ctp_valor_parcela, ctp_valor_desconto, ctp_valor_juros,
                 ctp_outro_valor, ctp_situacao,
                 ctp_codigo_fazenda, ctp_codigo_centro_custos, ctp_codigo_conta,
-                ctp_conta_pagamento, ctp_tipo_documento,
+                ctp_conta_pagamento,
                 ctp_incluido_em, ctp_incluido_por,
                 ctp_descricao_compra, ctp_observacoes,
                 ctp_grupo_repeticao, ctp_repeticao_seq, ctp_repeticao_total
@@ -542,7 +542,7 @@
                 '$vlr_r', 0.00, 0.00,
                 null, '',
                 '$codigo_local_r', '$codigo_ccusto_r', '$codigo_conta_r',
-                '$rep_banco', '$rep_tipodoc',
+                '$rep_banco',
                 '$data_sistema', '$nomeusuario',
                 '$descricao_i', '$observacoes_r',
                 '$uuid_grupo', " . ($i+1) . ", '$rep_ocorrencias'
