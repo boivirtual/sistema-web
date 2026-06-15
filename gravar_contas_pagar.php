@@ -129,6 +129,9 @@
 	$tipo_operacao = $_POST['tipo_operacao'];
 	$codigo_c_custo = $_POST['codigo_cc'];
 
+    // Quando rateio está ativo, Local/Conta Contábil/CC não são obrigatórios
+    $tem_rateio = !empty($_POST['rateio_json']) && $_POST['rateio_json'] !== '[]' && $_POST['rateio_json'] !== 'null';
+
 	if (!isset($_POST['codigo_fazenda'])) {
 		$codigo_local = '';
 	}
