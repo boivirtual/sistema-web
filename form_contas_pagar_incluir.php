@@ -1319,12 +1319,6 @@ $data_sistema = date("Y-m-d");
                 : true;
         };
 
-        // Ponto de entrada do botão Confirmar
-        function confirmar_incluir() {
-            if (!validarParcelamento_completo()) return;
-            confirmar_fazendas();
-        }
-
         // ----------------------------------------------------------------
         // Anexos
         // ----------------------------------------------------------------
