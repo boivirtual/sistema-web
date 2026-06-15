@@ -1167,9 +1167,9 @@ $data_sistema = date("Y-m-d");
             var label = REP_FREQ_LABELS[freq] || '';
             $('#rep_resumo_texto').text('A cada ' + cada + ' ' + label + ' por ' + ocorr + ' ' + label);
 
-            // Pré-preenche 1º Vencimento = emissão + 1 intervalo (se ainda não preenchido)
+            // Pré-preenche 1º Vencimento = emissão + 1 intervalo (sempre recalcula ao confirmar)
             var emissao = $('#data_emissao').val();
-            if (emissao && !$('#rep_primeiro_venc').val()) {
+            if (emissao) {
                 var primVenc = repAvancarData(emissao, freq, cada, 1);
                 $('#rep_primeiro_venc').val(primVenc);
             }
