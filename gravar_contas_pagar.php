@@ -364,8 +364,9 @@
                     mysqli_close($conector); exit;
                 }
                 $novo_id = mysqli_insert_id($conector);
-                // Salva anexos vinculados ao primeiro (e único) registro
+                // Salva anexos e rateio vinculados ao primeiro (e único) registro
                 salvar_anexos($novo_id, $conector, $nomeusuario, $data_sistema);
+                salvar_rateio($novo_id, $conector, $nomeusuario, $data_sistema);
                 if ($pago_n == 'S') {
                     $novo_id_fmt = str_pad($novo_id, 9, '0', STR_PAD_LEFT);
                     $hist = mysqli_real_escape_string($conector, 'Pag total do doc para: ' . $razao_n);
