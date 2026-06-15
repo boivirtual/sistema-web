@@ -61,6 +61,29 @@ while ($r = mysqli_fetch_object($rs_t)) {
     $arr_tipodoc_js[] = ['id' => $r->tbl_tipo_doc_id, 'desc' => $r->tbl_tipo_doc_descricao];
 }
 
+// Arrays para o modal de rateio
+$arr_local_rat_js = [];
+$rs_loc_rat = mysqli_query($conector, "select tbl_pessoa_id, tbl_pessoa_nome from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0 order by tbl_pessoa_nome");
+while ($r = mysqli_fetch_object($rs_loc_rat)) {
+    foreach ($array_locais_usuario as $v) {
+        if (trim($v) == $r->tbl_pessoa_id) {
+            $arr_local_rat_js[] = ['id' => $r->tbl_pessoa_id, 'nome' => $r->tbl_pessoa_nome];
+        }
+    }
+}
+
+$arr_cc_rat_js = [];
+$rs_cc_rat = mysqli_query($conector, "select tbl_cc_codigo_id, tbl_cc_descricao from tbl_centro_custo where tbl_cc_lixeira=0 order by tbl_cc_codigo_id");
+while ($r = mysqli_fetch_object($rs_cc_rat)) {
+    $arr_cc_rat_js[] = ['id' => $r->tbl_cc_codigo_id, 'nome' => $r->tbl_cc_descricao];
+}
+
+$arr_conta_rat_js = [];
+$rs_cta_rat = mysqli_query($conector, "select tbl_plano_contas_codigo_id, tbl_plano_contas_descricao from tbl_plano_contas where tbl_plano_contas_nivel=3 and tbl_plano_contas_debito_credito='D' and tbl_plano_contas_lixeira=0 order by tbl_plano_contas_codigo_id");
+while ($r = mysqli_fetch_object($rs_cta_rat)) {
+    $arr_conta_rat_js[] = ['id' => $r->tbl_plano_contas_codigo_id, 'nome' => $r->tbl_plano_contas_descricao];
+}
+
 $data_sistema = date("Y-m-d");
 ?>
 <!DOCTYPE html>
