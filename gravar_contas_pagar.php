@@ -546,7 +546,7 @@
         if (empty($rep_prim_venc))   { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o 1º Vencimento da recorrência.']); mysqli_close($conector); exit; }
         if ($rep_banco == 0)          { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Banco/Conta Pagamento da recorrência.']); mysqli_close($conector); exit; }
         if ($vlr_r <= 0)              { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Valor.']); mysqli_close($conector); exit; }
-        if (empty($codigo_local_r))  { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Local.']); mysqli_close($conector); exit; }
+        if (!$tem_rateio && empty($codigo_local_r))  { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Local.']); mysqli_close($conector); exit; }
 
         // UUID do grupo de repetição
         $uuid_grupo = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
