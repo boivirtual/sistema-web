@@ -302,6 +302,11 @@
             $codigo_local, $codigo_ccusto, $codigo_conta, $conta_pagamento,
             $descricao, $observacoes, $nomeusuario, $data_sistema, $conector
         ) {
+            // Campos opcionais: NULL quando vazio
+            $sql_local  = ($codigo_local  === null || $codigo_local  === '') ? 'NULL' : "'$codigo_local'";
+            $sql_ccusto = ($codigo_ccusto === null || $codigo_ccusto === '') ? 'NULL' : "'$codigo_ccusto'";
+            $sql_conta  = ($codigo_conta  === null || $codigo_conta  === '') ? 'NULL' : "'$codigo_conta'";
+
             $sql = "INSERT INTO contas_pagar (
                 ctp_numero_doc, ctp_codigo_fornecedor, ctp_parcela,
                 ctp_tipo_documento, ctp_nome_fornecedor, ctp_numero_documento,
@@ -326,7 +331,7 @@
                 null, null,
                 '', null, null,
                 null, null, null,
-                " . (($codigo_local === null || $codigo_local === '') ? 'NULL' : "'$codigo_local'") . ", " . (($codigo_ccusto === null || $codigo_ccusto === '') ? 'NULL' : "'$codigo_ccusto'") . ", " . (($codigo_conta === null || $codigo_conta === '') ? 'NULL' : "'$codigo_conta'") . ",
+                $sql_local, $sql_ccusto, $sql_conta,
                 null, null, '$conta_pagamento',
                 '', null, null,
                 '$data_sistema', '$nomeusuario',
