@@ -152,6 +152,9 @@ if ($num_rows_usuario != 0) {
         table#tabela_contas_pagar { border-top: none !important; }
         table#tabela_contas_pagar thead > tr:first-child > th,
         table#tabela_contas_pagar thead > tr:first-child > td { border-top: none !important; }
+
+        /* Garante que o header fixo fique sempre acima do conteúdo da página */
+        .header { z-index: 1030 !important; }
     </style>
 </head>
 
