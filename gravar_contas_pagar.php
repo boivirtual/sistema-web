@@ -416,6 +416,158 @@
         exit;
 
     } // fim novo sistema parcelamento
+
+    // =========================================================
+    // NOVO SISTEMA — Repetir Lançamento (recorrência)
+    // =========================================================
+    $rep_ocorrencias = isset($_POST['rep_ocorrencias']) ? intval($_POST['rep_ocorrencias']) : 0;
+
+    if ($tipo_operacao == 1 && $rep_ocorrencias >= 2) {
+
+        // Leitura dos campos
+        $data_emissao_r   = isset($_POST['data_emissao'])       ? mysqli_real_escape_string($conector, $_POST['data_emissao'])       : '';
+        $descricao_r      = mysqli_real_escape_string($conector, $descricao_compra);
+        $codigo_for_r     = mysqli_real_escape_string($conector, $codigo_for);
+        $codigo_conta_r   = mysqli_real_escape_string($conector, $codigo_conta);
+        $codigo_ccusto_r  = isset($_POST['codigo_cc'])          ? mysqli_real_escape_string($conector, $_POST['codigo_cc'])          : '';
+        $observacoes_r    = isset($_POST['observacoes'])         ? mysqli_real_escape_string($conector, $_POST['observacoes'])        : '';
+        $numero_doc_r     = isset($_POST['number_doc'])          ? mysqli_real_escape_string($conector, $_POST['number_doc'])         : '';
+        $rep_cada         = max(1, intval($_POST['rep_cada']));
+        $rep_freq         = intval($_POST['rep_frequencia']);
+        $rep_cobrar_no    = isset($_POST['rep_cobrar_no'])       ? mysqli_real_escape_string($conector, $_POST['rep_cobrar_no'])      : 'dia_vencimento';
+        $rep_prim_venc    = isset($_POST['rep_primeiro_venc'])   ? mysqli_real_escape_string($conector, $_POST['rep_primeiro_venc'])  : '';
+        $rep_banco        = isset($_POST['rep_banco'])           ? intval($_POST['rep_banco'])                                        : 0;
+        $rep_tipodoc      = isset($_POST['rep_tipodoc'])         ? mysqli_real_escape_string($conector, $_POST['rep_tipodoc'])        : '00';
+
+        $vlr_r = isset($_POST['vlr_primeira_parcela'])
+            ? floatval(str_replace(',', '.', str_replace('.', '', $_POST['vlr_primeira_parcela'])))
+            : 0;
+
+        // Resolve local
+        $cod_local_raw_r = isset($_POST['codigo_fazenda']) ? $_POST['codigo_fazenda'] : [];
+        if (!is_array($cod_local_raw_r)) $cod_local_raw_r = [$cod_local_raw_r];
+        $codigo_local_r = trim(implode(', ', $cod_local_raw_r));
+        // Para repetição usamos sempre a primeira fazenda (simplificado)
+        $partes_local_r = explode(',', $codigo_local_r);
+        $codigo_local_r = mysqli_real_escape_string($conector, trim($partes_local_r[0]));
+
+        // Resolve nome do fornecedor
+        if ($codigo_for_r != '999999999') {
+            $rs_for_r = mysqli_query($conector, "SELECT tbl_pessoa_nome FROM tbl_pessoa WHERE tbl_pessoa_id='$codigo_for_r'");
+            $row_r = mysqli_fetch_object($rs_for_r);
+            $razao_r = $row_r ? mysqli_real_escape_string($conector, $row_r->tbl_pessoa_nome) : '';
+        } else {
+            $razao_r = isset($_POST['nome_for']) ? mysqli_real_escape_string($conector, $_POST['nome_for']) : '';
+        }
+
+        // Validações
+        if (empty($data_emissao_r))  { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe a Data de Emissão.']); mysqli_close($conector); exit; }
+        if (empty($rep_prim_venc))   { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o 1º Vencimento da recorrência.']); mysqli_close($conector); exit; }
+        if ($rep_banco == 0)          { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Banco/Conta Pagamento da recorrência.']); mysqli_close($conector); exit; }
+        if ($vlr_r <= 0)              { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Valor.']); mysqli_close($conector); exit; }
+        if (empty($codigo_local_r))  { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Local.']); mysqli_close($conector); exit; }
+
+        // UUID do grupo de repetição
+        $uuid_grupo = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            mt_rand(0,0xffff), mt_rand(0,0xffff), mt_rand(0,0xffff),
+            mt_rand(0,0x0fff)|0x4000, mt_rand(0,0x3fff)|0x8000,
+            mt_rand(0,0xffff), mt_rand(0,0xffff), mt_rand(0,0xffff));
+
+        // Dia base para cálculo de vencimento
+        $dia_base = null;
+        if ($rep_cobrar_no === 'dia_vencimento') {
+            $dia_base = (int)date('d', strtotime($rep_prim_venc));
+        } elseif ($rep_cobrar_no === 'dia_emissao') {
+            $dia_base = (int)date('d', strtotime($data_emissao_r));
+        } elseif ($rep_cobrar_no === 'ultimo') {
+            $dia_base = null; // calculado por mês
+        } else {
+            $dia_base = intval($rep_cobrar_no);
+        }
+
+        // Função local: avança data conforme frequência
+        $avancar_data = function($dateStr, $freq, $cada, $n) {
+            $total = $cada * $n;
+            $ts    = strtotime($dateStr);
+            switch ($freq) {
+                case 1: return date('Y-m-d', strtotime("+{$total} days",    $ts)); // diária
+                case 2: return date('Y-m-d', strtotime("+{$total} weeks",   $ts)); // semanal
+                case 3: return date('Y-m-d', strtotime("+" . ($total*15) . " days", $ts)); // quinzenal
+                case 4: return date('Y-m-d', strtotime("+{$total} months",  $ts)); // mensal
+                case 5: return date('Y-m-d', strtotime("+" . ($total*2) . " months", $ts)); // bimestral
+                case 6: return date('Y-m-d', strtotime("+" . ($total*3) . " months", $ts)); // trimestral
+                case 7: return date('Y-m-d', strtotime("+" . ($total*6) . " months", $ts)); // semestral
+                case 8: return date('Y-m-d', strtotime("+" . ($total*12) . " months", $ts)); // anual
+                default: return $dateStr;
+            }
+        };
+
+        $ajustar_dia = function($dateStr, $dia_base, $cobrar_no) {
+            if ($cobrar_no === 'ultimo') {
+                return date('Y-m-t', strtotime($dateStr)); // último dia do mês
+            }
+            if ($dia_base !== null) {
+                $ano = (int)date('Y', strtotime($dateStr));
+                $mes = (int)date('m', strtotime($dateStr));
+                $ultimo = (int)date('t', mktime(0,0,0,$mes,1,$ano));
+                $dia    = min($dia_base, $ultimo);
+                return sprintf('%04d-%02d-%02d', $ano, $mes, $dia);
+            }
+            return $dateStr;
+        };
+
+        $primeiro_id_r = null;
+
+        for ($i = 0; $i < $rep_ocorrencias; $i++) {
+            $data_emissao_i  = $avancar_data($data_emissao_r, $rep_freq, $rep_cada, $i);
+            $data_vencto_i   = ($i === 0) ? $rep_prim_venc : $ajustar_dia($avancar_data($rep_prim_venc, $rep_freq, $rep_cada, $i), $dia_base, $rep_cobrar_no);
+            $descricao_i_txt = $descricao_r . ' (' . ($i+1) . '/' . $rep_ocorrencias . ')';
+            $descricao_i     = mysqli_real_escape_string($conector, $descricao_i_txt);
+
+            $sql = "INSERT INTO contas_pagar (
+                ctp_numero_doc, ctp_codigo_fornecedor, ctp_parcela,
+                ctp_tipo_documento, ctp_nome_fornecedor, ctp_numero_documento,
+                ctp_qtd_parcelas, ctp_data_emissao, ctp_data_vencimento,
+                ctp_valor_parcela, ctp_valor_desconto, ctp_valor_juros,
+                ctp_outro_valor, ctp_situacao,
+                ctp_codigo_fazenda, ctp_codigo_centro_custos, ctp_codigo_conta,
+                ctp_conta_pagamento, ctp_tipo_documento,
+                ctp_incluido_em, ctp_incluido_por,
+                ctp_descricao_compra, ctp_observacoes,
+                ctp_grupo_repeticao, ctp_repeticao_seq, ctp_repeticao_total
+            ) VALUES (
+                '$numero_doc_r', '$codigo_for_r', " . ($i+1) . ",
+                '$rep_tipodoc', '$razao_r', '$numero_doc_r',
+                '$rep_ocorrencias', '$data_emissao_i', '$data_vencto_i',
+                '$vlr_r', 0.00, 0.00,
+                null, '',
+                '$codigo_local_r', '$codigo_ccusto_r', '$codigo_conta_r',
+                '$rep_banco', '$rep_tipodoc',
+                '$data_sistema', '$nomeusuario',
+                '$descricao_i', '$observacoes_r',
+                '$uuid_grupo', " . ($i+1) . ", '$rep_ocorrencias'
+            )";
+
+            $ok = mysqli_query($conector, $sql);
+            if (!$ok) {
+                header('Content-type: application/json');
+                echo json_encode(['error'=>true,'message'=>'Erro ao gravar recorrência '.($i+1).': '.mysqli_error($conector)]);
+                mysqli_close($conector); exit;
+            }
+
+            $novo_id_r = mysqli_insert_id($conector);
+            if ($primeiro_id_r === null) {
+                $primeiro_id_r = $novo_id_r;
+                salvar_anexos($primeiro_id_r, $conector, $nomeusuario, $data_sistema);
+            }
+        }
+
+        header('Content-type: application/json');
+        echo json_encode(['success'=>true,'message'=>'Lançamento recorrente incluído com sucesso ('.$rep_ocorrencias.' ocorrências).']);
+        mysqli_close($conector);
+        exit;
+
+    } // fim repetir lançamento
     // =========================================================
     // FIM NOVO SISTEMA
     // =========================================================
