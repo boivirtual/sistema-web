@@ -802,6 +802,193 @@ $data_sistema = date("Y-m-d");
                     </div>
                 </div>
 
+                <!-- Modal: Rateio -->
+                <div class="modal fade" id="modal_rateio" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+                    <div class="modal-dialog" style="width:92%;max-width:860px;" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title"><i class="fas fa-sliders-h"></i> Configurar Rateio</h4>
+                            </div>
+                            <div class="modal-body" style="padding-bottom:4px;">
+                                <!-- Passos -->
+                                <div class="rt-steps">
+                                    <div class="rt-step ativo" data-painel="1">1. Locais</div>
+                                    <div class="rt-step" data-painel="2">2. Centros de Custo</div>
+                                    <div class="rt-step" data-painel="3">3. Contas Contábeis</div>
+                                    <div class="rt-step" data-painel="4">4. Resumo</div>
+                                </div>
+
+                                <!-- Painel 1: Locais -->
+                                <div id="rt_painel_1" class="rt-painel">
+                                    <div class="row" style="margin-bottom:8px;">
+                                        <div class="col-md-8">
+                                            <label class="control-label">Selecione os Locais</label>
+                                            <select id="rt_sel_locais" class="selectpicker form-control" multiple data-live-search="true" data-width="100%" title="Selecione os locais...">
+                                                <?php foreach ($arr_local_rat_js as $loc): ?>
+                                                <option value="<?php echo $loc['id']; ?>" data-nome="<?php echo htmlspecialchars($loc['nome']); ?>"><?php echo htmlspecialchars($loc['nome']); ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4" style="padding-top:24px;">
+                                            <button type="button" class="btn btn-info btn-sm btn-block" onclick="rtAdicionarLocais()">
+                                                <i class="fas fa-plus"></i> Adicionar Locais
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div style="overflow-x:auto;">
+                                        <table class="tbl-rateio" id="rt_tab_locais">
+                                            <thead>
+                                                <tr>
+                                                    <th>Local</th>
+                                                    <th style="width:120px;">% Rateio</th>
+                                                    <th style="width:130px;">Valor (R$)</th>
+                                                    <th style="width:40px;"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td><strong>Total</strong></td>
+                                                    <td><strong id="rt_tot_perc_loc">0,00%</strong></td>
+                                                    <td><strong id="rt_tot_val_loc">R$ 0,00</strong></td>
+                                                    <td></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Painel 2: Centros de Custo por Local -->
+                                <div id="rt_painel_2" class="rt-painel" style="display:none;">
+                                    <div id="rt_tabs_cc" class="rt-tabs-nav"></div>
+                                    <div id="rt_corpo_cc">
+                                        <div class="row" style="margin-bottom:8px;">
+                                            <div class="col-md-8">
+                                                <label class="control-label">Selecione os Centros de Custo</label>
+                                                <select id="rt_sel_cc" class="selectpicker form-control" multiple data-live-search="true" data-width="100%" title="Selecione CCs...">
+                                                    <?php foreach ($arr_cc_rat_js as $cc): ?>
+                                                    <option value="<?php echo htmlspecialchars($cc['id']); ?>" data-nome="<?php echo htmlspecialchars($cc['nome']); ?>"><?php echo htmlspecialchars($cc['nome']); ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4" style="padding-top:24px;">
+                                                <button type="button" class="btn btn-info btn-sm btn-block" onclick="rtAdicionarCCs()">
+                                                    <i class="fas fa-plus"></i> Adicionar CCs
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div style="overflow-x:auto;">
+                                            <table class="tbl-rateio" id="rt_tab_cc">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Centro de Custo</th>
+                                                        <th style="width:120px;">% Rateio</th>
+                                                        <th style="width:130px;">Valor (R$)</th>
+                                                        <th style="width:40px;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td><strong>Total</strong></td>
+                                                        <td><strong id="rt_tot_perc_cc">0,00%</strong></td>
+                                                        <td><strong id="rt_tot_val_cc">R$ 0,00</strong></td>
+                                                        <td></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Painel 3: Contas Contábeis por Local×CC -->
+                                <div id="rt_painel_3" class="rt-painel" style="display:none;">
+                                    <div id="rt_tabs_conta" class="rt-tabs-nav"></div>
+                                    <div id="rt_corpo_conta">
+                                        <div class="row" style="margin-bottom:8px;">
+                                            <div class="col-md-8">
+                                                <label class="control-label">Selecione as Contas Contábeis</label>
+                                                <select id="rt_sel_conta" class="selectpicker form-control" multiple data-live-search="true" data-width="100%" title="Selecione contas...">
+                                                    <?php foreach ($arr_conta_rat_js as $ct): ?>
+                                                    <option value="<?php echo htmlspecialchars($ct['id']); ?>" data-nome="<?php echo htmlspecialchars($ct['nome']); ?>"><?php echo htmlspecialchars($ct['nome']); ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4" style="padding-top:24px;">
+                                                <button type="button" class="btn btn-info btn-sm btn-block" onclick="rtAdicionarContas()">
+                                                    <i class="fas fa-plus"></i> Adicionar Contas
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div style="overflow-x:auto;">
+                                            <table class="tbl-rateio" id="rt_tab_conta">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Conta Contábil</th>
+                                                        <th style="width:120px;">% Rateio</th>
+                                                        <th style="width:130px;">Valor (R$)</th>
+                                                        <th style="width:40px;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td><strong>Total</strong></td>
+                                                        <td><strong id="rt_tot_perc_conta">0,00%</strong></td>
+                                                        <td><strong id="rt_tot_val_conta">R$ 0,00</strong></td>
+                                                        <td></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Painel 4: Resumo -->
+                                <div id="rt_painel_4" class="rt-painel" style="display:none;">
+                                    <div style="overflow-x:auto;">
+                                        <table class="tbl-rateio" id="rt_tab_resumo">
+                                            <thead>
+                                                <tr>
+                                                    <th>Local</th>
+                                                    <th>% Local</th>
+                                                    <th>Vlr. Local</th>
+                                                    <th>Centro de Custo</th>
+                                                    <th>% CC</th>
+                                                    <th>Vlr. CC</th>
+                                                    <th>Conta Contábil</th>
+                                                    <th>% Conta</th>
+                                                    <th>Vlr. Conta</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div><!-- modal-body -->
+                            <div class="modal-footer">
+                                <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+                                    <div>
+                                        <button type="button" id="rt_btn_voltar" class="btn btn-default" onclick="rtVoltar()" style="display:none;">
+                                            <i class="fas fa-arrow-left"></i> Voltar
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                        <button type="button" id="rt_btn_avancar" class="btn btn-primary" onclick="rtAvancar()">
+                                            Avançar <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                        <button type="button" id="rt_btn_confirmar" class="btn btn-primary" onclick="rtConfirmar()" style="display:none;">
+                                            <i class="fas fa-check"></i> Confirmar Rateio
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /modal_rateio -->
+
                 <div><?php include "ajuda.php"; ?></div>
 
             </section><!-- wrapper -->
@@ -814,6 +1001,9 @@ $data_sistema = date("Y-m-d");
         // Dados PHP exportados para JS
         var CTP_BANCOS    = <?php echo json_encode($arr_banco_js,    JSON_UNESCAPED_UNICODE); ?>;
         var CTP_TIPODOCS  = <?php echo json_encode($arr_tipodoc_js,  JSON_UNESCAPED_UNICODE); ?>;
+        var CTP_LOCAIS    = <?php echo json_encode($arr_local_rat_js, JSON_UNESCAPED_UNICODE); ?>;
+        var CTP_CCS       = <?php echo json_encode($arr_cc_rat_js,    JSON_UNESCAPED_UNICODE); ?>;
+        var CTP_CONTAS_RAT= <?php echo json_encode($arr_conta_rat_js, JSON_UNESCAPED_UNICODE); ?>;
 
         // ----------------------------------------------------------------
         // Helpers de formatação / parse de moeda BR
