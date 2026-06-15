@@ -539,7 +539,7 @@ $data_sistema = date("Y-m-d");
                                     <!-- ===== BOTÕES ===== -->
                                     <div class="row" style="margin-top: 10px;">
                                         <div class="form-group col-md-12">
-                                            <button type="button" class="btn btn-primary confirmar_gravar" onclick="confirmar_fazendas()">Confirmar</button>
+                                            <button type="button" class="btn btn-primary confirmar_gravar" onclick="confirmar_incluir()">Confirmar</button>
                                             <button type="button" class="btn btn-info pull-right fecha_editar_dados">Voltar</button>
                                         </div>
                                     </div>
