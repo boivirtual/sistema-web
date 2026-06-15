@@ -394,8 +394,9 @@
                     }
                     if ($primeiro_id_n === null) {
                         $primeiro_id_n = mysqli_insert_id($conector);
-                        // Vincula anexos ao primeiro registro do lote
+                        // Vincula anexos e rateio ao primeiro registro do lote
                         salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                        salvar_rateio($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
                     }
                 }
             }
