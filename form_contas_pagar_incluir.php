@@ -226,15 +226,22 @@ $data_sistema = date("Y-m-d");
         #parc_totais span.valor-err { color: #c0392b; font-weight: 600; }
 
         /* ── Modal Rateio ── */
-        .rt-steps { display:flex; gap:0; margin-bottom:16px; }
+        /* Steps do rateio — estilo suave sem box */
+        .rt-steps { display:flex; gap:0; margin-bottom:20px; border-bottom:2px solid #e0e0e0; }
         .rt-step {
-            flex:1; text-align:center; padding:7px 4px; font-size:12px;
-            background:#f5f5f5; border:1px solid #ddd; color:#888;
-            border-right:none; cursor:default;
+            flex:1; text-align:center; padding:10px 4px; font-size:12px;
+            background:transparent; border:none; color:#bbb;
+            cursor:default; position:relative; font-weight:500;
+            letter-spacing:0.3px;
         }
-        .rt-step:last-child { border-right:1px solid #ddd; }
-        .rt-step.ativo { background:#337ab7; color:#fff; font-weight:600; border-color:#337ab7; }
-        .rt-step.concluido { background:#d5f0e0; color:#27ae60; border-color:#a8dbb8; }
+        .rt-step::after {
+            content:''; position:absolute; bottom:-2px; left:0; right:0;
+            height:2px; background:transparent;
+        }
+        .rt-step.ativo { color:#337ab7; font-weight:700; }
+        .rt-step.ativo::after { background:#337ab7; }
+        .rt-step.concluido { color:#5cb85c; }
+        .rt-step.concluido::after { background:#5cb85c; }
 
         .tbl-rateio { width:100%; border-collapse:collapse; font-size:13px; }
         .tbl-rateio th { background:#f7f7f7; padding:6px 8px; border-bottom:2px solid #ddd; font-size:12px; color:#555; }
