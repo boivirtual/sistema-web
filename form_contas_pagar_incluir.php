@@ -953,14 +953,11 @@ $data_sistema = date("Y-m-d");
             return true;
         }
 
-        // Sobrescreve confirmar_fazendas para incluir validação de parcelamento
-        var _confirmar_fazendas_original = window.confirmar_fazendas;
-        window.confirmar_fazendas = function() {
+        // Ponto de entrada do botão Confirmar — valida parcelamento antes de gravar
+        function confirmar_incluir() {
             if (!validarParcelamento()) return;
-            if (typeof _confirmar_fazendas_original === 'function') {
-                _confirmar_fazendas_original();
-            }
-        };
+            confirmar_fazendas(); // função de contas_pagar.js (já disponível no clique)
+        }
 
         // ----------------------------------------------------------------
         // Anexos
