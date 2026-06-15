@@ -265,7 +265,7 @@
             echo json_encode(array('error' => true, 'message' => 'Informe a Descrição da Compra.'));
             mysqli_close($conector); exit;
         }
-        if (empty($codigo_local_str) || $codigo_local_str == '000000000') {
+        if (!$tem_rateio && (empty($codigo_local_str) || $codigo_local_str == '000000000')) {
             header('Content-type: application/json');
             echo json_encode(array('error' => true, 'message' => 'Informe a Fazenda/Local.'));
             mysqli_close($conector); exit;
@@ -275,7 +275,7 @@
             echo json_encode(array('error' => true, 'message' => 'Informe o Fornecedor.'));
             mysqli_close($conector); exit;
         }
-        if ($codigo_conta_n == '0000000') {
+        if (!$tem_rateio && $codigo_conta_n == '0000000') {
             header('Content-type: application/json');
             echo json_encode(array('error' => true, 'message' => 'Informe a Conta Contábil.'));
             mysqli_close($conector); exit;
