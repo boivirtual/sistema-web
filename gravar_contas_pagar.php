@@ -4,6 +4,80 @@
 	}
 
     /**
+     * Salva rateio da conta (rateio_json) na tbl_ctp_rateio.
+     * $ctp_id = ID do registro principal em contas_pagar (1ª parcela ou único)
+     */
+    function salvar_rateio($ctp_id, $conector, $nomeusuario, $data_sistema) {
+        $json = isset($_POST['rateio_json']) ? trim($_POST['rateio_json']) : '';
+        if (empty($json) || $json === 'null' || $json === '[]') return;
+
+        $locais = json_decode($json, true);
+        if (!is_array($locais) || count($locais) === 0) return;
+
+        $usuario_esc = mysqli_real_escape_string($conector, $nomeusuario);
+
+        foreach ($locais as $loc) {
+            $rc_cod_local  = (int)($loc['id'] ?? 0);
+            $rc_nom_local  = mysqli_real_escape_string($conector, $loc['nome'] ?? '');
+            $rc_perc_local = (float)($loc['perc'] ?? 0);
+            $rc_val_local  = (float)($loc['valor'] ?? 0);
+
+            $ccs = $loc['ccs'] ?? [];
+            if (count($ccs) === 0) {
+                // local sem CCs — grava linha só com local
+                $sql = "INSERT INTO tbl_ctp_rateio
+                            (rc_ctp_id, rc_codigo_local, rc_nome_local, rc_perc_local, rc_valor_local,
+                             rc_incluido_em, rc_incluido_por)
+                        VALUES
+                            ('$ctp_id','$rc_cod_local','$rc_nom_local','$rc_perc_local','$rc_val_local',
+                             '$data_sistema','$usuario_esc')";
+                mysqli_query($conector, $sql);
+                continue;
+            }
+
+            foreach ($ccs as $cc) {
+                $rc_cod_cc  = mysqli_real_escape_string($conector, $cc['id'] ?? '');
+                $rc_nom_cc  = mysqli_real_escape_string($conector, $cc['nome'] ?? '');
+                $rc_perc_cc = (float)($cc['perc'] ?? 0);
+                $rc_val_cc  = (float)($cc['valor'] ?? 0);
+
+                $contas = $cc['contas'] ?? [];
+                if (count($contas) === 0) {
+                    $sql = "INSERT INTO tbl_ctp_rateio
+                                (rc_ctp_id, rc_codigo_local, rc_nome_local, rc_perc_local, rc_valor_local,
+                                 rc_codigo_cc, rc_nome_cc, rc_perc_cc, rc_valor_cc,
+                                 rc_incluido_em, rc_incluido_por)
+                            VALUES
+                                ('$ctp_id','$rc_cod_local','$rc_nom_local','$rc_perc_local','$rc_val_local',
+                                 '$rc_cod_cc','$rc_nom_cc','$rc_perc_cc','$rc_val_cc',
+                                 '$data_sistema','$usuario_esc')";
+                    mysqli_query($conector, $sql);
+                    continue;
+                }
+
+                foreach ($contas as $ct) {
+                    $rc_cod_conta  = mysqli_real_escape_string($conector, $ct['id'] ?? '');
+                    $rc_nom_conta  = mysqli_real_escape_string($conector, $ct['nome'] ?? '');
+                    $rc_perc_conta = (float)($ct['perc'] ?? 0);
+                    $rc_val_conta  = (float)($ct['valor'] ?? 0);
+
+                    $sql = "INSERT INTO tbl_ctp_rateio
+                                (rc_ctp_id, rc_codigo_local, rc_nome_local, rc_perc_local, rc_valor_local,
+                                 rc_codigo_cc, rc_nome_cc, rc_perc_cc, rc_valor_cc,
+                                 rc_codigo_conta, rc_nome_conta, rc_perc_conta, rc_valor_conta,
+                                 rc_incluido_em, rc_incluido_por)
+                            VALUES
+                                ('$ctp_id','$rc_cod_local','$rc_nom_local','$rc_perc_local','$rc_val_local',
+                                 '$rc_cod_cc','$rc_nom_cc','$rc_perc_cc','$rc_val_cc',
+                                 '$rc_cod_conta','$rc_nom_conta','$rc_perc_conta','$rc_val_conta',
+                                 '$data_sistema','$usuario_esc')";
+                    mysqli_query($conector, $sql);
+                }
+            }
+        }
+    }
+
+    /**
      * Processa os arquivos do input name="anexo[]" e grava na tbl_ctp_anexos.
      * Retorna array com erros (vazio = sucesso).
      */
