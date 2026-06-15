@@ -326,7 +326,7 @@
                 null, null,
                 '', null, null,
                 null, null, null,
-                '$codigo_local', '$codigo_ccusto', '$codigo_conta',
+                " . (($codigo_local === null || $codigo_local === '') ? 'NULL' : "'$codigo_local'") . ", " . (($codigo_ccusto === null || $codigo_ccusto === '') ? 'NULL' : "'$codigo_ccusto'") . ", " . (($codigo_conta === null || $codigo_conta === '') ? 'NULL' : "'$codigo_conta'") . ",
                 null, null, '$conta_pagamento',
                 '', null, null,
                 '$data_sistema', '$nomeusuario',
