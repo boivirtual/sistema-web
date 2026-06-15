@@ -442,10 +442,11 @@
                     mysqli_close($conector); exit;
                 }
                 $novo_id = mysqli_insert_id($conector);
-                // Vincula anexos apenas à 1ª parcela
+                // Vincula anexos e rateio apenas à 1ª parcela
                 if ($primeiro_id_n === null) {
                     $primeiro_id_n = $novo_id;
                     salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                    salvar_rateio($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
                 }
                 if ($p_pago == 'S') {
                     $novo_id_fmt = str_pad($novo_id, 9, '0', STR_PAD_LEFT);
