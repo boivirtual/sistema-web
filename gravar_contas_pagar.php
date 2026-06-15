@@ -422,8 +422,6 @@
     // =========================================================
     // NOVO SISTEMA — Repetir Lançamento (recorrência)
     // =========================================================
-    $rep_ocorrencias = isset($_POST['rep_ocorrencias']) ? intval($_POST['rep_ocorrencias']) : 0;
-
     if ($tipo_operacao == 1 && $rep_ocorrencias >= 2) {
 
         // Leitura dos campos
