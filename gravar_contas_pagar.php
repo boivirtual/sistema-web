@@ -661,7 +661,7 @@
 	    exit;
     }
 
-    if ($codigo_local=='' || $codigo_local=='000000000') {
+    if (!$tem_rateio && ($codigo_local=='' || $codigo_local=='000000000')) {
 	    header('Content-type: application/json');
 	    echo json_encode(array('error' => true, 'message' => 'Informe a Fazenda.'));
 	    mysqli_close($conector);
