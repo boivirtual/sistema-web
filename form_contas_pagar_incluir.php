@@ -1353,7 +1353,17 @@ $data_sistema = date("Y-m-d");
         // Ponto de entrada do botão Confirmar — valida parcelamento antes de gravar
         function confirmar_incluir() {
             if (!validarParcelamento()) return;
-            confirmar_fazendas(); // função de contas_pagar.js (já disponível no clique)
+            // Se rateio novo estiver ativo, vai direto gravar (sem modal de fazendas)
+            // Se rateio desligado com 1 só fazenda, também vai direto
+            var rateioAtivo = $('#habilitar_rateio').is(':checked');
+            var fazendas = $('#codigo_fazenda').val();
+            var qtdFazendas = Array.isArray(fazendas) ? fazendas.length : (fazendas ? 1 : 0);
+
+            if (rateioAtivo || qtdFazendas <= 1) {
+                gravar_conta();
+            } else {
+                confirmar_fazendas(); // múltiplas fazendas sem rateio novo — fluxo legado
+            }
         }
 
         // ================================================================
