@@ -1627,7 +1627,7 @@ $data_sistema = date("Y-m-d");
                          '<span class="input-group-addon">%</span>' +
                     '</div></td>' +
                     '<td><span class="rt-conta-val">' + ctpFormatMoney(ct.valor) + '</span></td>' +
-                    '<td><button type="button" class="btn btn-danger btn-xs" onclick="rtRemoverConta(' + li + ',' + ci + ',' + ti + ')"><i class="fas fa-trash"></i></button></td>' +
+                    '<td><button type="button" class="btn btn-xs" onclick="rtRemoverConta(' + li + ',' + ci + ',' + ti + ')"><i class="fas fa-trash"></i></button></td>' +
                     '</tr>'
                 );
             });
