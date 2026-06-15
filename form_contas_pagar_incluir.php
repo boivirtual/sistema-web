@@ -224,6 +224,32 @@ $data_sistema = date("Y-m-d");
         #parc_totais { margin-top: 8px; font-size: 13px; color: #555; }
         #parc_totais span.valor-ok  { color: #27ae60; font-weight: 600; }
         #parc_totais span.valor-err { color: #c0392b; font-weight: 600; }
+
+        /* ── Modal Rateio ── */
+        .rt-steps { display:flex; gap:0; margin-bottom:16px; }
+        .rt-step {
+            flex:1; text-align:center; padding:7px 4px; font-size:12px;
+            background:#f5f5f5; border:1px solid #ddd; color:#888;
+            border-right:none; cursor:default;
+        }
+        .rt-step:last-child { border-right:1px solid #ddd; }
+        .rt-step.ativo { background:#337ab7; color:#fff; font-weight:600; border-color:#337ab7; }
+        .rt-step.concluido { background:#d5f0e0; color:#27ae60; border-color:#a8dbb8; }
+
+        .tbl-rateio { width:100%; border-collapse:collapse; font-size:13px; }
+        .tbl-rateio th { background:#f7f7f7; padding:6px 8px; border-bottom:2px solid #ddd; font-size:12px; color:#555; }
+        .tbl-rateio td { padding:5px 7px; vertical-align:middle; border-bottom:1px solid #f0f0f0; }
+        .tbl-rateio input[type=text] { width:80px; text-align:right; }
+        .tbl-rateio .total-row td { font-weight:600; border-top:2px solid #ddd; background:#fafafa; }
+        .rt-ok  { color:#27ae60; font-weight:700; }
+        .rt-err { color:#c0392b; font-weight:700; }
+
+        .rt-tabs-nav { margin-bottom:10px; border-bottom:2px solid #ddd; display:flex; flex-wrap:wrap; gap:4px; }
+        .rt-tab-btn { padding:5px 12px; font-size:12px; border:1px solid #ddd; border-bottom:none;
+                      background:#f5f5f5; cursor:pointer; border-radius:3px 3px 0 0; color:#555; }
+        .rt-tab-btn.ativo { background:#fff; color:#337ab7; font-weight:600; border-color:#337ab7; border-bottom:2px solid #fff; margin-bottom:-2px; }
+
+        #rateio_badge { display:none; margin-left:10px; font-size:13px; color:#27ae60; font-weight:600; }
     </style>
 </head>
 
