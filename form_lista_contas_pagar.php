@@ -485,15 +485,15 @@
                                 "</td>";
 
                                 echo "<td width='14%'>";
+                                echo "<a style='color:#ccc' data-toggle='tooltip' data-placement='right' title='Falta Aceite'>".$razao."</a>";
+                                "</td>";
+
+                                echo "<td width='14%'>";
                                 echo "<a style='color:#ccc' data-toggle='tooltip' data-placement='right' title='Falta Aceite'>".$desc_fazenda."</a>";
                                 "</td>";
 
                                 echo "<td width='15%'>";
-                                echo "<a style='color:#ccc' data-toggle='tooltip' data-placement='right' title='Falta Aceite'>".$desc_conta."</a>";
-                                "</td>";
-
-                                echo "<td width='14%'>";
-                                echo "<a  style='color:#ccc' data-toggle='tooltip' data-placement='right' title='Falta Aceite'>".$razao."</a>";
+                                echo "<a  style='color:#ccc' data-toggle='tooltip' data-placement='right' title='Falta Aceite'>".$desc_conta."</a>";
                                 "</td>";
 
                                 echo "<td width='6%'>";
