@@ -414,6 +414,7 @@ $data_sistema = date("Y-m-d");
                                     <!-- FIM LINHA 3 -->
 
                                     <!-- ===== SEÇÃO: Condição de Pagamento ===== -->
+                                    <div id="secao_condicao_normal">
                                     <div class="secao-titulo">Condição de Pagamento</div>
 
                                     <div class="row">
