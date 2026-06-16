@@ -1344,15 +1344,7 @@ $data_sistema = date("Y-m-d");
         // ================================================================
         var RT = { locais: [], reset: function(){ this.locais = []; } };
 
-        function rtAbrirModal() {
-            // Nova tela de rateio a implementar
-            return;
-            setTimeout(function(){
-                $('#rt_sel_locais').selectpicker('refresh');
-                $('#rt_sel_cc').selectpicker('refresh');
-                $('#rt_sel_conta').selectpicker('refresh');
-            }, 300);
-        }
+        function rtAbrirModal() { /* Nova tela de rateio a implementar */ }
 
         function rtIrPainel(n) {
             RT.painel = n;
