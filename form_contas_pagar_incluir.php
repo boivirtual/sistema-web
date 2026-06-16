@@ -1626,67 +1626,109 @@ $data_sistema = date("Y-m-d");
          Handlers que dependem de jQuery — DEVE ficar após rodape.php.
     ================================================================ -->
     <script>
-    // ── Handler do toggle Rateio (requer jQuery já carregado) ──
+    // ── Dados de CC disponíveis para JS (gerados pelo PHP) ──
+    var ccOpcoes = <?php echo json_encode($arr_cc_rat_js); ?>;
+
+    // ── Handler do toggle Rateio ──
     $(document).ready(function () {
         $('#habilitar_rateio').on('change', function () {
             var on = $(this).is(':checked');
-            var sels = ['#codigo_fazenda', '#codigo_cc', '#codigo_conta'];
+            var $local = $('#codigo_fazenda');
 
             if (on) {
-                // Rateio ON → converte os 3 selects em múltiplos com selectpicker
-                $.each(sels, function(i, id) {
-                    var $s = $(id);
-                    if ($s.hasClass('selectpicker')) return; // já convertido
-
-                    // Desmarca todas as opções antes de virar múltiplo
-                    $s.find('option').prop('selected', false);
-
-                    $s.attr('multiple', 'multiple')
+                // Rateio ON → apenas Local vira selectpicker múltiplo
+                $local.find('option').prop('selected', false);
+                $local.attr('multiple', 'multiple')
                       .attr('data-live-search', 'true')
                       .attr('data-size', '8')
                       .addClass('selectpicker');
+                $local.selectpicker({ actionsBox: true, width: '100%', noneSelectedText: '...' });
+                $local.val([]);
+                $local.selectpicker('refresh');
 
-                    // noneSelectedText = texto mostrado quando nada está selecionado
-                    $s.selectpicker({ actionsBox: true, width: '100%', noneSelectedText: '...' });
+                var $bs = $local.closest('.bootstrap-select');
+                $bs.css('width', '100%');
+                $bs.find('.bs-select-all').hide();
+                $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
 
-                    // Força seleção correta: CC mantém Pecuária de Corte; outros ficam vazios
-                    if (id === '#codigo_cc') {
-                        $s.val(['001']);
+                // Monitora seleção para mostrar/ocultar botão Confirmar
+                $local.on('changed.bs.select.rateio', function () {
+                    var selecionados = $local.val();
+                    if (selecionados && selecionados.length > 0) {
+                        $('#btn_confirmar_locais').show();
                     } else {
-                        $s.val([]);
+                        $('#btn_confirmar_locais').hide();
+                        // Esconde seção se nenhum local selecionado
+                        $('#secao_distribuir_rateio').hide();
+                        $('#linhas_rateio').empty();
                     }
-                    $s.selectpicker('refresh');
-
-                    // Após inicializar, o select fica DENTRO do .bootstrap-select
-                    var $bs = $s.closest('.bootstrap-select');
-                    $bs.css('width', '100%');
-                    $bs.find('.bs-select-all').hide();
-                    $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
                 });
+
             } else {
-                // Rateio OFF → destrói selectpicker, volta ao select simples
-                $.each(sels, function(i, id) {
-                    var $s = $(id);
-                    if ($s.hasClass('selectpicker')) {
-                        $s.selectpicker('destroy');
-                    }
-                    $s.removeAttr('multiple')
+                // Rateio OFF → destrói selectpicker do Local, volta ao select simples
+                $local.off('changed.bs.select.rateio');
+                if ($local.hasClass('selectpicker')) {
+                    $local.selectpicker('destroy');
+                }
+                $local.removeAttr('multiple')
                       .removeAttr('data-live-search')
                       .removeAttr('data-size')
                       .removeClass('selectpicker')
                       .addClass('form-control');
-                });
-                // Restaura placeholders: força o valor do disabled option programaticamente
-                $('#codigo_fazenda').val('');          // value="" do <option disabled selected>
-                $('#codigo_conta').val('0000000');     // value="0000000" do <option disabled selected>
-                // Restaura padrão CC = Pecuária de Corte
-                $('#codigo_cc').val('001');
+
+                // Restaura placeholder do Local
+                $local.val('');
+
+                // Oculta botão e seção rateio
+                $('#btn_confirmar_locais').hide();
+                $('#secao_distribuir_rateio').hide();
+                $('#linhas_rateio').empty();
+
                 // Limpa JSON do rateio
                 $('#rateio_json').val('');
                 RT.reset();
             }
         });
     });
+
+    // ── Confirma locais selecionados e monta seção Distribuir Rateio ──
+    function confirmarLocaisRateio() {
+        var $local = $('#codigo_fazenda');
+        var selecionados = $local.val();
+        if (!selecionados || selecionados.length === 0) return;
+
+        // Monta as opções de CC em HTML
+        var optionsCC = '';
+        $.each(ccOpcoes, function(i, cc) {
+            var sel = (cc.id === '001') ? ' selected' : '';
+            optionsCC += '<option value="' + cc.id + '"' + sel + '>' + cc.nome + '</option>';
+        });
+
+        // Gera uma linha por local selecionado
+        var html = '';
+        $.each(selecionados, function(i, idLocal) {
+            var $opt = $local.find('option[value="' + idLocal + '"]');
+            var nomeLocal = $opt.data('nome') || $opt.text();
+            var idxCC = 'cc_rateio_' + i;
+
+            html += '<div class="row" style="margin-bottom:10px; align-items:flex-end;">';
+            html += '  <div class="col-md-3" style="padding-top:24px;">';
+            html += '    <strong style="color:#555;">' + nomeLocal + '</strong>';
+            html += '    <input type="hidden" name="rateio_local_id[]" value="' + idLocal + '">';
+            html += '    <input type="hidden" name="rateio_local_nome[]" value="' + nomeLocal + '">';
+            html += '  </div>';
+            html += '  <div class="form-group col-md-3">';
+            html += '    <label class="control-label">Centro de Custos</label>';
+            html += '    <select class="form-control" id="' + idxCC + '" name="rateio_cc[]">';
+            html += optionsCC;
+            html += '    </select>';
+            html += '  </div>';
+            html += '</div>';
+        });
+
+        $('#linhas_rateio').html(html);
+        $('#secao_distribuir_rateio').show();
+    }
 
     (function () {
         // Aguarda o DOM estar pronto para garantir que contas_pagar.js já definiu gravar_conta
