@@ -1640,8 +1640,10 @@ $data_sistema = date("Y-m-d");
                       .attr('data-live-search', 'true')
                       .attr('data-size', '8')
                       .attr('data-width', '100%')
-                      .addClass('selectpicker');
-                    $s.selectpicker({ actionsBox: false });
+                      .addClass('selectpicker selectpicker-rateio');
+                    $s.selectpicker({ actionsBox: true });
+                    // Esconde Select All após inicializar
+                    $s.next('.bootstrap-select').find('.bs-select-all').hide();
                 });
             } else {
                 // Rateio OFF → destrói selectpicker, volta ao select simples
