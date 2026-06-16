@@ -1737,6 +1737,7 @@ $data_sistema = date("Y-m-d");
             html += '  <td>';
             html += '    <button type="button" class="btn btn-info btn-sm" style="white-space:nowrap;">Confirmar</button>';
             html += '  </td>';
+            html += '  <td></td>';
             html += '</tr>';
         });
 
