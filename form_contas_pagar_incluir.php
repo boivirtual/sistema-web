@@ -1713,9 +1713,10 @@ $data_sistema = date("Y-m-d");
         // Monta tabela no mesmo padrão da tbl-parcelas
         var html = '<table class="tbl-parcelas">';
         html += '<thead><tr>';
-        html += '  <th style="width:35%;">Local</th>';
-        html += '  <th style="width:45%;">Centro de Custos</th>';
-        html += '  <th style="width:20%;"></th>';
+        html += '  <th style="width:22%;">Local</th>';
+        html += '  <th style="width:28%;">Centro de Custos</th>';
+        html += '  <th style="width:12%;"></th>';
+        html += '  <th style="width:38%;"></th>';
         html += '</tr></thead><tbody>';
 
         $.each(selecionados, function(i, idLocal) {
