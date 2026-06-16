@@ -1346,7 +1346,16 @@ $data_sistema = date("Y-m-d");
 
         function rtAbrirModal() { /* Nova tela de rateio a implementar */ }
 
-        function rtIrPainel(n) {
+        /* === Funções rt* removidas — nova tela a implementar === */
+        function rtIrPainel(n) { return; } function rtVoltar(){} function rtAvancar(){}
+        function rtAdicionarLocais(){} function rtAtualizarTabLocais(){} function rtAtualizarTotaisLocais(){}
+        function rtRemoverLocal(){} function rtRenderizarTabsCC(){} function rtSelecionarTabCC(){}
+        function rtCarregarTabCC(){} function rtAdicionarCCs(){} function rtRemoverCC(){}
+        function rtAtualizarTotaisCC(){} function rtRenderizarTabsConta(){} function rtSelecionarTabConta(){}
+        function rtCarregarTabConta(){} function rtAdicionarContas(){} function rtRemoverConta(){}
+        function rtAtualizarTotaisConta(){} function rtGerarResumo(){} function rtConfirmar(){}
+        /* === fim placeholder === */
+        function rtIrPainel_OLD(n) {
             RT.painel = n;
             $('.rt-painel').hide();
             $('#rt_painel_' + n).show();
