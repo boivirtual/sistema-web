@@ -777,8 +777,8 @@ $data_sistema = date("Y-m-d");
                     </div>
                 </div>
 
-                <!-- Modal: Rateio -->
-                <div class="modal fade" id="modal_rateio" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+                <!-- Modal: Rateio — REMOVIDO (nova tela a implementar) -->
+                <div class="modal fade" id="modal_rateio" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" style="display:none!important">
                     <div class="modal-dialog" style="width:92%;max-width:860px;" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
