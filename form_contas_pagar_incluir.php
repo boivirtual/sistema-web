@@ -1345,10 +1345,8 @@ $data_sistema = date("Y-m-d");
         var RT = { locais: [], reset: function(){ this.locais = []; } };
 
         function rtAbrirModal() {
-            RT.painel = 1;
-            rtIrPainel(1);
-            $('#modal_rateio').modal('show');
-            // inicializa selectpickers do modal
+            // Nova tela de rateio a implementar
+            return;
             setTimeout(function(){
                 $('#rt_sel_locais').selectpicker('refresh');
                 $('#rt_sel_cc').selectpicker('refresh');
