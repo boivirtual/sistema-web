@@ -1736,6 +1736,7 @@ $data_sistema = date("Y-m-d");
             html += optionsCC;
             html += '    </select>';
             html += '  </td>';
+            html += '  <td></td>'; // Conta Contábil (vazia neste nível)
             html += '  <td>';
             html += '    <button type="button" class="btn btn-info btn-sm" style="white-space:nowrap;" onclick="confirmarCCRateio(this,\'' + idLocal + '\',\'' + nomeLocal.replace(/'/g,"\\'" ) + '\',\'' + idxCC + '\')">';
             html += '      Confirmar</button>';
