@@ -2054,9 +2054,11 @@ $data_sistema = date("Y-m-d");
             return;
         }
 
-        // Tudo ok — marca a seção como confirmada visualmente
-        $('#btn_confirmar_rateio_final').removeClass('btn-primary').addClass('btn-success')
-            .html('<i class="fas fa-check-circle"></i> Rateio Confirmado').prop('disabled', true);
+        // Tudo ok — oculta a seção de distribuição e exibe status "Rateio Configurado"
+        $('#secao_distribuir_rateio').hide();
+        $('#col_local').hide();
+        $('#col_btn_confirmar_locais').hide();
+        $('#rateio_status').show();
         $('#habilitar_rateio').prop('checked', true); // garante que o flag está ativo
     }
 
