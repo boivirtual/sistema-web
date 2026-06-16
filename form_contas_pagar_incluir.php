@@ -1828,10 +1828,10 @@ $data_sistema = date("Y-m-d");
             if ($s.data('selectpicker')) return; // já inicializado
             $s.selectpicker({ actionsBox: true, width: '100%', noneSelectedText: '...' });
             var $bs = $s.closest('.bootstrap-select');
-            $bs.css({ 'width': '100%', 'flex': '1' });
+            $bs.css({ 'width': '100%', 'flex': '1', 'max-width': '400px' });
             $bs.find('.bs-select-all').remove();
-            $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px' });
-            $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
+            $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%' });
+            $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '400px', 'width': '100%' });
         });
     }
 
