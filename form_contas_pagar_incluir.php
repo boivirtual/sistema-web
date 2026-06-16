@@ -1770,11 +1770,20 @@ $data_sistema = date("Y-m-d");
         var selecionadosCC = $('#' + ccSelectId).val();
         if (!selecionadosCC || selecionadosCC.length === 0) return;
 
-        // Monta opções da Conta Contábil
+        // Monta opções da Conta Contábil (com grupos/sintéticas desabilitadas, igual ao select original)
         var optionsConta = '';
         $.each(contaOpcoes, function(k, cta) {
-            optionsConta += '<option value="' + cta.id + '">' + cta.nome + '</option>';
+            if (cta.nivel === 1) {
+                optionsConta += '<option value="' + cta.id + '" disabled style="color:#777;font-weight:600;">' + cta.nome + '</option>';
+            } else if (cta.nivel === 2) {
+                optionsConta += '<option value="' + cta.id + '" disabled style="color:#888;">    ' + cta.nome + '</option>';
+            } else {
+                optionsConta += '<option value="' + cta.id + '">        ' + cta.nome + '</option>';
+            }
         });
+
+        // Atualiza cabeçalho da tabela: segunda coluna vira "Conta Contábil"
+        $('#tbl_rateio thead tr th:nth-child(2)').text('Conta Contábil');
 
         // Gera sub-linhas: uma por CC selecionado
         var novasLinhas = '';
