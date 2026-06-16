@@ -130,7 +130,7 @@
                             <input type="hidden" id="tipo_mapa_gado" 
                             <?php echo "value='".$_SESSION['tipo_mapa_gado']."'";?>>
 
-                            <input type="text" id="id_cliente" 
+                            <input type="hidden" id="id_cliente" 
                             <?php echo "value='".$_SESSION['id_cliente']."'";?>>
 
 
