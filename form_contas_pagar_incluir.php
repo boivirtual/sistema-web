@@ -1451,7 +1451,8 @@ $data_sistema = date("Y-m-d");
 
             // Monta texto resumo
             var label = REP_FREQ_LABELS[freq] || '';
-            $('#rep_resumo_texto').text('A cada ' + cada + ' ' + label + ' por ' + ocorr + ' ' + label);
+            var vezStr = parseInt(ocorr) === 1 ? 'vez' : 'vezes';
+            $('#rep_resumo_texto').text('A cada ' + cada + ' ' + label + ' por ' + ocorr + ' ' + vezStr);
 
             // Pré-preenche 1º Vencimento = emissão + 1 intervalo (sempre recalcula ao confirmar)
             var emissao = $('#data_emissao').val();
