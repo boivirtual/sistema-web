@@ -285,7 +285,7 @@ if ($num_rows_usuario != 0) {
                                             <div class="row">
                                                 <div class="form-group col-md-3">
                                                     <label class="control-label">Período</label>
-                                                    <div style="width: 100%; display: flex; gap: 3px;">
+                                                    <div style="width: 100%; display: flex; gap: 1px;">
                                                         <button type="button" class="btn btn-default btn-seta-periodo" style="width: 34px; height: 34px; padding: 6px 8px; flex-shrink: 0; border-radius: 4px; background-color: #e0e0e0;" onclick="navegarMesAnterior()"><i class="fas fa-chevron-left"></i></button>
                                                         <button type="button" class="btn btn-default" id="btnMesAno" style="flex: 1; text-align: center; height: 34px; border-radius: 4px; color: #555; font-weight: 400; cursor: default;">Maio 2026</button>
                                                         <button type="button" class="btn btn-default btn-seta-periodo" style="width: 34px; height: 34px; padding: 6px 8px; flex-shrink: 0; border-radius: 4px; background-color: #e0e0e0;" onclick="navegarMesProximo()"><i class="fas fa-chevron-right"></i></button>
