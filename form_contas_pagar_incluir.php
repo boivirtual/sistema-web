@@ -1628,6 +1628,8 @@ $data_sistema = date("Y-m-d");
                         $ph.detach();
                         $s.data('placeholder-opt', $ph);
                     }
+                    // Desmarca todas as opções (o browser auto-seleciona a 1ª ao remover o placeholder)
+                    $s.find('option').prop('selected', false);
 
                     $s.attr('multiple', 'multiple')
                       .attr('data-live-search', 'true')
