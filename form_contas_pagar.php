@@ -286,9 +286,9 @@ if ($num_rows_usuario != 0) {
                                                 <div class="form-group col-md-3">
                                                     <label class="control-label">Período</label>
                                                     <div class="btn-group" style="width: 100%; display: flex; gap: 0; border-radius: 4px;">
-                                                        <button type="button" class="btn btn-default" style="width: 38px; height: 34px; padding: 6px 8px; flex-shrink: 0; border-right: none; border-radius: 0; background-color: #e0e0e0;" onclick="navegarMesAnterior()"><i class="fas fa-chevron-left" style="display: inline-block;"></i></button>
+                                                        <button type="button" class="btn btn-default btn-seta-periodo" style="width: 38px; height: 34px; padding: 6px 8px; flex-shrink: 0; border-right: none; border-radius: 0; background-color: #e0e0e0;" onclick="navegarMesAnterior()"><i class="fas fa-chevron-left" style="display: inline-block;"></i></button>
                                                         <button type="button" class="btn btn-default" id="btnMesAno" style="flex: 1; text-align: center; height: 34px; border-left: none; border-right: none; border-radius: 0; color: #555; font-weight: 400; cursor: default;">Maio 2026</button>
-                                                        <button type="button" class="btn btn-default" style="width: 38px; height: 34px; padding: 6px 8px; flex-shrink: 0; border-left: none; border-radius: 0; background-color: #e0e0e0;" onclick="navegarMesProximo()"><i class="fas fa-chevron-right" style="display: inline-block;"></i></button>
+                                                        <button type="button" class="btn btn-default btn-seta-periodo" style="width: 38px; height: 34px; padding: 6px 8px; flex-shrink: 0; border-left: none; border-radius: 0; background-color: #e0e0e0;" onclick="navegarMesProximo()"><i class="fas fa-chevron-right" style="display: inline-block;"></i></button>
                                                     </div>
                                                 </div>
 
