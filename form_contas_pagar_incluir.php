@@ -1627,8 +1627,9 @@ $data_sistema = date("Y-m-d");
          Handlers que dependem de jQuery — DEVE ficar após rodape.php.
     ================================================================ -->
     <script>
-    // ── Dados de CC disponíveis para JS (gerados pelo PHP) ──
-    var ccOpcoes = <?php echo json_encode($arr_cc_rat_js); ?>;
+    // ── Dados de CC e Conta Contábil disponíveis para JS (gerados pelo PHP) ──
+    var ccOpcoes    = <?php echo json_encode($arr_cc_rat_js); ?>;
+    var contaOpcoes = <?php echo json_encode($arr_conta_rat_js); ?>;
 
     // ── Handler do toggle Rateio ──
     $(document).ready(function () {
