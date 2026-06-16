@@ -1610,12 +1610,39 @@ $data_sistema = date("Y-m-d");
     // ── Handler do toggle Rateio (requer jQuery já carregado) ──
     $(document).ready(function () {
         $('#habilitar_rateio').on('change', function () {
-            if (!$(this).is(':checked')) {
-                // Rateio OFF — limpa JSON salvo
+            var on = $(this).is(':checked');
+            var sels = ['#codigo_fazenda', '#codigo_cc', '#codigo_conta'];
+
+            if (on) {
+                // Rateio ON → converte os 3 selects em múltiplos com selectpicker
+                $.each(sels, function(i, id) {
+                    var $s = $(id);
+                    if ($s.hasClass('selectpicker')) return; // já convertido
+                    $s.attr('multiple', 'multiple')
+                      .attr('data-live-search', 'true')
+                      .attr('data-size', '8')
+                      .addClass('selectpicker');
+                    $s.selectpicker();
+                });
+            } else {
+                // Rateio OFF → destrói selectpicker, volta ao select simples
+                $.each(sels, function(i, id) {
+                    var $s = $(id);
+                    if ($s.hasClass('selectpicker')) {
+                        $s.selectpicker('destroy');
+                    }
+                    $s.removeAttr('multiple')
+                      .removeAttr('data-live-search')
+                      .removeAttr('data-size')
+                      .removeClass('selectpicker')
+                      .addClass('form-control');
+                });
+                // Restaura padrão CC = Pecuária de Corte
+                $('#codigo_cc').val('001');
+                // Limpa JSON do rateio
                 $('#rateio_json').val('');
                 RT.reset();
             }
-            // Nova tela de rateio será implementada aqui
         });
     });
 
