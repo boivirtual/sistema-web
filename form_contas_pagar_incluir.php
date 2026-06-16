@@ -371,7 +371,7 @@ $data_sistema = date("Y-m-d");
                                         <div class="form-group col-md-3">
                                             <label for="codigo_fazenda" class="control-label"><span class="required">*</span> Local</label>
                                             <select class="form-control" id="codigo_fazenda" name="codigo_fazenda[]">
-                                                <option value="" disabled selected>...</option>
+                                                <option value="" disabled selected data-hidden="true">...</option>
                                                 <?php
                                                 while ($reg_local = mysqli_fetch_object($tbl_local)) {
                                                     foreach ($array_locais_usuario as $value) {
