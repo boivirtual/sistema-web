@@ -1651,20 +1651,17 @@ $data_sistema = date("Y-m-d");
                 $local.selectpicker('refresh');
 
                 var $bs = $local.closest('.bootstrap-select');
-                // Garante que o wrapper ocupa apenas o espaço da flex-col
-                $bs.css({ 'width': '100%', 'flex': '1', 'min-width': '0' });
+                $bs.css('width', '100%');
                 $bs.find('.bs-select-all').hide();
                 $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
-                // O botão de toggle do bootstrap-select não deve esticar além da coluna
-                $bs.find('button.dropdown-toggle').css('width', '100%');
 
-                // Monitora seleção para mostrar/ocultar botão Confirmar
+                // Monitora seleção para mostrar/ocultar coluna do botão Confirmar
                 $local.on('changed.bs.select.rateio', function () {
                     var selecionados = $local.val();
                     if (selecionados && selecionados.length > 0) {
-                        $('#btn_confirmar_locais').show();
+                        $('#col_btn_confirmar_locais').show();
                     } else {
-                        $('#btn_confirmar_locais').hide();
+                        $('#col_btn_confirmar_locais').hide();
                         $('#secao_distribuir_rateio').hide();
                         $('#linhas_rateio').empty();
                     }
