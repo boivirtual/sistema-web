@@ -390,7 +390,7 @@ $data_sistema = date("Y-m-d");
                                             </div>
                                         </div>
 
-                                        <div class="form-group col-md-3">
+                                        <div class="form-group col-md-3" id="col_cc">
                                             <label for="codigo_cc" class="control-label"><span class="required">*</span> Centro de Custos</label>
                                             <select class="form-control" id="codigo_cc" name="codigo_cc">
                                                 <option value="" disabled>...</option>
