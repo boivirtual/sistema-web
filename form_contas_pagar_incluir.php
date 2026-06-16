@@ -383,6 +383,18 @@ $data_sistema = date("Y-m-d");
                                         </div>
 
                                         <div class="form-group col-md-3">
+                                            <label for="codigo_cc" class="control-label"><span class="required">*</span> Centro de Custos</label>
+                                            <select class="form-control selectpicker" id="codigo_cc" name="codigo_cc" data-live-search="true" data-size="8">
+                                                <option value="">...</option>
+                                                <?php while ($registo_cc = mysqli_fetch_object($c_custo)) { ?>
+                                                    <option value="<?php echo $registo_cc->tbl_cc_codigo_id; ?>">
+                                                        <?php echo $registo_cc->tbl_cc_descricao; ?>
+                                                    </option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-md-3">
                                             <label for="codigo_conta" class="control-label"><span class="required">*</span> Conta Contábil</label>
                                             <select class="form-control selectpicker" id="codigo_conta" name="codigo_conta" data-live-search="true" data-size="8">
                                                 <option value="0000000">...</option>
@@ -398,18 +410,6 @@ $data_sistema = date("Y-m-d");
                                                             str_repeat('&nbsp;', 8) . $registro_pcontas->tbl_plano_contas_descricao . "</option>";
                                                     }
                                                 } ?>
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group col-md-3">
-                                            <label for="codigo_cc" class="control-label"><span class="required">*</span> Centro de Custos</label>
-                                            <select class="form-control selectpicker" id="codigo_cc" name="codigo_cc" data-live-search="true" data-size="8">
-                                                <option value="">...</option>
-                                                <?php while ($registo_cc = mysqli_fetch_object($c_custo)) { ?>
-                                                    <option value="<?php echo $registo_cc->tbl_cc_codigo_id; ?>">
-                                                        <?php echo $registo_cc->tbl_cc_descricao; ?>
-                                                    </option>
-                                                <?php } ?>
                                             </select>
                                         </div>
 
