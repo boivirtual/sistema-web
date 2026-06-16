@@ -711,14 +711,14 @@ $data_sistema = date("Y-m-d");
                                     <div class="form-group col-md-4">
                                         <label class="control-label"><span class="required">*</span> Frequência</label>
                                         <select class="form-control" id="rep_freq">
-                                            <option value="1">Diária</option>
-                                            <option value="2">Semanal</option>
-                                            <option value="3">Quinzenal</option>
-                                            <option value="4" selected>Mensal</option>
-                                            <option value="5">Bimestral</option>
-                                            <option value="6">Trimestral</option>
-                                            <option value="7">Semestral</option>
-                                            <option value="8">Anual</option>
+                                            <option value="1">Dia</option>
+                                            <option value="2">Semana</option>
+                                            <option value="3">Quinzena</option>
+                                            <option value="4" selected>Mês</option>
+                                            <option value="5">Bimestre</option>
+                                            <option value="6">Trimestre</option>
+                                            <option value="7">Semestre</option>
+                                            <option value="8">Ano</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-4">
