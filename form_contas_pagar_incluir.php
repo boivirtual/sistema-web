@@ -1650,9 +1650,12 @@ $data_sistema = date("Y-m-d");
                 $local.selectpicker('refresh');
 
                 var $bs = $local.closest('.bootstrap-select');
-                $bs.css('width', '100%');
+                // Garante que o wrapper ocupa apenas o espaço da flex-col
+                $bs.css({ 'width': '100%', 'flex': '1', 'min-width': '0' });
                 $bs.find('.bs-select-all').hide();
                 $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
+                // O botão de toggle do bootstrap-select não deve esticar além da coluna
+                $bs.find('button.dropdown-toggle').css('width', '100%');
 
                 // Monitora seleção para mostrar/ocultar botão Confirmar
                 $local.on('changed.bs.select.rateio', function () {
