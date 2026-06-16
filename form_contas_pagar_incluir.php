@@ -226,35 +226,7 @@ $data_sistema = date("Y-m-d");
         #parc_totais span.valor-err { color: #c0392b; font-weight: 600; }
 
         /* ── Modal Rateio ── */
-        /* Steps do rateio — estilo suave sem box */
-        .rt-steps { display:flex; gap:0; margin-bottom:20px; border-bottom:2px solid #e0e0e0; }
-        .rt-step {
-            flex:1; text-align:center; padding:10px 4px; font-size:12px;
-            background:transparent; border:none; color:#bbb;
-            cursor:default; position:relative; font-weight:500;
-            letter-spacing:0.3px;
-        }
-        .rt-step::after {
-            content:''; position:absolute; bottom:-2px; left:0; right:0;
-            height:2px; background:transparent;
-        }
-        .rt-step.ativo { color:#337ab7; font-weight:700; }
-        .rt-step.ativo::after { background:#337ab7; }
-        .rt-step.concluido { color:#5cb85c; }
-        .rt-step.concluido::after { background:#5cb85c; }
-
-        .tbl-rateio { width:100%; border-collapse:collapse; font-size:13px; }
-        .tbl-rateio th { background:#f7f7f7; padding:6px 8px; border-bottom:2px solid #ddd; font-size:12px; color:#555; }
-        .tbl-rateio td { padding:5px 7px; vertical-align:middle; border-bottom:1px solid #f0f0f0; }
-        .tbl-rateio input[type=text] { width:80px; text-align:right; }
-        .tbl-rateio .total-row td { font-weight:600; border-top:2px solid #ddd; background:#fafafa; }
-        .rt-ok  { color:#27ae60; font-weight:700; }
-        .rt-err { color:#c0392b; font-weight:700; }
-
-        .rt-tabs-nav { margin-bottom:10px; border-bottom:2px solid #ddd; display:flex; flex-wrap:wrap; gap:4px; }
-        .rt-tab-btn { padding:5px 12px; font-size:12px; border:1px solid #ddd; border-bottom:none;
-                      background:#f5f5f5; cursor:pointer; border-radius:3px 3px 0 0; color:#555; }
-        .rt-tab-btn.ativo { background:#fff; color:#337ab7; font-weight:600; border-color:#337ab7; border-bottom:2px solid #fff; margin-bottom:-2px; }
+        /* CSS rateio reservado para nova tela */
 
         #rateio_badge { display:none; margin-left:10px; font-size:13px; color:#27ae60; font-weight:600; }
     </style>
