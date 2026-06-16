@@ -1975,26 +1975,21 @@ $data_sistema = date("Y-m-d");
             else optConta += '<option value="' + ct.id + '">        ' + ct.nome + '</option>';
         });
 
-        var html = '<tr class="linha-valor-rateio linha-manual">';
-        html += '<td><select class="form-control" name="rat2_local_id[]" style="height:30px;font-size:12px;"' +
-                ' onchange="this.nextElementSibling.value=this.options[this.selectedIndex].text;">' +
-                '<option value="">...</option>' + optLocal + '</select>' +
-                '<input type="hidden" name="rat2_local_nome[]" value=""></td>';
-        html += '<td><select class="form-control" name="rat2_cc_id[]" style="height:30px;font-size:12px;"' +
-                ' onchange="this.nextElementSibling.value=this.options[this.selectedIndex].text;">' +
-                optCC + '</select>' +
-                '<input type="hidden" name="rat2_cc_nome[]" value=""></td>';
-        html += '<td><select class="form-control" name="rat2_conta_id[]" style="height:30px;font-size:12px;"' +
-                ' onchange="this.nextElementSibling.value=this.options[this.selectedIndex].text;">' +
-                '<option value="">...</option>' + optConta + '</select>' +
-                '<input type="hidden" name="rat2_conta_nome[]" value=""></td>';
+        var uid = 'manual_' + Date.now();
+        var html = '<tr class="linha-valor-rateio linha-manual" id="tr_' + uid + '">';
+        html += '<td><select class="form-control sel-local-manual" style="height:30px;font-size:12px;">' +
+                '<option value="">...</option>' + optLocal + '</select></td>';
+        html += '<td><select class="form-control sel-cc-manual" style="height:30px;font-size:12px;">' +
+                optCC + '</select></td>';
+        html += '<td><select class="form-control sel-conta-manual" style="height:30px;font-size:12px;">' +
+                '<option value="">...</option>' + optConta + '</select></td>';
         html += '<td style="text-align:right;">' +
                 '<input type="text" class="form-control rat-valor" placeholder="0,00" name="rat2_valor[]"' +
                 ' style="height:30px;font-size:13px;text-align:right;" oninput="recalcularRateio()"></td>';
         html += '<td><input type="text" class="form-control rat-perc" placeholder="0,00%" name="rat2_perc[]" readonly' +
                 ' style="height:30px;font-size:13px;text-align:right;background:#f9f9f9;color:#555;"></td>';
-        html += '<td style="text-align:center;"><button type="button" class="btn btn-danger btn-xs"' +
-                ' onclick="excluirLinhaRateio(this)" title="Remover" style="background:transparent;border:none;color:#2980b9;padding:2px 6px;"><i class="fas fa-trash"></i></button></td>';
+        html += '<td style="text-align:center;"><button type="button" class="btn btn-info btn-xs"' +
+                ' onclick="confirmarLinhaManual(this)" style="white-space:nowrap; font-size:11px; padding:3px 7px;">Confirmar</button></td>';
         html += '</tr>';
 
         // Insere antes da linha de totais
