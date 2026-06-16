@@ -1622,21 +1622,20 @@ $data_sistema = date("Y-m-d");
                     var $s = $(id);
                     if ($s.hasClass('selectpicker')) return; // já convertido
 
-                    // Retira o <option disabled> do DOM (sem apagar) e salva para restaurar depois
-                    var $ph = $s.find('option[disabled]').first();
-                    if ($ph.length) {
-                        $ph.detach();
-                        $s.data('placeholder-opt', $ph);
-                    }
-                    // Desmarca todas as opções (o browser auto-seleciona a 1ª ao remover o placeholder)
+                    // Desmarca todas as opções antes de virar múltiplo
                     $s.find('option').prop('selected', false);
 
                     $s.attr('multiple', 'multiple')
                       .attr('data-live-search', 'true')
                       .attr('data-size', '8')
-                      .attr('title', '...')        // texto exibido quando nada está selecionado
                       .addClass('selectpicker');
-                    $s.selectpicker({ actionsBox: true, width: '100%', title: '...' });
+
+                    // noneSelectedText = texto mostrado quando nada está selecionado
+                    $s.selectpicker({ actionsBox: true, width: '100%', noneSelectedText: '...' });
+
+                    // Força limpeza de qualquer seleção automática do Bootstrap Select
+                    $s.val([]);
+                    $s.selectpicker('refresh');
 
                     // Após inicializar, o select fica DENTRO do .bootstrap-select
                     var $bs = $s.closest('.bootstrap-select');
@@ -1654,16 +1653,8 @@ $data_sistema = date("Y-m-d");
                     $s.removeAttr('multiple')
                       .removeAttr('data-live-search')
                       .removeAttr('data-size')
-                      .removeAttr('title')
                       .removeClass('selectpicker')
                       .addClass('form-control');
-
-                    // Recoloca o <option disabled> de volta no início do select
-                    var $ph = $s.data('placeholder-opt');
-                    if ($ph) {
-                        $s.prepend($ph);
-                        $s.removeData('placeholder-opt');
-                    }
                 });
                 // Restaura placeholders como selecionados (selects simples)
                 $('#codigo_fazenda').find('option[disabled]').prop('selected', true);
