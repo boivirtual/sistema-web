@@ -373,7 +373,7 @@ $data_sistema = date("Y-m-d");
                                                 </span>
                                                 <a href="#" id="link_editar_rateio" onclick="editarRateio(); return false;"
                                                    style="font-size:12px; color:#128cb8; font-weight:500; margin-left:8px;">
-                                                    Editar
+                                                    <i class="far fa-edit"></i>
                                                 </a>
                                             </div>
                                         </div>
