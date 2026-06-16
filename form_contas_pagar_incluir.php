@@ -1715,10 +1715,8 @@ $data_sistema = date("Y-m-d");
         var html = '<table class="tbl-parcelas" id="tbl_rateio">';
         html += '<thead><tr>';
         html += '  <th style="width:20%;">Local</th>';
-        html += '  <th style="width:25%;">Centro de Custos</th>';
-        html += '  <th style="width:30%;">Conta Contábil</th>';
-        html += '  <th style="width:10%;"></th>';
-        html += '  <th style="width:15%;"></th>';
+        html += '  <th style="width:55%;">Centro de Custos</th>';
+        html += '  <th style="width:25%;"></th>';
         html += '</tr></thead><tbody>';
 
         $.each(selecionados, function(i, idLocal) {
