@@ -731,6 +731,12 @@ if ($num_rows_usuario != 0) {
             }
         });
 
+        // Ao digitar nas datas customizadas, limpa o radio selecionado
+        $(document).on('change', '#data_inicio_custom, #data_fim_custom', function() {
+            $('input[name="periodo_rapido"]').prop('checked', false);
+            ctpFiltroModal.radio = null;
+        });
+
         // Traz #modal_conta para frente quando aberto sobre outro modal
         $('#modal_conta').on('show.bs.modal', function() {
             $(this).css('z-index', 1100);
