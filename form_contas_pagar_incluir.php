@@ -1649,11 +1649,10 @@ $data_sistema = date("Y-m-d");
             mask.money.call(this, e);
         });
         $(document).on('blur', '.rat-valor', function() {
-            var v = $(this).val().replace(/\./g,'').replace(',','.');
-            var n = parseFloat(v);
-            if (!isNaN(n)) {
-                $(this).val(formatMoney(n));
-            }
+            // mask.money deixa o valor em formato US (ex: "1500.32")
+            // formatMoney converte para BR (ex: "1.500,32")
+            var n = parseFloat($(this).val()) || 0;
+            $(this).val(formatMoney(n));
             recalcularRateio();
         });
 
