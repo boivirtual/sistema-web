@@ -1648,14 +1648,6 @@ $data_sistema = date("Y-m-d");
         $(document).on('keypress', '.rat-valor', function(e) {
             mask.money.call(this, e);
         });
-        // Recalcula após mask.money reformatar (setTimeout > 1ms do mask)
-        $(document).on('keyup', '.rat-valor', function() {
-            var $el = $(this);
-            setTimeout(function() {
-                var n = parseFloat($el.val()) || 0;
-                recalcularRateio();
-            }, 10);
-        });
         $(document).on('blur', '.rat-valor', function() {
             // Ao sair: converte formato US → BR e recalcula
             var n = parseFloat($(this).val()) || 0;
