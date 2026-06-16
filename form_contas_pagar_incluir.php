@@ -1997,6 +1997,37 @@ $data_sistema = date("Y-m-d");
         recalcularRateio();
     }
 
+    // ── Confirma linha adicionada manualmente ──
+    function confirmarLinhaManual(btn) {
+        var $tr = $(btn).closest('tr');
+
+        var $selLocal = $tr.find('.sel-local-manual');
+        var $selCC    = $tr.find('.sel-cc-manual');
+        var $selConta = $tr.find('.sel-conta-manual');
+
+        var localId   = $selLocal.val();
+        var localNome = $selLocal.find('option:selected').data('nome') || $selLocal.find('option:selected').text();
+        var ccId      = $selCC.val();
+        var ccNome    = $selCC.find('option:selected').text();
+        var contaId   = $selConta.val();
+        var contaNome = $selConta.find('option:selected').text();
+
+        if (!localId || localId === '') { alert('Selecione o Local.'); return; }
+        if (!ccId   || ccId   === '') { alert('Selecione o Centro de Custos.'); return; }
+        if (!contaId || contaId === '') { alert('Selecione a Conta Contábil.'); return; }
+
+        // Pega o valor já digitado na linha antes de substituir
+        var valorAtual = $tr.find('.rat-valor').val() || '';
+
+        // Gera linha normal (com lixeira)
+        var novaLinha = $(gerarLinhaValorRateio(localId, localNome, ccId, ccNome, contaId, contaNome));
+        if (valorAtual) {
+            novaLinha.find('.rat-valor').val(valorAtual);
+        }
+        $tr.replaceWith(novaLinha);
+        recalcularRateio();
+    }
+
     // ── Recalcula restante e percentuais em tempo real ──
     function recalcularRateio() {
         var total = ctpGetValorTotal();
