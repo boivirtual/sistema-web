@@ -1647,6 +1647,9 @@ $data_sistema = date("Y-m-d");
                       .removeClass('selectpicker')
                       .addClass('form-control');
                 });
+                // Restaura placeholders: Local e Conta Contábil voltam para "..."
+                $('#codigo_fazenda').find('option[disabled]').prop('selected', true);
+                $('#codigo_conta').find('option[disabled]').prop('selected', true);
                 // Restaura padrão CC = Pecuária de Corte
                 $('#codigo_cc').val('001');
                 // Limpa JSON do rateio
