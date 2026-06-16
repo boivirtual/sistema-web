@@ -1944,7 +1944,7 @@ $data_sistema = date("Y-m-d");
                 '</td>';
         html += '<td style="text-align:right;">' +
                     '<input type="text" class="form-control rat-valor" placeholder="0,00" name="rat2_valor[]"' +
-                    ' style="height:30px;font-size:13px;text-align:right;" oninput="recalcularRateio()">' +
+                    ' style="height:30px;font-size:13px;text-align:right;">' +
                 '</td>';
         html += '<td style="text-align:right;">' +
                     '<input type="text" class="form-control rat-perc" placeholder="0,00%" name="rat2_perc[]" readonly' +
