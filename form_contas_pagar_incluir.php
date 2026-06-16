@@ -1712,12 +1712,13 @@ $data_sistema = date("Y-m-d");
         });
 
         // Monta tabela no mesmo padrão da tbl-parcelas
-        var html = '<table class="tbl-parcelas">';
+        var html = '<table class="tbl-parcelas" id="tbl_rateio">';
         html += '<thead><tr>';
-        html += '  <th style="width:22%;">Local</th>';
-        html += '  <th style="width:28%;">Centro de Custos</th>';
-        html += '  <th style="width:12%;"></th>';
-        html += '  <th style="width:38%;"></th>';
+        html += '  <th style="width:20%;">Local</th>';
+        html += '  <th style="width:25%;">Centro de Custos</th>';
+        html += '  <th style="width:30%;">Conta Contábil</th>';
+        html += '  <th style="width:10%;"></th>';
+        html += '  <th style="width:15%;"></th>';
         html += '</tr></thead><tbody>';
 
         $.each(selecionados, function(i, idLocal) {
