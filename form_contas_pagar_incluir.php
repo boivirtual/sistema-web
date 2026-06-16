@@ -1621,6 +1621,8 @@ $data_sistema = date("Y-m-d");
                 $.each(sels, function(i, id) {
                     var $s = $(id);
                     if ($s.hasClass('selectpicker')) return; // já convertido
+                    // Remove selected das opções disabled antes de virar múltiplo
+                    $s.find('option[disabled]').prop('selected', false);
                     $s.attr('multiple', 'multiple')
                       .attr('data-live-search', 'true')
                       .attr('data-size', '8')
