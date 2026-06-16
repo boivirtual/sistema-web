@@ -1730,7 +1730,7 @@ $data_sistema = date("Y-m-d");
             html += '    <input type="hidden" name="rateio_local_nome[]" value="' + nomeLocal + '">';
             html += '  </td>';
             html += '  <td>';
-            html += '    <select class="form-control selectpicker" id="' + idxCC + '" name="rateio_cc[]" data-live-search="true" data-size="8">';
+            html += '    <select class="form-control selectpicker" id="' + idxCC + '" name="rateio_cc[' + i + '][]" multiple data-live-search="true" data-size="8">';
             html += optionsCC;
             html += '    </select>';
             html += '  </td>';
