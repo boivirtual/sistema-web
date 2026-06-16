@@ -1660,6 +1660,14 @@ $data_sistema = date("Y-m-d");
             recalcularRateio();
         });
 
+        // Ao carregar: se À Vista, vencimento = emissão
+        (function() {
+            if (parseInt($('#parcelamento').val()) === 0) {
+                var emissao = $('#data_emissao').val();
+                if (emissao) $('#data_vencimento').val(emissao);
+            }
+        })();
+
         $('#habilitar_rateio').on('change', function () {
             var on = $(this).is(':checked');
             var $local = $('#codigo_fazenda');
