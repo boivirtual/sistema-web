@@ -894,8 +894,10 @@ if ($num_rows_usuario != 0) {
         var radioSelecionado = $('input[name="periodo_rapido"]:checked').val();
         var dataInicio, dataFim, label;
 
+        // Períodos baseados em mês → setas ativas | outros → setas desabilitadas
+        var periodosComSeta = ['mes', 'mes_passado'];
+
         if (radioSelecionado) {
-            // Período rápido selecionado
             var datas = calcularDatasRapido(radioSelecionado);
             dataInicio = datas.inicio;
             dataFim = datas.fim;
@@ -906,12 +908,18 @@ if ($num_rows_usuario != 0) {
             $('#data_inicial').val(formatarData(dataInicio));
             $('#data_final').val(formatarData(dataFim));
 
+            // Este Mês / Mês Passado → modo mês normal; outros → modo fixo com label
+            if (periodosComSeta.indexOf(radioSelecionado) !== -1) {
+                setModoNavegacao(null);
+            } else {
+                setModoNavegacao(label);
+            }
+
         } else {
             var customInicio = $('#data_inicio_custom').val();
             var customFim = $('#data_fim_custom').val();
 
             if (customInicio && customFim) {
-                // Período customizado preenchido
                 dataInicio = parseDateLocal(customInicio);
                 dataFim = parseDateLocal(customFim);
 
@@ -925,9 +933,10 @@ if ($num_rows_usuario != 0) {
                 atualizarMesAnoFromDates(dataInicio, dataFim);
                 $('#data_inicial').val(formatarData(dataInicio));
                 $('#data_final').val(formatarData(dataFim));
+                setModoNavegacao(label);
 
             }
-            // Se nenhum período foi selecionado, mantém as datas já ativas (apenas aplica outros filtros)
+            // Se nenhum período foi selecionado, mantém o modo atual
         }
 
         // Salva estado para restaurar ao reabrir o modal
