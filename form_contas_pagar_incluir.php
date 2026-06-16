@@ -1638,6 +1638,14 @@ $data_sistema = date("Y-m-d");
             var $local = $('#codigo_fazenda');
 
             if (on) {
+                // Valida se o valor foi digitado antes de habilitar o rateio
+                var vlrTotal = ctpGetValorTotal();
+                if (!vlrTotal || vlrTotal <= 0) {
+                    $(this).prop('checked', false);
+                    alert('Digite o Valor da conta antes de habilitar o Rateio.');
+                    $('#vlr_primeira_parcela').focus();
+                    return;
+                }
                 // Rateio ON → oculta CC e Conta Contábil, apenas Local vira selectpicker múltiplo
                 $('#col_cc').hide();
                 $('#col_conta').hide();
