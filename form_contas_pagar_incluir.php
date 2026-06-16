@@ -423,6 +423,17 @@ $data_sistema = date("Y-m-d");
                                     </div>
                                     <!-- FIM LINHA 2 -->
 
+                                    <!-- ===== SEÇÃO DISTRIBUIR RATEIO (aparece dinamicamente) ===== -->
+                                    <div id="secao_distribuir_rateio" style="display:none; margin-top:10px;">
+                                        <fieldset class="scheduler-border">
+                                            <legend class="scheduler-border fonte-legend">Distribuir Rateio</legend>
+                                            <div id="linhas_rateio">
+                                                <!-- linhas geradas dinamicamente por JS -->
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <!-- FIM SEÇÃO DISTRIBUIR RATEIO -->
+
                                     <!-- ===== LINHA 3: Repetir Lançamento ===== -->
                                     <div class="row">
                                         <div class="col-md-12">
