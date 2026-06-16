@@ -2083,8 +2083,11 @@ $data_sistema = date("Y-m-d");
         var total = ctpGetValorTotal();
         var somaValores = 0;
         $('.rat-valor').each(function() {
-            var v = parseFloat($(this).val().replace(/\./g,'').replace(',','.')) || 0;
-            somaValores += v;
+            var raw = $(this).val();
+            var v = raw.indexOf(',') !== -1
+                ? raw.replace(/\./g,'').replace(',','.')
+                : raw;
+            somaValores += parseFloat(v) || 0;
         });
 
         if (Math.abs(total - somaValores) > 0.01) {
