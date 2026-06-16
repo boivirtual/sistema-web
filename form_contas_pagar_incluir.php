@@ -368,21 +368,26 @@ $data_sistema = date("Y-m-d");
                                             <input type="hidden" id="rateio_json" name="rateio_json" value="">
                                         </div>
 
-                                        <div class="form-group col-md-3">
+                                        <div class="form-group col-md-3" id="col_local">
                                             <label for="codigo_fazenda" class="control-label"><span class="required">*</span> Local</label>
-                                            <select class="form-control" id="codigo_fazenda" name="codigo_fazenda[]">
-                                                <option value="" disabled selected data-hidden="true">...</option>
-                                                <?php
-                                                while ($reg_local = mysqli_fetch_object($tbl_local)) {
-                                                    foreach ($array_locais_usuario as $value) {
-                                                        $value = trim($value);
-                                                        if ($value == $reg_local->tbl_pessoa_id) {
-                                                            echo '<option value="' . $value . '">' . $reg_local->tbl_pessoa_nome . '</option>';
+                                            <div style="display:flex; gap:6px; align-items:flex-start;">
+                                                <select class="form-control" id="codigo_fazenda" name="codigo_fazenda[]" style="flex:1;">
+                                                    <option value="" disabled selected data-hidden="true">...</option>
+                                                    <?php
+                                                    while ($reg_local = mysqli_fetch_object($tbl_local)) {
+                                                        foreach ($array_locais_usuario as $value) {
+                                                            $value = trim($value);
+                                                            if ($value == $reg_local->tbl_pessoa_id) {
+                                                                echo '<option value="' . $value . '" data-nome="' . htmlspecialchars($reg_local->tbl_pessoa_nome) . '">' . $reg_local->tbl_pessoa_nome . '</option>';
+                                                            }
                                                         }
                                                     }
-                                                }
-                                                ?>
-                                            </select>
+                                                    ?>
+                                                </select>
+                                                <button type="button" id="btn_confirmar_locais" class="btn btn-info" style="display:none; margin-top:0; white-space:nowrap;" onclick="confirmarLocaisRateio()">
+                                                    <i class="fas fa-check"></i> Confirmar
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div class="form-group col-md-3">
