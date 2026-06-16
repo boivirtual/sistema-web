@@ -1745,15 +1745,18 @@ $data_sistema = date("Y-m-d");
 
         $('#linhas_rateio').html(html);
 
-        // Inicializa selectpickers dos CC com tamanho compacto (igual tbl-parcelas)
+        // Inicializa selectpickers dos CC como múltiplos com tamanho compacto
         $('#linhas_rateio .selectpicker').each(function() {
             var $s = $(this);
-            $s.selectpicker({ width: '100%' });
+            // Pré-seleciona Pecuária de Corte (001) e desmarca os demais
+            $s.val(['001']);
+            $s.selectpicker({ actionsBox: true, width: '100%', noneSelectedText: '...' });
             var $bs = $s.closest('.bootstrap-select');
             $bs.css('width', '100%');
-            // Remove "Selecionar Todos" e ajusta tamanho do botão para caber na célula
+            // Remove "Selecionar Todos", mantém "Limpar Seleção"
             $bs.find('.bs-select-all').remove();
             $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px' });
+            $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
         });
 
         $('#secao_distribuir_rateio').show();
