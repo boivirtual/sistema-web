@@ -1633,8 +1633,12 @@ $data_sistema = date("Y-m-d");
                     // noneSelectedText = texto mostrado quando nada está selecionado
                     $s.selectpicker({ actionsBox: true, width: '100%', noneSelectedText: '...' });
 
-                    // Força limpeza de qualquer seleção automática do Bootstrap Select
-                    $s.val([]);
+                    // Força seleção correta: CC mantém Pecuária de Corte; outros ficam vazios
+                    if (id === '#codigo_cc') {
+                        $s.val(['001']);
+                    } else {
+                        $s.val([]);
+                    }
                     $s.selectpicker('refresh');
 
                     // Após inicializar, o select fica DENTRO do .bootstrap-select
