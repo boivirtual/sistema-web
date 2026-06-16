@@ -401,7 +401,7 @@ $data_sistema = date("Y-m-d");
                                             </select>
                                         </div>
 
-                                        <div class="form-group col-md-3">
+                                        <div class="form-group col-md-3" id="col_conta">
                                             <label for="codigo_conta" class="control-label"><span class="required">*</span> Conta Contábil</label>
                                             <select class="form-control" id="codigo_conta" name="codigo_conta">
                                                 <option value="0000000" disabled selected data-hidden="true">...</option>
