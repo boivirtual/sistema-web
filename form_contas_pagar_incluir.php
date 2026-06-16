@@ -387,8 +387,8 @@ $data_sistema = date("Y-m-d");
 
                                         <div class="form-group col-md-3">
                                             <label for="codigo_cc" class="control-label"><span class="required">*</span> Centro de Custos</label>
-                                            <select class="form-control" id="codigo_cc" name="codigo_cc">
-                                                <option value="">...</option>
+                                            <select class="form-control" id="codigo_cc" name="codigo_cc" title="Selecione...">
+                                                <option value="" disabled>...</option>
                                                 <?php while ($registo_cc = mysqli_fetch_object($c_custo)) {
                                                     $sel = ($registo_cc->tbl_cc_codigo_id == '001') ? ' selected' : '';
                                                     echo '<option value="' . $registo_cc->tbl_cc_codigo_id . '"' . $sel . '>' . $registo_cc->tbl_cc_descricao . '</option>';
