@@ -1953,7 +1953,7 @@ $data_sistema = date("Y-m-d");
         // Se não restam linhas, reabilita Confirmar Rateio
         if ($('.linha-valor-rateio').length === 0) {
             $('#btn_confirmar_rateio_final').removeClass('btn-success').addClass('btn-primary')
-                .html('<i class="fas fa-check-circle"></i> Confirmar Rateio').prop('disabled', false);
+                .text('Confirmar Rateio').prop('disabled', false);
         }
     }
 
