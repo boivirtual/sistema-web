@@ -229,22 +229,13 @@ $data_sistema = date("Y-m-d");
         /* ── Modal Rateio ── */
         /* CSS rateio reservado para nova tela */
 
-        /* Oculta botão Select All nos selectpickers múltiplos do rateio */
-        #codigo_fazenda + .bootstrap-select .bs-select-all,
-        #codigo_cc      + .bootstrap-select .bs-select-all,
-        #codigo_conta   + .bootstrap-select .bs-select-all { display: none !important; }
-
-        /* Impede que o dropdown ultrapasse a largura da coluna */
-        #codigo_fazenda + .bootstrap-select,
-        #codigo_cc      + .bootstrap-select,
-        #codigo_conta   + .bootstrap-select { width: 100% !important; }
-
-        #codigo_fazenda + .bootstrap-select .dropdown-menu,
-        #codigo_cc      + .bootstrap-select .dropdown-menu,
-        #codigo_conta   + .bootstrap-select .dropdown-menu {
-            min-width: 100% !important;
+        /* Selectpickers do rateio — dropdown restrito à largura da coluna */
+        .selectpicker-rateio + .bootstrap-select { width: 100% !important; }
+        .selectpicker-rateio + .bootstrap-select .dropdown-menu {
+            min-width: 0 !important;
             max-width: 100% !important;
             width: 100% !important;
+            box-sizing: border-box;
         }
 
         #rateio_badge { display:none; margin-left:10px; font-size:13px; color:#27ae60; font-weight:600; }
