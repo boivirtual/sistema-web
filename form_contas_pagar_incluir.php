@@ -1887,23 +1887,24 @@ $data_sistema = date("Y-m-d");
         $(btn).closest('tr').replaceWith(novasLinhas);
 
         if (primeiraVez) {
-            // Linha de totais
+            // Linha de totais (fundo transparente)
             $('#tbl_rateio tbody').append(
-                '<tr id="tr_rateio_restante" style="background:#fff8e1;">' +
-                '  <td colspan="4" style="text-align:right; font-size:12px; color:#666; padding:6px 8px;">Restante a distribuir:</td>' +
-                '  <td id="td_rat_vlr_rest" style="font-size:13px; font-weight:600; color:#c0392b; text-align:right; padding:6px 8px; white-space:nowrap;">R$ 0,00</td>' +
-                '  <td id="td_rat_pct_rest" style="font-size:13px; font-weight:600; color:#c0392b; text-align:right; padding:6px 8px;">0,00%</td>' +
+                '<tr id="tr_rateio_restante">' +
+                '  <td colspan="4" style="text-align:right; font-size:12px; color:#666; padding:6px 8px; border-top:1px solid #ddd;">Restante a distribuir:</td>' +
+                '  <td id="td_rat_vlr_rest" style="font-size:13px; font-weight:600; color:#c0392b; text-align:right; padding:6px 8px; white-space:nowrap; border-top:1px solid #ddd;">R$ 0,00</td>' +
+                '  <td id="td_rat_pct_rest" style="font-size:13px; font-weight:600; color:#c0392b; text-align:right; padding:6px 8px; border-top:1px solid #ddd;">0,00%</td>' +
                 '</tr>'
             );
-            // Rodapé com botões
+            // Rodapé dentro do fieldset
             if (!$('#rodape_rateio').length) {
-                $('#secao_distribuir_rateio').append(
-                    '<div id="rodape_rateio" style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding:0 4px;">' +
-                    '  <button type="button" class="btn btn-default btn-sm" onclick="adicionarLinhaRateio()">' +
+                $('#linhas_rateio').after(
+                    '<div id="rodape_rateio" style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding:4px 2px;">' +
+                    '  <a href="#" onclick="adicionarLinhaRateio(); return false;"' +
+                    '     style="font-size:13px; font-weight:500; color:#128cb8; text-decoration:none;">' +
                     '    <i class="fas fa-plus"></i> Adicionar linha' +
-                    '  </button>' +
-                    '  <button type="button" id="btn_confirmar_rateio_final" class="btn btn-primary" onclick="confirmarRateioFinal()">' +
-                    '    <i class="fas fa-check-circle"></i> Confirmar Rateio' +
+                    '  </a>' +
+                    '  <button type="button" id="btn_confirmar_rateio_final" class="btn btn-primary btn-sm" onclick="confirmarRateioFinal()">' +
+                    '    Confirmar Rateio' +
                     '  </button>' +
                     '</div>'
                 );
