@@ -1660,9 +1660,9 @@ $data_sistema = date("Y-m-d");
                       .removeClass('selectpicker')
                       .addClass('form-control');
                 });
-                // Restaura placeholders como selecionados (selects simples)
-                $('#codigo_fazenda').find('option[disabled]').prop('selected', true);
-                $('#codigo_conta').find('option[disabled]').prop('selected', true);
+                // Restaura placeholders: força o valor do disabled option programaticamente
+                $('#codigo_fazenda').val('');          // value="" do <option disabled selected>
+                $('#codigo_conta').val('0000000');     // value="0000000" do <option disabled selected>
                 // Restaura padrão CC = Pecuária de Corte
                 $('#codigo_cc').val('001');
                 // Limpa JSON do rateio
