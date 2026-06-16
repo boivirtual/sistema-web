@@ -722,7 +722,7 @@ $data_sistema = date("Y-m-d");
                                         </select>
                                     </div>
                                     <div class="form-group col-md-4">
-                                        <label class="control-label"><span class="required">*</span> Ocorrências</label>
+                                        <label class="control-label"><span class="required">*</span> Nº de Ocorrências</label>
                                         <input type="number" class="form-control" id="rep_ocorr" min="2" value="3" style="text-align:center;">
                                     </div>
                                 </div>
