@@ -1636,7 +1636,10 @@ $data_sistema = date("Y-m-d");
             var $local = $('#codigo_fazenda');
 
             if (on) {
-                // Rateio ON → apenas Local vira selectpicker múltiplo
+                // Rateio ON → oculta CC e Conta Contábil, apenas Local vira selectpicker múltiplo
+                $('#col_cc').hide();
+                $('#col_conta').hide();
+
                 $local.find('option').prop('selected', false);
                 $local.attr('multiple', 'multiple')
                       .attr('data-live-search', 'true')
@@ -1658,14 +1661,16 @@ $data_sistema = date("Y-m-d");
                         $('#btn_confirmar_locais').show();
                     } else {
                         $('#btn_confirmar_locais').hide();
-                        // Esconde seção se nenhum local selecionado
                         $('#secao_distribuir_rateio').hide();
                         $('#linhas_rateio').empty();
                     }
                 });
 
             } else {
-                // Rateio OFF → destrói selectpicker do Local, volta ao select simples
+                // Rateio OFF → restaura CC e Conta Contábil, destrói selectpicker do Local
+                $('#col_cc').show();
+                $('#col_conta').show();
+
                 $local.off('changed.bs.select.rateio');
                 if ($local.hasClass('selectpicker')) {
                     $local.selectpicker('destroy');
@@ -1676,15 +1681,12 @@ $data_sistema = date("Y-m-d");
                       .removeClass('selectpicker')
                       .addClass('form-control');
 
-                // Restaura placeholder do Local
                 $local.val('');
 
-                // Oculta botão e seção rateio
                 $('#btn_confirmar_locais').hide();
                 $('#secao_distribuir_rateio').hide();
                 $('#linhas_rateio').empty();
 
-                // Limpa JSON do rateio
                 $('#rateio_json').val('');
                 RT.reset();
             }
