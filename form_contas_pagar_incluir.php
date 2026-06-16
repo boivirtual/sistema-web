@@ -1639,8 +1639,9 @@ $data_sistema = date("Y-m-d");
                     $s.attr('multiple', 'multiple')
                       .attr('data-live-search', 'true')
                       .attr('data-size', '8')
+                      .attr('data-width', '100%')
                       .addClass('selectpicker');
-                    $s.selectpicker();
+                    $s.selectpicker({ actionsBox: false });
                 });
             } else {
                 // Rateio OFF → destrói selectpicker, volta ao select simples
