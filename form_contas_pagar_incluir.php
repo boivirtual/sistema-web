@@ -2048,7 +2048,11 @@ $data_sistema = date("Y-m-d");
 
         var somaValores = 0;
         $('.rat-valor').each(function() {
-            var v = $(this).val().replace(/\./g,'').replace(',','.');
+            var raw = $(this).val();
+            // Suporta formato BR (1.500,32) e formato US intermediário (1500.32)
+            var v = raw.indexOf(',') !== -1
+                ? raw.replace(/\./g,'').replace(',','.')
+                : raw;
             somaValores += parseFloat(v) || 0;
         });
 
