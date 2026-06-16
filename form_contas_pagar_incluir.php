@@ -1340,22 +1340,9 @@ $data_sistema = date("Y-m-d");
         // Handler do toggle Rateio — registrado após jQuery carregar (ver bloco pós-rodape.php)
 
         // ================================================================
-        // RATEIO — Wizard em 4 painéis
+        // RATEIO — Nova tela a implementar
         // ================================================================
-        var RT = {
-            painel: 1,
-            // Estrutura: locais[{id, nome, perc, valor, ccs:[{id,nome,perc,valor,contas:[{id,nome,perc,valor}]}]}]
-            locais: [],
-            localAtivo: 0,   // índice do local na aba do painel 2
-            ccAtivoIdx: 0,   // índice do CC na aba do painel 3
-
-            reset: function() {
-                this.painel = 1;
-                this.locais = [];
-                this.localAtivo = 0;
-                this.ccAtivoIdx = 0;
-            }
-        };
+        var RT = { locais: [], reset: function(){ this.locais = []; } };
 
         function rtAbrirModal() {
             RT.painel = 1;
