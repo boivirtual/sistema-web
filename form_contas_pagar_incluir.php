@@ -79,9 +79,9 @@ while ($r = mysqli_fetch_object($rs_cc_rat)) {
 }
 
 $arr_conta_rat_js = [];
-$rs_cta_rat = mysqli_query($conector, "select tbl_plano_contas_codigo_id, tbl_plano_contas_descricao from tbl_plano_contas where tbl_plano_contas_nivel=3 and tbl_plano_contas_debito_credito='D' and tbl_plano_contas_lixeira=0 order by tbl_plano_contas_codigo_id");
+$rs_cta_rat = mysqli_query($conector, "select tbl_plano_contas_codigo_id, tbl_plano_contas_descricao, tbl_plano_contas_nivel from tbl_plano_contas where tbl_plano_contas_debito_credito='D' and tbl_plano_contas_lixeira=0 order by tbl_plano_contas_codigo_id");
 while ($r = mysqli_fetch_object($rs_cta_rat)) {
-    $arr_conta_rat_js[] = ['id' => $r->tbl_plano_contas_codigo_id, 'nome' => $r->tbl_plano_contas_descricao];
+    $arr_conta_rat_js[] = ['id' => $r->tbl_plano_contas_codigo_id, 'nome' => $r->tbl_plano_contas_descricao, 'nivel' => (int)$r->tbl_plano_contas_nivel];
 }
 
 $data_sistema = date("Y-m-d");
