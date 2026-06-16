@@ -153,6 +153,14 @@ $data_sistema = date("Y-m-d");
         }
         .pago-wrap label { margin: 0; font-weight: normal; font-size: 13px; cursor: pointer; }
 
+        /* Normaliza cor dos selectpicker para igual ao select padrão do sistema */
+        .bootstrap-select .btn-default,
+        .bootstrap-select .btn-default:hover,
+        .bootstrap-select .btn-default:focus,
+        .bootstrap-select .btn-default:active {
+            color: #555 !important;
+        }
+
         /* Seção Condição de Pagamento */
         .secao-titulo {
             font-size: 15px;
