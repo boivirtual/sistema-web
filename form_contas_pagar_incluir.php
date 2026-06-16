@@ -1841,6 +1841,20 @@ $data_sistema = date("Y-m-d");
         var selecionadasConta = $('#' + contaSelectId).val();
         if (!selecionadasConta || selecionadasConta.length === 0) return;
 
+        // Na primeira confirmação: ajusta cabeçalho e garante rodapé/botão
+        var primeiraVez = !$('#tr_rateio_restante').length;
+        if (primeiraVez) {
+            // Substitui cabeçalho da tabela por colunas completas
+            $('#tbl_rateio thead tr').html(
+                '<th style="width:16%;">Local</th>' +
+                '<th style="width:16%;">Centro de Custos</th>' +
+                '<th style="width:26%;">Conta Contábil</th>' +
+                '<th style="width:14%; text-align:right;">Valor (R$)</th>' +
+                '<th style="width:9%;  text-align:right;">%</th>' +
+                '<th style="width:9%;"></th>'
+            );
+        }
+
         // Monta sub-linhas: uma por Conta selecionada
         var novasLinhas = '';
         $.each(selecionadasConta, function(k, contaId) {
@@ -1848,52 +1862,28 @@ $data_sistema = date("Y-m-d");
             $.each(contaOpcoes, function(m, ct) {
                 if (ct.id === contaId) { contaNome = ct.nome; return false; }
             });
-            var uid = (localId + '_' + ccId + '_' + k).replace(/\W/g,'_');
-
-            novasLinhas += '<tr class="linha-valor-rateio">';
-            novasLinhas += '  <td>';
-            novasLinhas += '    <span class="lbl-parcela">' + localNome + '</span><br>';
-            novasLinhas += '    <small style="color:#888;">' + ccNome + '</small><br>';
-            novasLinhas += '    <small style="color:#aaa;">' + contaNome + '</small>';
-            novasLinhas += '    <input type="hidden" name="rat2_local_id[]"   value="' + localId   + '">';
-            novasLinhas += '    <input type="hidden" name="rat2_local_nome[]" value="' + localNome + '">';
-            novasLinhas += '    <input type="hidden" name="rat2_cc_id[]"      value="' + ccId      + '">';
-            novasLinhas += '    <input type="hidden" name="rat2_cc_nome[]"    value="' + ccNome    + '">';
-            novasLinhas += '    <input type="hidden" name="rat2_conta_id[]"   value="' + contaId   + '">';
-            novasLinhas += '    <input type="hidden" name="rat2_conta_nome[]" value="' + contaNome + '">';
-            novasLinhas += '  </td>';
-            novasLinhas += '  <td>';
-            novasLinhas += '    <input type="text" class="form-control rat-valor" id="rat_vlr_' + uid + '" placeholder="0,00"';
-            novasLinhas += '      name="rat2_valor[]" style="height:30px;font-size:13px;" oninput="recalcularRateio()">';
-            novasLinhas += '  </td>';
-            novasLinhas += '  <td>';
-            novasLinhas += '    <input type="text" class="form-control rat-perc" id="rat_pct_' + uid + '" placeholder="0,00%"';
-            novasLinhas += '      name="rat2_perc[]" readonly style="height:30px;font-size:13px;background:#f9f9f9;color:#555;">';
-            novasLinhas += '  </td>';
-            novasLinhas += '</tr>';
+            novasLinhas += gerarLinhaValorRateio(localId, localNome, ccId, ccNome, contaId, contaNome);
         });
 
         // Substitui a linha da conta pelas sub-linhas
         $(btn).closest('tr').replaceWith(novasLinhas);
 
-        // Garante que o rodapé e botão de confirmação existam
-        if (!$('#tr_rateio_restante').length) {
-            // Adiciona cabeçalho da tabela Valor/Percentual se ainda não existe
-            if ($('#tbl_rateio thead tr th').length < 4) {
-                $('#tbl_rateio thead tr').append('<th style="width:13%; text-align:right;">Valor (R$)</th><th style="width:10%; text-align:right;">%</th>');
-            }
+        if (primeiraVez) {
             // Linha de totais
             $('#tbl_rateio tbody').append(
                 '<tr id="tr_rateio_restante" style="background:#fff8e1;">' +
-                '  <td colspan="2" style="text-align:right; font-size:12px; color:#666; padding:6px 8px;">Restante a distribuir:</td>' +
-                '  <td id="td_rat_vlr_rest" style="font-size:13px; font-weight:600; color:#c0392b; text-align:right; padding:6px 8px;">R$ 0,00</td>' +
+                '  <td colspan="4" style="text-align:right; font-size:12px; color:#666; padding:6px 8px;">Restante a distribuir:</td>' +
+                '  <td id="td_rat_vlr_rest" style="font-size:13px; font-weight:600; color:#c0392b; text-align:right; padding:6px 8px; white-space:nowrap;">R$ 0,00</td>' +
                 '  <td id="td_rat_pct_rest" style="font-size:13px; font-weight:600; color:#c0392b; text-align:right; padding:6px 8px;">0,00%</td>' +
                 '</tr>'
             );
-            // Botão Confirmar Rateio (fora da tabela)
-            if (!$('#btn_confirmar_rateio_final').length) {
+            // Rodapé com botões
+            if (!$('#rodape_rateio').length) {
                 $('#secao_distribuir_rateio').append(
-                    '<div style="text-align:right; margin-top:10px; padding:0 4px;">' +
+                    '<div id="rodape_rateio" style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding:0 4px;">' +
+                    '  <button type="button" class="btn btn-default btn-sm" onclick="adicionarLinhaRateio()">' +
+                    '    <i class="fas fa-plus"></i> Adicionar linha' +
+                    '  </button>' +
                     '  <button type="button" id="btn_confirmar_rateio_final" class="btn btn-primary" onclick="confirmarRateioFinal()">' +
                     '    <i class="fas fa-check-circle"></i> Confirmar Rateio' +
                     '  </button>' +
@@ -1902,6 +1892,94 @@ $data_sistema = date("Y-m-d");
             }
         }
 
+        recalcularRateio();
+    }
+
+    // ── Gera HTML de uma linha de valor/rateio ──
+    function gerarLinhaValorRateio(localId, localNome, ccId, ccNome, contaId, contaNome) {
+        var uid = (localId + '_' + ccId + '_' + contaId).replace(/\W/g,'_') + '_' + Date.now();
+        var html = '<tr class="linha-valor-rateio">';
+        html += '<td><span class="lbl-parcela">' + localNome + '</span>' +
+                    '<input type="hidden" name="rat2_local_id[]"   value="' + localId   + '">' +
+                    '<input type="hidden" name="rat2_local_nome[]" value="' + localNome + '">' +
+                '</td>';
+        html += '<td><span class="lbl-parcela">' + ccNome + '</span>' +
+                    '<input type="hidden" name="rat2_cc_id[]"   value="' + ccId   + '">' +
+                    '<input type="hidden" name="rat2_cc_nome[]" value="' + ccNome + '">' +
+                '</td>';
+        html += '<td><span class="lbl-parcela">' + contaNome + '</span>' +
+                    '<input type="hidden" name="rat2_conta_id[]"   value="' + contaId   + '">' +
+                    '<input type="hidden" name="rat2_conta_nome[]" value="' + contaNome + '">' +
+                '</td>';
+        html += '<td style="text-align:right;">' +
+                    '<input type="text" class="form-control rat-valor" placeholder="0,00" name="rat2_valor[]"' +
+                    ' style="height:30px;font-size:13px;text-align:right;" oninput="recalcularRateio()">' +
+                '</td>';
+        html += '<td style="text-align:right;">' +
+                    '<input type="text" class="form-control rat-perc" placeholder="0,00%" name="rat2_perc[]" readonly' +
+                    ' style="height:30px;font-size:13px;text-align:right;background:#f9f9f9;color:#555;">' +
+                '</td>';
+        html += '<td style="text-align:center;">' +
+                    '<button type="button" class="btn btn-danger btn-xs" onclick="excluirLinhaRateio(this)" title="Remover">' +
+                    '<i class="fas fa-trash"></i></button>' +
+                '</td>';
+        html += '</tr>';
+        return html;
+    }
+
+    // ── Remove uma linha de rateio ──
+    function excluirLinhaRateio(btn) {
+        $(btn).closest('tr').remove();
+        recalcularRateio();
+        // Se não restam linhas, reabilita Confirmar Rateio
+        if ($('.linha-valor-rateio').length === 0) {
+            $('#btn_confirmar_rateio_final').removeClass('btn-success').addClass('btn-primary')
+                .html('<i class="fas fa-check-circle"></i> Confirmar Rateio').prop('disabled', false);
+        }
+    }
+
+    // ── Adiciona linha em branco para distribuição manual ──
+    function adicionarLinhaRateio() {
+        // Linha com selects simples para escolher Local, CC e Conta
+        var optLocal = '', optCC = '', optConta = '';
+
+        // Opções de Local (das fazendas disponíveis no select principal)
+        $('#codigo_fazenda option:not([disabled])').each(function() {
+            optLocal += '<option value="' + $(this).val() + '" data-nome="' + $(this).data('nome') + '">' + $(this).text() + '</option>';
+        });
+        $.each(ccOpcoes, function(i, cc) {
+            optCC += '<option value="' + cc.id + '"' + (cc.id==='001'?' selected':'') + '>' + cc.nome + '</option>';
+        });
+        $.each(contaOpcoes, function(i, ct) {
+            if (ct.nivel === 1) optConta += '<option value="' + ct.id + '" disabled style="color:#777;font-weight:600;">' + ct.nome + '</option>';
+            else if (ct.nivel === 2) optConta += '<option value="' + ct.id + '" disabled style="color:#888;">    ' + ct.nome + '</option>';
+            else optConta += '<option value="' + ct.id + '">        ' + ct.nome + '</option>';
+        });
+
+        var html = '<tr class="linha-valor-rateio linha-manual">';
+        html += '<td><select class="form-control" name="rat2_local_id[]" style="height:30px;font-size:12px;"' +
+                ' onchange="this.nextElementSibling.value=this.options[this.selectedIndex].text;">' +
+                '<option value="">...</option>' + optLocal + '</select>' +
+                '<input type="hidden" name="rat2_local_nome[]" value=""></td>';
+        html += '<td><select class="form-control" name="rat2_cc_id[]" style="height:30px;font-size:12px;"' +
+                ' onchange="this.nextElementSibling.value=this.options[this.selectedIndex].text;">' +
+                optCC + '</select>' +
+                '<input type="hidden" name="rat2_cc_nome[]" value=""></td>';
+        html += '<td><select class="form-control" name="rat2_conta_id[]" style="height:30px;font-size:12px;"' +
+                ' onchange="this.nextElementSibling.value=this.options[this.selectedIndex].text;">' +
+                '<option value="">...</option>' + optConta + '</select>' +
+                '<input type="hidden" name="rat2_conta_nome[]" value=""></td>';
+        html += '<td style="text-align:right;">' +
+                '<input type="text" class="form-control rat-valor" placeholder="0,00" name="rat2_valor[]"' +
+                ' style="height:30px;font-size:13px;text-align:right;" oninput="recalcularRateio()"></td>';
+        html += '<td><input type="text" class="form-control rat-perc" placeholder="0,00%" name="rat2_perc[]" readonly' +
+                ' style="height:30px;font-size:13px;text-align:right;background:#f9f9f9;color:#555;"></td>';
+        html += '<td style="text-align:center;"><button type="button" class="btn btn-danger btn-xs"' +
+                ' onclick="excluirLinhaRateio(this)" title="Remover"><i class="fas fa-trash"></i></button></td>';
+        html += '</tr>';
+
+        // Insere antes da linha de totais
+        $('#tr_rateio_restante').before(html);
         recalcularRateio();
     }
 
