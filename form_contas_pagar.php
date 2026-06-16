@@ -408,24 +408,19 @@ if ($num_rows_usuario != 0) {
                             </div>
 
                             <div class="modal-body">
+                                <!-- Linha 1: Períodos Rápidos | Período Customizado -->
                                 <div class="row">
                                     <div class="col-md-4">
                                         <h5 style="margin-bottom: 15px; font-weight: 600;">Períodos Rápidos</h5>
                                         <div class="list-group">
                                             <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
-                                                <input type="radio" name="periodo_rapido" value="hoje"> &nbsp; Hoje
-                                            </label>
-                                            <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
-                                                <input type="radio" name="periodo_rapido" value="semana"> &nbsp; Esta Semana
-                                            </label>
-                                            <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
                                                 <input type="radio" name="periodo_rapido" value="mes"> &nbsp; Este Mês
                                             </label>
                                             <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
-                                                <input type="radio" name="periodo_rapido" value="30dias"> &nbsp; Últimos 30 Dias
+                                                <input type="radio" name="periodo_rapido" value="mes_passado"> &nbsp; Mês Passado
                                             </label>
                                             <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
-                                                <input type="radio" name="periodo_rapido" value="mes_passado"> &nbsp; Mês Passado
+                                                <input type="radio" name="periodo_rapido" value="30dias"> &nbsp; Últimos 30 Dias
                                             </label>
                                             <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
                                                 <input type="radio" name="periodo_rapido" value="trimestre"> &nbsp; Este Trimestre
@@ -433,15 +428,44 @@ if ($num_rows_usuario != 0) {
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-8">
                                         <h5 style="margin-bottom: 15px; font-weight: 600;">Período Customizado</h5>
-                                        <div class="form-group">
-                                            <label for="data_inicio_custom" class="control-label" style="font-size: 12px;">Data Inicial</label>
-                                            <input type="date" class="form-control" id="data_inicio_custom">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="data_inicio_custom" class="control-label" style="font-size: 12px;">Data Inicial</label>
+                                                    <input type="date" class="form-control" id="data_inicio_custom">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="data_fim_custom" class="control-label" style="font-size: 12px;">Data Final</label>
+                                                    <input type="date" class="form-control" id="data_fim_custom">
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="data_fim_custom" class="control-label" style="font-size: 12px;">Data Final</label>
-                                            <input type="date" class="form-control" id="data_fim_custom">
+
+                                        <!-- Linha 2: Outros Filtros abaixo das datas -->
+                                        <h5 style="margin-top: 5px; margin-bottom: 15px; font-weight: 600;">Outros Filtros</h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="codigo_cc" class="control-label" style="font-size: 12px;">Centro de Custo</label>
+                                                    <select class="form-control selectpicker" id="codigo_cc" name="codigo_cc" multiple data-live-search="true" data-size="6">
+                                                        <?php while ($registo_cc = mysqli_fetch_object($c_custo)) { ?>
+                                                        <option value="<?php echo $registo_cc->tbl_cc_codigo_id ?>">
+                                                            <?php echo $registo_cc->tbl_cc_descricao; ?>
+                                                        </option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="contas_selecionadas" class="control-label" style="font-size: 12px;">Conta Contábil</label>
+                                                    <input type="text" name="contas_selecionadas" id="contas_selecionadas" class="form-control" value="Todas ou (Clique p/ selecionar contas)" style="cursor: pointer;" readonly>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
