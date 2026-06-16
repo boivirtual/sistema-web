@@ -1643,6 +1643,20 @@ $data_sistema = date("Y-m-d");
 
     // ── Handler do toggle Rateio ──
     $(document).ready(function () {
+
+        // Máscara money nos campos de valor do rateio (delegada — funciona em linhas dinâmicas)
+        $(document).on('keypress', '.rat-valor', function(e) {
+            mask.money.call(this, e);
+        });
+        $(document).on('blur', '.rat-valor', function() {
+            var v = $(this).val().replace(/\./g,'').replace(',','.');
+            var n = parseFloat(v);
+            if (!isNaN(n)) {
+                $(this).val(formatMoney(n));
+            }
+            recalcularRateio();
+        });
+
         $('#habilitar_rateio').on('change', function () {
             var on = $(this).is(':checked');
             var $local = $('#codigo_fazenda');
