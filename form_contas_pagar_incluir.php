@@ -1699,6 +1699,9 @@ $data_sistema = date("Y-m-d");
         var selecionados = $local.val();
         if (!selecionados || selecionados.length === 0) return;
 
+        // Esconde o botão confirmar após confirmação
+        $('#btn_confirmar_locais').hide();
+
         // Monta as opções de CC em HTML
         var optionsCC = '';
         $.each(ccOpcoes, function(i, cc) {
@@ -1721,9 +1724,12 @@ $data_sistema = date("Y-m-d");
             html += '  </div>';
             html += '  <div class="form-group col-md-3">';
             html += '    <label class="control-label">Centro de Custos</label>';
-            html += '    <select class="form-control" id="' + idxCC + '" name="rateio_cc[]">';
+            html += '    <div style="display:flex; gap:6px; align-items:flex-end;">';
+            html += '      <select class="form-control" id="' + idxCC + '" name="rateio_cc[]" style="flex:1;">';
             html += optionsCC;
-            html += '    </select>';
+            html += '      </select>';
+            html += '      <button type="button" class="btn btn-info" style="white-space:nowrap;">Confirmar</button>';
+            html += '    </div>';
             html += '  </div>';
             html += '</div>';
         });
