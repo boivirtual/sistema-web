@@ -778,10 +778,10 @@ if ($num_rows_usuario != 0) {
         $('#data_inicio_custom').val('');
         $('#data_fim_custom').val('');
 
-        // Volta ao mês atual
+        // Volta ao mês atual com setas ativas
         dataSelecionada = new Date();
         $('#periodo_label').val('');
-        atualizarMesAno();
+        setModoNavegacao(null);
 
         // Oculta o link
         $('#link_limpar_filtros').hide();
