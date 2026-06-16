@@ -1700,8 +1700,8 @@ $data_sistema = date("Y-m-d");
         var selecionados = $local.val();
         if (!selecionados || selecionados.length === 0) return;
 
-        // Esconde o botão confirmar após confirmação
-        $('#btn_confirmar_locais').hide();
+        // Esconde a coluna do botão confirmar após confirmação
+        $('#col_btn_confirmar_locais').hide();
 
         // Monta as opções de CC em HTML
         var optionsCC = '';
@@ -1710,12 +1710,12 @@ $data_sistema = date("Y-m-d");
             optionsCC += '<option value="' + cc.id + '"' + sel + '>' + cc.nome + '</option>';
         });
 
-        // Monta tabela compacta com uma linha por local
-        var html = '<table class="table table-condensed" style="margin-bottom:0;">';
+        // Monta tabela no mesmo padrão da tbl-parcelas
+        var html = '<table class="tbl-parcelas">';
         html += '<thead><tr>';
-        html += '  <th style="width:35%; border-top:0;">Local</th>';
-        html += '  <th style="width:45%; border-top:0;">Centro de Custos</th>';
-        html += '  <th style="width:20%; border-top:0;"></th>';
+        html += '  <th style="width:35%;">Local</th>';
+        html += '  <th style="width:45%;">Centro de Custos</th>';
+        html += '  <th style="width:20%;"></th>';
         html += '</tr></thead><tbody>';
 
         $.each(selecionados, function(i, idLocal) {
@@ -1724,8 +1724,7 @@ $data_sistema = date("Y-m-d");
             var idxCC = 'cc_rateio_' + i;
 
             html += '<tr>';
-            html += '  <td style="vertical-align:middle; font-weight:600; color:#444;">';
-            html += '    ' + nomeLocal;
+            html += '  <td><span class="lbl-parcela">' + nomeLocal + '</span>';
             html += '    <input type="hidden" name="rateio_local_id[]" value="' + idLocal + '">';
             html += '    <input type="hidden" name="rateio_local_nome[]" value="' + nomeLocal + '">';
             html += '  </td>';
@@ -1734,8 +1733,8 @@ $data_sistema = date("Y-m-d");
             html += optionsCC;
             html += '    </select>';
             html += '  </td>';
-            html += '  <td style="vertical-align:middle;">';
-            html += '    <button type="button" class="btn btn-info btn-sm">Confirmar</button>';
+            html += '  <td>';
+            html += '    <button type="button" class="btn btn-info btn-sm" style="white-space:nowrap;">Confirmar</button>';
             html += '  </td>';
             html += '</tr>';
         });
@@ -1744,13 +1743,15 @@ $data_sistema = date("Y-m-d");
 
         $('#linhas_rateio').html(html);
 
-        // Inicializa selectpickers dos CC e remove "Selecionar Todos"
+        // Inicializa selectpickers dos CC com tamanho compacto (igual tbl-parcelas)
         $('#linhas_rateio .selectpicker').each(function() {
             var $s = $(this);
             $s.selectpicker({ width: '100%' });
             var $bs = $s.closest('.bootstrap-select');
             $bs.css('width', '100%');
+            // Remove "Selecionar Todos" e ajusta tamanho do botão para caber na célula
             $bs.find('.bs-select-all').remove();
+            $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px' });
         });
 
         $('#secao_distribuir_rateio').show();
