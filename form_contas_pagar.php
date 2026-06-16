@@ -414,6 +414,12 @@ if ($num_rows_usuario != 0) {
                                         <h5 style="margin-bottom: 15px; font-weight: 600;">Períodos Rápidos</h5>
                                         <div class="list-group">
                                             <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                                <input type="radio" name="periodo_rapido" value="hoje"> &nbsp; Hoje
+                                            </label>
+                                            <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
+                                                <input type="radio" name="periodo_rapido" value="semana"> &nbsp; Esta Semana
+                                            </label>
+                                            <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
                                                 <input type="radio" name="periodo_rapido" value="mes"> &nbsp; Este Mês
                                             </label>
                                             <label class="list-group-item" style="font-weight: normal; cursor: pointer; margin-bottom: 0;">
