@@ -229,14 +229,8 @@ $data_sistema = date("Y-m-d");
         /* ── Modal Rateio ── */
         /* CSS rateio reservado para nova tela */
 
-        /* Selectpickers do rateio — dropdown restrito à largura da coluna */
-        .selectpicker-rateio + .bootstrap-select { width: 100% !important; }
-        .selectpicker-rateio + .bootstrap-select .dropdown-menu {
-            min-width: 0 !important;
-            max-width: 100% !important;
-            width: 100% !important;
-            box-sizing: border-box;
-        }
+        /* Selectpickers do rateio — dropdown não ultrapassa a coluna */
+        .bootstrap-select.open > .dropdown-menu { max-width: 100% !important; }
 
         #rateio_badge { display:none; margin-left:10px; font-size:13px; color:#27ae60; font-weight:600; }
     </style>
