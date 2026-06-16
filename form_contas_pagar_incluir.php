@@ -1061,7 +1061,10 @@ $data_sistema = date("Y-m-d");
         // Chamado ao alterar data de emissão
         function onEmissaoChange() {
             var n = parseInt($('#parcelamento').val());
-            if (n > 0) {
+            if (n === 0) {
+                // À Vista: vencimento = emissão
+                $('#data_vencimento').val($('#data_emissao').val());
+            } else {
                 $('#primeiro_vencimento').val(calcPrimeiroVencimento());
                 recalcularDatas();
             }
