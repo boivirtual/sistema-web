@@ -367,7 +367,6 @@ $data_sistema = date("Y-m-d");
 
                                         <div class="form-group col-md-3">
                                             <label for="codigo_fazenda" class="control-label"><span class="required">*</span> Local</label>
-                                            <!-- Sem rateio: select simples -->
                                             <select class="form-control" id="codigo_fazenda" name="codigo_fazenda[]">
                                                 <option value="">...</option>
                                                 <?php
@@ -385,19 +384,18 @@ $data_sistema = date("Y-m-d");
 
                                         <div class="form-group col-md-3">
                                             <label for="codigo_cc" class="control-label"><span class="required">*</span> Centro de Custos</label>
-                                            <select class="form-control selectpicker" id="codigo_cc" name="codigo_cc" data-live-search="true" data-size="8">
+                                            <select class="form-control" id="codigo_cc" name="codigo_cc">
                                                 <option value="">...</option>
-                                                <?php while ($registo_cc = mysqli_fetch_object($c_custo)) { ?>
-                                                    <option value="<?php echo $registo_cc->tbl_cc_codigo_id; ?>">
-                                                        <?php echo $registo_cc->tbl_cc_descricao; ?>
-                                                    </option>
-                                                <?php } ?>
+                                                <?php while ($registo_cc = mysqli_fetch_object($c_custo)) {
+                                                    $sel = ($registo_cc->tbl_cc_codigo_id == '001') ? ' selected' : '';
+                                                    echo '<option value="' . $registo_cc->tbl_cc_codigo_id . '"' . $sel . '>' . $registo_cc->tbl_cc_descricao . '</option>';
+                                                } ?>
                                             </select>
                                         </div>
 
                                         <div class="form-group col-md-3">
                                             <label for="codigo_conta" class="control-label"><span class="required">*</span> Conta Contábil</label>
-                                            <select class="form-control selectpicker" id="codigo_conta" name="codigo_conta" data-live-search="true" data-size="8">
+                                            <select class="form-control" id="codigo_conta" name="codigo_conta">
                                                 <option value="0000000">...</option>
                                                 <?php while ($registro_pcontas = mysqli_fetch_object($plano_contas)) {
                                                     if ($registro_pcontas->tbl_plano_contas_nivel == 1) {
