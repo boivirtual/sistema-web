@@ -1394,8 +1394,8 @@ $data_sistema = date("Y-m-d");
         // ================================================================
 
         var REP_FREQ_LABELS = {
-            '1': 'dia(s)',  '2': 'semana(s)', '3': 'quinzena(s)',
-            '4': 'mês(es)', '5': 'bimestre(s)', '6': 'trimestre(s)',
+            '1': 'dia(s)',      '2': 'semana(s)',    '3': 'quinzena(s)',
+            '4': 'mês(es)',     '5': 'bimestre(s)',  '6': 'trimestre(s)',
             '7': 'semestre(s)', '8': 'ano(s)'
         };
 
