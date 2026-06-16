@@ -385,7 +385,7 @@ $data_sistema = date("Y-m-d");
                                                     ?>
                                                 </select>
                                                 <button type="button" id="btn_confirmar_locais" class="btn btn-info" style="display:none; margin-top:0; white-space:nowrap;" onclick="confirmarLocaisRateio()">
-                                                    <i class="fas fa-check"></i> Confirmar
+                                                    Confirmar
                                                 </button>
                                             </div>
                                         </div>
