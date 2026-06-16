@@ -1764,6 +1764,64 @@ $data_sistema = date("Y-m-d");
         $('#secao_distribuir_rateio').show();
     }
 
+    // ── Confirma CC de uma linha e expande em sub-linhas com Conta Contábil ──
+    function confirmarCCRateio(btn, localId, localNome, ccSelectId) {
+        var selecionadosCC = $('#' + ccSelectId).val();
+        if (!selecionadosCC || selecionadosCC.length === 0) return;
+
+        // Monta opções da Conta Contábil
+        var optionsConta = '';
+        $.each(contaOpcoes, function(k, cta) {
+            optionsConta += '<option value="' + cta.id + '">' + cta.nome + '</option>';
+        });
+
+        // Gera sub-linhas: uma por CC selecionado
+        var novasLinhas = '';
+        $.each(selecionadosCC, function(j, ccId) {
+            // Busca nome do CC
+            var ccNome = ccId;
+            $.each(ccOpcoes, function(k, cc) {
+                if (cc.id === ccId) { ccNome = cc.nome; return false; }
+            });
+
+            var idxConta = 'conta_rateio_' + localId.replace(/\W/g,'_') + '_' + j;
+
+            novasLinhas += '<tr class="linha-conta-rateio">';
+            novasLinhas += '  <td><span class="lbl-parcela">' + localNome + '</span>';
+            novasLinhas += '    <input type="hidden" name="rat_local_id[]" value="' + localId + '">';
+            novasLinhas += '    <input type="hidden" name="rat_local_nome[]" value="' + localNome + '">';
+            novasLinhas += '  </td>';
+            novasLinhas += '  <td><span class="lbl-parcela">' + ccNome + '</span>';
+            novasLinhas += '    <input type="hidden" name="rat_cc_id[]" value="' + ccId + '">';
+            novasLinhas += '    <input type="hidden" name="rat_cc_nome[]" value="' + ccNome + '">';
+            novasLinhas += '  </td>';
+            novasLinhas += '  <td>';
+            novasLinhas += '    <select class="form-control selectpicker" id="' + idxConta + '" name="rat_conta[]" data-live-search="true" data-size="8">';
+            novasLinhas += '      <option value="" disabled selected>...</option>';
+            novasLinhas += optionsConta;
+            novasLinhas += '    </select>';
+            novasLinhas += '  </td>';
+            novasLinhas += '  <td>';
+            novasLinhas += '    <button type="button" class="btn btn-info btn-sm" style="white-space:nowrap;">Confirmar</button>';
+            novasLinhas += '  </td>';
+            novasLinhas += '</tr>';
+        });
+
+        // Substitui a linha atual pelas sub-linhas
+        $(btn).closest('tr').replaceWith(novasLinhas);
+
+        // Inicializa selectpickers das contas contábeis recém-criadas
+        $('.linha-conta-rateio .selectpicker').each(function() {
+            var $s = $(this);
+            if ($s.data('selectpicker')) return; // já inicializado
+            $s.selectpicker({ width: '100%', noneSelectedText: '...' });
+            var $bs = $s.closest('.bootstrap-select');
+            $bs.css('width', '100%');
+            $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px' });
+            $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
+        });
+    }
+
     (function () {
         // Aguarda o DOM estar pronto para garantir que contas_pagar.js já definiu gravar_conta
         window.gravar_conta = function () {
