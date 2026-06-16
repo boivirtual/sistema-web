@@ -798,17 +798,38 @@ if ($num_rows_usuario != 0) {
         atualizarPeriodo();
     }
 
+    // Controla o modo de exibição do navegador de período
+    // label = null → modo mês (setas ativas, mostra Mês Ano)
+    // label = texto → modo fixo (setas desabilitadas, mostra o label)
+    function setModoNavegacao(label) {
+        if (label) {
+            $('#btnMesAno').text(label);
+            $('.btn-seta-periodo').prop('disabled', true).css({ 'opacity': '0.4', 'cursor': 'default', 'pointer-events': 'none' });
+        } else {
+            atualizarMesAno();
+            $('.btn-seta-periodo').prop('disabled', false).css({ 'opacity': '1', 'cursor': 'pointer', 'pointer-events': 'auto' });
+        }
+    }
+
     function navegarMesAnterior() {
         $('#periodo_label').val('');
+        ctpFiltroModal.radio = null;
+        ctpFiltroModal.dataInicio = null;
+        ctpFiltroModal.dataFim = null;
         dataSelecionada.setMonth(dataSelecionada.getMonth() - 1);
         atualizarMesAno();
+        setModoNavegacao(null);
         consultar_ctp();
     }
 
     function navegarMesProximo() {
         $('#periodo_label').val('');
+        ctpFiltroModal.radio = null;
+        ctpFiltroModal.dataInicio = null;
+        ctpFiltroModal.dataFim = null;
         dataSelecionada.setMonth(dataSelecionada.getMonth() + 1);
         atualizarMesAno();
+        setModoNavegacao(null);
         consultar_ctp();
     }
 
