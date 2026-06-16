@@ -230,7 +230,7 @@ $data_sistema = date("Y-m-d");
         /* CSS rateio reservado para nova tela */
 
         /* Selectpickers do rateio — dropdown não ultrapassa a coluna */
-        .bootstrap-select.open > .dropdown-menu { max-width: 100% !important; }
+        #linhas_rateio .bootstrap-select.open > .dropdown-menu { max-width: 100% !important; }
 
         #rateio_badge { display:none; margin-left:10px; font-size:13px; color:#27ae60; font-weight:600; }
     </style>
