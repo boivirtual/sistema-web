@@ -1630,11 +1630,13 @@ $data_sistema = date("Y-m-d");
                     $s.attr('multiple', 'multiple')
                       .attr('data-live-search', 'true')
                       .attr('data-size', '8')
-                      .attr('data-width', '100%')
-                      .addClass('selectpicker selectpicker-rateio');
-                    $s.selectpicker({ actionsBox: true });
-                    // Esconde Select All após inicializar
-                    $s.next('.bootstrap-select').find('.bs-select-all').hide();
+                      .addClass('selectpicker');
+                    $s.selectpicker({ actionsBox: true, width: '100%' });
+                    // Após inicializar, o select fica DENTRO do .bootstrap-select
+                    var $bs = $s.closest('.bootstrap-select');
+                    $bs.css('width', '100%');
+                    $bs.find('.bs-select-all').hide();
+                    $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
                 });
             } else {
                 // Rateio OFF → destrói selectpicker, volta ao select simples
