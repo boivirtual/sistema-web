@@ -1836,6 +1836,133 @@ $data_sistema = date("Y-m-d");
         });
     }
 
+    // ── Confirma Conta Contábil e expande campos de Valor / Percentual ──
+    function confirmarContaRateio(btn, localId, localNome, ccId, ccNome, contaSelectId) {
+        var selecionadasConta = $('#' + contaSelectId).val();
+        if (!selecionadasConta || selecionadasConta.length === 0) return;
+
+        // Monta sub-linhas: uma por Conta selecionada
+        var novasLinhas = '';
+        $.each(selecionadasConta, function(k, contaId) {
+            var contaNome = contaId;
+            $.each(contaOpcoes, function(m, ct) {
+                if (ct.id === contaId) { contaNome = ct.nome; return false; }
+            });
+            var uid = (localId + '_' + ccId + '_' + k).replace(/\W/g,'_');
+
+            novasLinhas += '<tr class="linha-valor-rateio">';
+            novasLinhas += '  <td>';
+            novasLinhas += '    <span class="lbl-parcela">' + localNome + '</span><br>';
+            novasLinhas += '    <small style="color:#888;">' + ccNome + '</small><br>';
+            novasLinhas += '    <small style="color:#aaa;">' + contaNome + '</small>';
+            novasLinhas += '    <input type="hidden" name="rat2_local_id[]"   value="' + localId   + '">';
+            novasLinhas += '    <input type="hidden" name="rat2_local_nome[]" value="' + localNome + '">';
+            novasLinhas += '    <input type="hidden" name="rat2_cc_id[]"      value="' + ccId      + '">';
+            novasLinhas += '    <input type="hidden" name="rat2_cc_nome[]"    value="' + ccNome    + '">';
+            novasLinhas += '    <input type="hidden" name="rat2_conta_id[]"   value="' + contaId   + '">';
+            novasLinhas += '    <input type="hidden" name="rat2_conta_nome[]" value="' + contaNome + '">';
+            novasLinhas += '  </td>';
+            novasLinhas += '  <td>';
+            novasLinhas += '    <input type="text" class="form-control rat-valor" id="rat_vlr_' + uid + '" placeholder="0,00"';
+            novasLinhas += '      name="rat2_valor[]" style="height:30px;font-size:13px;" oninput="recalcularRateio()">';
+            novasLinhas += '  </td>';
+            novasLinhas += '  <td>';
+            novasLinhas += '    <input type="text" class="form-control rat-perc" id="rat_pct_' + uid + '" placeholder="0,00%"';
+            novasLinhas += '      name="rat2_perc[]" readonly style="height:30px;font-size:13px;background:#f9f9f9;color:#555;">';
+            novasLinhas += '  </td>';
+            novasLinhas += '</tr>';
+        });
+
+        // Substitui a linha da conta pelas sub-linhas
+        $(btn).closest('tr').replaceWith(novasLinhas);
+
+        // Garante que o rodapé e botão de confirmação existam
+        if (!$('#tr_rateio_restante').length) {
+            // Adiciona cabeçalho da tabela Valor/Percentual se ainda não existe
+            if ($('#tbl_rateio thead tr th').length < 4) {
+                $('#tbl_rateio thead tr').append('<th style="width:13%; text-align:right;">Valor (R$)</th><th style="width:10%; text-align:right;">%</th>');
+            }
+            // Linha de totais
+            $('#tbl_rateio tbody').append(
+                '<tr id="tr_rateio_restante" style="background:#fff8e1;">' +
+                '  <td colspan="2" style="text-align:right; font-size:12px; color:#666; padding:6px 8px;">Restante a distribuir:</td>' +
+                '  <td id="td_rat_vlr_rest" style="font-size:13px; font-weight:600; color:#c0392b; text-align:right; padding:6px 8px;">R$ 0,00</td>' +
+                '  <td id="td_rat_pct_rest" style="font-size:13px; font-weight:600; color:#c0392b; text-align:right; padding:6px 8px;">0,00%</td>' +
+                '</tr>'
+            );
+            // Botão Confirmar Rateio (fora da tabela)
+            if (!$('#btn_confirmar_rateio_final').length) {
+                $('#secao_distribuir_rateio').append(
+                    '<div style="text-align:right; margin-top:10px; padding:0 4px;">' +
+                    '  <button type="button" id="btn_confirmar_rateio_final" class="btn btn-primary" onclick="confirmarRateioFinal()">' +
+                    '    <i class="fas fa-check-circle"></i> Confirmar Rateio' +
+                    '  </button>' +
+                    '</div>'
+                );
+            }
+        }
+
+        recalcularRateio();
+    }
+
+    // ── Recalcula restante e percentuais em tempo real ──
+    function recalcularRateio() {
+        var total = ctpGetValorTotal();
+        if (!total || total <= 0) total = 0;
+
+        var somaValores = 0;
+        $('.rat-valor').each(function() {
+            var v = $(this).val().replace(/\./g,'').replace(',','.');
+            somaValores += parseFloat(v) || 0;
+        });
+
+        var restante = total - somaValores;
+
+        // Atualiza percentuais de cada linha
+        $('.rat-valor').each(function() {
+            var $row = $(this).closest('tr');
+            var v = parseFloat($(this).val().replace(/\./g,'').replace(',','.')) || 0;
+            var pct = total > 0 ? (v / total * 100) : 0;
+            $row.find('.rat-perc').val(pct.toFixed(2).replace('.',',') + '%');
+        });
+
+        // Atualiza linha restante
+        var corRest = (Math.abs(restante) < 0.01) ? '#27ae60' : '#c0392b';
+        $('#td_rat_vlr_rest').text('R$ ' + restante.toFixed(2).replace('.',',')).css('color', corRest);
+        $('#td_rat_pct_rest').text((total > 0 ? restante/total*100 : 0).toFixed(2).replace('.',',') + '%').css('color', corRest);
+    }
+
+    // ── Valida e confirma o rateio completo ──
+    function confirmarRateioFinal() {
+        // Verifica se ainda há linhas de CC ou Conta pendentes de confirmação
+        if ($('.linha-conta-rateio').length > 0) {
+            alert('Confirme todos os Centros de Custos antes de fechar o rateio.');
+            return;
+        }
+
+        var total = ctpGetValorTotal();
+        var somaValores = 0;
+        $('.rat-valor').each(function() {
+            var v = parseFloat($(this).val().replace(/\./g,'').replace(',','.')) || 0;
+            somaValores += v;
+        });
+
+        if (Math.abs(total - somaValores) > 0.01) {
+            alert('O valor distribuído (R$ ' + somaValores.toFixed(2).replace('.',',') + ') não corresponde ao valor total (R$ ' + total.toFixed(2).replace('.',',') + ').\nAjuste os valores antes de confirmar.');
+            return;
+        }
+
+        if ($('.rat-valor').length === 0) {
+            alert('Nenhuma distribuição informada.');
+            return;
+        }
+
+        // Tudo ok — marca a seção como confirmada visualmente
+        $('#btn_confirmar_rateio_final').removeClass('btn-primary').addClass('btn-success')
+            .html('<i class="fas fa-check-circle"></i> Rateio Confirmado').prop('disabled', true);
+        $('#habilitar_rateio').prop('checked', true); // garante que o flag está ativo
+    }
+
     (function () {
         // Aguarda o DOM estar pronto para garantir que contas_pagar.js já definiu gravar_conta
         window.gravar_conta = function () {
