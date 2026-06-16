@@ -2005,7 +2005,7 @@ $data_sistema = date("Y-m-d");
                 '<option value="">...</option>' + optConta + '</select></td>';
         html += '<td style="text-align:right;">' +
                 '<input type="text" class="form-control rat-valor" placeholder="0,00" name="rat2_valor[]"' +
-                ' style="height:30px;font-size:13px;text-align:right;" oninput="recalcularRateio()"></td>';
+                ' style="height:30px;font-size:13px;text-align:right;"></td>';
         html += '<td><input type="text" class="form-control rat-perc" placeholder="0,00%" name="rat2_perc[]" readonly' +
                 ' style="height:30px;font-size:13px;text-align:right;background:#f9f9f9;color:#555;"></td>';
         html += '<td style="text-align:center;"><button type="button" class="btn btn-info btn-xs"' +
