@@ -495,8 +495,10 @@ $(document).ready(function(){
         var filtro = $(this).data('filtro');
 
         if (ctpFiltroAtivo === filtro || filtro === 'total_periodo') {
+            // Deseleciona ou clica no Total → mostra tudo, destaca Total
             ctpFiltroAtivo = null;
             $('#ctp-cards-container .ctp-card-total').removeClass('ativo');
+            $('#ctp-cards-container [data-filtro="total_periodo"]').addClass('ativo');
         } else {
             ctpFiltroAtivo = filtro;
             $('#ctp-cards-container .ctp-card-total').removeClass('ativo');
