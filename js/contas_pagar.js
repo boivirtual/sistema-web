@@ -544,6 +544,8 @@ $(document).ready(function(){
             if (cardsHtml) {
                 $('#ctp-cards-container').html(cardsHtml);
             }
+            // Destaca o card Total do Período como padrão (mostra tudo)
+            $('#ctp-cards-container [data-filtro="total_periodo"]').addClass('ativo');
             // Remove borda do topo do thead (entre cards e cabeçalho das colunas)
             $('#tabela_contas_pagar thead tr:first-child th').css('border-top', '0');
             $('#tabela_contas_pagar').css('margin-top', '0');
