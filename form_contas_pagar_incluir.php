@@ -366,6 +366,16 @@ $data_sistema = date("Y-m-d");
                                                 </label>
                                             </div>
                                             <input type="hidden" id="rateio_json" name="rateio_json" value="">
+                                            <!-- Status após confirmar rateio -->
+                                            <div id="rateio_status" style="display:none; margin-top:6px;">
+                                                <span style="font-size:12px; color:#27ae60; font-weight:600;">
+                                                    <i class="fas fa-check-circle"></i> Rateio Configurado
+                                                </span>
+                                                <a href="#" id="link_editar_rateio" onclick="editarRateio(); return false;"
+                                                   style="font-size:12px; color:#128cb8; font-weight:500; margin-left:8px;">
+                                                    Editar
+                                                </a>
+                                            </div>
                                         </div>
 
                                         <div class="form-group col-md-3" id="col_local">
