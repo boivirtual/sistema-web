@@ -1285,12 +1285,14 @@ $data_sistema = date("Y-m-d");
             var n = parseInt($('#parcelamento').val());
 
             if (n === 0) {
-                // À Vista
+                // À Vista — vencimento = emissão
                 $('#bloco_avista').show();
                 $('#bloco_parc_header').hide();
                 $('#bloco_parcelas').hide();
                 $('#tbody_parcelas').empty();
                 $('#parc_totais').empty();
+                var emissao = $('#data_emissao').val();
+                if (emissao) $('#data_vencimento').val(emissao);
             } else {
                 // Parcelado
                 $('#bloco_avista').hide();
