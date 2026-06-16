@@ -398,8 +398,8 @@ $data_sistema = date("Y-m-d");
 
                                         <div class="form-group col-md-3">
                                             <label for="codigo_conta" class="control-label"><span class="required">*</span> Conta Contábil</label>
-                                            <select class="form-control" id="codigo_conta" name="codigo_conta" title="Selecione...">
-                                                <option value="0000000" disabled>...</option>
+                                            <select class="form-control" id="codigo_conta" name="codigo_conta">
+                                                <option value="0000000" disabled selected>...</option>
                                                 <?php while ($registro_pcontas = mysqli_fetch_object($plano_contas)) {
                                                     if ($registro_pcontas->tbl_plano_contas_nivel == 1) {
                                                         echo "<option value='{$registro_pcontas->tbl_plano_contas_codigo_id}' disabled style='color:#777; font-weight:600;'>" .
