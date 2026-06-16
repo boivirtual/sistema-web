@@ -1928,7 +1928,7 @@ $data_sistema = date("Y-m-d");
                     ' style="height:30px;font-size:13px;text-align:right;background:#f9f9f9;color:#555;">' +
                 '</td>';
         html += '<td style="text-align:center;">' +
-                    '<button type="button" class="btn btn-danger btn-xs" onclick="excluirLinhaRateio(this)" title="Remover">' +
+                    '<button type="button" class="btn btn-xs" onclick="excluirLinhaRateio(this)" title="Remover" style="background:transparent;border:none;color:#2980b9;padding:2px 6px;">' +
                     '<i class="fas fa-trash"></i></button>' +
                 '</td>';
         html += '</tr>';
