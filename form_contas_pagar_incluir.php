@@ -2062,6 +2062,17 @@ $data_sistema = date("Y-m-d");
         $('#habilitar_rateio').prop('checked', true); // garante que o flag está ativo
     }
 
+    // ── Reabre a configuração do rateio para edição ──
+    function editarRateio() {
+        $('#rateio_status').hide();
+        $('#col_local').show();
+        $('#secao_distribuir_rateio').show();
+        // Reabilita o botão Confirmar Rateio
+        $('#btn_confirmar_rateio_final')
+            .removeClass('btn-success').addClass('btn-primary')
+            .text('Confirmar Rateio').prop('disabled', false);
+    }
+
     (function () {
         // Aguarda o DOM estar pronto para garantir que contas_pagar.js já definiu gravar_conta
         window.gravar_conta = function () {
