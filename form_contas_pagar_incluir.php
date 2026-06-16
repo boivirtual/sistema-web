@@ -355,15 +355,11 @@ $data_sistema = date("Y-m-d");
 
                                         <div class="form-group col-md-2">
                                             <label class="control-label">Habilitar Rateio</label>
-                                            <div style="padding-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                            <div style="padding-top:6px;">
                                                 <label class="toggle-switch" style="margin:0;">
                                                     <input type="checkbox" id="habilitar_rateio" name="habilitar_rateio">
                                                     <span class="toggle-track"></span>
                                                 </label>
-                                                <button type="button" id="btn_configurar_rateio" class="btn btn-xs btn-info" style="display:none;" onclick="rtAbrirModal()">
-                                                    <i class="fas fa-edit"></i> Editar Rateio
-                                                </button>
-                                                <span id="rateio_badge"><i class="fas fa-check-circle"></i> Configurado</span>
                                             </div>
                                             <input type="hidden" id="rateio_json" name="rateio_json" value="">
                                         </div>
