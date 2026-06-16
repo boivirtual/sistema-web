@@ -1684,7 +1684,7 @@ $data_sistema = date("Y-m-d");
 
                 $local.val('');
 
-                $('#btn_confirmar_locais').hide();
+                $('#col_btn_confirmar_locais').hide();
                 $('#secao_distribuir_rateio').hide();
                 $('#linhas_rateio').empty();
 
