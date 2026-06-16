@@ -1712,32 +1712,49 @@ $data_sistema = date("Y-m-d");
             optionsCC += '<option value="' + cc.id + '"' + sel + '>' + cc.nome + '</option>';
         });
 
-        // Gera uma linha por local selecionado
-        var html = '';
+        // Monta tabela compacta com uma linha por local
+        var html = '<table class="table table-condensed" style="margin-bottom:0;">';
+        html += '<thead><tr>';
+        html += '  <th style="width:35%; border-top:0;">Local</th>';
+        html += '  <th style="width:45%; border-top:0;">Centro de Custos</th>';
+        html += '  <th style="width:20%; border-top:0;"></th>';
+        html += '</tr></thead><tbody>';
+
         $.each(selecionados, function(i, idLocal) {
             var $opt = $local.find('option[value="' + idLocal + '"]');
             var nomeLocal = $opt.data('nome') || $opt.text();
             var idxCC = 'cc_rateio_' + i;
 
-            html += '<div class="row" style="margin-bottom:10px; align-items:flex-end;">';
-            html += '  <div class="col-md-3" style="padding-top:24px;">';
-            html += '    <strong style="color:#555;">' + nomeLocal + '</strong>';
+            html += '<tr>';
+            html += '  <td style="vertical-align:middle; font-weight:600; color:#444;">';
+            html += '    ' + nomeLocal;
             html += '    <input type="hidden" name="rateio_local_id[]" value="' + idLocal + '">';
             html += '    <input type="hidden" name="rateio_local_nome[]" value="' + nomeLocal + '">';
-            html += '  </div>';
-            html += '  <div class="form-group col-md-3">';
-            html += '    <label class="control-label">Centro de Custos</label>';
-            html += '    <div style="display:flex; gap:6px; align-items:flex-end;">';
-            html += '      <select class="form-control" id="' + idxCC + '" name="rateio_cc[]" style="flex:1;">';
+            html += '  </td>';
+            html += '  <td>';
+            html += '    <select class="form-control selectpicker" id="' + idxCC + '" name="rateio_cc[]" data-live-search="true" data-size="8">';
             html += optionsCC;
-            html += '      </select>';
-            html += '      <button type="button" class="btn btn-info" style="white-space:nowrap;">Confirmar</button>';
-            html += '    </div>';
-            html += '  </div>';
-            html += '</div>';
+            html += '    </select>';
+            html += '  </td>';
+            html += '  <td style="vertical-align:middle;">';
+            html += '    <button type="button" class="btn btn-info btn-sm">Confirmar</button>';
+            html += '  </td>';
+            html += '</tr>';
         });
 
+        html += '</tbody></table>';
+
         $('#linhas_rateio').html(html);
+
+        // Inicializa selectpickers dos CC e remove "Selecionar Todos"
+        $('#linhas_rateio .selectpicker').each(function() {
+            var $s = $(this);
+            $s.selectpicker({ width: '100%' });
+            var $bs = $s.closest('.bootstrap-select');
+            $bs.css('width', '100%');
+            $bs.find('.bs-select-all').remove();
+        });
+
         $('#secao_distribuir_rateio').show();
     }
 
