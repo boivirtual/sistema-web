@@ -227,11 +227,11 @@
                                   <input type='checkbox' class='checkbox1' name='id_ctp' value='".$ctp_id."' onClick='somar_total_para_baixar()'>
                                 </td>";
                             echo "<td width='10%'>".$numero_id."</td>";
-                            echo "<td width='15%'>".$desc_fazenda."</td>";
+                            echo "<td width='3%' align='center'>".$parcela."</td>";
                             echo "<td width='15%'>".$nome_for."</td>";
+                            echo "<td width='15%'>".$desc_fazenda."</td>";
                             echo "<td width='10%'>".$desc_conta."</td>";
                             echo "<td width='6%'>".$data_emissao->format('d/m/Y')."</td>";
-                            echo "<td width='3%' align='center'>".$parcela."</td>";
                             echo "<td width='6%'>".$data_vencimento->format('d/m/Y')."</td>";
                             echo "<td width='12%'>".number_format($total_parcela, 2, ",", ".")."</td>";
                             echo "<td width='19%' style='font-size: 10px;'>".$descricao_compra."</td>";
@@ -245,11 +245,11 @@
                                 <input type='checkbox' class='checkbox1' name='id_ctp'  value='".$ctp_id."' onClick='somar_total_para_baixar()'>
                                 </td>";
                             echo "<td width='10%'>".$numero_id."</td>";
-                            echo "<td style='color: #fff;' width='15%'>".$desc_fazenda."</td>";
+                            echo "<td width='3%' align='center'>".$parcela."</td>";
                             echo "<td style='color: #fff;' width='15%'>".$nome_for."</td>";
+                            echo "<td style='color: #fff;' width='15%'>".$desc_fazenda."</td>";
                             echo "<td style='color: #fff;' width='10%'>".$desc_conta."</td>";
                             echo "<td style='color: #fff;' width='6%'>".$data_emissao->format('d/m/Y')."</td>";
-                            echo "<td width='3%' align='center'>".$parcela."</td>";
                             echo "<td width='6%'>".$data_vencimento->format('d/m/Y')."</td>";
                             echo "<td width='12%'>".number_format($total_parcela, 2, ",", ".")."</td>";
                             echo "<td></td>";
