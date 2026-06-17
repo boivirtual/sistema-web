@@ -457,10 +457,21 @@
                             }
 
                             // Se ctp_codigo_conta for NULL é rateio — busca contas da tbl_ctp_rateio
+                            // O rateio usa o rc_ctp_id do primeiro registro criado no lote,
+                            // por isso filtra por rc_codigo_local (fazenda) + numero_doc + parcela
                             if (is_null($registro_ctp->ctp_codigo_conta)) {
+                                $num_doc_esc  = mysqli_real_escape_string($conector, $numero_doc);
+                                $parcela_esc  = mysqli_real_escape_string($conector, $numero_parcela);
+                                $fazenda_esc  = mysqli_real_escape_string($conector, ltrim($registro_ctp->ctp_codigo_fazenda, '0'));
                                 $rs_rat = mysqli_query($conector,
                                     "SELECT rc_nome_conta FROM tbl_ctp_rateio
-                                     WHERE rc_ctp_id='" . $ctp_id . "'
+                                     WHERE rc_codigo_local = '$fazenda_esc'
+                                       AND rc_ctp_id IN (
+                                           SELECT ctp_id FROM contas_pagar
+                                           WHERE ctp_numero_doc = '$num_doc_esc'
+                                             AND ctp_parcela    = '$parcela_esc'
+                                             AND ctp_codigo_conta IS NULL
+                                       )
                                      ORDER BY rc_id ASC");
                                 $total_rat = mysqli_num_rows($rs_rat);
                                 $first_rat = mysqli_fetch_object($rs_rat);
