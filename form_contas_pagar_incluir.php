@@ -1793,20 +1793,23 @@ $data_sistema = date("Y-m-d");
 
     // ── FASE 2: Lê CC de todas as linhas → tabela com selectpicker Conta por linha Local+CC ──
     function confirmarTodoCC() {
+        document.activeElement && document.activeElement.blur();
         var linhas = [];
         var valido = true;
 
         $('#tbl_rateio tbody tr.linha-fase1').each(function() {
             var localId   = $(this).data('local-id');
             var localNome = $(this).data('local-nome');
-            var ccIds     = $(this).find('.fase1-cc').val();
+            var $sel      = $(this).find('.fase1-cc');
+            $sel.selectpicker('refresh');
+            var ccIds     = $sel.val();
             if (!ccIds || ccIds.length === 0) {
                 alert('Selecione pelo menos um Centro de Custos para cada local.');
                 valido = false; return false;
             }
             $.each(ccIds, function(j, ccId) {
                 var ccNome = ccId;
-                $.each(ccOpcoes, function(k, cc) { if (cc.id === ccId) { ccNome = cc.nome; return false; } });
+                $.each(ccOpcoes, function(k, cc) { if (String(cc.id) === String(ccId)) { ccNome = cc.nome; return false; } });
                 linhas.push({ localId: localId, localNome: localNome, ccId: ccId, ccNome: ccNome });
             });
         });
