@@ -1777,8 +1777,10 @@ $data_sistema = date("Y-m-d");
 
         $('#linhas_rateio .selectpicker').each(function() {
             var $s = $(this);
-            $s.val(['001']);
+            var firstVal = $s.find('option:first').val();
+            if (firstVal) { $s.find('option:first').prop('selected', true); }
             $s.selectpicker({ actionsBox: true, width: '100%', noneSelectedText: '...' });
+            if (firstVal) { $s.selectpicker('val', [firstVal]); }
             var $bs = $s.closest('.bootstrap-select');
             $bs.css('width', '100%');
             $bs.find('.bs-select-all').remove();
