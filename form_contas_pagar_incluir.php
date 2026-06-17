@@ -1778,12 +1778,10 @@ $data_sistema = date("Y-m-d");
         $('#linhas_rateio .fase1-cc').each(function() {
             var $s = $(this);
             $s.find('option:first').prop('selected', true);
-            $s.selectpicker({ actionsBox: false, noneSelectedText: '...' });
-            $s.selectpicker('refresh');
+            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', width: '420px' });
             var $bs = $s.closest('.bootstrap-select');
-            $bs.css('width', '420px');
             $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px' });
-            $bs.find('.dropdown-menu').css({ 'min-width': '420px', 'width': '420px' });
+            $bs.find('.dropdown-menu').css({ 'min-width': '420px' });
         });
 
         $('#secao_distribuir_rateio').show();
