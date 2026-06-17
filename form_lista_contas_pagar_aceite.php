@@ -119,7 +119,7 @@
                     $rs = mysqli_query($conector, "SELECT * FROM contas_pagar
                         INNER JOIN tbl_pessoa
                                 ON tbl_pessoa_id=ctp_codigo_fazenda
-                        INNER JOIN tbl_plano_contas
+                        LEFT JOIN tbl_plano_contas
                                 ON tbl_plano_contas_codigo_id=ctp_codigo_conta
                         WHERE ctp_aceite='' AND 
                               ctp_data_vencimento>='$data_inicial' AND 
@@ -133,7 +133,7 @@
                     $rs = mysqli_query($conector, "SELECT * FROM contas_pagar
                         INNER JOIN tbl_pessoa
                                 ON tbl_pessoa_id=ctp_codigo_fazenda
-                        INNER JOIN tbl_plano_contas
+                        LEFT JOIN tbl_plano_contas
                                 ON tbl_plano_contas_codigo_id=ctp_codigo_conta
                         WHERE ctp_aceite='' AND 
                               ctp_data_emissao>='$data_inicial' AND 
@@ -146,7 +146,7 @@
                     $rs = mysqli_query($conector, "SELECT * FROM contas_pagar
                         INNER JOIN tbl_pessoa
                                 ON tbl_pessoa_id=ctp_codigo_fazenda
-                        INNER JOIN tbl_plano_contas
+                        LEFT JOIN tbl_plano_contas
                                 ON tbl_plano_contas_codigo_id=ctp_codigo_conta
                         WHERE ctp_aceite=''
                         " . $wfornecedor . $wfazenda . $wconta .
