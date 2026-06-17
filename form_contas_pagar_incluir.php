@@ -1781,9 +1781,9 @@ $data_sistema = date("Y-m-d");
             $s.selectpicker({ actionsBox: false, noneSelectedText: '...' });
             $s.selectpicker('refresh');
             var $bs = $s.closest('.bootstrap-select');
-            $bs.css('width', '320px');
+            $bs.css('width', '420px');
             $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px' });
-            $bs.find('.dropdown-menu').css({ 'min-width': '320px', 'width': '320px' });
+            $bs.find('.dropdown-menu').css({ 'min-width': '420px', 'width': '420px' });
         });
 
         $('#secao_distribuir_rateio').show();
