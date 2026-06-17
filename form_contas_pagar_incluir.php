@@ -1778,10 +1778,10 @@ $data_sistema = date("Y-m-d");
         $('#linhas_rateio .fase1-cc').each(function() {
             var $s = $(this);
             $s.find('option:first').prop('selected', true);
-            $s.selectpicker({ actionsBox: false, noneSelectedText: '...' });
+            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'count > 1', countSelectedText: '{0} selecionados' });
             var $bs = $s.closest('.bootstrap-select');
             $bs.css({ 'width': '100%', 'display': 'block' });
-            $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%' });
+            $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
             $bs.find('.dropdown-menu').css({ 'width': '100%' });
         });
 
