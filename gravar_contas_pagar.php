@@ -275,11 +275,28 @@
             $codigo_local_str = trim($array_fazenda_n[0]);
         }
 
-        // Quando rateio ativo: local/conta/cc vão NULL no banco
+        // Quando rateio ativo: local/conta/cc do campo simples são ignorados;
+        // os locais reais vêm do rateio_json
         if ($tem_rateio) {
             $codigo_local_str = '';
             $codigo_ccusto_n  = '';
             $codigo_conta_n   = '';
+        }
+
+        // Monta array de locais do rateio para uso nos CASOS A e B
+        $rateio_locais = []; // [ ['id'=>..., 'nome'=>..., 'valor'=>..., 'perc'=>...], ... ]
+        if ($tem_rateio) {
+            $rj = json_decode($_POST['rateio_json'], true);
+            if (is_array($rj)) {
+                foreach ($rj as $loc) {
+                    $rateio_locais[] = [
+                        'id'    => mysqli_real_escape_string($conector, $loc['id']   ?? ''),
+                        'nome'  => mysqli_real_escape_string($conector, $loc['nome'] ?? ''),
+                        'valor' => (float)($loc['valor'] ?? 0),
+                        'perc'  => (float)($loc['perc']  ?? 0),
+                    ];
+                }
+            }
         }
 
         // Resolve nome do fornecedor
