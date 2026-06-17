@@ -1850,10 +1850,11 @@ $data_sistema = date("Y-m-d");
 
         $('#linhas_rateio .fase2-conta').each(function() {
             var $s = $(this);
-            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', width: '420px' });
+            $s.selectpicker({ actionsBox: false, noneSelectedText: '...' });
             var $bs = $s.closest('.bootstrap-select');
-            $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px' });
-            $bs.find('.dropdown-menu').css({ 'min-width': '420px' });
+            $bs.css({ 'width': '100%', 'display': 'block' });
+            $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%' });
+            $bs.find('.dropdown-menu').css({ 'width': '100%' });
         });
     }
 
