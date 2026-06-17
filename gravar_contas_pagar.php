@@ -732,11 +732,22 @@
 
         $primeiro_id_r = null;
 
-        for ($i = 0; $i < $rep_ocorrencias; $i++) {
+        // Helper para inserir uma ocorrência de repetição
+        $insere_repeticao = function($loc_id, $loc_vlr, $i) use (
+            &$primeiro_id_r, $numero_doc_r, $codigo_for_r, $rep_tipodoc, $razao_r,
+            $rep_ocorrencias, $rep_banco, $data_sistema, $nomeusuario,
+            $observacoes_r, $uuid_grupo, $codigo_ccusto_r, $codigo_conta_r,
+            $avancar_data, $ajustar_dia, $data_emissao_r, $rep_prim_venc,
+            $rep_freq, $rep_cada, $dia_base, $rep_cobrar_no, $descricao_r,
+            $conector, $vlr_r
+        ) {
             $data_emissao_i  = $avancar_data($data_emissao_r, $rep_freq, $rep_cada, $i);
             $data_vencto_i   = ($i === 0) ? $rep_prim_venc : $ajustar_dia($avancar_data($rep_prim_venc, $rep_freq, $rep_cada, $i), $dia_base, $rep_cobrar_no);
-            $descricao_i_txt = $descricao_r . ' (' . ($i+1) . '/' . $rep_ocorrencias . ')';
-            $descricao_i     = mysqli_real_escape_string($conector, $descricao_i_txt);
+            $descricao_i     = mysqli_real_escape_string($conector, $descricao_r . ' (' . ($i+1) . '/' . $rep_ocorrencias . ')');
+            $vlr_i           = $loc_vlr > 0 ? $loc_vlr : $vlr_r;
+            $sql_local       = ($loc_id === '' || $loc_id === null) ? 'NULL' : "'$loc_id'";
+            $sql_cc          = ($codigo_ccusto_r === '') ? 'NULL' : "'$codigo_ccusto_r'";
+            $sql_conta       = ($codigo_conta_r  === '') ? 'NULL' : "'$codigo_conta_r'";
 
             $sql = "INSERT INTO contas_pagar (
                 ctp_numero_doc, ctp_codigo_fornecedor, ctp_parcela,
@@ -753,9 +764,9 @@
                 '$numero_doc_r', '$codigo_for_r', " . ($i+1) . ",
                 '$rep_tipodoc', '$razao_r', '$numero_doc_r',
                 '$rep_ocorrencias', '$data_emissao_i', '$data_vencto_i',
-                '$vlr_r', 0.00, 0.00,
+                '$vlr_i', 0.00, 0.00,
                 null, '',
-                " . ($codigo_local_r  === '' ? 'NULL' : "'$codigo_local_r'")  . ", " . ($codigo_ccusto_r === '' ? 'NULL' : "'$codigo_ccusto_r'") . ", " . ($codigo_conta_r  === '' ? 'NULL' : "'$codigo_conta_r'")  . ",
+                $sql_local, $sql_cc, $sql_conta,
                 '$rep_banco',
                 '$data_sistema', '$nomeusuario',
                 '$descricao_i', '$observacoes_r',
@@ -768,12 +779,25 @@
                 echo json_encode(['error'=>true,'message'=>'Erro ao gravar recorrência '.($i+1).': '.mysqli_error($conector)]);
                 mysqli_close($conector); exit;
             }
-
             $novo_id_r = mysqli_insert_id($conector);
             if ($primeiro_id_r === null) {
                 $primeiro_id_r = $novo_id_r;
                 salvar_anexos($primeiro_id_r, $conector, $nomeusuario, $data_sistema);
                 salvar_rateio($primeiro_id_r, $conector, $nomeusuario, $data_sistema);
+            }
+        };
+
+        if ($tem_rateio && count($rateio_locais_r) > 0) {
+            // Com rateio: para cada ocorrência × cada local
+            for ($i = 0; $i < $rep_ocorrencias; $i++) {
+                foreach ($rateio_locais_r as $rloc) {
+                    $insere_repeticao($rloc['id'], $rloc['valor'], $i);
+                }
+            }
+        } else {
+            // Sem rateio: uma linha por ocorrência
+            for ($i = 0; $i < $rep_ocorrencias; $i++) {
+                $insere_repeticao($codigo_local_r, 0, $i);
             }
         }
 
