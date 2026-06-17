@@ -1866,14 +1866,17 @@ $data_sistema = date("Y-m-d");
             var localNome = $(this).data('local-nome');
             var ccId      = $(this).data('cc-id');
             var ccNome    = $(this).data('cc-nome');
-            var contaIds  = $(this).find('.fase2-conta').val();
-            if (!contaIds || contaIds.length === 0) {
+            var contaIds = [];
+            $(this).find('.fase2-conta option:selected').each(function() {
+                if ($(this).val()) contaIds.push($(this).val());
+            });
+            if (contaIds.length === 0) {
                 alert('Selecione pelo menos uma Conta Contábil para cada linha.');
                 valido = false; return false;
             }
             $.each(contaIds, function(k, contaId) {
                 var contaNome = contaId;
-                $.each(contaOpcoes, function(m, ct) { if (ct.id === contaId) { contaNome = ct.nome; return false; } });
+                $.each(contaOpcoes, function(m, ct) { if (String(ct.id) === String(contaId)) { contaNome = ct.nome; return false; } });
                 linhas.push({ localId: localId, localNome: localNome, ccId: ccId, ccNome: ccNome, contaId: contaId, contaNome: contaNome });
             });
         });
