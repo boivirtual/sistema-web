@@ -315,20 +315,20 @@
                             $ssql = "SELECT * FROM baixa_contas_pagar
                                 INNER JOIN contas_pagar
                                         ON bcp_id=ctp_id
-                                INNER JOIN tbl_plano_contas
+                                LEFT JOIN tbl_plano_contas
                                         ON tbl_plano_contas_codigo_id=ctp_codigo_conta
                                 INNER JOIN tbl_pessoa
                                         ON tbl_pessoa_id=ctp_codigo_fazenda"
-                                . $criterio; 
+                                . $criterio;
 
                         }
                         else {
                             $ssql = "SELECT * FROM contas_pagar
-                                INNER JOIN tbl_plano_contas
-                                        ON tbl_plano_contas_codigo_id=ctp_codigo_conta 
+                                LEFT JOIN tbl_plano_contas
+                                        ON tbl_plano_contas_codigo_id=ctp_codigo_conta
                                 INNER JOIN tbl_pessoa
                                         ON tbl_pessoa_id=ctp_codigo_fazenda"
-                                . $criterio; 
+                                . $criterio;
                         }
 
                         $rs = mysqli_query($conector, $ssql); 
