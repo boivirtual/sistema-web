@@ -1798,10 +1798,11 @@ $data_sistema = date("Y-m-d");
         $('#tbl_rateio tbody tr.linha-fase1').each(function() {
             var localId   = $(this).data('local-id');
             var localNome = $(this).data('local-nome');
-            var $sel      = $(this).find('.fase1-cc');
-            $sel.selectpicker('refresh');
-            var ccIds     = $sel.val();
-            if (!ccIds || ccIds.length === 0) {
+            var ccIds = [];
+            $(this).find('.fase1-cc option:selected').each(function() {
+                ccIds.push($(this).val());
+            });
+            if (ccIds.length === 0) {
                 alert('Selecione pelo menos um Centro de Custos para cada local.');
                 valido = false; return false;
             }
