@@ -456,7 +456,21 @@
                                 }
                             }
 
-                            $desc_conta = $registro_ctp->tbl_plano_contas_descricao;
+                            // Se ctp_codigo_conta for NULL é rateio — busca contas da tbl_ctp_rateio
+                            if (is_null($registro_ctp->ctp_codigo_conta)) {
+                                $rs_rat = mysqli_query($conector,
+                                    "SELECT rc_nome_conta FROM tbl_ctp_rateio
+                                     WHERE rc_ctp_id='" . $ctp_id . "'
+                                     ORDER BY rc_id ASC");
+                                $total_rat = mysqli_num_rows($rs_rat);
+                                $first_rat = mysqli_fetch_object($rs_rat);
+                                $desc_conta = $first_rat ? $first_rat->rc_nome_conta : 'Rateio';
+                                if ($total_rat > 1) {
+                                    $desc_conta .= ' <span style="color:#888;font-size:10px">+' . ($total_rat - 1) . '</span>';
+                                }
+                            } else {
+                                $desc_conta = $registro_ctp->tbl_plano_contas_descricao;
+                            }
                             $desc_fazenda = $registro_ctp->tbl_pessoa_nome;
 
                             $total_a_pagar = $vlr_parcela - $total_pago;
