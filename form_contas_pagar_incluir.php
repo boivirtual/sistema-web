@@ -670,8 +670,11 @@ $data_sistema = date("Y-m-d");
                                             <label class="control-label">Anexo</label>
                                             <div style="display: flex; align-items: center; gap: 8px;">
                                                 <input type="file" name="anexo[]" id="anexo_0" class="form-control" style="max-width: 320px;">
-                                                <button type="button" class="btn-anexo-add" onclick="adicionarAnexo()" data-toggle='tooltip' data-placement='top' title="Adicionar mais anexos">
+                                                <button type="button" class="btn-anexo-add" onclick="adicionarAnexo()" data-toggle='tooltip' data-placement='top' title="Adicionar arquivo">
                                                     <i class="far fa-plus-square" style="font-size: 16px;"></i>
+                                                </button>
+                                                <button type="button" class="btn-anexo-add" onclick="adicionarLink()" data-toggle='tooltip' data-placement='top' title="Adicionar link">
+                                                    <i class="fas fa-link" style="font-size: 15px;"></i>
                                                 </button>
                                             </div>
                                             <div id="lista_anexos"></div>
