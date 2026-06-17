@@ -2089,6 +2089,54 @@ $data_sistema = date("Y-m-d");
             return;
         }
 
+        // Monta rateio_json no formato esperado pelo backend (local → ccs → contas)
+        var total = ctpGetValorTotal();
+        var locaisMap = {};
+        var locaisOrder = [];
+
+        $('.linha-valor-rateio').each(function() {
+            var localId   = $(this).find('input[name="rat2_local_id[]"]').val();
+            var localNome = $(this).find('input[name="rat2_local_nome[]"]').val();
+            var ccId      = $(this).find('input[name="rat2_cc_id[]"]').val();
+            var ccNome    = $(this).find('input[name="rat2_cc_nome[]"]').val();
+            var contaId   = $(this).find('input[name="rat2_conta_id[]"]').val();
+            var contaNome = $(this).find('input[name="rat2_conta_nome[]"]').val();
+            var raw       = $(this).find('.rat-valor').val() || '0';
+            var v         = raw.indexOf(',') !== -1
+                            ? parseFloat(raw.replace(/\./g,'').replace(',','.'))
+                            : (parseFloat(raw) || 0);
+            var perc      = total > 0 ? parseFloat((v / total * 100).toFixed(4)) : 0;
+
+            if (!locaisMap[localId]) {
+                locaisMap[localId] = { id: localId, nome: localNome, valor: 0, perc: 0, ccs: {}, ccsOrder: [] };
+                locaisOrder.push(localId);
+            }
+            locaisMap[localId].valor += v;
+
+            var ccKey = ccId;
+            if (!locaisMap[localId].ccs[ccKey]) {
+                locaisMap[localId].ccs[ccKey] = { id: ccId, nome: ccNome, valor: 0, perc: 0, contas: [] };
+                locaisMap[localId].ccsOrder.push(ccKey);
+            }
+            locaisMap[localId].ccs[ccKey].valor += v;
+            locaisMap[localId].ccs[ccKey].contas.push({ id: contaId, nome: contaNome, valor: v, perc: perc });
+        });
+
+        var locaisArr = [];
+        $.each(locaisOrder, function(i, localId) {
+            var loc = locaisMap[localId];
+            loc.perc = total > 0 ? parseFloat((loc.valor / total * 100).toFixed(4)) : 0;
+            var ccsArr = [];
+            $.each(loc.ccsOrder, function(j, ccKey) {
+                var cc = loc.ccs[ccKey];
+                cc.perc = total > 0 ? parseFloat((cc.valor / total * 100).toFixed(4)) : 0;
+                ccsArr.push({ id: cc.id, nome: cc.nome, valor: cc.valor, perc: cc.perc, contas: cc.contas });
+            });
+            locaisArr.push({ id: loc.id, nome: loc.nome, valor: loc.valor, perc: loc.perc, ccs: ccsArr });
+        });
+
+        $('#rateio_json').val(JSON.stringify(locaisArr));
+
         // Tudo ok — oculta a seção de distribuição e exibe status "Rateio Configurado"
         $('#secao_distribuir_rateio').hide();
         $('#col_local').hide();
