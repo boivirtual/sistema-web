@@ -1821,8 +1821,8 @@ $data_sistema = date("Y-m-d");
             else                      optionsConta += '<option value="' + cta.id + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + cta.nome + '</option>';
         });
 
-        var html = '<table class="tbl-parcelas" id="tbl_rateio">';
-        html += '<thead><tr><th style="width:20%;">Local</th><th style="width:22%;">Centro de Custos</th><th>Conta Contábil</th></tr></thead><tbody>';
+        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:auto;">';
+        html += '<thead><tr><th style="white-space:nowrap;padding-right:16px;">Local</th><th style="white-space:nowrap;padding-right:16px;">Centro de Custos</th><th style="white-space:nowrap;">Conta Contábil</th></tr></thead><tbody>';
 
         $.each(linhas, function(i, ln) {
             var idxConta = 'conta_rateio_' + i;
@@ -1831,9 +1831,9 @@ $data_sistema = date("Y-m-d");
             html += ' data-local-nome="' + ln.localNome.replace(/"/g,'&quot;') + '"';
             html += ' data-cc-id="'      + ln.ccId      + '"';
             html += ' data-cc-nome="'    + ln.ccNome.replace(/"/g,'&quot;') + '">';
-            html += '<td><span class="lbl-parcela">' + ln.localNome + '</span></td>';
-            html += '<td><span class="lbl-parcela">' + ln.ccNome    + '</span></td>';
-            html += '<td><select class="form-control selectpicker fase2-conta" id="' + idxConta + '" multiple data-live-search="true" data-size="8">';
+            html += '<td style="white-space:nowrap;vertical-align:middle;padding-right:12px;"><span class="lbl-parcela">' + ln.localNome + '</span></td>';
+            html += '<td style="white-space:nowrap;vertical-align:middle;padding-right:12px;"><span class="lbl-parcela">' + ln.ccNome    + '</span></td>';
+            html += '<td style="vertical-align:middle;"><select class="form-control selectpicker fase2-conta" id="' + idxConta + '" multiple data-live-search="true" data-size="8">';
             html += '<option value="" disabled>...</option>' + optionsConta;
             html += '</select></td></tr>';
         });
@@ -1847,14 +1847,12 @@ $data_sistema = date("Y-m-d");
             '</div>'
         );
 
-        $('#linhas_rateio .selectpicker').each(function() {
+        $('#linhas_rateio .fase2-conta').each(function() {
             var $s = $(this);
-            $s.selectpicker({ actionsBox: true, width: '100%', noneSelectedText: '...' });
+            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', width: '420px' });
             var $bs = $s.closest('.bootstrap-select');
-            $bs.css('width', '100%');
-            $bs.find('.bs-select-all').remove();
             $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px' });
-            $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
+            $bs.find('.dropdown-menu').css({ 'min-width': '420px' });
         });
     }
 
