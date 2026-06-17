@@ -1753,16 +1753,16 @@ $data_sistema = date("Y-m-d");
             optionsCC += '<option value="' + cc.id + '">' + cc.nome + '</option>';
         });
 
-        var html = '<table class="tbl-parcelas" id="tbl_rateio">';
-        html += '<thead><tr><th style="width:22%;">Local</th><th style="width:45%;">Centro de Custos</th></tr></thead><tbody>';
+        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:auto;">';
+        html += '<thead><tr><th style="white-space:nowrap;padding-right:16px;">Local</th><th style="white-space:nowrap;">Centro de Custos</th></tr></thead><tbody>';
 
         $.each(selecionados, function(i, idLocal) {
             var $opt = $local.find('option[value="' + idLocal + '"]');
             var nomeLocal = $opt.data('nome') || $opt.text();
             var idxCC = 'cc_rateio_' + i;
             html += '<tr class="linha-fase1" data-local-id="' + idLocal + '" data-local-nome="' + nomeLocal.replace(/"/g,'&quot;') + '">';
-            html += '<td><span class="lbl-parcela">' + nomeLocal + '</span></td>';
-            html += '<td><select class="form-control selectpicker fase1-cc" id="' + idxCC + '" multiple data-live-search="true" data-size="8">' + optionsCC + '</select></td>';
+            html += '<td style="white-space:nowrap;vertical-align:middle;padding-right:12px;"><span class="lbl-parcela">' + nomeLocal + '</span></td>';
+            html += '<td style="vertical-align:middle;"><select class="form-control selectpicker fase1-cc" id="' + idxCC + '" multiple data-live-search="true" data-size="8" style="width:320px;">' + optionsCC + '</select></td>';
             html += '</tr>';
         });
 
@@ -1775,17 +1775,15 @@ $data_sistema = date("Y-m-d");
             '</div>'
         );
 
-        $('#linhas_rateio .selectpicker').each(function() {
+        $('#linhas_rateio .fase1-cc').each(function() {
             var $s = $(this);
-            var firstVal = $s.find('option:first').val();
-            if (firstVal) { $s.find('option:first').prop('selected', true); }
-            $s.selectpicker({ actionsBox: true, width: '100%', noneSelectedText: '...' });
-            if (firstVal) { $s.selectpicker('val', [firstVal]); }
+            $s.find('option:first').prop('selected', true);
+            $s.selectpicker({ actionsBox: false, noneSelectedText: '...' });
+            $s.selectpicker('refresh');
             var $bs = $s.closest('.bootstrap-select');
-            $bs.css('width', '100%');
-            $bs.find('.bs-select-all').remove();
+            $bs.css('width', '320px');
             $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px' });
-            $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
+            $bs.find('.dropdown-menu').css({ 'min-width': '320px', 'width': '320px' });
         });
 
         $('#secao_distribuir_rateio').show();
