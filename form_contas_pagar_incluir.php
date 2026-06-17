@@ -1629,6 +1629,18 @@ $data_sistema = date("Y-m-d");
             document.getElementById('lista_anexos').appendChild(div);
         }
 
+        function adicionarLink() {
+            var div = document.createElement('div');
+            div.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:nowrap;';
+            div.innerHTML =
+                '<i class="fas fa-link" style="color:#337ab7;font-size:14px;flex-shrink:0;"></i>' +
+                '<input type="text" name="anexo_link_desc[]" class="form-control" placeholder="Descrição do link" style="max-width:200px;">' +
+                '<input type="url"  name="anexo_link_url[]"  class="form-control" placeholder="https://..." style="max-width:320px;">' +
+                '<button type="button" class="btn-anexo-add" onclick="removerAnexo(this)" title="Remover">' +
+                '<i class="far fa-times-circle" style="font-size:16px; color:#c0392b;"></i></button>';
+            document.getElementById('lista_anexos').appendChild(div);
+        }
+
         function removerAnexo(btn) {
             btn.parentElement.remove();
         }
