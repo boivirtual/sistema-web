@@ -300,13 +300,13 @@
             </tr>
 
             <tr>
-                <th><input type="checkbox" class='checkbox1' id="seleciona_todos_aceite"></th> 
+                <th><input type="checkbox" class='checkbox1' id="seleciona_todos_aceite"></th>
                 <th>Documento</th>
-                <th>Fazenda</th>
-                <th>Fonte Recebedora</th> 
-                <th>Conta</th>
-                <th>Emissão</th> 
                 <th>Parcela</th>
+                <th>Fornecedor</th>
+                <th>Local</th>
+                <th>Conta</th>
+                <th>Emissão</th>
                 <th>Vencimentos</th> 
                 <th>Valor</th> 
                 <th>Descrição</th>
