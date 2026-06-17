@@ -1910,7 +1910,7 @@ $data_sistema = date("Y-m-d");
         $('#linhas_rateio').after(
             '<div id="rodape_rateio" style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:4px 2px;">' +
             '<a href="#" onclick="adicionarLinhaRateio();return false;" style="font-size:13px;font-weight:500;color:#128cb8;text-decoration:none;"><i class="fas fa-plus"></i> Adicionar linha</a>' +
-            '<button type="button" id="btn_confirmar_rateio_final" class="btn btn-primary btn-sm" onclick="confirmarRateioFinal()">Confirmar Rateio</button>' +
+            '<button type="button" id="btn_confirmar_rateio_final" class="btn btn-primary" onclick="confirmarRateioFinal()">Confirmar Rateio</button>' +
             '</div>'
         );
 
