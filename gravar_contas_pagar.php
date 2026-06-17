@@ -507,7 +507,38 @@
         $qtd_total_n  = count($parcelas_post);
         $primeiro_id_n = null; // para vincular anexos na 1ª parcela
 
-        if ($qtd_fazendas_n == 1) {
+        if ($tem_rateio && count($rateio_locais) > 0) {
+            // Com rateio: para cada parcela × cada local → grava proporcional ao valor do local
+            foreach ($rateio_locais as $rloc) {
+                $perc_loc = $vlr_total_n > 0 ? ($rloc['valor'] / $vlr_total_n) : 0;
+                foreach ($parcelas_post as $idx => $parc) {
+                    $p_data  = mysqli_real_escape_string($conector, $parc['data_vencimento']);
+                    $p_vlr   = round(floatval(str_replace(',', '.', str_replace('.', '', $parc['valor']))) * $perc_loc, 2);
+                    $p_banco = intval($parc['banco_conta']);
+                    $p_tdoc  = mysqli_real_escape_string($conector, $parc['tipo_doc']);
+                    $p_num   = $idx + 1;
+
+                    $ok = $insere_parcela(
+                        $numero_doc_n, $codigo_for_n, $p_num, $p_tdoc, $razao_n,
+                        $qtd_total_n, $data_emissao_n, $p_data, $p_vlr,
+                        $rloc['id'], '', '', $p_banco,
+                        $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
+                    );
+                    if (!$ok) {
+                        header('Content-type: application/json');
+                        echo json_encode(array('error' => true, 'message' => 'Erro ao gravar parcela ' . $p_num . ' do rateio: ' . mysqli_error($conector)));
+                        mysqli_close($conector); exit;
+                    }
+                    $novo_id = mysqli_insert_id($conector);
+                    if ($primeiro_id_n === null) {
+                        $primeiro_id_n = $novo_id;
+                        salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                        salvar_rateio($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                    }
+                }
+            }
+        } elseif ($qtd_fazendas_n == 1) {
+            // Única fazenda sem rateio
             $cod_loc_esc = mysqli_real_escape_string($conector, trim($codigo_local_str));
             foreach ($parcelas_post as $idx => $parc) {
                 $p_data   = mysqli_real_escape_string($conector, $parc['data_vencimento']);
@@ -529,7 +560,6 @@
                     mysqli_close($conector); exit;
                 }
                 $novo_id = mysqli_insert_id($conector);
-                // Vincula anexos e rateio apenas à 1ª parcela
                 if ($primeiro_id_n === null) {
                     $primeiro_id_n = $novo_id;
                     salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
@@ -543,20 +573,18 @@
                 }
             }
         } else {
-            // Múltiplas fazendas com parcelamento
+            // Múltiplas fazendas sem rateio (array_fazendas legado)
             $matriz_n = explode('<|>', $array_valores_fazendas_n);
             foreach ($matriz_n as $item) {
-                $partes    = explode('|', $item);
-                $loc_i     = mysqli_real_escape_string($conector, trim($partes[0]));
-                $perc_i    = floatval($partes[1]) / 100;
-
+                $partes = explode('|', $item);
+                $loc_i  = mysqli_real_escape_string($conector, trim($partes[0]));
+                $perc_i = floatval($partes[1]) / 100;
                 foreach ($parcelas_post as $idx => $parc) {
-                    $p_data   = mysqli_real_escape_string($conector, $parc['data_vencimento']);
-                    $p_vlr    = round(floatval(str_replace(',', '.', str_replace('.', '', $parc['valor']))) * $perc_i, 2);
-                    $p_banco  = intval($parc['banco_conta']);
-                    $p_tdoc   = mysqli_real_escape_string($conector, $parc['tipo_doc']);
-                    $p_num    = $idx + 1;
-
+                    $p_data  = mysqli_real_escape_string($conector, $parc['data_vencimento']);
+                    $p_vlr   = round(floatval(str_replace(',', '.', str_replace('.', '', $parc['valor']))) * $perc_i, 2);
+                    $p_banco = intval($parc['banco_conta']);
+                    $p_tdoc  = mysqli_real_escape_string($conector, $parc['tipo_doc']);
+                    $p_num   = $idx + 1;
                     $ok = $insere_parcela(
                         $numero_doc_n, $codigo_for_n, $p_num, $p_tdoc, $razao_n,
                         $qtd_total_n, $data_emissao_n, $p_data, $p_vlr,
