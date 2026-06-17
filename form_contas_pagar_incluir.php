@@ -480,11 +480,14 @@ $data_sistema = date("Y-m-d");
                                     <div class="row">
 
                                         <!-- Parcelamento — sempre visível -->
+                                        <!-- sel_modo_parc: controla A Vista / Parcelado (sem name, não vai ao POST) -->
+                                        <!-- #parcelamento (hidden): valor numérico real enviado ao backend e lido pelo JS -->
+                                        <input type="hidden" id="parcelamento" name="parcelamento" value="0">
                                         <div class="form-group col-md-2">
-                                            <label for="parcelamento" class="control-label"><span class="required">*</span> Parcelamento</label>
-                                            <select class="form-control" id="parcelamento" name="parcelamento" onchange="onParcelamentoChange()">
-                                                <option value="0">A Vista</option>
-                                                <option value="-1">Parcelado</option>
+                                            <label class="control-label"><span class="required">*</span> Parcelamento</label>
+                                            <select class="form-control" id="sel_modo_parc" onchange="onParcelamentoChange()">
+                                                <option value="avista">A Vista</option>
+                                                <option value="parc">Parcelado</option>
                                             </select>
                                         </div>
                                         <!-- Qtde de parcelas — só aparece quando Parcelado -->
