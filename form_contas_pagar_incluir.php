@@ -1771,7 +1771,7 @@ $data_sistema = date("Y-m-d");
 
         $('#linhas_rateio').after(
             '<div id="rodape_fase1" style="display:flex;justify-content:flex-end;margin-top:8px;">' +
-            '<button type="button" class="btn btn-info btn-sm" onclick="confirmarTodoCC()">Confirmar</button>' +
+            '<button type="button" class="btn btn-primary btn-sm" onclick="confirmarTodoCC()">Confirmar</button>' +
             '</div>'
         );
 
