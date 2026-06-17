@@ -1762,7 +1762,7 @@ $data_sistema = date("Y-m-d");
             var idxCC = 'cc_rateio_' + i;
             html += '<tr class="linha-fase1" data-local-id="' + idLocal + '" data-local-nome="' + nomeLocal.replace(/"/g,'&quot;') + '">';
             html += '<td style="white-space:nowrap;vertical-align:middle;padding-right:12px;"><span class="lbl-parcela">' + nomeLocal + '</span></td>';
-            html += '<td style="vertical-align:middle;"><select class="form-control selectpicker fase1-cc" id="' + idxCC + '" multiple data-live-search="true" data-size="8" data-width="420px">' + optionsCC + '</select></td>';
+            html += '<td style="vertical-align:middle;min-width:420px;"><select class="selectpicker fase1-cc" id="' + idxCC + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsCC + '</select></td>';
             html += '</tr>';
         });
 
