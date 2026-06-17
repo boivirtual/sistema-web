@@ -1834,7 +1834,7 @@ $data_sistema = date("Y-m-d");
             html += ' data-cc-nome="'    + ln.ccNome.replace(/"/g,'&quot;') + '">';
             html += '<td style="white-space:nowrap;vertical-align:middle;padding-right:12px;"><span class="lbl-parcela">' + ln.localNome + '</span></td>';
             html += '<td style="white-space:nowrap;vertical-align:middle;padding-right:12px;"><span class="lbl-parcela">' + ln.ccNome    + '</span></td>';
-            html += '<td style="vertical-align:middle;"><select class="form-control selectpicker fase2-conta" id="' + idxConta + '" multiple data-live-search="true" data-size="8">';
+            html += '<td style="vertical-align:middle;min-width:420px;"><select class="selectpicker fase2-conta" id="' + idxConta + '" multiple data-live-search="true" data-size="8" data-width="100%">';
             html += '<option value="" disabled>...</option>' + optionsConta;
             html += '</select></td></tr>';
         });
