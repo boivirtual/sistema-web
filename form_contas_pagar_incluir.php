@@ -484,31 +484,13 @@ $data_sistema = date("Y-m-d");
                                             <label for="parcelamento" class="control-label"><span class="required">*</span> Parcelamento</label>
                                             <select class="form-control" id="parcelamento" name="parcelamento" onchange="onParcelamentoChange()">
                                                 <option value="0">A Vista</option>
-                                                <option value="1">1x</option>
-                                                <option value="2">2x</option>
-                                                <option value="3">3x</option>
-                                                <option value="4">4x</option>
-                                                <option value="5">5x</option>
-                                                <option value="6">6x</option>
-                                                <option value="7">7x</option>
-                                                <option value="8">8x</option>
-                                                <option value="9">9x</option>
-                                                <option value="10">10x</option>
-                                                <option value="11">11x</option>
-                                                <option value="12">12x</option>
-                                                <option value="13">13x</option>
-                                                <option value="14">14x</option>
-                                                <option value="15">15x</option>
-                                                <option value="16">16x</option>
-                                                <option value="17">17x</option>
-                                                <option value="18">18x</option>
-                                                <option value="19">19x</option>
-                                                <option value="20">20x</option>
-                                                <option value="21">21x</option>
-                                                <option value="22">22x</option>
-                                                <option value="23">23x</option>
-                                                <option value="24">24x</option>
+                                                <option value="-1">Parcelado</option>
                                             </select>
+                                        </div>
+                                        <!-- Qtde de parcelas — só aparece quando Parcelado -->
+                                        <div class="form-group col-md-1" id="bloco_qtd_parcelas" style="display:none;">
+                                            <label for="qtd_parcelas_input" class="control-label">Qtde</label>
+                                            <input type="number" class="form-control" id="qtd_parcelas_input" min="1" max="360" placeholder="Nº" style="text-align:center;" oninput="onQtdParcelasChange(this.value)">
                                         </div>
 
                                         <!-- Bloco À Vista: Vencimento | Banco | Tipo Doc | Pago -->
