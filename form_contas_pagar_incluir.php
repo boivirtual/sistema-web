@@ -1267,10 +1267,12 @@ $data_sistema = date("Y-m-d");
         // Alterna entre À Vista e Parcelado
         // ----------------------------------------------------------------
         function onParcelamentoChange() {
-            var n = parseInt($('#parcelamento').val());
+            var val = $('#parcelamento').val();
 
-            if (n === 0) {
-                // À Vista — vencimento = emissão
+            if (val === '0') {
+                // À Vista
+                $('#bloco_qtd_parcelas').hide();
+                $('#qtd_parcelas_input').val('');
                 $('#bloco_avista').show();
                 $('#bloco_parc_header').hide();
                 $('#bloco_parcelas').hide();
@@ -1279,18 +1281,39 @@ $data_sistema = date("Y-m-d");
                 var emissao = $('#data_emissao').val();
                 if (emissao) $('#data_vencimento').val(emissao);
             } else {
-                // Parcelado
+                // Parcelado — mostra campo de quantidade
+                $('#bloco_qtd_parcelas').show();
                 $('#bloco_avista').hide();
-                $('#bloco_parc_header').show();
-                $('#bloco_parcelas').show();
-
-                // Preenche 1º vencimento se ainda vazio
-                if (!$('#primeiro_vencimento').val()) {
-                    $('#primeiro_vencimento').val(calcPrimeiroVencimento());
-                }
-
-                gerarTabelaParcelas(n);
+                $('#bloco_parc_header').hide();
+                $('#bloco_parcelas').hide();
+                $('#tbody_parcelas').empty();
+                $('#parc_totais').empty();
+                // foca o campo de qtde
+                setTimeout(function(){ $('#qtd_parcelas_input').focus(); }, 50);
             }
+        }
+
+        function onQtdParcelasChange(val) {
+            var n = parseInt(val);
+            if (!n || n < 1) {
+                $('#bloco_parc_header').hide();
+                $('#bloco_parcelas').hide();
+                $('#tbody_parcelas').empty();
+                return;
+            }
+            // Atualiza o value do select para refletir n (usado pelas funções existentes)
+            // Garante que a option existe ou cria dinamicamente
+            if ($('#parcelamento option[value="' + n + '"]').length === 0) {
+                $('#parcelamento').append('<option value="' + n + '">' + n + 'x</option>');
+            }
+            $('#parcelamento').val(n);
+
+            $('#bloco_parc_header').show();
+            $('#bloco_parcelas').show();
+            if (!$('#primeiro_vencimento').val()) {
+                $('#primeiro_vencimento').val(calcPrimeiroVencimento());
+            }
+            gerarTabelaParcelas(n);
         }
 
         // ----------------------------------------------------------------
