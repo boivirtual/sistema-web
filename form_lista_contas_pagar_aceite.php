@@ -174,8 +174,30 @@
                         $codigo_fazenda = $fila->ctp_codigo_fazenda;
                         $desc_fazenda = $fila->tbl_pessoa_nome;
                         $codigo_conta = $fila->ctp_codigo_conta;
-                        $desc_conta = $fila->tbl_plano_contas_descricao;
-                        $codigo_conta = $fila->ctp_codigo_conta;
+                        // Se ctp_codigo_conta for NULL é rateio — busca contas da tbl_ctp_rateio
+                        if (is_null($codigo_conta)) {
+                            $num_doc_esc  = mysqli_real_escape_string($conector, $numero_id);
+                            $parcela_esc  = mysqli_real_escape_string($conector, $parcela);
+                            $fazenda_esc  = mysqli_real_escape_string($conector, ltrim($fila->ctp_codigo_fazenda, '0'));
+                            $rs_rat = mysqli_query($conector,
+                                "SELECT rc_nome_conta FROM tbl_ctp_rateio
+                                 WHERE rc_codigo_local = '$fazenda_esc'
+                                   AND rc_ctp_id IN (
+                                       SELECT ctp_id FROM contas_pagar
+                                       WHERE ctp_numero_doc = '$num_doc_esc'
+                                         AND ctp_parcela    = '$parcela_esc'
+                                         AND ctp_codigo_conta IS NULL
+                                   )
+                                 ORDER BY rc_id ASC");
+                            $total_rat = mysqli_num_rows($rs_rat);
+                            $first_rat = mysqli_fetch_object($rs_rat);
+                            $desc_conta = $first_rat ? $first_rat->rc_nome_conta : 'Rateio';
+                            if ($total_rat > 1) {
+                                $desc_conta .= ' +' . ($total_rat - 1);
+                            }
+                        } else {
+                            $desc_conta = $fila->tbl_plano_contas_descricao;
+                        }
                         $descricao_compra = $fila->ctp_descricao_compra;
                         $situacao = $fila->ctp_situacao;
                         $vlr_parcela = $fila->ctp_valor_parcela;
