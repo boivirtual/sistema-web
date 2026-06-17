@@ -644,11 +644,25 @@
         $partes_local_r = explode(',', $codigo_local_r);
         $codigo_local_r = mysqli_real_escape_string($conector, trim($partes_local_r[0]));
 
-        // Quando rateio ativo: local/conta/cc vão NULL no banco
+        // Quando rateio ativo: local/conta/cc do campo simples são ignorados
         if ($tem_rateio) {
             $codigo_local_r  = '';
             $codigo_ccusto_r = '';
             $codigo_conta_r  = '';
+        }
+
+        // Monta locais do rateio para repetição
+        $rateio_locais_r = [];
+        if ($tem_rateio) {
+            $rj_r = json_decode($_POST['rateio_json'], true);
+            if (is_array($rj_r)) {
+                foreach ($rj_r as $loc) {
+                    $rateio_locais_r[] = [
+                        'id'    => mysqli_real_escape_string($conector, $loc['id']   ?? ''),
+                        'valor' => (float)($loc['valor'] ?? 0),
+                    ];
+                }
+            }
         }
 
         // Resolve nome do fornecedor
