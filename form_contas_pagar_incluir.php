@@ -1754,7 +1754,7 @@ $data_sistema = date("Y-m-d");
         });
 
         var html = '<table class="tbl-parcelas" id="tbl_rateio">';
-        html += '<thead><tr><th style="width:22%;">Local</th><th>Centro de Custos</th></tr></thead><tbody>';
+        html += '<thead><tr><th style="width:22%;">Local</th><th style="width:45%;">Centro de Custos</th></tr></thead><tbody>';
 
         $.each(selecionados, function(i, idLocal) {
             var $opt = $local.find('option[value="' + idLocal + '"]');
