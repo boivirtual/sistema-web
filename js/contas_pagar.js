@@ -1110,19 +1110,20 @@ function ctpRestaurarPosicao() {
 
     if (ctpId) {
         sessionStorage.removeItem('ctp_retorno_id');
+        // 500ms: aguarda modal "Aguarde" terminar animação (300ms) antes de rolar
         setTimeout(function() {
             var $row = $('tr[data-ctp-id="' + ctpId + '"]');
             if ($row.length) {
-                $('html, body').animate({ scrollTop: $row.offset().top - 120 }, 400);
+                $row[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
                 $row.addClass('ctp-destaque');
                 setTimeout(function() { $row.removeClass('ctp-destaque'); }, 2500);
             }
-        }, 150);
+        }, 500);
     } else if (scrollPos) {
         sessionStorage.removeItem('ctp_scroll_pos');
         setTimeout(function() {
-            $(window).scrollTop(parseInt(scrollPos));
-        }, 150);
+            window.scrollTo({ top: parseInt(scrollPos), behavior: 'smooth' });
+        }, 500);
     }
 }
 
