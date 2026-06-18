@@ -2315,6 +2315,7 @@ $data_sistema = date("Y-m-d");
                         $('#mensagem_erro').modal();
                         $('#mensagem_erro .modal-body').html(data.message);
                     } else {
+                        _limparDirty();
                         $('#mensagem_retorno').modal();
                         $('#mensagem_retorno .modal-body').html(data.message);
                     }
