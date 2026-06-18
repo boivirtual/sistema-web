@@ -77,8 +77,8 @@
                    LEFT JOIN tbl_plano_contas pc ON pc.tbl_plano_contas_codigo_id = cp.ctp_codigo_conta";
     $where_base = " WHERE cp.ctp_aceite=''";
     $filtros    = $wfornecedor . $wfazenda . $wconta;
-    $order_venc = " ORDER BY cp.ctp_codigo_fazenda, cp.ctp_codigo_fornecedor, cp.ctp_data_vencimento, cp.ctp_numero_doc, cp.ctp_parcela ASC";
-    $order_emis = " ORDER BY cp.ctp_codigo_fazenda, cp.ctp_codigo_fornecedor, cp.ctp_data_emissao, cp.ctp_numero_doc, cp.ctp_parcela ASC";
+    $order_venc = " ORDER BY cp.ctp_numero_doc ASC, cp.ctp_parcela ASC, cp.ctp_codigo_fazenda ASC";
+    $order_emis = " ORDER BY cp.ctp_numero_doc ASC, cp.ctp_parcela ASC, cp.ctp_codigo_fazenda ASC";
 ?>
 
 <!DOCTYPE html>
