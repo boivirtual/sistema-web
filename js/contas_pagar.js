@@ -490,6 +490,12 @@ $(document).ready(function(){
       });
     });
 
+    // Salva ctp_id no sessionStorage ao clicar em "Editar" para restaurar scroll ao voltar
+    $(document).off('click.ctpEdit').on('click.ctpEdit', 'a[href*="form_contas_pagar_editar.php"]', function() {
+        var m = ($(this).attr('href') || '').match(/[?&]id=([^&]+)/);
+        if (m) sessionStorage.setItem('ctp_retorno_id', m[1]);
+    });
+
     // Filtro por card — .off().on() garante apenas UM handler mesmo com múltiplos reloads do script
     $(document).off('click.ctpCard').on('click.ctpCard', '#ctp-cards-container .ctp-card-total', function () {
         var filtro = $(this).data('filtro');
