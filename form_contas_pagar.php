@@ -735,8 +735,6 @@ if ($num_rows_usuario != 0) {
                 // Período customizado: restaura datas e bloqueia setas
                 $('#data_inicial').val(dataIniSessao);
                 $('#data_final').val(dataFimSessao);
-                ctpFiltroModal.dataInicio = dataIniSessao;
-                ctpFiltroModal.dataFim    = dataFimSessao;
                 setModoNavegacao('Período Customizado');
             }
         }
