@@ -155,6 +155,12 @@ if ($num_rows_usuario != 0) {
 
         /* Garante que o header fixo fique sempre acima do conteúdo da página */
         .header { z-index: 1030 !important; }
+
+        /* Destaque temporário na linha após retorno da edição */
+        .ctp-destaque {
+            background-color: #fffde7 !important;
+            transition: background-color 1.5s ease;
+        }
     </style>
 </head>
 
