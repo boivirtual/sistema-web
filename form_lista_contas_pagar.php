@@ -796,7 +796,7 @@
 
     </section>
 
-    <script src="js/contas_pagar.js?<?php echo Versao; ?>" charset="utf-8" type="text/javascript" ></script>
+    <script src="js/contas_pagar.js?<?php echo filemtime(__DIR__.'/js/contas_pagar.js'); ?>" charset="utf-8" type="text/javascript" ></script>
 
     <script>
     $(document).ready(function(){
