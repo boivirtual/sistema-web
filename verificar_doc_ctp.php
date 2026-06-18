@@ -11,8 +11,7 @@ if ($numero_doc === '' || $codigo_for === '' || $codigo_for === '999999999') {
 
 $sql = "SELECT COUNT(*) as total FROM contas_pagar
         WHERE ctp_numero_doc = '$numero_doc'
-          AND ctp_codigo_fornecedor = '$codigo_for'
-          AND ctp_lixeira = 0";
+          AND ctp_codigo_fornecedor = '$codigo_for'";
 
 $result = mysqli_query($conector, $sql);
 if (!$result) {
