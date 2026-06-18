@@ -652,15 +652,24 @@ $data_sistema = date("Y-m-d");
                                     <!-- ===== ANEXO ===== -->
                                     <div class="row">
                                         <div class="form-group col-md-12">
-                                            <label class="control-label">Anexo</label>
-                                            <div style="display: flex; align-items: center; gap: 8px;">
-                                                <input type="file" name="anexo[]" id="anexo_0" class="form-control" style="max-width: 320px;">
-                                                <button type="button" class="btn-anexo-add" onclick="adicionarAnexo()" data-toggle='tooltip' data-placement='top' title="Adicionar arquivo">
-                                                    <i class="far fa-plus-square" style="font-size: 16px;"></i>
-                                                </button>
-                                                <button type="button" class="btn-anexo-add" onclick="adicionarLink()" data-toggle='tooltip' data-placement='top' title="Adicionar link">
-                                                    <i class="fas fa-link" style="font-size: 15px;"></i>
-                                                </button>
+                                            <div style="display: flex; align-items: flex-end; gap: 24px;">
+                                                <div>
+                                                    <label class="control-label">Anexar Documento</label>
+                                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                                        <input type="file" name="anexo[]" id="anexo_0" class="form-control" style="max-width: 320px;">
+                                                        <button type="button" class="btn-anexo-add" onclick="adicionarAnexo()" data-toggle='tooltip' data-placement='top' title="Adicionar mais documentos">
+                                                            <i class="far fa-plus-square" style="font-size: 16px;"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="control-label">Anexar Link</label>
+                                                    <div style="display: flex; align-items: center;">
+                                                        <button type="button" class="btn-anexo-add" onclick="adicionarLink()" data-toggle='tooltip' data-placement='top' title="Adicionar link">
+                                                            <i class="fas fa-link" style="font-size: 16px;"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div id="lista_anexos"></div>
                                         </div>
