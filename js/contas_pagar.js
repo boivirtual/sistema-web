@@ -1098,6 +1098,28 @@ function limpa_contas_selecionadas() {
     });
 }
 
+function ctpRestaurarPosicao() {
+    var ctpId    = sessionStorage.getItem('ctp_retorno_id');
+    var scrollPos = sessionStorage.getItem('ctp_scroll_pos');
+
+    if (ctpId) {
+        sessionStorage.removeItem('ctp_retorno_id');
+        setTimeout(function() {
+            var $row = $('tr[data-ctp-id="' + ctpId + '"]');
+            if ($row.length) {
+                $('html, body').animate({ scrollTop: $row.offset().top - 120 }, 400);
+                $row.addClass('ctp-destaque');
+                setTimeout(function() { $row.removeClass('ctp-destaque'); }, 2500);
+            }
+        }, 150);
+    } else if (scrollPos) {
+        sessionStorage.removeItem('ctp_scroll_pos');
+        setTimeout(function() {
+            $(window).scrollTop(parseInt(scrollPos));
+        }, 150);
+    }
+}
+
 function consultar_ctp() {
     // Reset do filtro de card ao fazer nova consulta
     ctpFiltroAtivo = null;
