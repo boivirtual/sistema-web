@@ -86,7 +86,7 @@
     $local = $_SESSION['codigo_local_aceite']; 
     $contas = $_SESSION['codigo_conta_aceite']; 
 
-    $tbl_local = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0");
+    $tbl_local = mysqli_query($conector, "SELECT tbl_pessoa_id, tbl_pessoa_nome FROM tbl_pessoa WHERE tbl_pessoa_classe=4 AND tbl_pessoa_lixeira=0");
 
     $tbl_fornecedor = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_lixeira=0 and (tbl_pessoa_classe=3 or tbl_pessoa_classe=5) order by tbl_pessoa_nome ASC");
 
