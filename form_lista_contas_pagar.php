@@ -498,7 +498,7 @@
                                 $categoria_linha = "a_vencer";
                             }
 
-                            echo "<tr data-categoria='" . $categoria_linha . "'>";
+                            echo "<tr data-categoria='" . $categoria_linha . "' data-ctp-id='" . $ctp_id . "'>";
                             if ($aceite==""){
                                 echo "<td width='2%'></td>";
                                 echo "<td width='4%'>";
