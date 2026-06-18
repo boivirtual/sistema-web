@@ -1659,6 +1659,35 @@ $data_sistema = date("Y-m-d");
         function removerAnexo(btn) {
             btn.parentElement.remove();
         }
+
+        // ----------------------------------------------------------------
+        // Verifica documento duplicado (mesmo fornecedor + mesmo nº doc)
+        // ----------------------------------------------------------------
+        function verificarDocDuplicado() {
+            var numero_doc = $('#number_doc').val().trim();
+            var codigo_for = $('#codigo_cli_for').val();
+
+            if (!numero_doc || !codigo_for || codigo_for === '999999999') return;
+
+            $.ajax({
+                type: 'POST',
+                url: 'verificar_doc_ctp.php',
+                data: { numero_doc: numero_doc, codigo_for: codigo_for },
+                success: function(resp) {
+                    if (resp.trim() === '1') {
+                        $('#mensagem_erro').modal();
+                        $('#mensagem_erro .modal-body').html(
+                            '<i class="fas fa-exclamation-triangle" style="color:#c0392b;"></i> ' +
+                            'Este Número de Documento já está cadastrado para o fornecedor selecionado. ' +
+                            'Verifique o número e tente novamente.'
+                        );
+                        $('#mensagem_erro').one('hidden.bs.modal', function () {
+                            $('#number_doc').val('').focus();
+                        });
+                    }
+                }
+            });
+        }
         </script>
 
     </section><!-- container section start end -->
