@@ -710,7 +710,37 @@ if ($num_rows_usuario != 0) {
 
     // Inicializar com mês/ano atual e carregar listagem
     $(document).ready(function() {
-        atualizarMesAno();
+        // Preserva datas da sessão antes que atualizarMesAno() as substitua
+        var dataIniSessao = $('#data_inicial').val();
+        var dataFimSessao = $('#data_final').val();
+
+        atualizarMesAno(); // define dataSelecionada e sobrescreve #data_inicial/#data_final
+
+        // Restaura o período da sessão se não for exatamente o mês atual
+        if (dataIniSessao && dataFimSessao) {
+            var dIni   = parseDateLocal(dataIniSessao);
+            var dFim   = parseDateLocal(dataFimSessao);
+            var primDia = new Date(dIni.getFullYear(), dIni.getMonth(), 1);
+            var ultDia  = new Date(dFim.getFullYear(), dFim.getMonth() + 1, 0);
+            var ehMesUnico = (dIni.getTime() === primDia.getTime()) &&
+                             (dFim.getTime() === ultDia.getTime()) &&
+                             (dIni.getMonth() === dFim.getMonth()) &&
+                             (dIni.getFullYear() === dFim.getFullYear());
+
+            if (ehMesUnico) {
+                // Período é um mês completo: navega para ele com setas ativas
+                dataSelecionada = new Date(dIni);
+                atualizarMesAno();
+            } else {
+                // Período customizado: restaura datas e bloqueia setas
+                $('#data_inicial').val(dataIniSessao);
+                $('#data_final').val(dataFimSessao);
+                ctpFiltroModal.dataInicio = dataIniSessao;
+                ctpFiltroModal.dataFim    = dataFimSessao;
+                setModoNavegacao('Período Customizado');
+            }
+        }
+
         $('[data-toggle="tooltip"]').tooltip();
         consultar_ctp();
 
