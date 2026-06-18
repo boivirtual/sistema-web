@@ -187,7 +187,12 @@
                     }
 
                     $chave_ctp = $codigo_fazenda . $codigo_for . $codigo_conta . str_replace('-', '', $fila->ctp_data_emissao) . $numero_id;
-                    $registro  = $numero_id . $codigo_fazenda . $codigo_for . $codigo_conta . str_replace('-', '', $fila->ctp_data_emissao . $descricao_compra);
+                    // Sem número de documento: cada registro é único pelo ctp_id (linha sempre completa)
+                    if (empty($numero_id)) {
+                        $registro = 'SEM_DOC_' . $ctp_id;
+                    } else {
+                        $registro = $numero_id . $codigo_fazenda . $codigo_for . $codigo_conta . str_replace('-', '', $fila->ctp_data_emissao . $descricao_compra);
+                    }
 
                     if ($chave_anterior != $registro) {
                         echo "<tr>";
