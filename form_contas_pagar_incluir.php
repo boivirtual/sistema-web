@@ -1677,6 +1677,32 @@ $data_sistema = date("Y-m-d");
     var ccOpcoes    = <?php echo json_encode($arr_cc_rat_js); ?>;
     var contaOpcoes = <?php echo json_encode($arr_conta_rat_js); ?>;
 
+    // ── Controle de formulário não salvo ──
+    var _formDirty = false;
+
+    function _marcarDirty() { _formDirty = true; }
+    function _limparDirty()  { _formDirty = false; }
+
+    // Monitora qualquer alteração nos campos do formulário
+    $(document).on('change input', '#form_gravar_contas_pagar input, #form_gravar_contas_pagar select, #form_gravar_contas_pagar textarea', _marcarDirty);
+
+    // Aviso ao fechar/recarregar aba ou navegar pelo browser
+    window.addEventListener('beforeunload', function(e) {
+        if (!_formDirty) return;
+        e.preventDefault();
+        e.returnValue = '';
+    });
+
+    // Sobrepõe o click do botão Voltar para perguntar antes de sair
+    $(document).off('click', '.fecha_editar_dados').on('click', '.fecha_editar_dados', function(e) {
+        e.preventDefault();
+        if (_formDirty) {
+            if (!confirm('Existem dados digitados que não foram gravados.\nDeseja realmente sair sem salvar?')) return;
+        }
+        _limparDirty();
+        location.href = 'form_contas_pagar.php';
+    });
+
     // ── ENTER navega como TAB em inputs/selects do formulário ──
     $(document).on('keydown', 'input, select', function(e) {
         if (e.key !== 'Enter') return;
