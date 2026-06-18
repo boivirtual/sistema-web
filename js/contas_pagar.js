@@ -496,6 +496,17 @@ $(document).ready(function(){
         if (m) sessionStorage.setItem('ctp_retorno_id', m[1]);
     });
 
+    // Salva scroll ANTES do modal abrir (após abrir, Bootstrap põe overflow:hidden no body e scrollTop vira 0)
+    // Se o modal fechar sem reload (botão X), limpa para não restaurar posição antiga na próxima vez
+    $('#mensagem_retorno')
+        .off('show.bs.modal.ctpScroll hidden.bs.modal.ctpScroll')
+        .on('show.bs.modal.ctpScroll', function() {
+            sessionStorage.setItem('ctp_scroll_pos', window.scrollY !== undefined ? window.scrollY : $(window).scrollTop());
+        })
+        .on('hidden.bs.modal.ctpScroll', function() {
+            sessionStorage.removeItem('ctp_scroll_pos');
+        });
+
     // Filtro por card — .off().on() garante apenas UM handler mesmo com múltiplos reloads do script
     $(document).off('click.ctpCard').on('click.ctpCard', '#ctp-cards-container .ctp-card-total', function () {
         var filtro = $(this).data('filtro');
