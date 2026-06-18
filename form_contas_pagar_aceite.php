@@ -90,10 +90,10 @@
 
     $tbl_fornecedor = mysqli_query($conector, "SELECT tbl_pessoa_id, tbl_pessoa_nome FROM tbl_pessoa WHERE tbl_pessoa_lixeira=0 AND (tbl_pessoa_classe=3 OR tbl_pessoa_classe=5) ORDER BY tbl_pessoa_nome ASC");
 
-    $codigo_usuario = $_SESSION['id_usuario'];
+    $codigo_usuario = intval($_SESSION['id_usuario']);
 
-    $tbl_usuario = "SELECT * FROM usuario 
-            WHERE id_usuario = '$codigo_usuario' AND 
+    $tbl_usuario = "SELECT id_usuario, lixeira_usuario, local_usuario FROM usuario
+            WHERE id_usuario = $codigo_usuario AND
                   lixeira_usuario=0 ";
     $query = mysqli_query($conector_acesso, $tbl_usuario);
 
