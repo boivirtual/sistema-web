@@ -1668,6 +1668,17 @@ $data_sistema = date("Y-m-d");
     var ccOpcoes    = <?php echo json_encode($arr_cc_rat_js); ?>;
     var contaOpcoes = <?php echo json_encode($arr_conta_rat_js); ?>;
 
+    // ── ENTER navega como TAB em inputs/selects do formulário ──
+    $(document).on('keydown', 'input, select', function(e) {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        var focusable = $('input:not([disabled]):not([readonly]), select:not([disabled]), textarea:not([disabled])').filter(':visible');
+        var idx = focusable.index(this);
+        if (idx >= 0 && idx < focusable.length - 1) {
+            focusable.eq(idx + 1).focus();
+        }
+    });
+
     // ── Handler do toggle Rateio ──
     $(document).ready(function () {
 
