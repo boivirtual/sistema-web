@@ -1677,9 +1677,10 @@ $data_sistema = date("Y-m-d");
                     if (resp.trim() === '1') {
                         $('#mensagem_erro').modal();
                         $('#mensagem_erro .modal-body').html(
-                            '<i class="fas fa-exclamation-triangle" style="color:#c0392b;"></i> ' +
-                            'Este Número de Documento já está cadastrado para o fornecedor selecionado. ' +
-                            'Verifique o número e tente novamente.'
+                            '<div class="row"><div class="form-group col-md-12">' +
+                            '<p><img src="img/exclamacao.png" class="fa fa-exclamation-triangle" width="20" height="23"/>&nbsp; ATENÇÃO!</p>' +
+                            '<p>Este Número de Documento já está cadastrado para o fornecedor selecionado. Verifique o número e tente novamente.</p>' +
+                            '</div></div>'
                         );
                         $('#mensagem_erro').one('hidden.bs.modal', function () {
                             $('#number_doc').val('').focus();
