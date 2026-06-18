@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 function diferenca_data($data_validade)
 {
     $data_inicial = $data_sistema = date("Y-m-d H:i:s");;
@@ -1145,7 +1145,7 @@ $data_sistema = date("Y-m-d");
                 tr += '<td><span class="lbl-parcela">' + ordinal(i + 1) + ' Vencimento</span></td>';
                 tr += '<td><input type="date" class="form-control parc-data" name="parcela[' + i + '][data_vencimento]" id="parc_data_' + i + '" value="' + dataParc + '" style="height:30px;font-size:13px;padding:2px 6px;"></td>';
                 tr += '<td><input type="text"  class="form-control parc-valor" name="parcela[' + i + '][valor]" id="parc_valor_' + i + '" value="' + ctpFormatMoney(vlrEsta) + '" onblur="recalcularPorValor(' + i + ')" onkeypress="digita_valor()"></td>';
-                tr += '<td><input type="text"  class="form-control parc-perc"  name="parcela[' + i + '][percentual]" id="parc_perc_' + i + '"  value="' + ctpFormatMoney(percEsta) + '" onblur="recalcularPorPercentual(' + i + ')"></td>';
+                tr += '<td><input type="text"  class="form-control parc-perc"  name="parcela[' + i + '][percentual]" id="parc_perc_' + i + '"  value="' + ctpFormatMoney(percEsta) + '" readonly style="background:#f5f5f5;color:#777;"></td>';
                 tr += '<td>' + buildSelectBanco('parcela[' + i + '][banco_conta]', 'parc_banco_' + i, '', i) + '</td>';
                 tr += '<td>' + buildSelectTipoDoc('parcela[' + i + '][tipo_doc]', 'parc_tipodoc_' + i, '', i) + '</td>';
                 tr += '<td class="pago-parc" style="text-align:center;"><input type="checkbox" name="parcela[' + i + '][pago]" id="parc_pago_' + i + '" value="S" onchange="replicarSeDesejado(\'pago\', this, ' + i + ')"></td>';
