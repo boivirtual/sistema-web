@@ -623,7 +623,7 @@ if ($num_rows_usuario != 0) {
                             </div>
                             <div class="modal-body"></div>
                             <div class="modal-footer">
-                                <button data-dismiss="modal" class="btn btn-default" type="button" onclick="sessionStorage.setItem('ctp_scroll_pos', $(window).scrollTop()); location.reload();">Fechar</button>
+                                <button data-dismiss="modal" class="btn btn-default" type="button" onclick="location.reload();">Fechar</button>
                             </div>
                         </div>
                     </div>
