@@ -145,7 +145,6 @@
                     $codigo_for       = $fila->ctp_codigo_fornecedor;
                     $nome_for         = $fila->ctp_nome_fornecedor;
                     $codigo_fazenda   = $fila->ctp_codigo_fazenda;
-                    $desc_fazenda     = $fila->tbl_pessoa_nome;
                     $codigo_conta     = $fila->ctp_codigo_conta;
                     $descricao_compra = $fila->ctp_descricao_compra;
                     $situacao         = $fila->ctp_situacao;
@@ -156,27 +155,112 @@
                     $total_parcela    = $vlr_parcela - $vlr_desconto + $vlr_juros + $vlr_outro;
                     $total_periodo   += $total_parcela;
 
-                    // Se ctp_codigo_conta for NULL é rateio — busca contas da tbl_ctp_rateio
-                    if (is_null($codigo_conta)) {
-                        $num_doc_esc  = mysqli_real_escape_string($conector, $numero_id);
-                        $parcela_esc  = mysqli_real_escape_string($conector, $parcela);
-                        $fazenda_esc  = mysqli_real_escape_string($conector, ltrim($fila->ctp_codigo_fazenda, '0'));
-                        $rs_rat = mysqli_query($conector,
-                            "SELECT rc_nome_conta FROM tbl_ctp_rateio
-                             WHERE rc_codigo_local = '$fazenda_esc'
-                               AND rc_ctp_id IN (
-                                   SELECT ctp_id FROM contas_pagar
-                                   WHERE ctp_numero_doc = '$num_doc_esc'
-                                     AND ctp_parcela    = '$parcela_esc'
-                                     AND ctp_codigo_conta IS NULL
-                               )
+                    // Detecta rateio novo: ctp_codigo_fazenda IS NULL
+                    $tem_rateio = is_null($codigo_fazenda);
+
+                    if ($tem_rateio) {
+                        // Localiza o primeiro ctp_id do documento para acessar tbl_ctp_rateio
+                        $num_doc_esc = mysqli_real_escape_string($conector, $numero_id);
+                        $for_esc     = mysqli_real_escape_string($conector, $codigo_for);
+                        $rs_prim = mysqli_query($conector,
+                            "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar
+                             WHERE ctp_numero_doc = '$num_doc_esc'
+                               AND ctp_codigo_fornecedor = '$for_esc'
+                               AND ctp_codigo_fazenda IS NULL");
+                        $row_prim     = mysqli_fetch_object($rs_prim);
+                        $primeiro_ctp = $row_prim ? (int)$row_prim->primeiro_id : $ctp_id;
+
+                        // Locais distintos para exibição na coluna Local
+                        $rs_locais = mysqli_query($conector,
+                            "SELECT rc_codigo_local, rc_nome_local FROM tbl_ctp_rateio
+                             WHERE rc_ctp_id = '$primeiro_ctp'
+                             GROUP BY rc_codigo_local, rc_nome_local
+                             ORDER BY MIN(rc_id) ASC");
+                        $total_locais = mysqli_num_rows($rs_locais);
+                        $first_local  = mysqli_fetch_object($rs_locais);
+                        $desc_fazenda_plain = $first_local ? $first_local->rc_nome_local : 'Rateio';
+                        $desc_fazenda = htmlspecialchars($desc_fazenda_plain);
+                        if ($total_locais > 1) {
+                            $desc_fazenda .= ' <span style="color:#337ab7;font-weight:600">+' . ($total_locais - 1) . '</span>';
+                        }
+
+                        // Contas contábeis distintas para exibição na coluna Conta
+                        $rs_contas = mysqli_query($conector,
+                            "SELECT rc_codigo_conta, rc_nome_conta FROM tbl_ctp_rateio
+                             WHERE rc_ctp_id = '$primeiro_ctp'
+                               AND rc_nome_conta IS NOT NULL AND rc_nome_conta != ''
+                             GROUP BY rc_codigo_conta, rc_nome_conta
+                             ORDER BY MIN(rc_id) ASC");
+                        $total_contas = mysqli_num_rows($rs_contas);
+                        $first_conta  = mysqli_fetch_object($rs_contas);
+                        $desc_conta_plain = $first_conta ? $first_conta->rc_nome_conta : 'Rateio';
+                        $desc_conta = htmlspecialchars($desc_conta_plain);
+                        if ($total_contas > 1) {
+                            $desc_conta .= ' +' . ($total_contas - 1);
+                        }
+
+                        // Detalhe completo do rateio para linha expansível
+                        $rs_det = mysqli_query($conector,
+                            "SELECT rc_nome_local, rc_perc_local, rc_valor_local,
+                                    rc_nome_cc, rc_perc_cc, rc_valor_cc,
+                                    rc_nome_conta, rc_perc_conta, rc_valor_conta
+                             FROM tbl_ctp_rateio
+                             WHERE rc_ctp_id = '$primeiro_ctp'
                              ORDER BY rc_id ASC");
-                        $total_rat = mysqli_num_rows($rs_rat);
-                        $first_rat = mysqli_fetch_object($rs_rat);
-                        $desc_conta = $first_rat ? $first_rat->rc_nome_conta : 'Rateio';
-                        if ($total_rat > 1) $desc_conta .= ' +' . ($total_rat - 1);
+                        $rateio_html  = '<table style="width:100%;border-collapse:collapse;font-size:11px;">';
+                        $rateio_html .= '<tr style="background:#e8eeff;">';
+                        $rateio_html .= '<th style="padding:3px 6px;text-align:left;">Local</th>';
+                        $rateio_html .= '<th style="padding:3px 6px;text-align:right;">% Local</th>';
+                        $rateio_html .= '<th style="padding:3px 6px;text-align:right;">Vlr. Local</th>';
+                        $rateio_html .= '<th style="padding:3px 6px;text-align:left;">Centro de Custo</th>';
+                        $rateio_html .= '<th style="padding:3px 6px;text-align:right;">% CC</th>';
+                        $rateio_html .= '<th style="padding:3px 6px;text-align:right;">Vlr. CC</th>';
+                        $rateio_html .= '<th style="padding:3px 6px;text-align:left;">Conta Contábil</th>';
+                        $rateio_html .= '<th style="padding:3px 6px;text-align:right;">%</th>';
+                        $rateio_html .= '<th style="padding:3px 6px;text-align:right;">Valor</th>';
+                        $rateio_html .= '</tr>';
+                        while ($rr = mysqli_fetch_object($rs_det)) {
+                            $rateio_html .= '<tr style="border-bottom:1px solid #dde8ff;">';
+                            $rateio_html .= '<td style="padding:3px 6px;">' . htmlspecialchars($rr->rc_nome_local ?? '') . '</td>';
+                            $rateio_html .= '<td style="padding:3px 6px;text-align:right;">' . number_format((float)$rr->rc_perc_local, 2, ',', '.') . '%</td>';
+                            $rateio_html .= '<td style="padding:3px 6px;text-align:right;">R$ ' . number_format((float)$rr->rc_valor_local, 2, ',', '.') . '</td>';
+                            $rateio_html .= '<td style="padding:3px 6px;">' . htmlspecialchars($rr->rc_nome_cc ?? '') . '</td>';
+                            $rateio_html .= '<td style="padding:3px 6px;text-align:right;">' . ($rr->rc_perc_cc  ? number_format((float)$rr->rc_perc_cc,  2, ',', '.') . '%'         : '') . '</td>';
+                            $rateio_html .= '<td style="padding:3px 6px;text-align:right;">' . ($rr->rc_valor_cc ? 'R$ ' . number_format((float)$rr->rc_valor_cc, 2, ',', '.') : '') . '</td>';
+                            $rateio_html .= '<td style="padding:3px 6px;">' . htmlspecialchars($rr->rc_nome_conta ?? '') . '</td>';
+                            $rateio_html .= '<td style="padding:3px 6px;text-align:right;">' . ($rr->rc_perc_conta  ? number_format((float)$rr->rc_perc_conta,  2, ',', '.') . '%'         : '') . '</td>';
+                            $rateio_html .= '<td style="padding:3px 6px;text-align:right;">' . ($rr->rc_valor_conta ? 'R$ ' . number_format((float)$rr->rc_valor_conta, 2, ',', '.') : '') . '</td>';
+                            $rateio_html .= '</tr>';
+                        }
+                        $rateio_html .= '</table>';
+
                     } else {
-                        $desc_conta = $fila->tbl_plano_contas_descricao;
+                        $desc_fazenda_plain = $fila->tbl_pessoa_nome;
+                        $desc_fazenda       = htmlspecialchars($desc_fazenda_plain ?? '');
+                        $rateio_html        = '';
+
+                        // Lógica legada: ctp_codigo_conta IS NULL com fazenda preenchida
+                        if (is_null($codigo_conta)) {
+                            $num_doc_esc = mysqli_real_escape_string($conector, $numero_id);
+                            $parcela_esc = mysqli_real_escape_string($conector, $parcela);
+                            $fazenda_esc = mysqli_real_escape_string($conector, ltrim($codigo_fazenda, '0'));
+                            $rs_rat = mysqli_query($conector,
+                                "SELECT rc_nome_conta FROM tbl_ctp_rateio
+                                 WHERE rc_codigo_local = '$fazenda_esc'
+                                   AND rc_ctp_id IN (
+                                       SELECT ctp_id FROM contas_pagar
+                                       WHERE ctp_numero_doc = '$num_doc_esc'
+                                         AND ctp_parcela    = '$parcela_esc'
+                                         AND ctp_codigo_conta IS NULL
+                                   )
+                                 ORDER BY rc_id ASC");
+                            $total_rat = mysqli_num_rows($rs_rat);
+                            $first_rat = mysqli_fetch_object($rs_rat);
+                            $desc_conta = $first_rat ? htmlspecialchars($first_rat->rc_nome_conta) : 'Rateio';
+                            if ($total_rat > 1) $desc_conta .= ' +' . ($total_rat - 1);
+                        } else {
+                            $desc_conta = htmlspecialchars($fila->tbl_plano_contas_descricao ?? '');
+                        }
                     }
 
                     if ($situacao == "P") {
@@ -187,19 +271,23 @@
                         $desc_situacao = "";
                     }
 
-                    $chave_ctp = $codigo_fazenda . $codigo_for . $codigo_conta . str_replace('-', '', $fila->ctp_data_emissao) . $numero_id;
-                    // Sem número de documento: cada registro é único pelo ctp_id (linha sempre completa)
                     if (empty($numero_id)) {
                         $registro = 'SEM_DOC_' . $ctp_id;
                     } else {
                         $registro = $numero_id . $codigo_fazenda . $codigo_for . $codigo_conta . str_replace('-', '', $fila->ctp_data_emissao . $descricao_compra);
                     }
 
+                    $vlr_display = number_format($total_parcela, 2, ",", ".");
+
                     if ($chave_anterior != $registro) {
+                        // Ícone de expansão do rateio — só na 1ª linha do documento
+                        $icon_rateio = '';
+                        if ($tem_rateio) {
+                            $icon_rateio = ' <button type="button" onclick="toggleRateio(' . $ctp_id . ')" title="Ver distribuição do rateio" style="background:none;border:none;padding:0 3px;cursor:pointer;color:#337ab7;font-size:13px;"><i class="fas fa-sitemap"></i></button>';
+                        }
+
                         echo "<tr>";
-                        echo "<td width='2%'>
-                              <input type='checkbox' class='checkbox1' name='id_ctp' value='" . $ctp_id . "' onClick='somar_total_para_baixar()'>
-                            </td>";
+                        echo "<td width='2%'><input type='checkbox' class='checkbox1' name='id_ctp' value='" . $ctp_id . "' onClick='somar_total_para_baixar()'></td>";
                         echo "<td width='10%'>" . $numero_id . "</td>";
                         echo "<td width='3%' align='center'>" . $parcela . "</td>";
                         echo "<td width='15%'>" . $nome_for . "</td>";
@@ -207,24 +295,31 @@
                         echo "<td width='10%'>" . $desc_conta . "</td>";
                         echo "<td width='6%'>" . $data_emissao->format('d/m/Y') . "</td>";
                         echo "<td width='6%'>" . $data_vencimento->format('d/m/Y') . "</td>";
-                        echo "<td width='12%'>" . number_format($total_parcela, 2, ",", ".") . "</td>";
+                        echo "<td width='12%'>" . $vlr_display . $icon_rateio . "</td>";
                         echo "<td width='19%' style='font-size: 10px;'>" . $descricao_compra . "</td>";
                         echo "<td width='10%'>" . $desc_situacao . "</td>";
                         echo "</tr>";
+
+                        // Linha oculta com detalhe do rateio
+                        if ($tem_rateio) {
+                            echo "<tr id='rateio-row-" . $ctp_id . "' style='display:none;'>";
+                            echo "<td colspan='11' style='padding:4px 12px 8px;background:#f5f8ff;border-bottom:2px solid #ccd8ff;'>";
+                            echo $rateio_html;
+                            echo "</td></tr>";
+                        }
+
                         $chave_anterior = $registro;
                     } else {
                         echo "<tr>";
-                        echo "<td style='color: #fff;' width='2%'>
-                            <input type='checkbox' class='checkbox1' name='id_ctp'  value='" . $ctp_id . "' onClick='somar_total_para_baixar()'>
-                            </td>";
+                        echo "<td style='color:#fff;' width='2%'><input type='checkbox' class='checkbox1' name='id_ctp' value='" . $ctp_id . "' onClick='somar_total_para_baixar()'></td>";
                         echo "<td width='10%'>" . $numero_id . "</td>";
                         echo "<td width='3%' align='center'>" . $parcela . "</td>";
-                        echo "<td style='color: #fff;' width='15%'>" . $nome_for . "</td>";
-                        echo "<td style='color: #fff;' width='15%'>" . $desc_fazenda . "</td>";
-                        echo "<td style='color: #fff;' width='10%'>" . $desc_conta . "</td>";
-                        echo "<td style='color: #fff;' width='6%'>" . $data_emissao->format('d/m/Y') . "</td>";
+                        echo "<td style='color:#fff;' width='15%'>" . $nome_for . "</td>";
+                        echo "<td style='color:#fff;' width='15%'>" . strip_tags($desc_fazenda) . "</td>";
+                        echo "<td style='color:#fff;' width='10%'>" . strip_tags($desc_conta) . "</td>";
+                        echo "<td style='color:#fff;' width='6%'>" . $data_emissao->format('d/m/Y') . "</td>";
                         echo "<td width='6%'>" . $data_vencimento->format('d/m/Y') . "</td>";
-                        echo "<td width='12%'>" . number_format($total_parcela, 2, ",", ".") . "</td>";
+                        echo "<td width='12%'>" . $vlr_display . "</td>";
                         echo "<td></td>";
                         echo "<td width='10%'>" . $desc_situacao . "</td>";
                         echo "</tr>";
