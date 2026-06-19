@@ -98,6 +98,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="shortcut icon" href="img/boi_virtual_preto.ico">
   <title>Boi Virtual</title>
+  <style>
+    #tabela_aceite_contas tr[id^="rateio-row-"] td { background: #f5f8ff; }
+  </style>
 </head>
 
 <body>
