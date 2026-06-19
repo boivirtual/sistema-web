@@ -31,6 +31,36 @@ $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
     return true;
 });
 
+function toggleRateio(id) {
+    $.ajax({
+        type: 'POST',
+        url: 'get_rateio_aceite.php',
+        data: { ctp_id: id },
+        timeout: 10000,
+        success: function (data) {
+            $('#modal_rateio_ctp_dyn').remove();
+            var corpo = data || '<p style="color:#888;">Sem dados de rateio.</p>';
+            var modalHtml =
+                '<div class="modal fade" id="modal_rateio_ctp_dyn" tabindex="-1" role="dialog" data-backdrop="static">' +
+                '<div class="modal-dialog" style="width:92%;max-width:940px;" role="document">' +
+                '<div class="modal-content">' +
+                '<div class="modal-header">' +
+                '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
+                '<h4 class="modal-title"><i class="fas fa-sitemap" style="color:#337ab7;margin-right:6px;"></i>Distribuição do Rateio</h4>' +
+                '</div>' +
+                '<div class="modal-body" style="overflow-x:auto;padding:12px 16px;">' + corpo + '</div>' +
+                '<div class="modal-footer"><button class="btn btn-default" type="button" data-dismiss="modal">Fechar</button></div>' +
+                '</div></div></div>';
+            $('body').append(modalHtml);
+            $('#modal_rateio_ctp_dyn').modal('show');
+            $('#modal_rateio_ctp_dyn').on('hidden.bs.modal', function () { $(this).remove(); });
+        },
+        error: function (xhr, status, err) {
+            alert('Erro ao carregar rateio: ' + status + (err ? ' — ' + err : ''));
+        }
+    });
+}
+
 $(window).load(function(){
     // Exibe filtros quando faz reload
     var filtro_local = $("#exibe_local").val();
