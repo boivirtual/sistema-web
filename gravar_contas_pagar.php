@@ -787,11 +787,9 @@
         };
 
         if ($tem_rateio && count($rateio_locais_r) > 0) {
-            // Com rateio: para cada ocorrência × cada local
+            // Com rateio: 1 registro por ocorrência com valor total e ctp_codigo_fazenda = NULL
             for ($i = 0; $i < $rep_ocorrencias; $i++) {
-                foreach ($rateio_locais_r as $rloc) {
-                    $insere_repeticao($rloc['id'], $rloc['valor'], $i);
-                }
+                $insere_repeticao('', 0, $i);
             }
         } else {
             // Sem rateio: uma linha por ocorrência
