@@ -186,13 +186,13 @@ if ($num_rows_usuario != 0) {
     }
 
     if ($_SESSION['data_inicio_ctp'] == 0) {
-        $data_inicial = $data_sistema;
+        $data_inicial = date('Y-m-01');
     } else {
         $data_inicial =  $_SESSION['data_inicio_ctp'];
     }
 
     if ($_SESSION['data_fim_ctp'] == 0) {
-        $data_final = $data_sistema;
+        $data_final = date('Y-m-t');
     } else {
         $data_final =  $_SESSION['data_fim_ctp'];
     }
