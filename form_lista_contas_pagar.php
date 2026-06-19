@@ -580,7 +580,7 @@
                                 "</td>";
 
                                 echo "<td width='6%'>";
-                                echo "<a  style='color:#ccc' data-toggle='tooltip' data-placement='right' title='Falta Aceite'>".number_format($vlr_parcela, 2, ",", ".")."</a>";
+                                echo "<a  style='color:#ccc' data-toggle='tooltip' data-placement='right' title='Falta Aceite'>".number_format($vlr_parcela, 2, ",", ".")."</a>" . $icon_rateio;
                                 "</td>";
 
                                 echo "<td width='6%'></td>";
