@@ -3,8 +3,24 @@
 function toggleRateio(id) {
     var el = document.getElementById('rateio-data-' + id);
     if (!el) return;
-    $('#rateio_aceite_body').html(el.innerHTML);
-    $('#modal_rateio_aceite').modal('show');
+
+    $('#modal_rateio_aceite_dyn').remove();
+
+    var modalHtml =
+        '<div class="modal fade" id="modal_rateio_aceite_dyn" tabindex="-1" role="dialog" data-backdrop="static">' +
+        '<div class="modal-dialog" style="width:92%;max-width:940px;" role="document">' +
+        '<div class="modal-content">' +
+        '<div class="modal-header">' +
+        '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
+        '<h4 class="modal-title"><i class="fas fa-sitemap" style="color:#337ab7;margin-right:6px;"></i>Distribuição do Rateio</h4>' +
+        '</div>' +
+        '<div class="modal-body" style="overflow-x:auto;padding:12px 16px;">' + el.innerHTML + '</div>' +
+        '<div class="modal-footer"><button class="btn btn-default" type="button" data-dismiss="modal">Fechar</button></div>' +
+        '</div></div></div>';
+
+    $('body').append(modalHtml);
+    $('#modal_rateio_aceite_dyn').modal('show');
+    $('#modal_rateio_aceite_dyn').on('hidden.bs.modal', function () { $(this).remove(); });
 }
 
 const idConta = [];
