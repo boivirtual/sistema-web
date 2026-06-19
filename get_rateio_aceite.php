@@ -1,4 +1,5 @@
 <?php
+session_write_close();
 include "conecta_mysql.inc";
 
 $ctp_id = isset($_POST['ctp_id']) ? intval($_POST['ctp_id']) : 0;
