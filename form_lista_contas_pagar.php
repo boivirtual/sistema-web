@@ -462,10 +462,53 @@
                                 }
                             }
 
-                            // Se ctp_codigo_conta for NULL é rateio — busca contas da tbl_ctp_rateio
-                            // O rateio usa o rc_ctp_id do primeiro registro criado no lote,
-                            // por isso filtra por rc_codigo_local (fazenda) + numero_doc + parcela
-                            if (is_null($registro_ctp->ctp_codigo_conta)) {
+                            $tem_rateio  = is_null($registro_ctp->ctp_codigo_fazenda);
+                            $icon_rateio = '';
+
+                            if ($tem_rateio) {
+                                // Localiza o primeiro ctp_id do documento (onde salvar_rateio gravou)
+                                $num_doc_esc = mysqli_real_escape_string($conector, $numero_doc);
+                                $for_esc     = intval($codigo_fornecedor);
+                                $rs_prim = mysqli_query($conector,
+                                    "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar
+                                     WHERE ctp_numero_doc = '$num_doc_esc'
+                                       AND ctp_codigo_fornecedor = '$for_esc'
+                                       AND ctp_codigo_fazenda IS NULL");
+                                $row_prim     = mysqli_fetch_object($rs_prim);
+                                $primeiro_ctp = $row_prim ? (int)$row_prim->primeiro_id : intval($ctp_id);
+
+                                // Locais distintos para coluna Local
+                                $rs_locais = mysqli_query($conector,
+                                    "SELECT rc_nome_local FROM tbl_ctp_rateio
+                                     WHERE rc_ctp_id = '$primeiro_ctp'
+                                     GROUP BY rc_codigo_local, rc_nome_local
+                                     ORDER BY MIN(rc_id) ASC");
+                                $total_locais = mysqli_num_rows($rs_locais);
+                                $first_local  = mysqli_fetch_object($rs_locais);
+                                $desc_fazenda = htmlspecialchars($first_local ? $first_local->rc_nome_local : 'Rateio');
+                                if ($total_locais > 1) {
+                                    $desc_fazenda .= ' <span style="color:#337ab7;font-weight:600">+' . ($total_locais - 1) . '</span>';
+                                }
+
+                                // Contas distintas para coluna Conta
+                                $rs_contas = mysqli_query($conector,
+                                    "SELECT rc_nome_conta FROM tbl_ctp_rateio
+                                     WHERE rc_ctp_id = '$primeiro_ctp'
+                                       AND rc_nome_conta IS NOT NULL AND rc_nome_conta != ''
+                                     GROUP BY rc_codigo_conta, rc_nome_conta
+                                     ORDER BY MIN(rc_id) ASC");
+                                $total_contas = mysqli_num_rows($rs_contas);
+                                $first_conta  = mysqli_fetch_object($rs_contas);
+                                $desc_conta   = htmlspecialchars($first_conta ? $first_conta->rc_nome_conta : 'Rateio');
+                                if ($total_contas > 1) {
+                                    $desc_conta .= ' +' . ($total_contas - 1);
+                                }
+
+                                // Ícone para abrir modal de rateio
+                                $icon_rateio = ' <button type="button" onclick="toggleRateio(' . intval($ctp_id) . ')" title="Ver distribuição do rateio" style="background:none;border:none;padding:0 2px;cursor:pointer;color:#337ab7;font-size:12px;"><i class="fas fa-sitemap"></i></button>';
+
+                            } elseif (is_null($registro_ctp->ctp_codigo_conta)) {
+                                // Formato legado: fazenda preenchida mas conta via rateio
                                 $num_doc_esc  = mysqli_real_escape_string($conector, $numero_doc);
                                 $parcela_esc  = mysqli_real_escape_string($conector, $numero_parcela);
                                 $fazenda_esc  = mysqli_real_escape_string($conector, ltrim($registro_ctp->ctp_codigo_fazenda, '0'));
@@ -481,14 +524,15 @@
                                      ORDER BY rc_id ASC");
                                 $total_rat = mysqli_num_rows($rs_rat);
                                 $first_rat = mysqli_fetch_object($rs_rat);
-                                $desc_conta = $first_rat ? $first_rat->rc_nome_conta : 'Rateio';
+                                $desc_conta   = $first_rat ? $first_rat->rc_nome_conta : 'Rateio';
                                 if ($total_rat > 1) {
                                     $desc_conta .= ' <span style="color:#888;font-size:10px">+' . ($total_rat - 1) . '</span>';
                                 }
+                                $desc_fazenda = $registro_ctp->tbl_pessoa_nome;
                             } else {
-                                $desc_conta = $registro_ctp->tbl_plano_contas_descricao;
+                                $desc_conta   = $registro_ctp->tbl_plano_contas_descricao;
+                                $desc_fazenda = $registro_ctp->tbl_pessoa_nome;
                             }
-                            $desc_fazenda = $registro_ctp->tbl_pessoa_nome;
 
                             $total_a_pagar = $vlr_parcela - $total_pago;
 
