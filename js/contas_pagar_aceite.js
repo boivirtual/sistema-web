@@ -1,4 +1,11 @@
 /**CONTAS A PAGAR ACEITE*/
+
+function toggleRateio(id) {
+    var row = document.getElementById('rateio-row-' + id);
+    if (!row) return;
+    row.style.display = (row.style.display === 'none') ? '' : 'none';
+}
+
 const idConta = [];
 const selectedConta = [];
 
