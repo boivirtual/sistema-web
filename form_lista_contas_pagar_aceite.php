@@ -202,41 +202,6 @@
                             $desc_conta .= ' +' . ($total_contas - 1);
                         }
 
-                        // Detalhe completo do rateio para linha expansível
-                        $rs_det = mysqli_query($conector,
-                            "SELECT rc_nome_local, rc_perc_local, rc_valor_local,
-                                    rc_nome_cc, rc_perc_cc, rc_valor_cc,
-                                    rc_nome_conta, rc_perc_conta, rc_valor_conta
-                             FROM tbl_ctp_rateio
-                             WHERE rc_ctp_id = '$primeiro_ctp'
-                             ORDER BY rc_id ASC");
-                        $rateio_html  = '<table style="width:100%;border-collapse:collapse;font-size:11px;">';
-                        $rateio_html .= '<tr style="background:#e8eeff;">';
-                        $rateio_html .= '<th style="padding:3px 6px;text-align:left;">Local</th>';
-                        $rateio_html .= '<th style="padding:3px 6px;text-align:right;">% Local</th>';
-                        $rateio_html .= '<th style="padding:3px 6px;text-align:right;">Vlr. Local</th>';
-                        $rateio_html .= '<th style="padding:3px 6px;text-align:left;">Centro de Custo</th>';
-                        $rateio_html .= '<th style="padding:3px 6px;text-align:right;">% CC</th>';
-                        $rateio_html .= '<th style="padding:3px 6px;text-align:right;">Vlr. CC</th>';
-                        $rateio_html .= '<th style="padding:3px 6px;text-align:left;">Conta Contábil</th>';
-                        $rateio_html .= '<th style="padding:3px 6px;text-align:right;">%</th>';
-                        $rateio_html .= '<th style="padding:3px 6px;text-align:right;">Valor</th>';
-                        $rateio_html .= '</tr>';
-                        while ($rr = mysqli_fetch_object($rs_det)) {
-                            $rateio_html .= '<tr style="border-bottom:1px solid #dde8ff;">';
-                            $rateio_html .= '<td style="padding:3px 6px;">' . htmlspecialchars($rr->rc_nome_local ?? '') . '</td>';
-                            $rateio_html .= '<td style="padding:3px 6px;text-align:right;">' . number_format((float)$rr->rc_perc_local, 2, ',', '.') . '%</td>';
-                            $rateio_html .= '<td style="padding:3px 6px;text-align:right;">R$ ' . number_format((float)$rr->rc_valor_local, 2, ',', '.') . '</td>';
-                            $rateio_html .= '<td style="padding:3px 6px;">' . htmlspecialchars($rr->rc_nome_cc ?? '') . '</td>';
-                            $rateio_html .= '<td style="padding:3px 6px;text-align:right;">' . ($rr->rc_perc_cc  ? number_format((float)$rr->rc_perc_cc,  2, ',', '.') . '%'         : '') . '</td>';
-                            $rateio_html .= '<td style="padding:3px 6px;text-align:right;">' . ($rr->rc_valor_cc ? 'R$ ' . number_format((float)$rr->rc_valor_cc, 2, ',', '.') : '') . '</td>';
-                            $rateio_html .= '<td style="padding:3px 6px;">' . htmlspecialchars($rr->rc_nome_conta ?? '') . '</td>';
-                            $rateio_html .= '<td style="padding:3px 6px;text-align:right;">' . ($rr->rc_perc_conta  ? number_format((float)$rr->rc_perc_conta,  2, ',', '.') . '%'         : '') . '</td>';
-                            $rateio_html .= '<td style="padding:3px 6px;text-align:right;">' . ($rr->rc_valor_conta ? 'R$ ' . number_format((float)$rr->rc_valor_conta, 2, ',', '.') : '') . '</td>';
-                            $rateio_html .= '</tr>';
-                        }
-                        $rateio_html .= '</table>';
-
                     } else {
                         $desc_fazenda_plain = $fila->tbl_pessoa_nome;
                         $desc_fazenda       = htmlspecialchars($desc_fazenda_plain ?? '');
