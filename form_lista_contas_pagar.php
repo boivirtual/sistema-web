@@ -642,7 +642,7 @@
                                     echo "<td style='color:#B22222' width='15%'>".$desc_conta."</td>";
                                     echo "<td style='color:#B22222'width='6%'>".$emissao_edi->format('d/m/Y')."</td>";
                                     echo "<td style='color:#B22222'width='6%'>".$vencimento_edi->format('d/m/Y')."</td>";
-                                    echo "<td style='color:#B22222'width='6%'>".number_format($vlr_parcela, 2, ",", ".")."</td>";
+                                    echo "<td style='color:#B22222'width='6%'>".number_format($vlr_parcela, 2, ",", ".").$icon_rateio."</td>";
 
                                     if ($situacao=="P" || $situacao=="C"){
                                         echo "<td style='color:#B22222'width='6%'>".$pagamento_edi->format('d/m/Y')."</td>";
