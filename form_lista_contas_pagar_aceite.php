@@ -267,11 +267,6 @@
                         echo "<td width='10%'>" . $desc_situacao . "</td>";
                         echo "</tr>";
 
-                        // Guarda o HTML do rateio para renderizar fora da tabela (evita erro no DataTables)
-                        if ($tem_rateio) {
-                            $rateio_divs[$ctp_id] = $rateio_html;
-                        }
-
                         $chave_anterior = $registro;
                     } else {
                         echo "<tr>";
