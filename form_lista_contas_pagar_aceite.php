@@ -41,7 +41,7 @@
         $wfornecedor = " AND ctp_codigo_fornecedor IN(" . implode(',', $fornecedor_ids) . ")";
     }
 
-    // Monta filtro de fazenda
+    // Monta filtro de fazenda — inclui registros com rateio (ctp_codigo_fazenda IS NULL)
     $fazenda_ids = [];
     foreach (explode(",", $array_fazenda) as $item) {
         $id = intval(trim($item));
@@ -49,7 +49,8 @@
     }
     $wfazenda = '';
     if ($array_fazenda !== '' && !empty($fazenda_ids)) {
-        $wfazenda = " AND ctp_codigo_fazenda IN(" . implode(',', $fazenda_ids) . ")";
+        $ids_str = implode(',', $fazenda_ids);
+        $wfazenda = " AND (ctp_codigo_fazenda IN($ids_str) OR (ctp_codigo_fazenda IS NULL AND ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE rc_codigo_local IN ($ids_str))))";
     }
 
     @ session_start();
