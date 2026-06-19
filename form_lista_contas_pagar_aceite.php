@@ -74,7 +74,7 @@
                              cp.ctp_valor_desconto, cp.ctp_outro_valor,
                              p.tbl_pessoa_nome, pc.tbl_plano_contas_descricao";
     $from_join = " FROM contas_pagar cp
-                   INNER JOIN tbl_pessoa p ON p.tbl_pessoa_id = cp.ctp_codigo_fazenda
+                   LEFT JOIN tbl_pessoa p ON p.tbl_pessoa_id = cp.ctp_codigo_fazenda
                    LEFT JOIN tbl_plano_contas pc ON pc.tbl_plano_contas_codigo_id = cp.ctp_codigo_conta";
     $where_base = " WHERE (cp.ctp_aceite = '' OR cp.ctp_aceite IS NULL)";
     $filtros    = $wfornecedor . $wfazenda . $wconta;
