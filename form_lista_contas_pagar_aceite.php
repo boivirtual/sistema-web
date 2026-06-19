@@ -339,12 +339,6 @@
         </tfoot>
         </table>
 
-        <?php if (!empty($rateio_divs)): ?>
-        <!-- Dados de rateio fora da tabela — usados pelo toggleRateio() para montar o modal -->
-        <?php foreach ($rateio_divs as $rid => $rhtml): ?>
-        <div id="rateio-data-<?php echo $rid; ?>" style="display:none;"><?php echo $rhtml; ?></div>
-        <?php endforeach; ?>
-        <?php endif; ?>
 
     </section>
 
