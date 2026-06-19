@@ -411,32 +411,27 @@
             }
 
             if ($tem_rateio && count($rateio_locais) > 0) {
-                // Com rateio: uma parcela por local, valor proporcional ao rateio
-                $primeiro_id_n = null;
-                foreach ($rateio_locais as $rloc) {
-                    $ok = $insere_parcela(
-                        $numero_doc_n, $codigo_for_n, 1, $tipo_doc_n, $razao_n,
-                        1, $data_emissao_n, $data_vencimento_n, $rloc['valor'],
-                        $rloc['id'], '', '', $banco_n,
-                        $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
-                    );
-                    if (!$ok) {
-                        header('Content-type: application/json');
-                        echo json_encode(array('error' => true, 'message' => 'Erro ao gravar local do rateio: ' . mysqli_error($conector)));
-                        mysqli_close($conector); exit;
-                    }
-                    $novo_id = mysqli_insert_id($conector);
-                    if ($primeiro_id_n === null) {
-                        $primeiro_id_n = $novo_id;
-                        salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
-                        salvar_rateio($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
-                    }
-                    if ($pago_n == 'S') {
-                        $novo_id_fmt = str_pad($novo_id, 9, '0', STR_PAD_LEFT);
-                        $hist = mysqli_real_escape_string($conector, 'Pag total do doc para: ' . $razao_n);
-                        mysqli_query($conector, "INSERT INTO baixa_contas_pagar (bcp_id, bcp_numero_id, bcp_codigo_fornecedor, bcp_parcela, bcp_sequencia_pagamento, bcp_nome_fornecedor, bcp_numero_documento, bcp_data_pagamento, bcp_valor_pagamento, bcp_situacao, bcp_data_aceite, bcp_usuario_aceite, bcp_numero_agendamento, bcp_historico_pagamento) VALUES ('$novo_id_fmt','$numero_doc_n','$codigo_for_n',1,1,'$razao_n','$numero_doc_n','$data_emissao_n','{$rloc['valor']}','P','$data_sistema','$nomeusuario',null,'$hist')");
-                        mysqli_query($conector, "UPDATE contas_pagar SET ctp_situacao='P' WHERE ctp_id='$novo_id'");
-                    }
+                // Com rateio: 1 registro com valor total e ctp_codigo_fazenda = NULL
+                $ok = $insere_parcela(
+                    $numero_doc_n, $codigo_for_n, 1, $tipo_doc_n, $razao_n,
+                    1, $data_emissao_n, $data_vencimento_n, $vlr_total_n,
+                    null, null, null, $banco_n,
+                    $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
+                );
+                if (!$ok) {
+                    header('Content-type: application/json');
+                    echo json_encode(array('error' => true, 'message' => 'Erro ao gravar: ' . mysqli_error($conector)));
+                    mysqli_close($conector); exit;
+                }
+                $novo_id = mysqli_insert_id($conector);
+                $primeiro_id_n = $novo_id;
+                salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                salvar_rateio($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                if ($pago_n == 'S') {
+                    $novo_id_fmt = str_pad($novo_id, 9, '0', STR_PAD_LEFT);
+                    $hist = mysqli_real_escape_string($conector, 'Pag total do doc para: ' . $razao_n);
+                    mysqli_query($conector, "INSERT INTO baixa_contas_pagar (bcp_id, bcp_numero_id, bcp_codigo_fornecedor, bcp_parcela, bcp_sequencia_pagamento, bcp_nome_fornecedor, bcp_numero_documento, bcp_data_pagamento, bcp_valor_pagamento, bcp_situacao, bcp_data_aceite, bcp_usuario_aceite, bcp_numero_agendamento, bcp_historico_pagamento) VALUES ('$novo_id_fmt','$numero_doc_n','$codigo_for_n',1,1,'$razao_n','$numero_doc_n','$data_emissao_n','$vlr_total_n','P','$data_sistema','$nomeusuario',null,'$hist')");
+                    mysqli_query($conector, "UPDATE contas_pagar SET ctp_situacao='P' WHERE ctp_id='$novo_id'");
                 }
             } elseif ($qtd_fazendas_n == 1) {
                 // Única fazenda sem rateio
