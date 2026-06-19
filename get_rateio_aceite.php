@@ -1,5 +1,4 @@
 <?php
-include "valida_sessao.inc";
 include "conecta_mysql.inc";
 
 $ctp_id = isset($_POST['ctp_id']) ? intval($_POST['ctp_id']) : 0;
