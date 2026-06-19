@@ -33,28 +33,22 @@ if (!$rs_det || mysqli_num_rows($rs_det) == 0) {
 
 echo '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
 echo '<tr style="background:#e8eeff;">';
-echo '<th style="padding:5px 8px;text-align:left;">Local</th>';
-echo '<th style="padding:5px 8px;text-align:right;">% Local</th>';
-echo '<th style="padding:5px 8px;text-align:right;">Vlr. Local</th>';
-echo '<th style="padding:5px 8px;text-align:left;">Centro de Custo</th>';
-echo '<th style="padding:5px 8px;text-align:right;">% CC</th>';
-echo '<th style="padding:5px 8px;text-align:right;">Vlr. CC</th>';
-echo '<th style="padding:5px 8px;text-align:left;">Conta Contábil</th>';
-echo '<th style="padding:5px 8px;text-align:right;">%</th>';
-echo '<th style="padding:5px 8px;text-align:right;">Valor</th>';
+echo '<th style="padding:5px 10px;text-align:left;">Local</th>';
+echo '<th style="padding:5px 10px;text-align:right;">Vlr. Local</th>';
+echo '<th style="padding:5px 10px;text-align:left;">Centro de Custo</th>';
+echo '<th style="padding:5px 10px;text-align:right;">Vlr. CC</th>';
+echo '<th style="padding:5px 10px;text-align:left;">Conta Contábil</th>';
+echo '<th style="padding:5px 10px;text-align:right;">Valor</th>';
 echo '</tr>';
 
 while ($rr = mysqli_fetch_object($rs_det)) {
     echo '<tr style="border-bottom:1px solid #dde8ff;">';
-    echo '<td style="padding:4px 8px;">'                   . htmlspecialchars($rr->rc_nome_local ?? '') . '</td>';
-    echo '<td style="padding:4px 8px;text-align:right;">'  . number_format((float)$rr->rc_perc_local,  2, ',', '.') . '%</td>';
-    echo '<td style="padding:4px 8px;text-align:right;">R$ ' . number_format((float)$rr->rc_valor_local, 2, ',', '.') . '</td>';
-    echo '<td style="padding:4px 8px;">'                   . htmlspecialchars($rr->rc_nome_cc ?? '')   . '</td>';
-    echo '<td style="padding:4px 8px;text-align:right;">'  . ($rr->rc_perc_cc   ? number_format((float)$rr->rc_perc_cc,   2, ',', '.') . '%'          : '') . '</td>';
-    echo '<td style="padding:4px 8px;text-align:right;">'  . ($rr->rc_valor_cc  ? 'R$ ' . number_format((float)$rr->rc_valor_cc,  2, ',', '.') : '') . '</td>';
-    echo '<td style="padding:4px 8px;">'                   . htmlspecialchars($rr->rc_nome_conta ?? '') . '</td>';
-    echo '<td style="padding:4px 8px;text-align:right;">'  . ($rr->rc_perc_conta  ? number_format((float)$rr->rc_perc_conta,  2, ',', '.') . '%'          : '') . '</td>';
-    echo '<td style="padding:4px 8px;text-align:right;">'  . ($rr->rc_valor_conta ? 'R$ ' . number_format((float)$rr->rc_valor_conta, 2, ',', '.') : '') . '</td>';
+    echo '<td style="padding:4px 10px;">'                    . htmlspecialchars($rr->rc_nome_local ?? '') . '</td>';
+    echo '<td style="padding:4px 10px;text-align:right;">R$ ' . number_format((float)$rr->rc_valor_local, 2, ',', '.') . '</td>';
+    echo '<td style="padding:4px 10px;">'                    . htmlspecialchars($rr->rc_nome_cc ?? '') . '</td>';
+    echo '<td style="padding:4px 10px;text-align:right;">'   . ($rr->rc_valor_cc  ? 'R$ ' . number_format((float)$rr->rc_valor_cc,  2, ',', '.') : '') . '</td>';
+    echo '<td style="padding:4px 10px;">'                    . htmlspecialchars($rr->rc_nome_conta ?? '') . '</td>';
+    echo '<td style="padding:4px 10px;text-align:right;">'   . ($rr->rc_valor_conta ? 'R$ ' . number_format((float)$rr->rc_valor_conta, 2, ',', '.') : '') . '</td>';
     echo '</tr>';
 }
 
