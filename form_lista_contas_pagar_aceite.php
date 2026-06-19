@@ -205,7 +205,6 @@
                     } else {
                         $desc_fazenda_plain = $fila->tbl_pessoa_nome;
                         $desc_fazenda       = htmlspecialchars($desc_fazenda_plain ?? '');
-                        $rateio_html        = '';
 
                         // Lógica legada: ctp_codigo_conta IS NULL com fazenda preenchida
                         if (is_null($codigo_conta)) {
