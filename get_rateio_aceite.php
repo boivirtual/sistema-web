@@ -51,7 +51,7 @@ while ($rr = mysqli_fetch_object($rs_det)) {
     $mesmo_local = ($local_atual === $local_ant);
     $mesmo_cc    = ($cc_atual    === $cc_ant && $mesmo_local);
 
-    $borda_top = (!$mesmo_local) ? 'border-top:2px solid #b0c4de;' : '';
+    $borda_top = (!$mesmo_local && $local_ant !== null) ? 'border-top:1px solid #b0c4de;' : '';
 
     echo '<tr style="border-bottom:1px solid #dde8ff;' . $borda_top . '">';
 
