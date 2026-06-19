@@ -382,26 +382,10 @@
         </table>
 
         <?php if (!empty($rateio_divs)): ?>
-        <!-- Dados de rateio fora da tabela para não interferir no DataTables -->
+        <!-- Dados de rateio fora da tabela — usados pelo toggleRateio() para montar o modal -->
         <?php foreach ($rateio_divs as $rid => $rhtml): ?>
         <div id="rateio-data-<?php echo $rid; ?>" style="display:none;"><?php echo $rhtml; ?></div>
         <?php endforeach; ?>
-
-        <!-- Modal: Distribuição do Rateio -->
-        <div class="modal fade" id="modal_rateio_aceite" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
-            <div class="modal-dialog" style="width:92%;max-width:920px;" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title"><i class="fas fa-sitemap" style="color:#337ab7;"></i> Distribuição do Rateio</h4>
-                    </div>
-                    <div class="modal-body" id="rateio_aceite_body" style="overflow-x:auto;padding:12px 16px;"></div>
-                    <div class="modal-footer">
-                        <button class="btn btn-default" type="button" data-dismiss="modal">Fechar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <?php endif; ?>
 
     </section>
