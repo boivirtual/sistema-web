@@ -112,7 +112,6 @@
             <?php
                 $chave_anterior = '';
                 $total_periodo  = 0;
-                $rateio_divs    = [];
 
                 if ($data_inicial != '' && $data_final != '' && $tipo_data == "V") {
                     $rs = mysqli_query($conector,
