@@ -95,10 +95,16 @@
 
     $wfazenda = '';
 
-    if ($array_fazenda!='') {
-        $wfazenda = " AND ctp_codigo_fazenda IN(";
-        $wfazenda.= $fazenda;
-        $wfazenda.= ")";
+    if ($array_fazenda != '') {
+        $fazenda_ids = [];
+        foreach (explode(',', $array_fazenda) as $item) {
+            $id = intval(trim($item));
+            if ($id > 0) $fazenda_ids[] = $id;
+        }
+        if (!empty($fazenda_ids)) {
+            $ids_str = implode(',', $fazenda_ids);
+            $wfazenda = " AND (ctp_codigo_fazenda IN($ids_str) OR (ctp_codigo_fazenda IS NULL AND ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE rc_codigo_local IN ($ids_str))))";
+        }
     }
 
     $cc= array();
