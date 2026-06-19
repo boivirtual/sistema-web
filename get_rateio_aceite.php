@@ -32,13 +32,13 @@ if (!$rs_det || mysqli_num_rows($rs_det) == 0) {
 }
 
 echo '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
-echo '<tr style="background:#e8eeff;">';
-echo '<th style="padding:5px 10px;text-align:left;">Local</th>';
-echo '<th style="padding:5px 10px;text-align:right;">Vlr. Local</th>';
-echo '<th style="padding:5px 10px;text-align:left;">Centro de Custo</th>';
-echo '<th style="padding:5px 10px;text-align:right;">Vlr. CC</th>';
-echo '<th style="padding:5px 10px;text-align:left;">Conta Contábil</th>';
-echo '<th style="padding:5px 10px;text-align:right;">Valor</th>';
+echo '<tr style="border-bottom:1px solid #ccc;">';
+echo '<th style="padding:5px 10px;text-align:left;font-weight:600;">Local</th>';
+echo '<th style="padding:5px 10px;text-align:right;font-weight:600;">Vlr. Local</th>';
+echo '<th style="padding:5px 10px;text-align:left;font-weight:600;">Centro de Custo</th>';
+echo '<th style="padding:5px 10px;text-align:right;font-weight:600;">Vlr. CC</th>';
+echo '<th style="padding:5px 10px;text-align:left;font-weight:600;">Conta Contábil</th>';
+echo '<th style="padding:5px 10px;text-align:right;font-weight:600;">Valor</th>';
 echo '</tr>';
 
 $local_ant = null;
