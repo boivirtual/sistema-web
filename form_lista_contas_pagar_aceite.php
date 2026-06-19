@@ -390,6 +390,12 @@
     $(document).ready(function(){
       $('[data-toggle="tooltip"]').tooltip();
     });
+
+    function toggleRateio(id) {
+        var row = document.getElementById('rateio-row-' + id);
+        if (!row) return;
+        row.style.display = (row.style.display === 'none') ? '' : 'none';
+    }
     </script>
 
 </body>
