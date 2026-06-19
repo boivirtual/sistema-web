@@ -25,11 +25,14 @@ function toggleRateio(id) {
         type: 'POST',
         url: 'get_rateio_aceite.php',
         data: { ctp_id: id },
+        timeout: 8000,
         success: function (data) {
-            $('#rateio_aceite_body').html(data);
+            console.log('RATEIO OK:', data);
+            $('#rateio_aceite_body').html(data || '<p style="color:#888;">Resposta vazia do servidor.</p>');
         },
-        error: function () {
-            $('#rateio_aceite_body').html('<p style="color:red;">Erro ao carregar os dados do rateio.</p>');
+        error: function (xhr, status, err) {
+            console.log('RATEIO ERRO:', status, err, xhr.responseText);
+            $('#rateio_aceite_body').html('<p style="color:red;">Status: ' + status + ' | ' + err + '</p><pre>' + xhr.responseText + '</pre>');
         }
     });
 }
