@@ -1,9 +1,10 @@
 /**CONTAS A PAGAR ACEITE*/
 
 function toggleRateio(id) {
-    var row = document.getElementById('rateio-row-' + id);
-    if (!row) return;
-    row.style.display = (row.style.display === 'none') ? '' : 'none';
+    var el = document.getElementById('rateio-data-' + id);
+    if (!el) return;
+    $('#rateio_aceite_body').html(el.innerHTML);
+    $('#modal_rateio_aceite').modal('show');
 }
 
 const idConta = [];
