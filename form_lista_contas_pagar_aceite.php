@@ -304,12 +304,9 @@
                         echo "<td width='10%'>" . $desc_situacao . "</td>";
                         echo "</tr>";
 
-                        // Linha oculta com detalhe do rateio
+                        // Guarda o HTML do rateio para renderizar fora da tabela (evita erro no DataTables)
                         if ($tem_rateio) {
-                            echo "<tr id='rateio-row-" . $ctp_id . "' style='display:none;'>";
-                            echo "<td colspan='11' style='padding:4px 12px 8px;background:#f5f8ff;border-bottom:2px solid #ccd8ff;'>";
-                            echo $rateio_html;
-                            echo "</td></tr>";
+                            $rateio_divs[$ctp_id] = $rateio_html;
                         }
 
                         $chave_anterior = $registro;
