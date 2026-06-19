@@ -332,7 +332,7 @@
                             $ssql = "SELECT * FROM contas_pagar
                                 LEFT JOIN tbl_plano_contas
                                         ON tbl_plano_contas_codigo_id=ctp_codigo_conta
-                                INNER JOIN tbl_pessoa
+                                LEFT JOIN tbl_pessoa
                                         ON tbl_pessoa_id=ctp_codigo_fazenda"
                                 . $criterio;
                         }
