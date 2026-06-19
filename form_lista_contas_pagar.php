@@ -711,7 +711,7 @@
                                     echo "<td width='15%'>".$desc_conta."</td>";
                                     echo "<td width='6%'>".$emissao_edi->format('d/m/Y')."</td>";
                                     echo "<td width='6%'>".$vencimento_edi->format('d/m/Y')."</td>";
-                                    echo "<td width='6%'>".number_format($vlr_parcela, 2, ",", ".")."</td>";
+                                    echo "<td width='6%'>".number_format($vlr_parcela, 2, ",", ".").$icon_rateio."</td>";
 
                                     if ($situacao=="P" || $situacao=="C"){
                                         echo "<td width='6%'>".$pagamento_edi->format('d/m/Y')."</td>";
