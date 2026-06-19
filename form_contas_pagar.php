@@ -185,16 +185,16 @@ if ($num_rows_usuario != 0) {
         exit;
     }
 
-    if ($_SESSION['data_inicio_ctp'] == 0) {
-        $data_inicial = date('Y-m-01');
-    } else {
-        $data_inicial =  $_SESSION['data_inicio_ctp'];
-    }
+    $stored_inicio = $_SESSION['data_inicio_ctp'] ?? null;
+    $stored_fim    = $_SESSION['data_fim_ctp']    ?? null;
 
-    if ($_SESSION['data_fim_ctp'] == 0) {
-        $data_final = date('Y-m-t');
+    // Sem sessão ou start==end (padrão antigo que salvava só o dia atual): usa mês inteiro
+    if (!$stored_inicio || !$stored_fim || $stored_inicio === $stored_fim) {
+        $data_inicial = date('Y-m-01');
+        $data_final   = date('Y-m-t');
     } else {
-        $data_final =  $_SESSION['data_fim_ctp'];
+        $data_inicial = $stored_inicio;
+        $data_final   = $stored_fim;
     }
 
     if ($_SESSION['tipo_data_ctp'] == '') {
