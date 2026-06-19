@@ -1,9 +1,6 @@
 /**CONTAS A PAGAR ACEITE*/
 
 function toggleRateio(id) {
-    var el = document.getElementById('rateio-data-' + id);
-    if (!el) return;
-
     $('#modal_rateio_aceite_dyn').remove();
 
     var modalHtml =
@@ -14,13 +11,27 @@ function toggleRateio(id) {
         '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
         '<h4 class="modal-title"><i class="fas fa-sitemap" style="color:#337ab7;margin-right:6px;"></i>Distribuição do Rateio</h4>' +
         '</div>' +
-        '<div class="modal-body" style="overflow-x:auto;padding:12px 16px;">' + el.innerHTML + '</div>' +
+        '<div class="modal-body" style="overflow-x:auto;padding:12px 16px;" id="rateio_aceite_body">' +
+        '<i class="fas fa-spinner fa-spin"></i> Carregando...' +
+        '</div>' +
         '<div class="modal-footer"><button class="btn btn-default" type="button" data-dismiss="modal">Fechar</button></div>' +
         '</div></div></div>';
 
     $('body').append(modalHtml);
     $('#modal_rateio_aceite_dyn').modal('show');
     $('#modal_rateio_aceite_dyn').on('hidden.bs.modal', function () { $(this).remove(); });
+
+    $.ajax({
+        type: 'POST',
+        url: 'get_rateio_aceite.php',
+        data: { ctp_id: id },
+        success: function (data) {
+            $('#rateio_aceite_body').html(data);
+        },
+        error: function () {
+            $('#rateio_aceite_body').html('<p style="color:red;">Erro ao carregar os dados do rateio.</p>');
+        }
+    });
 }
 
 const idConta = [];
