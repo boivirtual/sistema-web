@@ -477,7 +477,7 @@
                                 $first_conta  = mysqli_fetch_object($rs_contas);
                                 $desc_conta   = htmlspecialchars($first_conta ? $first_conta->rc_nome_conta : 'Rateio');
                                 if ($total_contas > 1) {
-                                    $desc_conta .= ' +' . ($total_contas - 1);
+                                    $desc_conta .= ' <span style="color:#337ab7;font-weight:600">+' . ($total_contas - 1) . '</span>';
                                 }
 
                                 // Ícone para abrir modal de rateio
