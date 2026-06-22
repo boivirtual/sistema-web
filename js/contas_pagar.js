@@ -66,7 +66,7 @@ $(window).load(function(){
     var filtro_local = $("#exibe_local").val();
  
     if (filtro_local!='' && filtro_local!=null) {
-        var filtro_local = filtro_local.split(',');
+        var filtro_local = filtro_local.split(',').filter(function(v){ return v !== ''; });
 
         $.each(filtro_local, function(idx, val) {
             $('#codigo_fazenda option[value=' + val + ']').attr('selected', true);
@@ -76,9 +76,9 @@ $(window).load(function(){
     }
 
     var filtro_fornecedor = $("#exibe_fornecedor").val();
- 
+
     if (filtro_fornecedor!='' && filtro_fornecedor!=null) {
-        var filtro_fornecedor = filtro_fornecedor.split(',');
+        var filtro_fornecedor = filtro_fornecedor.split(',').filter(function(v){ return v !== ''; });
 
         $.each(filtro_fornecedor, function(idx, val) {
             $('#razao_nome option[value=' + val + ']').attr('selected', true);
@@ -90,7 +90,7 @@ $(window).load(function(){
     var filtro_cc = $("#exibe_cc").val();
 
     if (filtro_cc!='' && filtro_cc!=null) {
-        var filtro_cc = filtro_cc.split(',');
+        var filtro_cc = filtro_cc.split(',').filter(function(v){ return v !== ''; });
 
         $.each(filtro_cc, function(idx, val) {
             $('#codigo_cc option[value=' + val + ']').attr('selected', true);
