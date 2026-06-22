@@ -502,7 +502,7 @@
                                 $first_rat = mysqli_fetch_object($rs_rat);
                                 $desc_conta   = $first_rat ? $first_rat->rc_nome_conta : 'Rateio';
                                 if ($total_rat > 1) {
-                                    $desc_conta .= ' <span style="color:#888;font-size:10px">+' . ($total_rat - 1) . '</span>';
+                                    $desc_conta .= ' <span style="color:#337ab7;font-weight:600">+' . ($total_rat - 1) . '</span>';
                                 }
                                 $desc_fazenda = $registro_ctp->tbl_pessoa_nome;
                             } else {
