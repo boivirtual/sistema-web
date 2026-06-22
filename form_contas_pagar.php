@@ -185,6 +185,18 @@ if ($num_rows_usuario != 0) {
         exit;
     }
 
+    // Reset ao entrar pelo menu (parâmetro reset=1 adicionado no link do menu)
+    if (isset($_GET['reset']) && $_GET['reset'] == '1') {
+        $_SESSION['data_inicio_ctp']    = '';
+        $_SESSION['data_fim_ctp']       = '';
+        $_SESSION['periodo_label_ctp']  = '';
+        $_SESSION['razao_nome_ctp']     = '';
+        $_SESSION['codigo_c_custo_ctp'] = '';
+        $_SESSION['codigo_local_ctp']   = '';
+        $_SESSION['codigo_conta_ctp']   = '';
+        $_SESSION['tipo_data_ctp']      = '';
+    }
+
     $stored_inicio = $_SESSION['data_inicio_ctp'] ?? null;
     $stored_fim    = $_SESSION['data_fim_ctp']    ?? null;
 
@@ -197,16 +209,17 @@ if ($num_rows_usuario != 0) {
         $data_final   = $stored_fim;
     }
 
-    if ($_SESSION['tipo_data_ctp'] == '') {
+    if (empty($_SESSION['tipo_data_ctp'])) {
         $tipo_data = "V";
     } else {
-        $tipo_data =  $_SESSION['tipo_data_ctp'];
+        $tipo_data = $_SESSION['tipo_data_ctp'];
     }
 
-    $razao_nome = $_SESSION['razao_nome_ctp'];
-    $codigo_c_custo = $_SESSION['codigo_c_custo_ctp'];
-    $local = $_SESSION['codigo_local_ctp']; 
-    $contas = $_SESSION['codigo_conta_ctp']; 
+    $razao_nome         = $_SESSION['razao_nome_ctp']     ?? '';
+    $codigo_c_custo     = $_SESSION['codigo_c_custo_ctp'] ?? '';
+    $local              = $_SESSION['codigo_local_ctp']   ?? '';
+    $contas             = $_SESSION['codigo_conta_ctp']   ?? '';
+    $periodo_label_sessao = $_SESSION['periodo_label_ctp'] ?? '';
 
     ?>
 
