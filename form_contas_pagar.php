@@ -796,7 +796,13 @@ if ($num_rows_usuario != 0) {
         }
 
         $('[data-toggle="tooltip"]').tooltip();
-        consultar_ctp();
+        // Se há filtro de Conta Contábil, o $(window).load carrega as opções e chama consultar_ctp()
+        // Chamar aqui também causaria duplo modal #aguardar (backdrop preso na tela)
+        var _exConta = $('#exibe_conta').val();
+        var _limpaContaFiltro = $('#limpar_filtro_contas').val();
+        if (!_exConta || _limpaContaFiltro === 'S') {
+            consultar_ctp();
+        }
         atualizarLinkLimparFiltros();
 
         // Exibir botão Consultar e verificar link Limpar Filtros ao alterar Local ou Fornecedor
