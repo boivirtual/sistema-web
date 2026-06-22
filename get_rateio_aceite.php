@@ -5,9 +5,9 @@ include "conecta_mysql.inc";
 $ctp_id = isset($_POST['ctp_id']) ? intval($_POST['ctp_id']) : 0;
 if ($ctp_id <= 0) { echo ''; exit; }
 
-// Localiza o primeiro ctp_id do documento (onde o rateio foi salvo)
+// Localiza o primeiro ctp_id do documento (onde o rateio foi salvo) e o número do documento
 $rs_prim = mysqli_query($conector,
-    "SELECT MIN(c2.ctp_id) AS primeiro_id
+    "SELECT MIN(c2.ctp_id) AS primeiro_id, c1.ctp_numero_doc
      FROM contas_pagar c1
      JOIN contas_pagar c2
        ON c2.ctp_numero_doc         = c1.ctp_numero_doc
@@ -16,6 +16,7 @@ $rs_prim = mysqli_query($conector,
      WHERE c1.ctp_id = '$ctp_id'");
 $row_prim     = mysqli_fetch_object($rs_prim);
 $primeiro_ctp = ($row_prim && $row_prim->primeiro_id) ? (int)$row_prim->primeiro_id : $ctp_id;
+$numero_doc   = ($row_prim && $row_prim->ctp_numero_doc) ? htmlspecialchars($row_prim->ctp_numero_doc) : '';
 
 $rs_det = mysqli_query($conector,
     "SELECT rc_nome_local, rc_perc_local, rc_valor_local,
