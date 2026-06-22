@@ -1737,6 +1737,25 @@ $data_sistema = date("Y-m-d");
     $(document).on('keydown', 'input, select', function(e) {
         if (e.key !== 'Enter') return;
         e.preventDefault();
+
+        // Dentro da seção de rateio: navega apenas entre os campos do rateio;
+        // no último campo aciona o botão Confirmar Rateio.
+        if ($(this).closest('#secao_distribuir_rateio').length) {
+            var $rateioFields = $('#secao_distribuir_rateio')
+                .find('input:not([disabled]):not([readonly]), select:not([disabled])')
+                .filter(':visible');
+            var rIdx = $rateioFields.index(this);
+            if (rIdx >= 0 && rIdx < $rateioFields.length - 1) {
+                $rateioFields.eq(rIdx + 1).focus();
+            } else {
+                var $btnRateio = $('#btn_confirmar_rateio_final');
+                if ($btnRateio.length && $btnRateio.is(':visible')) {
+                    $btnRateio.trigger('click');
+                }
+            }
+            return;
+        }
+
         var focusable = $('input:not([disabled]):not([readonly]), select:not([disabled]), textarea:not([disabled])').filter(':visible');
         var idx = focusable.index(this);
         if (idx >= 0 && idx < focusable.length - 1) {
