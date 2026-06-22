@@ -2171,7 +2171,10 @@ $data_sistema = date("Y-m-d");
             $row.find('.rat-perc').val(pct.toFixed(2).replace('.',',') + '%');
         });
 
-        // Atualiza linha restante
+        // Atualiza total a distribuir (sempre verde)
+        $('#span_rat_total').text('R$ ' + total.toFixed(2).replace('.',','));
+
+        // Atualiza linha restante (verde quando zerado, vermelho quando há saldo)
         var corRest = (Math.abs(restante) < 0.01) ? '#27ae60' : '#c0392b';
         $('#td_rat_vlr_rest').text('R$ ' + restante.toFixed(2).replace('.',',')).css('color', corRest);
         $('#td_rat_pct_rest').text((total > 0 ? restante/total*100 : 0).toFixed(2).replace('.',',') + '%').css('color', corRest);
