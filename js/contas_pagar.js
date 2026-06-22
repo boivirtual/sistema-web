@@ -170,6 +170,7 @@ $(window).load(function(){
                 $("#contas_selecionadas").val(conta_filtro);
 
                 consultar_ctp();
+                atualizarLinkLimparFiltros();
             },
         });
     }
