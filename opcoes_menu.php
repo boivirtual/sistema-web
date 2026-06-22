@@ -103,7 +103,7 @@
               <span class="menu-arrow arrow_carrot-right"></span>
             </a>
             <ul class="sub">
-              <li id="opc502"><a class="" href="form_contas_pagar.php">Contas a Pagar</a></li>
+              <li id="opc502"><a class="" href="form_contas_pagar.php?reset=1">Contas a Pagar</a></li>
               <li id="opc502d"><a style="color:#666666" href="#">Contas a Pagar</a></li>
               <li id="opc504"><a class="" href="form_contas_receber.php">Contas a Receber</a></li>
               <li id="opc504d"><a style="color:#666666" href="#">Contas a Receber</a></li>
