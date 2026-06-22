@@ -297,6 +297,7 @@ if ($num_rows_usuario != 0) {
                                         <input type="hidden" id="data_final" name="data_final" <?php echo "value='" . $data_final . "'"; ?>>
                                         <input type="hidden" id="tipo_data" name="tipo_data" value="V">
                                         <input type="hidden" id="periodo_label" value="">
+                                        <input type="hidden" id="periodo_label_sessao" value="<?php echo htmlspecialchars($periodo_label_sessao); ?>">
 
                                         <fieldset class="scheduler-border" id="dados_consulta">
                                             <legend class="scheduler-border fonte-legend">Consultar Contas a Pagar</legend>
