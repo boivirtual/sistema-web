@@ -63,38 +63,19 @@
         $wconta.= ")";
     }
 
-    $fornecedor= array();
-    $matriz_itens = explode(",", $array_fornecedor);
-    $quantidade_itens = count($matriz_itens);
-
-    for($i=0; $i < $quantidade_itens; $i++) {
-        $fornecedor[$i]=$matriz_itens[$i];
-    }
-
-    $fornecedor = implode(',', $fornecedor);
-    $fornecedor = substr($fornecedor,0, -1);
-
     $wfornecedor = '';
-
-    if ($array_fornecedor!='') {
-        $wfornecedor = " AND ctp_codigo_fornecedor IN(";
-        $wfornecedor.= $fornecedor;
-        $wfornecedor.= ")";
+    if ($array_fornecedor != '') {
+        $fornecedor_ids = [];
+        foreach (explode(',', $array_fornecedor) as $item) {
+            $id = intval(trim($item));
+            if ($id > 0) $fornecedor_ids[] = $id;
+        }
+        if (!empty($fornecedor_ids)) {
+            $wfornecedor = " AND ctp_codigo_fornecedor IN(" . implode(',', $fornecedor_ids) . ")";
+        }
     }
-
-    $fazenda= array();
-    $matriz_itens = explode(",", $array_fazenda);
-    $quantidade_itens = count($matriz_itens);
-
-    for($i=0; $i < $quantidade_itens; $i++) {
-        $fazenda[$i]=$matriz_itens[$i];
-    }
-
-    $fazenda = implode(',', $fazenda);
-    $fazenda = substr($fazenda,0, -1);
 
     $wfazenda = '';
-
     if ($array_fazenda != '') {
         $fazenda_ids = [];
         foreach (explode(',', $array_fazenda) as $item) {
@@ -107,23 +88,16 @@
         }
     }
 
-    $cc= array();
-    $matriz_itens = explode(",", $array_cc);
-    $quantidade_itens = count($matriz_itens);
-
-    for($i=0; $i < $quantidade_itens; $i++) {
-        $cc[$i]=$matriz_itens[$i];
-    }
-
-    $cc = implode(',', $cc);
-    $cc = substr($cc,0, -1);
-
     $wcc = '';
-
-    if ($array_cc!='') {
-        $wcc = " AND ctp_codigo_centro_custos IN(";
-        $wcc.= $cc;
-        $wcc.= ")";
+    if ($array_cc != '') {
+        $cc_ids = [];
+        foreach (explode(',', $array_cc) as $item) {
+            $id = intval(trim($item));
+            if ($id > 0) $cc_ids[] = $id;
+        }
+        if (!empty($cc_ids)) {
+            $wcc = " AND ctp_codigo_centro_custos IN(" . implode(',', $cc_ids) . ")";
+        }
     }
 
     $conta= array();
