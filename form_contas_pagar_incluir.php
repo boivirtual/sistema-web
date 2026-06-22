@@ -1750,7 +1750,7 @@ $data_sistema = date("Y-m-d");
             } else {
                 var $btnRateio = $('#btn_confirmar_rateio_final');
                 if ($btnRateio.length && $btnRateio.is(':visible')) {
-                    $btnRateio.trigger('click');
+                    $btnRateio.focus();
                 }
             }
             return;
