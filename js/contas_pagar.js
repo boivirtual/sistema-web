@@ -1346,7 +1346,8 @@ function consultar_ctp() {
      '&array_fornecedor=' + array_fornecedor  +
      '&array_conta=' + array_conta  +
      '&array_fazenda=' + array_fazenda +
-     '&array_cc=' + array_cc, function() {
+     '&array_cc=' + array_cc +
+     '&periodo_label=' + encodeURIComponent(periodo_label), function() {
         ctpRestaurarPosicao();
     });
 }
