@@ -746,10 +746,29 @@ if ($num_rows_usuario != 0) {
                 dataSelecionada = new Date(dIni);
                 atualizarMesAno();
             } else {
-                // Período customizado: restaura datas e bloqueia setas
+                // Período não é mês único: restaura datas e usa o label salvo na sessão
+                var labelSalvo = $('#periodo_label_sessao').val();
                 $('#data_inicial').val(dataIniSessao);
                 $('#data_final').val(dataFimSessao);
-                setModoNavegacao('Período Customizado');
+                if (labelSalvo) {
+                    $('#periodo_label').val(labelSalvo);
+                    setModoNavegacao(labelSalvo);
+                    var radioMap = {
+                        'Hoje': 'hoje', 'Esta Semana': 'semana',
+                        'Últimos 30 Dias': '30dias', 'Este Trimestre': 'trimestre'
+                    };
+                    var radioKey = radioMap[labelSalvo];
+                    if (radioKey) {
+                        ctpFiltroModal.radio = radioKey;
+                    } else {
+                        ctpFiltroModal.dataInicio = dataIniSessao;
+                        ctpFiltroModal.dataFim    = dataFimSessao;
+                    }
+                } else {
+                    setModoNavegacao('Período Customizado');
+                    ctpFiltroModal.dataInicio = dataIniSessao;
+                    ctpFiltroModal.dataFim    = dataFimSessao;
+                }
             }
         }
 
