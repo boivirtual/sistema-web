@@ -532,7 +532,7 @@ $data_sistema = date("Y-m-d");
                                         </div>
 
                                         <!-- Bloco cabeçalho parcelado: 1º Vencimento | Intervalo -->
-                                        <div id="bloco_parc_header" class="col-md-10" style="padding: 0; display: none;">
+                                        <div id="bloco_parc_header" class="col-md-9" style="padding: 0; display: none;">
                                             <div class="row" style="margin: 0;">
                                                 <div class="form-group col-md-3">
                                                     <label for="primeiro_vencimento" class="control-label"><span class="required">*</span> 1º Vencimento</label>
