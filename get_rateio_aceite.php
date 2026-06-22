@@ -32,6 +32,10 @@ if (!$rs_det || mysqli_num_rows($rs_det) == 0) {
     exit;
 }
 
+if ($numero_doc !== '') {
+    echo '<p style="font-size:13px;font-weight:600;margin-bottom:10px;">Documento N&ordm;: ' . $numero_doc . '</p>';
+}
+
 echo '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
 echo '<tr style="border-bottom:1px solid #ccc;">';
 echo '<th style="padding:5px 10px;text-align:left;font-weight:600;">Local</th>';
