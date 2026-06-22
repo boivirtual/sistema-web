@@ -199,7 +199,7 @@
                         $desc_conta_plain = $first_conta ? $first_conta->rc_nome_conta : 'Rateio';
                         $desc_conta = htmlspecialchars($desc_conta_plain);
                         if ($total_contas > 1) {
-                            $desc_conta .= ' +' . ($total_contas - 1);
+                            $desc_conta .= ' <span style="color:#337ab7;font-weight:600">+' . ($total_contas - 1) . '</span>';
                         }
 
                     } else {
