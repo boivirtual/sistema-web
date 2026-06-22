@@ -145,11 +145,12 @@
     $_SESSION['data_fim_ctp']=$data_final;
     $_SESSION['tipo_data_ctp']=$tipo_data;
     $_SESSION['razao_nome_ctp']=$array_fornecedor;
-    $_SESSION['lista_ctp']='S'; 
-    $_SESSION['codigo_c_custo_ctp']=$array_cc; 
-    $_SESSION['codigo_local_ctp']=$array_fazenda; 
+    $_SESSION['lista_ctp']='S';
+    $_SESSION['codigo_c_custo_ctp']=$array_cc;
+    $_SESSION['codigo_local_ctp']=$array_fazenda;
     $_SESSION['codigo_conta_ctp']=$array_conta;
     $_SESSION['periodo_label_ctp'] = isset($_REQUEST["periodo_label"]) ? $_REQUEST["periodo_label"] : '';
+    $_SESSION['limpa_conta_ctp'] = '';
 
 ?>
 <!DOCTYPE html>
