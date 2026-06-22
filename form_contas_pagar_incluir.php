@@ -1825,6 +1825,7 @@ $data_sistema = date("Y-m-d");
                         $('#col_btn_confirmar_locais').hide();
                         $('#secao_distribuir_rateio').hide();
                         $('#linhas_rateio').empty();
+                        $('#rodape_rateio').remove();
                     }
                 });
 
