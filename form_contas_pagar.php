@@ -772,8 +772,32 @@ if ($num_rows_usuario != 0) {
             }
         }
 
+        // Restaura selectpickers ANTES de consultar_ctp() porque $(window).load roda depois do document.ready
+        var _exLoc = $('#exibe_local').val();
+        if (_exLoc) {
+            _exLoc.split(',').filter(function(v){ return v !== ''; }).forEach(function(v) {
+                $('#codigo_fazenda option[value="' + v + '"]').attr('selected', true);
+            });
+            $('#codigo_fazenda').selectpicker('refresh');
+        }
+        var _exFor = $('#exibe_fornecedor').val();
+        if (_exFor) {
+            _exFor.split(',').filter(function(v){ return v !== ''; }).forEach(function(v) {
+                $('#razao_nome option[value="' + v + '"]').attr('selected', true);
+            });
+            $('#razao_nome').selectpicker('refresh');
+        }
+        var _exCC = $('#exibe_cc').val();
+        if (_exCC) {
+            _exCC.split(',').filter(function(v){ return v !== ''; }).forEach(function(v) {
+                $('#codigo_cc option[value="' + v + '"]').attr('selected', true);
+            });
+            $('#codigo_cc').selectpicker('refresh');
+        }
+
         $('[data-toggle="tooltip"]').tooltip();
         consultar_ctp();
+        atualizarLinkLimparFiltros();
 
         // Exibir botão Consultar e verificar link Limpar Filtros ao alterar Local ou Fornecedor
         $('#codigo_fazenda, #razao_nome').on('changed.bs.select', function() {
