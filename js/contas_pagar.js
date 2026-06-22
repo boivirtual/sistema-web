@@ -1194,10 +1194,7 @@ function consultar_ctp() {
     }
 
     if (tem_conta=='') {
-        // Se os checkboxes de conta ainda não foram carregados no DOM (AJAX pendente)
-        // e há um filtro salvo na sessão, usa o valor da sessão para não perdê-lo
-        var _sessaoConta = (aChk.length === 0) ? $('#exibe_conta').val() : '';
-        var array_conta = _sessaoConta ? _sessaoConta : new Array();
+        var array_conta= new Array();
         conta_filtro = "Conta: Todas";
     }
     else {
