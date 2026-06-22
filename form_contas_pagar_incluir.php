@@ -2171,8 +2171,8 @@ $data_sistema = date("Y-m-d");
             $row.find('.rat-perc').val(pct.toFixed(2).replace('.',',') + '%');
         });
 
-        // Atualiza total a distribuir (sempre verde)
-        $('#span_rat_total').text('R$ ' + total.toFixed(2).replace('.',','));
+        // Atualiza soma já distribuída (cresce conforme o usuário digita, sempre verde)
+        $('#span_rat_total').text('R$ ' + somaValores.toFixed(2).replace('.',','));
 
         // Atualiza linha restante (verde quando zerado, vermelho quando há saldo)
         var corRest = (Math.abs(restante) < 0.01) ? '#27ae60' : '#c0392b';
