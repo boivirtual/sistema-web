@@ -538,7 +538,7 @@ $data_sistema = date("Y-m-d");
                                                 <div class="form-group col-md-3">
                                                     <label for="intervalo" class="control-label"><span class="required">*</span> Intervalo (dias)</label>
                                                     <input type="number" class="form-control" id="intervalo" name="intervalo"
-                                                           value="30" min="1" onchange="recalcularDatas()">
+                                                           value="30" min="1" onchange="onIntervaloChange()">
                                                 </div>
                                                 <div class="form-group col-md-4">
                                                     <label for="primeiro_vencimento" class="control-label"><span class="required">*</span> 1º Vencimento</label>
