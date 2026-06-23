@@ -1246,7 +1246,7 @@ $data_sistema = date("Y-m-d");
             var total = ctpGetValorTotal();
             if (n < 1 || total === 0) return;
 
-            var novoVlr = ctpParseMoney($('#parc_valor_' + idx).val());
+            var novoVlr = parseMoneyVal($('#parc_valor_' + idx).val());
             // Atualiza percentual desta parcela
             var novoPerc = total > 0 ? (novoVlr / total) * 100 : 0;
             $('#parc_perc_' + idx).val(ctpFormatMoney(novoPerc));
