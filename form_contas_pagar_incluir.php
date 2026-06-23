@@ -574,6 +574,10 @@ $data_sistema = date("Y-m-d");
                                     <div id="secao_condicao_recorrente" style="display:none;">
                                         <div class="secao-titulo">Condição de Pagamento — Recorrente</div>
                                         <div class="row">
+                                            <div class="form-group col-md-2">
+                                                <label for="rep_primeiro_venc" class="control-label"><span class="required">*</span> 1º Vencimento</label>
+                                                <input type="date" class="form-control" id="rep_primeiro_venc" name="rep_primeiro_venc" onchange="gerarPreviewRecorrencias()">
+                                            </div>
                                             <div class="form-group col-md-3">
                                                 <label for="rep_cobrar_no" class="control-label"><span class="required">*</span> Cobrar Sempre No</label>
                                                 <select class="form-control selectpicker" id="rep_cobrar_no" name="rep_cobrar_no" onchange="gerarPreviewRecorrencias()">
@@ -587,10 +591,6 @@ $data_sistema = date("Y-m-d");
                                                     <option value="25">Todo dia 25</option>
                                                     <option value="ultimo">Último dia do mês</option>
                                                 </select>
-                                            </div>
-                                            <div class="form-group col-md-2">
-                                                <label for="rep_primeiro_venc" class="control-label"><span class="required">*</span> 1º Vencimento</label>
-                                                <input type="date" class="form-control" id="rep_primeiro_venc" name="rep_primeiro_venc" onchange="gerarPreviewRecorrencias()">
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label for="rep_banco" class="control-label"><span class="required">*</span> Banco/Conta Pagamento</label>
