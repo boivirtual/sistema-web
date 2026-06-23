@@ -483,7 +483,7 @@ $data_sistema = date("Y-m-d");
                                         <!-- sel_modo_parc: controla A Vista / Parcelado (sem name, não vai ao POST) -->
                                         <!-- #parcelamento (hidden): valor numérico real enviado ao backend e lido pelo JS -->
                                         <input type="hidden" id="parcelamento" name="parcelamento" value="0">
-                                        <div class="form-group col-md-2">
+                                        <div class="form-group col-md-3">
                                             <label class="control-label"><span class="required">*</span> Parcelamento</label>
                                             <select class="form-control" id="sel_modo_parc" onchange="onParcelamentoChange()">
                                                 <option value="avista">A Vista</option>
@@ -491,8 +491,8 @@ $data_sistema = date("Y-m-d");
                                                 <option value="parc">Parcelado em 2x ou mais</option>
                                             </select>
                                         </div>
-                                        <!-- Qtde de parcelas — só aparece quando Parcelado -->
-                                        <div class="form-group col-md-1" id="bloco_qtd_parcelas" style="display:none;">
+                                        <!-- Nº de Parcelas — só aparece quando Parcelado em 2x ou mais -->
+                                        <div class="form-group col-md-2" id="bloco_qtd_parcelas" style="display:none;">
                                             <label for="qtd_parcelas_input" class="control-label">Nº de Parcelas</label>
                                             <input type="number" class="form-control" id="qtd_parcelas_input" min="1" max="360" placeholder="Nº" style="text-align:center;" oninput="onQtdParcelasChange(this.value)">
                                         </div>
