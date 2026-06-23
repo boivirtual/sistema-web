@@ -1201,7 +1201,7 @@ $data_sistema = date("Y-m-d");
                 tr += '</div></td>';
                 tr += '<td style="padding:4px 8px;"><small style="color:#888;">Valor Pago</small><br>';
                 tr += '<input type="text" class="form-control" name="parcela[' + i + '][valor_pago]" id="parc_vlr_pago_' + i + '" placeholder="0,00" style="height:28px;font-size:12px;padding:2px 6px;background:#f0f8e8;font-weight:600;" readonly></td>';
-                tr += '<td style="padding:0; border:none; background:transparent;"></td>';
+                tr += '<td style="padding:0; background:#fffde7;"></td>';
                 tr += '</tr>';
 
                 tbody.append(tr);
