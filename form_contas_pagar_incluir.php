@@ -1337,6 +1337,14 @@ $data_sistema = date("Y-m-d");
         function onParcelamentoChange() {
             var modo = $('#sel_modo_parc').val();
 
+            // Sempre reseta o bloco de pagamento ao trocar de modo
+            $('#pago').prop('checked', false);
+            $('#pago_data_pagamento').val('');
+            $('#pago_desconto').val('');
+            $('#pago_juros').val('');
+            $('#pago_valor_pago').val('');
+            $('#bloco_pago_avista').hide();
+
             if (modo === 'avista') {
                 $('#parcelamento').val(0);
                 $('#bloco_qtd_parcelas').hide();
