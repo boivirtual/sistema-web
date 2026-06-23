@@ -398,6 +398,19 @@
             $banco_n           = isset($_POST['codigo_forma_rec']) ? intval($_POST['codigo_forma_rec']) : 0;
             $tipo_doc_n        = isset($_POST['tipo_doc']) ? mysqli_real_escape_string($conector, $_POST['tipo_doc']) : '00';
             $pago_n            = isset($_POST['pago']) ? 'S' : 'N';
+            // Dados do pagamento (quando Pago marcado)
+            $pago_dt_pag_n   = (!empty($_POST['pago_data_pagamento']))
+                                ? mysqli_real_escape_string($conector, $_POST['pago_data_pagamento'])
+                                : $data_vencimento_n;
+            $pago_desconto_n = (!empty($_POST['pago_desconto']))
+                                ? floatval(str_replace(',', '.', str_replace('.', '', $_POST['pago_desconto'])))
+                                : 0;
+            $pago_juros_n    = (!empty($_POST['pago_juros']))
+                                ? floatval(str_replace(',', '.', str_replace('.', '', $_POST['pago_juros'])))
+                                : 0;
+            $pago_vlr_pago_n = (!empty($_POST['pago_valor_pago']))
+                                ? floatval(str_replace(',', '.', str_replace('.', '', $_POST['pago_valor_pago'])))
+                                : $vlr_total_n;
 
             if (empty($data_vencimento_n)) {
                 header('Content-type: application/json');
