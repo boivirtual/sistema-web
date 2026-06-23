@@ -1731,6 +1731,69 @@ $data_sistema = date("Y-m-d");
         }
 
         // ----------------------------------------------------------------
+        // Pago checkbox — bloco À Vista / 1 Parcela
+        // ----------------------------------------------------------------
+        function onPagoAvistaChange() {
+            var checked = $('#pago').is(':checked');
+            if (checked) {
+                $('#pago_data_pagamento').val($('#data_vencimento').val());
+                $('#pago_desconto').val('');
+                $('#pago_juros').val('');
+                calcularValorPagoAvista();
+                $('#bloco_pago_avista').show();
+            } else {
+                $('#pago_data_pagamento').val('');
+                $('#pago_desconto').val('');
+                $('#pago_juros').val('');
+                $('#pago_valor_pago').val('');
+                $('#bloco_pago_avista').hide();
+            }
+        }
+
+        function calcularValorPagoAvista() {
+            var vlrTotal = ctpGetValorTotal();
+            var d = ctpParseMoney($('#pago_desconto').val());
+            var j = ctpParseMoney($('#pago_juros').val());
+            if ($('#pago_desconto').val()) $('#pago_desconto').val(ctpFormatMoney(d));
+            if ($('#pago_juros').val())    $('#pago_juros').val(ctpFormatMoney(j));
+            var vlrPago = vlrTotal - d + j;
+            if (vlrPago < 0) vlrPago = 0;
+            $('#pago_valor_pago').val(ctpFormatMoney(vlrPago));
+        }
+
+        // ----------------------------------------------------------------
+        // Pago checkbox — tabela de parcelas
+        // ----------------------------------------------------------------
+        function togglePagoParc(idx) {
+            var checked = $('#parc_pago_' + idx).is(':checked');
+            var $sub = $('#parc_pago_row_' + idx);
+            if (checked) {
+                $('#parc_dt_pag_' + idx).val($('#parc_data_' + idx).val());
+                $('#parc_desconto_' + idx).val('');
+                $('#parc_juros_' + idx).val('');
+                recalcularValorPago(idx);
+                $sub.show();
+            } else {
+                $('#parc_dt_pag_' + idx).val('');
+                $('#parc_desconto_' + idx).val('');
+                $('#parc_juros_' + idx).val('');
+                $('#parc_vlr_pago_' + idx).val('');
+                $sub.hide();
+            }
+        }
+
+        function recalcularValorPago(idx) {
+            var vlrParc = ctpParseMoney($('#parc_valor_' + idx).val());
+            var d = ctpParseMoney($('#parc_desconto_' + idx).val());
+            var j = ctpParseMoney($('#parc_juros_' + idx).val());
+            if ($('#parc_desconto_' + idx).val()) $('#parc_desconto_' + idx).val(ctpFormatMoney(d));
+            if ($('#parc_juros_' + idx).val())    $('#parc_juros_' + idx).val(ctpFormatMoney(j));
+            var vlrPago = vlrParc - d + j;
+            if (vlrPago < 0) vlrPago = 0;
+            $('#parc_vlr_pago_' + idx).val(ctpFormatMoney(vlrPago));
+        }
+
+        // ----------------------------------------------------------------
         // Verifica documento duplicado (mesmo fornecedor + mesmo nº doc)
         // ----------------------------------------------------------------
         function verificarDocDuplicado() {
