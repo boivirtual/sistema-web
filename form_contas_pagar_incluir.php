@@ -1184,7 +1184,17 @@ $data_sistema = date("Y-m-d");
                 tr += '<td><input type="text"  class="form-control parc-perc"  name="parcela[' + i + '][percentual]" id="parc_perc_' + i + '"  value="' + ctpFormatMoney(percEsta) + '" readonly style="background:#f5f5f5;color:#777;"></td>';
                 tr += '<td>' + buildSelectBanco('parcela[' + i + '][banco_conta]', 'parc_banco_' + i, '', i) + '</td>';
                 tr += '<td>' + buildSelectTipoDoc('parcela[' + i + '][tipo_doc]', 'parc_tipodoc_' + i, '', i) + '</td>';
-                tr += '<td class="pago-parc" style="text-align:center;"><input type="checkbox" name="parcela[' + i + '][pago]" id="parc_pago_' + i + '" value="S"></td>';
+                tr += '<td class="pago-parc" style="text-align:center;"><input type="checkbox" name="parcela[' + i + '][pago]" id="parc_pago_' + i + '" value="S" onchange="togglePagoParc(' + i + ')"></td>';
+                tr += '</tr>';
+                tr += '<tr id="parc_pago_row_' + i + '" style="display:none; background:#fffde7;">';
+                tr += '<td colspan="2" style="padding:4px 8px;"><small style="color:#888;">Data Pagamento</small><br>';
+                tr += '<input type="date" class="form-control" name="parcela[' + i + '][data_pagamento]" id="parc_dt_pag_' + i + '" style="height:28px;font-size:12px;padding:2px 6px;"></td>';
+                tr += '<td style="padding:4px 8px;"><small style="color:#888;">Desconto</small><br>';
+                tr += '<input type="text" class="form-control" name="parcela[' + i + '][desconto]" id="parc_desconto_' + i + '" placeholder="0,00" style="height:28px;font-size:12px;padding:2px 6px;" onkeypress="mask.money.call(this)" onblur="recalcularValorPago(' + i + ')"></td>';
+                tr += '<td style="padding:4px 8px;"><small style="color:#888;">Juros</small><br>';
+                tr += '<input type="text" class="form-control" name="parcela[' + i + '][juros]" id="parc_juros_' + i + '" placeholder="0,00" style="height:28px;font-size:12px;padding:2px 6px;" onkeypress="mask.money.call(this)" onblur="recalcularValorPago(' + i + ')"></td>';
+                tr += '<td colspan="3" style="padding:4px 8px;"><small style="color:#888;">Valor Pago</small><br>';
+                tr += '<input type="text" class="form-control" name="parcela[' + i + '][valor_pago]" id="parc_vlr_pago_' + i + '" placeholder="0,00" style="height:28px;font-size:12px;padding:2px 6px;background:#f0f8e8;font-weight:600;" readonly></td>';
                 tr += '</tr>';
 
                 tbody.append(tr);
