@@ -805,9 +805,10 @@ if ($num_rows_usuario != 0) {
         }
         atualizarLinkLimparFiltros();
 
-        // Exibir botão Consultar e verificar link Limpar Filtros ao alterar Local ou Fornecedor
+        // Exibir botão Consultar e ocultar listagem ao alterar Local ou Fornecedor
         $('#codigo_fazenda, #razao_nome').on('changed.bs.select', function() {
             $('#btn_consultar_filtro').show();
+            $('#lista_contas_pagar').hide();
             atualizarLinkLimparFiltros();
         });
 
