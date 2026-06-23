@@ -466,8 +466,8 @@
                 if ($pago_n == 'S') {
                     $novo_id_fmt = str_pad($novo_id, 9, '0', STR_PAD_LEFT);
                     $hist = mysqli_real_escape_string($conector, 'Pag total do doc para: ' . $razao_n);
-                    mysqli_query($conector, "INSERT INTO baixa_contas_pagar (bcp_id, bcp_numero_id, bcp_codigo_fornecedor, bcp_parcela, bcp_sequencia_pagamento, bcp_nome_fornecedor, bcp_numero_documento, bcp_data_pagamento, bcp_valor_pagamento, bcp_situacao, bcp_data_aceite, bcp_usuario_aceite, bcp_numero_agendamento, bcp_historico_pagamento) VALUES ('$novo_id_fmt','$numero_doc_n','$codigo_for_n',1,1,'$razao_n','$numero_doc_n','$data_emissao_n','$vlr_total_n','P','$data_sistema','$nomeusuario',null,'$hist')");
-                    mysqli_query($conector, "UPDATE contas_pagar SET ctp_situacao='P' WHERE ctp_id='$novo_id'");
+                    mysqli_query($conector, "INSERT INTO baixa_contas_pagar (bcp_id, bcp_numero_id, bcp_codigo_fornecedor, bcp_parcela, bcp_sequencia_pagamento, bcp_nome_fornecedor, bcp_numero_documento, bcp_data_pagamento, bcp_valor_pagamento, bcp_situacao, bcp_data_aceite, bcp_usuario_aceite, bcp_numero_agendamento, bcp_historico_pagamento) VALUES ('$novo_id_fmt','$numero_doc_n','$codigo_for_n',1,1,'$razao_n','$numero_doc_n','$pago_dt_pag_n','$pago_vlr_pago_n','P','$data_sistema','$nomeusuario',null,'$hist')");
+                    mysqli_query($conector, "UPDATE contas_pagar SET ctp_situacao='P', ctp_valor_desconto='$pago_desconto_n', ctp_valor_juros='$pago_juros_n' WHERE ctp_id='$novo_id'");
                 }
             } else {
                 // Múltiplas fazendas sem rateio (array_fazendas legado)
