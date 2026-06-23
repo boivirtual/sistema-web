@@ -557,12 +557,16 @@
             // Única fazenda sem rateio
             $cod_loc_esc = mysqli_real_escape_string($conector, trim($codigo_local_str));
             foreach ($parcelas_post as $idx => $parc) {
-                $p_data   = mysqli_real_escape_string($conector, $parc['data_vencimento']);
-                $p_vlr    = floatval(str_replace(',', '.', str_replace('.', '', $parc['valor'])));
-                $p_banco  = intval($parc['banco_conta']);
-                $p_tdoc   = mysqli_real_escape_string($conector, $parc['tipo_doc']);
-                $p_pago   = isset($parc['pago']) ? 'S' : 'N';
-                $p_num    = $idx + 1;
+                $p_data    = mysqli_real_escape_string($conector, $parc['data_vencimento']);
+                $p_vlr     = floatval(str_replace(',', '.', str_replace('.', '', $parc['valor'])));
+                $p_banco   = intval($parc['banco_conta']);
+                $p_tdoc    = mysqli_real_escape_string($conector, $parc['tipo_doc']);
+                $p_pago    = isset($parc['pago']) ? 'S' : 'N';
+                $p_num     = $idx + 1;
+                $p_dt_pag  = (!empty($parc['data_pagamento'])) ? mysqli_real_escape_string($conector, $parc['data_pagamento']) : $p_data;
+                $p_desconto = (!empty($parc['desconto'])) ? floatval(str_replace(',', '.', str_replace('.', '', $parc['desconto']))) : 0;
+                $p_juros    = (!empty($parc['juros']))    ? floatval(str_replace(',', '.', str_replace('.', '', $parc['juros'])))    : 0;
+                $p_vlr_pago = (!empty($parc['valor_pago'])) ? floatval(str_replace(',', '.', str_replace('.', '', $parc['valor_pago']))) : $p_vlr;
 
                 $ok = $insere_parcela(
                     $numero_doc_n, $codigo_for_n, $p_num, $p_tdoc, $razao_n,
@@ -584,8 +588,8 @@
                 if ($p_pago == 'S') {
                     $novo_id_fmt = str_pad($novo_id, 9, '0', STR_PAD_LEFT);
                     $hist = mysqli_real_escape_string($conector, 'Pag parcela ' . $p_num . ' para: ' . $razao_n);
-                    mysqli_query($conector, "INSERT INTO baixa_contas_pagar (bcp_id, bcp_numero_id, bcp_codigo_fornecedor, bcp_parcela, bcp_sequencia_pagamento, bcp_nome_fornecedor, bcp_numero_documento, bcp_data_pagamento, bcp_valor_pagamento, bcp_situacao, bcp_data_aceite, bcp_usuario_aceite, bcp_numero_agendamento, bcp_historico_pagamento) VALUES ('$novo_id_fmt','$numero_doc_n','$codigo_for_n','$p_num',1,'$razao_n','$numero_doc_n','$p_data','$p_vlr','P','$data_sistema','$nomeusuario',null,'$hist')");
-                    mysqli_query($conector, "UPDATE contas_pagar SET ctp_situacao='P' WHERE ctp_id='$novo_id'");
+                    mysqli_query($conector, "INSERT INTO baixa_contas_pagar (bcp_id, bcp_numero_id, bcp_codigo_fornecedor, bcp_parcela, bcp_sequencia_pagamento, bcp_nome_fornecedor, bcp_numero_documento, bcp_data_pagamento, bcp_valor_pagamento, bcp_situacao, bcp_data_aceite, bcp_usuario_aceite, bcp_numero_agendamento, bcp_historico_pagamento) VALUES ('$novo_id_fmt','$numero_doc_n','$codigo_for_n','$p_num',1,'$razao_n','$numero_doc_n','$p_dt_pag','$p_vlr_pago','P','$data_sistema','$nomeusuario',null,'$hist')");
+                    mysqli_query($conector, "UPDATE contas_pagar SET ctp_situacao='P', ctp_valor_desconto='$p_desconto', ctp_valor_juros='$p_juros' WHERE ctp_id='$novo_id'");
                 }
             }
         } else {
