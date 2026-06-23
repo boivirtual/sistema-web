@@ -1793,14 +1793,16 @@ $data_sistema = date("Y-m-d");
         }
 
         function recalcularValorPago(idx) {
-            var vlrParc = ctpParseMoney($('#parc_valor_' + idx).val());
-            var d = ctpParseMoney($('#parc_desconto_' + idx).val());
-            var j = ctpParseMoney($('#parc_juros_' + idx).val());
-            if ($('#parc_desconto_' + idx).val()) $('#parc_desconto_' + idx).val(ctpFormatMoney(d));
-            if ($('#parc_juros_' + idx).val())    $('#parc_juros_' + idx).val(ctpFormatMoney(j));
+            var vlrParc = parseMoneyVal($('#parc_valor_' + idx).val());
+            var dv = $('#parc_desconto_' + idx).val();
+            var jv = $('#parc_juros_' + idx).val();
+            var d = parseMoneyVal(dv);
+            var j = parseMoneyVal(jv);
+            if (dv) $('#parc_desconto_' + idx).val(formatMoney(d));
+            if (jv) $('#parc_juros_' + idx).val(formatMoney(j));
             var vlrPago = vlrParc - d + j;
             if (vlrPago < 0) vlrPago = 0;
-            $('#parc_vlr_pago_' + idx).val(ctpFormatMoney(vlrPago));
+            $('#parc_vlr_pago_' + idx).val(formatMoney(vlrPago));
         }
 
         // ----------------------------------------------------------------
