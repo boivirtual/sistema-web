@@ -531,7 +531,7 @@ $data_sistema = date("Y-m-d");
                                                 </div>
                                             </div>
                                             <!-- Dados do pagamento (aparece ao marcar Pago) -->
-                                            <div id="bloco_pago_avista" style="display:none; margin-top:6px; margin-left:15px; margin-right:15px; background:#fffde7; border:1px solid #ffe082; border-radius:4px; padding:6px 10px;">
+                                            <div id="bloco_pago_avista" style="display:none; margin-top:4px; padding:4px 0;">
                                                 <div class="row" style="margin:0;">
                                                     <div class="form-group col-md-3">
                                                         <label class="control-label">Data Pagamento</label>
