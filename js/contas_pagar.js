@@ -1347,6 +1347,7 @@ function consultar_ctp() {
      '&array_fazenda=' + array_fazenda +
      '&array_cc=' + array_cc +
      '&periodo_label=' + encodeURIComponent(periodo_label), function() {
+        $('#lista_contas_pagar').show();
         ctpRestaurarPosicao();
     });
 }
