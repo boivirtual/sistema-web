@@ -498,7 +498,7 @@ $data_sistema = date("Y-m-d");
                                         </div>
 
                                         <!-- Bloco À Vista: Vencimento | Banco | Tipo Doc | Pago -->
-                                        <div id="bloco_avista" class="col-md-10" style="padding: 0;">
+                                        <div id="bloco_avista" class="col-md-9" style="padding: 0;">
                                             <div class="row" style="margin: 0;">
                                                 <div class="form-group col-md-3">
                                                     <label for="data_vencimento" class="control-label"><span class="required">*</span> Vencimento</label>
