@@ -1762,13 +1762,13 @@ $data_sistema = date("Y-m-d");
             var vlrTotal = ctpGetValorTotal();
             var dv = $('#pago_desconto').val();
             var jv = $('#pago_juros').val();
-            var d = parseMoneyVal(dv);
-            var j = parseMoneyVal(jv);
-            if (dv) $('#pago_desconto').val(formatMoney(d));
-            if (jv) $('#pago_juros').val(formatMoney(j));
+            var d = ctpParseMoney(dv);
+            var j = ctpParseMoney(jv);
+            if (dv) $('#pago_desconto').val(ctpFormatMoney(d));
+            if (jv) $('#pago_juros').val(ctpFormatMoney(j));
             var vlrPago = vlrTotal - d + j;
             if (vlrPago < 0) vlrPago = 0;
-            $('#pago_valor_pago').val(formatMoney(vlrPago));
+            $('#pago_valor_pago').val(ctpFormatMoney(vlrPago));
         }
 
         // ----------------------------------------------------------------
