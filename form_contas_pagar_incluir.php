@@ -526,8 +526,32 @@ $data_sistema = date("Y-m-d");
                                                     </select>
                                                 </div>
                                                 <div class="col-md-1 pago-wrap">
-                                                    <input class="form-check-input" type="checkbox" value="" id="pago" name="pago">
+                                                    <input class="form-check-input" type="checkbox" value="" id="pago" name="pago" onchange="onPagoAvistaChange()">
                                                     <label for="pago">Pago</label>
+                                                </div>
+                                            </div>
+                                            <!-- Dados do pagamento (aparece ao marcar Pago) -->
+                                            <div id="bloco_pago_avista" style="display:none; margin-top:6px; background:#fffde7; border:1px solid #ffe082; border-radius:4px; padding:6px 10px;">
+                                                <div class="row" style="margin:0;">
+                                                    <div class="form-group col-md-3">
+                                                        <label class="control-label">Data Pagamento</label>
+                                                        <input type="date" class="form-control" id="pago_data_pagamento" name="pago_data_pagamento">
+                                                    </div>
+                                                    <div class="form-group col-md-2">
+                                                        <label class="control-label">Desconto</label>
+                                                        <input type="text" class="form-control" id="pago_desconto" name="pago_desconto" placeholder="0,00"
+                                                               onkeypress="mask.money.call(this)" onblur="calcularValorPagoAvista()">
+                                                    </div>
+                                                    <div class="form-group col-md-2">
+                                                        <label class="control-label">Juros</label>
+                                                        <input type="text" class="form-control" id="pago_juros" name="pago_juros" placeholder="0,00"
+                                                               onkeypress="mask.money.call(this)" onblur="calcularValorPagoAvista()">
+                                                    </div>
+                                                    <div class="form-group col-md-2">
+                                                        <label class="control-label">Valor Pago</label>
+                                                        <input type="text" class="form-control" id="pago_valor_pago" name="pago_valor_pago" placeholder="0,00"
+                                                               readonly style="background:#f0f8e8; font-weight:600;">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
