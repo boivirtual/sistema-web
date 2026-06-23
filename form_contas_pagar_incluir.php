@@ -1186,6 +1186,18 @@ $data_sistema = date("Y-m-d");
         }
 
         // ----------------------------------------------------------------
+        // Ao alterar o intervalo: atualiza 1º Vencimento = emissão + intervalo
+        // ----------------------------------------------------------------
+        function onIntervaloChange() {
+            var emissao   = $('#data_emissao').val();
+            var intervalo = parseInt($('#intervalo').val()) || 30;
+            if (emissao) {
+                $('#primeiro_vencimento').val(addDias(emissao, intervalo));
+            }
+            recalcularDatas();
+        }
+
+        // ----------------------------------------------------------------
         // Recalcular ao alterar VALOR de uma parcela
         // ----------------------------------------------------------------
         function recalcularPorValor(idx) {
