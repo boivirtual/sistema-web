@@ -1329,6 +1329,16 @@ $data_sistema = date("Y-m-d");
                 $('#tbody_parcelas').empty();
                 return;
             }
+            if (n < 2) {
+                $('#mensagem_erro').modal();
+                $('#mensagem_erro .modal-body').html('Para "Parcelado em 2x ou mais", informe no mínimo 2 parcelas.');
+                $('#qtd_parcelas_input').val('');
+                $('#parcelamento').val(0);
+                $('#bloco_parc_header').hide();
+                $('#bloco_parcelas').hide();
+                $('#tbody_parcelas').empty();
+                return;
+            }
             // Atualiza o hidden que as funções JS e o backend leem
             $('#parcelamento').val(n);
 
