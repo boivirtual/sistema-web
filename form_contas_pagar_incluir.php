@@ -1795,11 +1795,11 @@ $data_sistema = date("Y-m-d");
         }
 
         function recalcularValorPago(idx) {
-            var vlrParc = ctpParseMoney($('#parc_valor_' + idx).val());
+            var vlrParc = parseMoneyVal($('#parc_valor_' + idx).val());
             var dv = $('#parc_desconto_' + idx).val();
             var jv = $('#parc_juros_' + idx).val();
-            var d = ctpParseMoney(dv);
-            var j = ctpParseMoney(jv);
+            var d = parseMoneyVal(dv);
+            var j = parseMoneyVal(jv);
             if (dv) $('#parc_desconto_' + idx).val(ctpFormatMoney(d));
             if (jv) $('#parc_juros_' + idx).val(ctpFormatMoney(j));
             var vlrPago = vlrParc - d + j;
