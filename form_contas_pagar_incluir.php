@@ -487,7 +487,8 @@ $data_sistema = date("Y-m-d");
                                             <label class="control-label"><span class="required">*</span> Parcelamento</label>
                                             <select class="form-control" id="sel_modo_parc" onchange="onParcelamentoChange()">
                                                 <option value="avista">A Vista</option>
-                                                <option value="parc">Parcelado</option>
+                                                <option value="uma_parcela">1 Parcela</option>
+                                                <option value="parc">Parcelado em 2x ou mais</option>
                                             </select>
                                         </div>
                                         <!-- Qtde de parcelas — só aparece quando Parcelado -->
