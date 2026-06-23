@@ -1801,11 +1801,14 @@ $data_sistema = date("Y-m-d");
             recalcularRateio();
         });
 
-        // Ao carregar: se À Vista, vencimento = emissão
+        // Ao carregar: pré-preenche vencimento conforme modo selecionado
         (function() {
-            if (parseInt($('#parcelamento').val()) === 0) {
-                var emissao = $('#data_emissao').val();
-                if (emissao) $('#data_vencimento').val(emissao);
+            var modo = $('#sel_modo_parc').val();
+            var emissao = $('#data_emissao').val();
+            if (modo === 'avista' && emissao) {
+                $('#data_vencimento').val(emissao);
+            } else if (modo === 'uma_parcela' && emissao) {
+                $('#data_vencimento').val(addDias(emissao, 30));
             }
         })();
 
