@@ -1279,13 +1279,12 @@ $data_sistema = date("Y-m-d");
         }
 
         // ----------------------------------------------------------------
-        // Alterna entre À Vista e Parcelado
+        // Alterna entre À Vista, 1 Parcela e Parcelado em 2x ou mais
         // ----------------------------------------------------------------
         function onParcelamentoChange() {
             var modo = $('#sel_modo_parc').val();
 
             if (modo === 'avista') {
-                // À Vista
                 $('#parcelamento').val(0);
                 $('#bloco_qtd_parcelas').hide();
                 $('#qtd_parcelas_input').val('');
@@ -1296,10 +1295,22 @@ $data_sistema = date("Y-m-d");
                 $('#parc_totais').empty();
                 var emissao = $('#data_emissao').val();
                 if (emissao) $('#data_vencimento').val(emissao);
+            } else if (modo === 'uma_parcela') {
+                $('#parcelamento').val(0);
+                $('#bloco_qtd_parcelas').hide();
+                $('#qtd_parcelas_input').val('');
+                $('#bloco_avista').show();
+                $('#bloco_parc_header').hide();
+                $('#bloco_parcelas').hide();
+                $('#tbody_parcelas').empty();
+                $('#parc_totais').empty();
+                var emissao = $('#data_emissao').val();
+                if (emissao) $('#data_vencimento').val(addDias(emissao, 30));
             } else {
-                // Parcelado — mostra campo de quantidade e limpa tabela até digitar
+                // Parcelado em 2x ou mais
                 $('#parcelamento').val(0);
                 $('#bloco_qtd_parcelas').show();
+                $('#qtd_parcelas_input').attr('min', 2).val('');
                 $('#bloco_avista').hide();
                 $('#bloco_parc_header').hide();
                 $('#bloco_parcelas').hide();
