@@ -581,13 +581,13 @@ $data_sistema = date("Y-m-d");
                                         <table class="tbl-parcelas">
                                             <thead>
                                                 <tr>
-                                                    <th>Parcela</th>
-                                                    <th>Vencimento</th>
-                                                    <th style="width:120px">Valor (R$)</th>
-                                                    <th style="width:90px">% Perc.</th>
-                                                    <th>Banco/Conta Pagamento</th>
-                                                    <th>Tipo Documento</th>
-                                                    <th style="text-align:center">Pago</th>
+                                                    <th style="width:13%">Parcela</th>
+                                                    <th style="width:12%">Vencimento</th>
+                                                    <th style="width:10%">Valor (R$)</th>
+                                                    <th style="width:8%">% Perc.</th>
+                                                    <th style="width:35%">Banco/Conta Pagamento</th>
+                                                    <th style="width:17%">Tipo Documento</th>
+                                                    <th style="width:5%;text-align:center">Pago</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="tbody_parcelas"></tbody>
