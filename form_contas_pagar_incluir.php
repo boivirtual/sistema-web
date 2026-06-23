@@ -493,7 +493,7 @@ $data_sistema = date("Y-m-d");
                                         </div>
                                         <!-- Qtde de parcelas — só aparece quando Parcelado -->
                                         <div class="form-group col-md-1" id="bloco_qtd_parcelas" style="display:none;">
-                                            <label for="qtd_parcelas_input" class="control-label">Qtde</label>
+                                            <label for="qtd_parcelas_input" class="control-label">Nº de Parcelas</label>
                                             <input type="number" class="form-control" id="qtd_parcelas_input" min="1" max="360" placeholder="Nº" style="text-align:center;" oninput="onQtdParcelasChange(this.value)">
                                         </div>
 
