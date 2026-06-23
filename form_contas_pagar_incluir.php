@@ -532,18 +532,18 @@ $data_sistema = date("Y-m-d");
                                             </div>
                                         </div>
 
-                                        <!-- Bloco cabeçalho parcelado: 1º Vencimento | Intervalo -->
-                                        <div id="bloco_parc_header" class="col-md-9" style="padding: 0; display: none;">
+                                        <!-- Bloco cabeçalho parcelado: Intervalo | 1º Vencimento -->
+                                        <div id="bloco_parc_header" class="col-md-7" style="padding: 0; display: none;">
                                             <div class="row" style="margin: 0;">
                                                 <div class="form-group col-md-3">
-                                                    <label for="primeiro_vencimento" class="control-label"><span class="required">*</span> 1º Vencimento</label>
-                                                    <input type="date" class="form-control" id="primeiro_vencimento" name="primeiro_vencimento"
-                                                           onchange="recalcularDatas()">
-                                                </div>
-                                                <div class="form-group col-md-2">
                                                     <label for="intervalo" class="control-label"><span class="required">*</span> Intervalo (dias)</label>
                                                     <input type="number" class="form-control" id="intervalo" name="intervalo"
                                                            value="30" min="1" onchange="recalcularDatas()">
+                                                </div>
+                                                <div class="form-group col-md-4">
+                                                    <label for="primeiro_vencimento" class="control-label"><span class="required">*</span> 1º Vencimento</label>
+                                                    <input type="date" class="form-control" id="primeiro_vencimento" name="primeiro_vencimento"
+                                                           onchange="recalcularDatas()">
                                                 </div>
                                             </div>
                                         </div>
