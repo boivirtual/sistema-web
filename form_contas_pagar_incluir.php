@@ -540,11 +540,13 @@ $data_sistema = date("Y-m-d");
                                                     <div class="form-group col-md-2">
                                                         <label class="control-label">Desconto</label>
                                                         <input type="text" class="form-control" id="pago_desconto" name="pago_desconto" placeholder="0,00"
+                                                               onkeypress="mask.money.call(this, event)"
                                                                onblur="calcularValorPagoAvista()">
                                                     </div>
                                                     <div class="form-group col-md-2">
                                                         <label class="control-label">Juros</label>
                                                         <input type="text" class="form-control" id="pago_juros" name="pago_juros" placeholder="0,00"
+                                                               onkeypress="mask.money.call(this, event)"
                                                                onblur="calcularValorPagoAvista()">
                                                     </div>
                                                     <div class="form-group col-md-2">
