@@ -1750,15 +1750,25 @@ $data_sistema = date("Y-m-d");
             }
         }
 
+        // Parseia valor digitado — suporta tanto "30.00" (US, do mask.money durante digitação)
+        // quanto "3.000,00" (BR, após formatação). Usa verifica_virgula/replace_valor do contas_pagar.js
+        function parseMoneyVal(v) {
+            if (!v) return 0;
+            if (verifica_virgula(v) === ',') v = replace_valor(v);
+            return parseFloat(v) || 0;
+        }
+
         function calcularValorPagoAvista() {
             var vlrTotal = ctpGetValorTotal();
-            var d = ctpParseMoney($('#pago_desconto').val());
-            var j = ctpParseMoney($('#pago_juros').val());
-            if ($('#pago_desconto').val()) $('#pago_desconto').val(ctpFormatMoney(d));
-            if ($('#pago_juros').val())    $('#pago_juros').val(ctpFormatMoney(j));
+            var dv = $('#pago_desconto').val();
+            var jv = $('#pago_juros').val();
+            var d = parseMoneyVal(dv);
+            var j = parseMoneyVal(jv);
+            if (dv) $('#pago_desconto').val(formatMoney(d));
+            if (jv) $('#pago_juros').val(formatMoney(j));
             var vlrPago = vlrTotal - d + j;
             if (vlrPago < 0) vlrPago = 0;
-            $('#pago_valor_pago').val(ctpFormatMoney(vlrPago));
+            $('#pago_valor_pago').val(formatMoney(vlrPago));
         }
 
         // ----------------------------------------------------------------
