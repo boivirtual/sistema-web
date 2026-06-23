@@ -200,7 +200,7 @@ $data_sistema = date("Y-m-d");
         }
 
         /* Tabela de parcelas */
-        .tbl-parcelas { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        .tbl-parcelas { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
         .tbl-parcelas th {
             font-size: 12px;
             color: #666;
