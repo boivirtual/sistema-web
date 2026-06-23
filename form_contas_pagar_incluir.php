@@ -1058,10 +1058,12 @@ $data_sistema = date("Y-m-d");
 
         // Chamado ao alterar data de emissão
         function onEmissaoChange() {
-            var n = parseInt($('#parcelamento').val());
-            if (n === 0) {
-                // À Vista: vencimento = emissão
+            var modo = $('#sel_modo_parc').val();
+            if (modo === 'avista') {
                 $('#data_vencimento').val($('#data_emissao').val());
+            } else if (modo === 'uma_parcela') {
+                var emissao = $('#data_emissao').val();
+                if (emissao) $('#data_vencimento').val(addDias(emissao, 30));
             } else {
                 $('#primeiro_vencimento').val(calcPrimeiroVencimento());
                 recalcularDatas();
