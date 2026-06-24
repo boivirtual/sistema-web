@@ -5,26 +5,29 @@ include "conecta_mysql.inc";
 $ctp_id = isset($_POST['ctp_id']) ? intval($_POST['ctp_id']) : 0;
 if ($ctp_id <= 0) { echo ''; exit; }
 
-// Localiza o primeiro ctp_id do documento (onde o rateio foi salvo) e o número do documento
+// Localiza o primeiro ctp_id do documento (onde o rateio foi salvo), o número e o fornecedor
 $rs_prim = mysqli_query($conector,
-    "SELECT MIN(c2.ctp_id) AS primeiro_id, c1.ctp_numero_doc
+    "SELECT MIN(c2.ctp_id) AS primeiro_id, c1.ctp_numero_doc, c1.ctp_codigo_fornecedor
      FROM contas_pagar c1
      JOIN contas_pagar c2
        ON c2.ctp_numero_doc         = c1.ctp_numero_doc
       AND c2.ctp_codigo_fornecedor  = c1.ctp_codigo_fornecedor
       AND c2.ctp_codigo_fazenda IS NULL
      WHERE c1.ctp_id = '$ctp_id'");
-$row_prim     = mysqli_fetch_object($rs_prim);
-$primeiro_ctp = ($row_prim && $row_prim->primeiro_id) ? (int)$row_prim->primeiro_id : $ctp_id;
-$numero_doc   = ($row_prim && $row_prim->ctp_numero_doc) ? htmlspecialchars($row_prim->ctp_numero_doc) : '';
+$row_prim       = mysqli_fetch_object($rs_prim);
+$primeiro_ctp   = ($row_prim && $row_prim->primeiro_id) ? (int)$row_prim->primeiro_id : $ctp_id;
+$numero_doc_raw = ($row_prim && $row_prim->ctp_numero_doc) ? $row_prim->ctp_numero_doc : '';
+$codigo_for     = ($row_prim && $row_prim->ctp_codigo_fornecedor) ? (int)$row_prim->ctp_codigo_fornecedor : 0;
+$numero_doc     = $numero_doc_raw !== '' ? htmlspecialchars($numero_doc_raw) : '';
 
-// Total do documento (soma de todas as parcelas)
+// Total do documento — COALESCE evita NULL em campos opcionais (juros, desconto, outros)
+$num_doc_esc = mysqli_real_escape_string($conector, $numero_doc_raw);
 $rs_total = mysqli_query($conector,
-    "SELECT SUM(c.ctp_valor_parcela + c.ctp_valor_juros + c.ctp_outro_valor - c.ctp_valor_desconto) AS total_doc
-     FROM contas_pagar c
-     JOIN contas_pagar ref ON ref.ctp_id = '$ctp_id'
-     WHERE c.ctp_numero_doc = ref.ctp_numero_doc
-       AND c.ctp_codigo_fornecedor = ref.ctp_codigo_fornecedor");
+    "SELECT SUM(COALESCE(ctp_valor_parcela, 0) + COALESCE(ctp_valor_juros, 0) + COALESCE(ctp_outro_valor, 0) - COALESCE(ctp_valor_desconto, 0)) AS total_doc
+     FROM contas_pagar
+     WHERE ctp_numero_doc = '$num_doc_esc'
+       AND ctp_codigo_fornecedor = '$codigo_for'
+       AND ctp_codigo_fazenda IS NULL");
 $row_total = mysqli_fetch_object($rs_total);
 $total_doc = $row_total ? (float)$row_total->total_doc : 0;
 
