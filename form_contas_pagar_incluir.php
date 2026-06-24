@@ -2171,8 +2171,9 @@ $data_sistema = date("Y-m-d");
 
     // ── Valida e confirma o rateio completo ──
     function confirmarRateioFinal() {
-        if ($('.rat-valor').length === 0) {
-            alert('Nenhuma distribuição informada. Selecione Local, Centro de Custo e Conta Contábil.');
+        // Verifica se ainda há linhas de CC ou Conta pendentes de confirmação
+        if ($('.linha-conta-rateio').length > 0) {
+            alert('Confirme todos os Centros de Custos antes de fechar o rateio.');
             return;
         }
 
@@ -2191,7 +2192,13 @@ $data_sistema = date("Y-m-d");
             return;
         }
 
+        if ($('.rat-valor').length === 0) {
+            alert('Nenhuma distribuição informada.');
+            return;
+        }
+
         // Monta rateio_json no formato esperado pelo backend (local → ccs → contas)
+        var total = ctpGetValorTotal();
         var locaisMap = {};
         var locaisOrder = [];
 
@@ -2214,12 +2221,13 @@ $data_sistema = date("Y-m-d");
             }
             locaisMap[localId].valor += v;
 
-            if (!locaisMap[localId].ccs[ccId]) {
-                locaisMap[localId].ccs[ccId] = { id: ccId, nome: ccNome, valor: 0, perc: 0, contas: [] };
-                locaisMap[localId].ccsOrder.push(ccId);
+            var ccKey = ccId;
+            if (!locaisMap[localId].ccs[ccKey]) {
+                locaisMap[localId].ccs[ccKey] = { id: ccId, nome: ccNome, valor: 0, perc: 0, contas: [] };
+                locaisMap[localId].ccsOrder.push(ccKey);
             }
-            locaisMap[localId].ccs[ccId].valor += v;
-            locaisMap[localId].ccs[ccId].contas.push({ id: contaId, nome: contaNome, valor: v, perc: perc });
+            locaisMap[localId].ccs[ccKey].valor += v;
+            locaisMap[localId].ccs[ccKey].contas.push({ id: contaId, nome: contaNome, valor: v, perc: perc });
         });
 
         var locaisArr = [];
@@ -2237,18 +2245,23 @@ $data_sistema = date("Y-m-d");
 
         $('#rateio_json').val(JSON.stringify(locaisArr));
 
-        // Indica visualmente que o rateio está confirmado
-        $('#btn_confirmar_rateio_final')
-            .removeClass('btn-primary').addClass('btn-success')
-            .html('<i class="fas fa-check"></i> Rateio Configurado')
-            .prop('disabled', true);
+        // Tudo ok — oculta a seção de distribuição e exibe status "Rateio Configurado"
+        $('#secao_distribuir_rateio').hide();
+        $('#col_local').hide();
+        $('#col_btn_confirmar_locais').hide();
+        $('#rateio_status').show();
+        $('#habilitar_rateio').prop('checked', true); // garante que o flag está ativo
     }
 
     // ── Reabre a configuração do rateio para edição ──
     function editarRateio() {
         $('#rateio_status').hide();
+        $('#col_local').show();
         $('#secao_distribuir_rateio').show();
-        ratResetConfirmacao();
+        // Reabilita o botão Confirmar Rateio
+        $('#btn_confirmar_rateio_final')
+            .removeClass('btn-success').addClass('btn-primary')
+            .text('Confirmar Rateio').prop('disabled', false);
     }
 
     (function () {
