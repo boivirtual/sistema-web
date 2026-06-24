@@ -2100,7 +2100,7 @@ $data_sistema = date("Y-m-d");
             $bs.find('.dropdown-menu').css({ 'width': '100%' });
         });
 
-        $('#rateio_preview_header').hide();
+        $('#tr_local_input').hide();
         $('#linhas_rateio').show();
     }
 
