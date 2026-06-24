@@ -19,6 +19,7 @@ include "conecta_mysql.inc";
 
 $chave = $_POST['chave'];
 $numero_doc = $_POST['num_doc'];
+$tipo_doc = $_POST['tipo_doc'];
 $data_pagamento = $_POST['data_pagamento'];
 $forma_pgto = $_POST['forma_pag'];
 $total_baixar = $_POST['total_baixar'];
