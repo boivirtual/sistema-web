@@ -2139,39 +2139,40 @@ $data_sistema = date("Y-m-d");
             else                      optionsConta += '<option value="' + cta.id + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + cta.nome + '</option>';
         });
 
-        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:100%;">';
-        html += '<tbody>';
+        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:100%;table-layout:fixed;">';
+        html += '<colgroup><col style="width:16%"><col style="width:16%"><col style="width:26%"><col style="width:14%"><col style="width:9%"><col style="width:9%"></colgroup><tbody>';
 
         $.each(linhas, function(i, ln) {
             var idxConta = 'conta_rateio_' + i;
+            var isLast = (i === linhas.length - 1);
             html += '<tr class="linha-fase2"';
             html += ' data-local-id="'   + ln.localId   + '"';
             html += ' data-local-nome="' + ln.localNome.replace(/"/g,'&quot;') + '"';
             html += ' data-cc-id="'      + ln.ccId      + '"';
             html += ' data-cc-nome="'    + ln.ccNome.replace(/"/g,'&quot;') + '">';
-            html += '<td style="white-space:nowrap;vertical-align:middle;padding-right:12px;"><span class="lbl-parcela">' + ln.localNome + '</span></td>';
-            html += '<td style="white-space:nowrap;vertical-align:middle;padding-right:12px;"><span class="lbl-parcela">' + ln.ccNome    + '</span></td>';
-            html += '<td style="vertical-align:middle;min-width:420px;"><select class="selectpicker fase2-conta" id="' + idxConta + '" multiple data-live-search="true" data-size="8" data-width="100%">';
+            html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ln.localNome + '</span></td>';
+            html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ln.ccNome    + '</span></td>';
+            html += '<td style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker fase2-conta" id="' + idxConta + '" multiple data-live-search="true" data-size="8" data-width="100%">';
             html += '<option value="" disabled>...</option>' + optionsConta;
-            html += '</select></td></tr>';
+            html += '</select></td>';
+            if (isLast) {
+                html += '<td style="vertical-align:middle;padding:4px 8px;"><button type="button" class="btn btn-primary" onclick="confirmarTodaConta()">Confirmar</button></td><td colspan="2"></td>';
+            } else {
+                html += '<td colspan="3"></td>';
+            }
+            html += '</tr>';
         });
 
         html += '</tbody></table>';
         $('#linhas_rateio').html(html);
 
-        $('#linhas_rateio').after(
-            '<div id="rodape_fase2" style="display:flex;justify-content:flex-end;margin-top:8px;">' +
-            '<button type="button" class="btn btn-primary" onclick="confirmarTodaConta()">Confirmar</button>' +
-            '</div>'
-        );
-
         $('#linhas_rateio .fase2-conta').each(function() {
             var $s = $(this);
-            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'count > 1', countSelectedText: '{0} selecionadas' });
+            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
             var $bs = $s.closest('.bootstrap-select');
             $bs.css({ 'width': '100%', 'display': 'block' });
             $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
-            $bs.find('.dropdown-menu').css({ 'width': '100%' });
+            $bs.find('.dropdown-menu').css({ 'min-width': '220px', 'width': 'auto' });
         });
     }
 
