@@ -2138,8 +2138,8 @@ $data_sistema = date("Y-m-d");
             else                      optionsConta += '<option value="' + cta.id + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + cta.nome + '</option>';
         });
 
-        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:auto;">';
-        html += '<thead><tr><th style="white-space:nowrap;padding-right:16px;">Local</th><th style="white-space:nowrap;padding-right:16px;">Centro de Custos</th><th style="white-space:nowrap;">Conta Contábil</th></tr></thead><tbody>';
+        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:100%;table-layout:fixed;">';
+        html += '<colgroup><col style="width:16%"><col style="width:16%"><col style="width:68%" span="4"></colgroup><tbody>';
 
         $.each(linhas, function(i, ln) {
             var idxConta = 'conta_rateio_' + i;
