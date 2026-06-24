@@ -199,7 +199,7 @@ $(document).ready(function () {
             "thousands":     ".",
         },
         "aoColumns": [
-            null, null, null, null, null,
+            null, null, { "orderable": false }, null, null,
             { "sType": "date-br" },
             null,
             { "sType": "date-br" },
