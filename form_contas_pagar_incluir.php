@@ -439,16 +439,16 @@ $data_sistema = date("Y-m-d");
                                         <fieldset class="scheduler-border">
                                             <legend class="scheduler-border fonte-legend">Distribuir Rateio</legend>
                                             <!-- Tabela preview: cabeçalho + linha do select Local -->
-                                            <div id="rateio_preview_header" style="overflow-x:auto;">
-                                                <table class="tbl-parcelas" style="width:100%;">
+                                            <div id="rateio_preview_header" style="overflow:visible;">
+                                                <table class="tbl-parcelas" style="width:100%; table-layout:fixed;">
                                                     <thead>
                                                         <tr>
-                                                            <th style="width:20%;">Local</th>
-                                                            <th style="width:22%;">Centro de Custos</th>
-                                                            <th style="width:24%;">Conta Contábil</th>
-                                                            <th style="width:16%;text-align:right;">Valor (R$)</th>
-                                                            <th style="width:10%;text-align:right;">%</th>
-                                                            <th style="width:8%;"></th>
+                                                            <th style="width:16%;">Local</th>
+                                                            <th style="width:16%;">Centro de Custos</th>
+                                                            <th style="width:26%;">Conta Contábil</th>
+                                                            <th style="width:14%;text-align:right;">Valor (R$)</th>
+                                                            <th style="width:9%;text-align:right;">%</th>
+                                                            <th style="width:9%;"></th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
