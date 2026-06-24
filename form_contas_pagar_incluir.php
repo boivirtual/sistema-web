@@ -427,13 +427,61 @@ $data_sistema = date("Y-m-d");
                                     </div>
                                     <!-- FIM LINHA 2 -->
 
-                                    <!-- ===== SEÇÃO DISTRIBUIR RATEIO (aparece dinamicamente) ===== -->
+                                    <!-- ===== SEÇÃO DISTRIBUIR RATEIO (tabela dinâmica) ===== -->
                                     <div id="secao_distribuir_rateio" style="display:none; margin-top:10px;">
                                         <fieldset class="scheduler-border">
                                             <legend class="scheduler-border fonte-legend">Distribuir Rateio</legend>
-                                            <div id="linhas_rateio">
-                                                <!-- linhas geradas dinamicamente por JS -->
+
+                                            <!-- 3 multi-selects: alterar qualquer um regenera a tabela -->
+                                            <div class="row">
+                                                <div class="form-group col-md-4">
+                                                    <label class="control-label">Local</label>
+                                                    <select id="rat_sel_local" class="selectpicker" multiple
+                                                            data-live-search="true" data-size="8" data-width="100%"
+                                                            title="Selecione os locais...">
+                                                        <?php foreach ($arr_local_rat_js as $loc): ?>
+                                                        <option value="<?php echo $loc['id']; ?>"><?php echo htmlspecialchars($loc['nome']); ?></option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group col-md-4">
+                                                    <label class="control-label">Centro de Custos</label>
+                                                    <select id="rat_sel_cc" class="selectpicker" multiple
+                                                            data-live-search="true" data-size="8" data-width="100%"
+                                                            title="Selecione os centros de custo...">
+                                                        <?php foreach ($arr_cc_rat_js as $cc): ?>
+                                                        <option value="<?php echo htmlspecialchars($cc['id']); ?>"><?php echo htmlspecialchars($cc['nome']); ?></option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group col-md-4">
+                                                    <label class="control-label">Conta Contábil</label>
+                                                    <select id="rat_sel_conta" class="selectpicker" multiple
+                                                            data-live-search="true" data-size="8" data-width="100%"
+                                                            title="Selecione as contas...">
+                                                        <?php foreach ($arr_conta_rat_js as $ct): ?>
+                                                            <?php if ($ct['nivel'] == 1): ?>
+                                                            <option value="<?php echo htmlspecialchars($ct['id']); ?>" disabled style="color:#777;font-weight:600;"><?php echo htmlspecialchars($ct['nome']); ?></option>
+                                                            <?php elseif ($ct['nivel'] == 2): ?>
+                                                            <option value="<?php echo htmlspecialchars($ct['id']); ?>" disabled style="color:#888;">&nbsp;&nbsp;&nbsp;&nbsp;<?php echo htmlspecialchars($ct['nome']); ?></option>
+                                                            <?php else: ?>
+                                                            <option value="<?php echo htmlspecialchars($ct['id']); ?>">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo htmlspecialchars($ct['nome']); ?></option>
+                                                            <?php endif; ?>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                </div>
                                             </div>
+
+                                            <!-- Tabela dinâmica gerada por JS (produto cartesiano dos 3 selects) -->
+                                            <div id="rat_tabela_wrap"></div>
+
+                                            <!-- Botão confirmar (aparece quando há linhas) -->
+                                            <div id="rat_rodape" style="display:none; text-align:right; margin-top:10px;">
+                                                <button type="button" id="btn_confirmar_rateio_final" class="btn btn-primary" onclick="confirmarRateioFinal()">
+                                                    Confirmar Rateio
+                                                </button>
+                                            </div>
+
                                         </fieldset>
                                     </div>
                                     <!-- FIM SEÇÃO DISTRIBUIR RATEIO -->
