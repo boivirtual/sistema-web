@@ -2094,7 +2094,8 @@ $data_sistema = date("Y-m-d");
             $bs.find('.dropdown-menu').css({ 'width': '100%' });
         });
 
-        $('#secao_distribuir_rateio').show();
+        $('#rateio_preview_header').hide();
+        $('#linhas_rateio').show();
     }
 
     // ── FASE 2: Lê CC de todas as linhas → tabela com selectpicker Conta por linha Local+CC ──
