@@ -2186,6 +2186,7 @@ $data_sistema = date("Y-m-d");
             $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
             $bs.find('.dropdown-menu').css({ 'min-width': '220px', 'width': 'auto' });
         });
+        fixarConfirmarContaButton();
     }
 
     // ── FASE 3: Lê Conta de todas as linhas → tabela final com Valor/% ──
