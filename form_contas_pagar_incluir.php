@@ -2010,9 +2010,9 @@ $data_sistema = date("Y-m-d");
                         $('#col_btn_confirmar_locais').show();
                     } else {
                         $('#col_btn_confirmar_locais').hide();
-                        $('#secao_distribuir_rateio').hide();
-                        $('#linhas_rateio').empty();
+                        $('#linhas_rateio').hide().empty();
                         $('#rodape_rateio').remove();
+                        $('#rateio_preview_header').show();
                     }
                 });
 
