@@ -387,6 +387,7 @@
                                 $agendamento = $registro_ctp->ctp_agendamento;
                                 $aceite = $registro_ctp->ctp_aceite;
                                 $codigo_forma_pagto = $registro_ctp->ctp_conta_pagamento;
+                                $tipo_doc_ctp = $registro_ctp->ctp_tipo_documento;
 
                                 /*$ssql = "select * from baixa_contas_pagar
                                                  where bcp_numero_id='$numero_doc' and 
