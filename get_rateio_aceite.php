@@ -18,6 +18,16 @@ $row_prim     = mysqli_fetch_object($rs_prim);
 $primeiro_ctp = ($row_prim && $row_prim->primeiro_id) ? (int)$row_prim->primeiro_id : $ctp_id;
 $numero_doc   = ($row_prim && $row_prim->ctp_numero_doc) ? htmlspecialchars($row_prim->ctp_numero_doc) : '';
 
+// Total do documento (soma de todas as parcelas)
+$rs_total = mysqli_query($conector,
+    "SELECT SUM(c.ctp_valor_parcela + c.ctp_valor_juros + c.ctp_outro_valor - c.ctp_valor_desconto) AS total_doc
+     FROM contas_pagar c
+     JOIN contas_pagar ref ON ref.ctp_id = '$ctp_id'
+     WHERE c.ctp_numero_doc = ref.ctp_numero_doc
+       AND c.ctp_codigo_fornecedor = ref.ctp_codigo_fornecedor");
+$row_total = mysqli_fetch_object($rs_total);
+$total_doc = $row_total ? (float)$row_total->total_doc : 0;
+
 $rs_det = mysqli_query($conector,
     "SELECT rc_nome_local, rc_perc_local, rc_valor_local,
             rc_nome_cc,    rc_perc_cc,    rc_valor_cc,
