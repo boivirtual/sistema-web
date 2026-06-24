@@ -1972,9 +1972,12 @@ $data_sistema = date("Y-m-d");
             mask.money.call(this, e);
         });
         $(document).on('blur', '.rat-valor', function() {
-            // Ao sair: converte formato US → BR e recalcula
+            // Ao sair: converte formato US → BR, salva no cache e recalcula
             var n = parseFloat($(this).val()) || 0;
             $(this).val(formatMoney(n));
+            var key = $(this).data('key');
+            if (key) ratCache[key] = { valor: $(this).val() };
+            ratResetConfirmacao();
             recalcularRateio();
         });
 
