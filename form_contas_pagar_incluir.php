@@ -438,7 +438,25 @@ $data_sistema = date("Y-m-d");
                                     <div id="secao_distribuir_rateio" style="display:none; margin-top:10px;">
                                         <fieldset class="scheduler-border">
                                             <legend class="scheduler-border fonte-legend">Distribuir Rateio</legend>
-                                            <div id="linhas_rateio">
+                                            <!-- Local select movido aqui quando rateio ON -->
+                                            <div class="row" id="slot_local_rateio" style="margin-bottom:6px;"></div>
+                                            <!-- Cabeçalho preview (visível antes de qualquer fase) -->
+                                            <div id="rateio_preview_header" style="overflow-x:auto;">
+                                                <table class="tbl-parcelas" style="width:100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width:20%;">Local</th>
+                                                            <th style="width:22%;">Centro de Custos</th>
+                                                            <th style="width:24%;">Conta Contábil</th>
+                                                            <th style="width:16%;text-align:right;">Valor (R$)</th>
+                                                            <th style="width:10%;text-align:right;">%</th>
+                                                            <th style="width:8%;"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                            <div id="linhas_rateio" style="display:none;">
                                                 <!-- linhas geradas dinamicamente por JS -->
                                             </div>
                                         </fieldset>
