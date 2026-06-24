@@ -355,7 +355,7 @@ $data_sistema = date("Y-m-d");
                                     <!-- FIM LINHA 1 -->
 
                                     <!-- ===== LINHA 2: Habilitar Rateio | Local | Conta Contábil | Centro de Custos ===== -->
-                                    <div class="row">
+                                    <div class="row" id="linha2_row">
 
                                         <div class="form-group col-md-2">
                                             <label class="control-label">Habilitar Rateio</label>
