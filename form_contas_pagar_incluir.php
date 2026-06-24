@@ -2148,7 +2148,6 @@ $data_sistema = date("Y-m-d");
         var lastLocalId = null;
         $.each(linhas, function(i, ln) {
             var idxConta = 'conta_rateio_' + i;
-            var isLast = (i === linhas.length - 1);
             var showLocal = (ln.localId !== lastLocalId);
             lastLocalId = ln.localId;
             html += '<tr class="linha-fase2"';
@@ -2156,16 +2155,20 @@ $data_sistema = date("Y-m-d");
             html += ' data-local-nome="' + ln.localNome.replace(/"/g,'&quot;') + '"';
             html += ' data-cc-id="'      + ln.ccId      + '"';
             html += ' data-cc-nome="'    + ln.ccNome.replace(/"/g,'&quot;') + '">';
-            html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + (showLocal ? ln.localNome : '') + '</span></td>';
-            html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ln.ccNome    + '</span></td>';
+            if (showLocal) {
+                html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
+                        '<span class="lbl-parcela">' + ln.localNome + '</span>' +
+                        ' <a href="#" onclick="editarCCDoLocal(\'' + ln.localId + '\',\'' + ln.localNome.replace(/'/g,"\\'") + '\');return false;" style="color:#aaa;font-size:11px;">' +
+                        '<i class="far fa-edit"></i></a></td>';
+            } else {
+                html += '<td style="vertical-align:middle;padding:4px 8px;"></td>';
+            }
+            html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ln.ccNome + '</span></td>';
             html += '<td style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker fase2-conta" id="' + idxConta + '" multiple data-live-search="true" data-size="8" data-width="100%">';
             html += '<option value="" disabled>...</option>' + optionsConta;
             html += '</select></td>';
-            if (isLast) {
-                html += '<td style="vertical-align:middle;padding:4px 8px;"><button type="button" class="btn btn-primary" onclick="confirmarTodaConta()">Confirmar</button></td><td colspan="2"></td>';
-            } else {
-                html += '<td colspan="3"></td>';
-            }
+            html += '<td class="td-confirmar-conta" style="vertical-align:middle;padding:4px 8px;"></td>';
+            html += '<td colspan="2"></td>';
             html += '</tr>';
         });
 
