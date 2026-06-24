@@ -2068,8 +2068,8 @@ $data_sistema = date("Y-m-d");
             optionsCC += '<option value="' + cc.id + '">' + cc.nome + '</option>';
         });
 
-        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:auto;">';
-        html += '<thead><tr><th style="white-space:nowrap;padding-right:16px;">Local</th><th style="white-space:nowrap;">Centro de Custos</th></tr></thead><tbody>';
+        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:100%;table-layout:fixed;">';
+        html += '<colgroup><col style="width:16%"><col style="width:84%" span="5"></colgroup><tbody>';
 
         $.each(selecionados, function(i, idLocal) {
             var $opt = $local.find('option[value="' + idLocal + '"]');
