@@ -574,13 +574,25 @@ if ($num_rows_usuario != 0) {
                             <div class="modal-body">
                                 <form>
                                     <div class="row">
-                                        <div class="form-group col-md-6">
+                                        <div class="form-group col-md-5">
+                                            <label for="tipo_doc_baixar" class="control-label">* Tipo Documento</label>
+                                            <select class="form-control" id="tipo_doc_baixar" name="tipo_doc_baixar">
+                                                <option value="">...</option>
+                                                <?php while ($reg_tipo_doc = mysqli_fetch_object($tipos_documentos_baixar)) { ?>
+                                                    <option value="<?php echo $reg_tipo_doc->tbl_tipo_doc_id; ?>">
+                                                        <?php echo $reg_tipo_doc->tbl_tipo_doc_descricao; ?>
+                                                    </option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-md-4">
                                             <label for="number_doc_baixar" class="control-label">Nº Documento</label>
-                                            <input name="number_doc_baixar" type="number" class="form-control" id="number_doc_baixar" data-toggle='tooltip' data-placement='top' title="Caso não tenha o Nº, o sistema irá criar um automaticamente">
+                                            <input name="number_doc_baixar" type="number" class="form-control" id="number_doc_baixar" data-toggle='tooltip' data-placement='top' title="Obrigatório, exceto para Recibo (gerado automaticamente)">
                                             <input name="chave_ind" type="hidden" class="form-control" id="chave_ind" readonly="">
                                         </div>
 
-                                        <div class="form-group col-md-6">
+                                        <div class="form-group col-md-3">
                                             <label for="number_parcela_baixar" class="control-label">Parcela</label>
                                             <input name="number_parcela_baixar" type="text" class="form-control" id="number_parcela_baixar" readonly="">
                                         </div>
