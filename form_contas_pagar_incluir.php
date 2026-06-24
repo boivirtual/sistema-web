@@ -2547,9 +2547,9 @@ $data_sistema = date("Y-m-d");
             if (i === 0) {
                 newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + localNome + '</span></td>';
                 newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
-                               '<a href="#" onclick="editarCCDoLocal(\'' + localId + '\',\'' + localNomeJs + '\');return false;" data-toggle="tooltip" data-placement="top" title="Selecione Centro de Custos" style="color:#aaa;font-size:11px;margin-right:4px;">' +
-                               '<i class="far fa-edit"></i></a>' +
-                               '<span class="lbl-parcela">' + ccNome + '</span></td>';
+                               '<span class="lbl-parcela">' + ccNome + '</span>' +
+                               ' <a href="#" onclick="editarCCDoLocal(\'' + localId + '\',\'' + localNomeJs + '\');return false;" data-toggle="tooltip" data-placement="top" title="Selecione Centro de Custos" style="color:#aaa;font-size:11px;margin-left:4px;">' +
+                               '<i class="far fa-edit"></i></a></td>';
             } else {
                 newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;"></td>';
                 newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ccNome + '</span></td>';
