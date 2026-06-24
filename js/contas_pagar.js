@@ -1723,6 +1723,7 @@ $('#modal_baixar').on('show.bs.modal', function (event) {
     var valor = formatMoney(button.data('wvalor'))
     var vencimento = button.data('wvencimento')
     var forma_pag = button.data('wformapag')
+    var tipo_doc = button.data('wtipodoc')
     var modal = $(this)
 
     modal.find('#chave_ind').val(ctp_id)
@@ -1731,6 +1732,7 @@ $('#modal_baixar').on('show.bs.modal', function (event) {
     modal.find('#vlr_total_baixar').val(valor)
     modal.find('#data_pagamento_baixar').val(vencimento)
     modal.find('#codigo_forma_pagto_baixar').val(forma_pag)
+    modal.find('#tipo_doc_baixar').val(tipo_doc)
 })
 
 function baixar_conta_selecionada() {
@@ -1739,9 +1741,23 @@ function baixar_conta_selecionada() {
     var total_baixar=$("#vlr_total_baixar").val();
     var data_pagamento=$("#data_pagamento_baixar").val();
     var forma_pag=$("#codigo_forma_pagto_baixar").val();
+    var tipo_doc=$("#tipo_doc_baixar").val();
+    var tipo_doc_texto=$("#tipo_doc_baixar option:selected").text().trim();
 
     if (verifica_virgula(total_baixar)==',') {
         total_baixar = replace_valor(total_baixar);
+    }
+
+    if (tipo_doc=='' || tipo_doc=='0') {
+        $("#mensagem_erro").modal();
+        $("#mensagem_erro .modal-body").html('Informe o tipo de documento.');
+        return;
+    }
+
+    if (tipo_doc_texto.toLowerCase() !== 'recibos' && (numero_doc=='' || numero_doc==0)) {
+        $("#mensagem_erro").modal();
+        $("#mensagem_erro .modal-body").html('Informe o número do documento.');
+        return;
     }
 
     if (forma_pag==0) {
@@ -1750,7 +1766,7 @@ function baixar_conta_selecionada() {
         return;
     }
 
-    $.post("gravar_baixa_conta_pagar_selecionada.php", {chave: chave, num_doc: numero_doc, data_pagamento: data_pagamento, forma_pag:forma_pag, total_baixar:total_baixar}, function (get_retorno) {
+    $.post("gravar_baixa_conta_pagar_selecionada.php", {chave: chave, num_doc: numero_doc, tipo_doc: tipo_doc, data_pagamento: data_pagamento, forma_pag:forma_pag, total_baixar:total_baixar}, function (get_retorno) {
         if (get_retorno != 0) {
             $("#mensagem_erro").modal();
             $("#mensagem_erro .modal-body").html(get_retorno);
