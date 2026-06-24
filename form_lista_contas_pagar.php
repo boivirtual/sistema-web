@@ -512,6 +512,7 @@
                             }
 
                             $total_a_pagar = $vlr_parcela - $total_pago;
+                            $parcela_display = empty($numero_doc) ? $vencimento_edi->format('m/Y') : $numero_parcela;
 
                             // Define categoria da linha para filtro client-side
                             // Registros sem aceite nunca são "pago" — sempre caem na verificação de data
