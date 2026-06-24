@@ -656,15 +656,16 @@
                                         echo "<td width='19%'>";
                                         echo "<div class='btn-group'>";
                                         echo "<a class='btn' style='font-size: 11px;' href='form_contas_pagar_editar.php?id=".$ctp_id."'><i class='icon_search' data-toggle='tooltip' data-placement='left' title='Consultar esse registro' ></i></a>";
-                                        echo '<a class="btn" style="font-size: 11px;" href="#" 
-                                                  data-toggle="modal" 
-                                                  data-target="#modal_baixar" 
+                                        echo '<a class="btn" style="font-size: 11px;" href="#"
+                                                  data-toggle="modal"
+                                                  data-target="#modal_baixar"
                                                   data-wdoc="'.$numero_doc.'"
                                                   data-wparcela="'.$numero_parcela.'"
                                                   data-wctpid="'.$ctp_id.'"
                                                   data-wvalor="'.$total_a_pagar.'"
                                                   data-wvencimento="'.$data_vencimento.'"
                                                   data-wformapag="'.$codigo_forma_pagto.'"
+                                                  data-wtipodoc="'.$tipo_doc_ctp.'"
                                                   >
                                                   <i class="icon_folder_download" data-toggle="tooltip" data-placement="left"  title="Baixar esse registro" ></i>
                                                   </a>';
