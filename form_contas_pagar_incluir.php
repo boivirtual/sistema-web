@@ -2202,14 +2202,8 @@ $data_sistema = date("Y-m-d");
         if (!valido) return;
         $('#rodape_fase2').remove();
 
-        var html = '<table class="tbl-parcelas" id="tbl_rateio"><thead><tr>';
-        html += '<th style="width:16%;">Local</th>';
-        html += '<th style="width:16%;">Centro de Custos</th>';
-        html += '<th style="width:26%;">Conta Contábil</th>';
-        html += '<th style="width:14%;text-align:right;">Valor (R$)</th>';
-        html += '<th style="width:9%;text-align:right;">%</th>';
-        html += '<th style="width:9%;"></th>';
-        html += '</tr></thead><tbody>';
+        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:100%;table-layout:fixed;">';
+        html += '<colgroup><col style="width:16%"><col style="width:16%"><col style="width:26%"><col style="width:14%"><col style="width:9%"><col style="width:9%"></colgroup><tbody>';
 
         $.each(linhas, function(i, ln) {
             html += gerarLinhaValorRateio(ln.localId, ln.localNome, ln.ccId, ln.ccNome, ln.contaId, ln.contaNome);
