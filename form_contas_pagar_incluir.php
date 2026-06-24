@@ -2544,10 +2544,11 @@ $data_sistema = date("Y-m-d");
                 ' data-local-id="' + localId + '" data-local-nome="' + localNomeEsc + '"' +
                 ' data-cc-id="' + ccId + '" data-cc-nome="' + ccNome.replace(/"/g,'&quot;') + '">';
             if (i === 0) {
-                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
-                               '<span class="lbl-parcela">' + localNome + '</span>' +
-                               ' <a href="#" onclick="editarCCDoLocal(\'' + localId + '\',\'' + localNomeJs + '\');return false;" style="color:#aaa;font-size:11px;">' +
-                               '<i class="far fa-edit"></i></a></td>';
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;">' +
+                               '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+                               '<span class="lbl-parcela" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + localNome + '</span>' +
+                               '<a href="#" onclick="editarCCDoLocal(\'' + localId + '\',\'' + localNomeJs + '\');return false;" title="Selecione Centro de Custos" style="color:#aaa;font-size:11px;flex-shrink:0;margin-left:4px;">' +
+                               '<i class="far fa-edit"></i></a></div></td>';
             } else {
                 newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;"></td>';
             }
