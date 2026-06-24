@@ -2466,6 +2466,24 @@ $data_sistema = date("Y-m-d");
         $('#habilitar_rateio').prop('checked', true); // garante que o flag está ativo
     }
 
+    // ── Reabre seleção de locais a partir da fase 2 ──
+    function editarLocaisRateio() {
+        var locaisAtuais = [];
+        $('#tbl_rateio tbody tr.linha-fase2').each(function() {
+            var localId = String($(this).data('local-id'));
+            if (locaisAtuais.indexOf(localId) === -1) locaisAtuais.push(localId);
+        });
+
+        $('#linhas_rateio').hide().empty();
+        $('#rodape_fase2').remove();
+        $('#tr_local_input').show();
+
+        var $local = $('#codigo_fazenda');
+        $local.val(locaisAtuais);
+        $local.selectpicker('refresh');
+        $('#td_local_confirm button').show();
+    }
+
     // ── Reabre a configuração do rateio para edição ──
     function editarRateio() {
         $('#rateio_status').hide();
