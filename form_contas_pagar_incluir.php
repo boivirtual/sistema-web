@@ -394,13 +394,6 @@ $data_sistema = date("Y-m-d");
                                                 ?>
                                             </select>
                                         </div>
-                                        <!-- Botão Confirmar Locais — aparece ao lado do Local quando rateio ON -->
-                                        <div class="col-md-2" id="col_btn_confirmar_locais" style="display:none; padding-top:25px;">
-                                            <button type="button" id="btn_confirmar_locais" class="btn btn-primary" style="white-space:nowrap; width:100%;" onclick="confirmarLocaisRateio()">
-                                                Confirmar
-                                            </button>
-                                        </div>
-
                                         <div class="form-group col-md-3" id="col_cc">
                                             <label for="codigo_cc" class="control-label"><span class="required">*</span> Centro de Custos</label>
                                             <select class="form-control" id="codigo_cc" name="codigo_cc">
