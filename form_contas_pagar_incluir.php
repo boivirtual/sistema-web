@@ -2156,15 +2156,15 @@ $data_sistema = date("Y-m-d");
             html += ' data-cc-id="'      + ln.ccId      + '"';
             html += ' data-cc-nome="'    + ln.ccNome.replace(/"/g,'&quot;') + '">';
             if (showLocal) {
-                html += '<td style="vertical-align:middle;padding:4px 8px;">' +
-                        '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-                        '<span class="lbl-parcela" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + ln.localNome + '</span>' +
-                        '<a href="#" onclick="editarCCDoLocal(\'' + ln.localId + '\',\'' + ln.localNome.replace(/'/g,"\\'") + '\');return false;" title="Selecione Centro de Custos" style="color:#aaa;font-size:11px;flex-shrink:0;margin-left:4px;">' +
-                        '<i class="far fa-edit"></i></a></div></td>';
+                html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ln.localNome + '</span></td>';
+                html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
+                        '<a href="#" onclick="editarCCDoLocal(\'' + ln.localId + '\',\'' + ln.localNome.replace(/'/g,"\\'") + '\');return false;" data-toggle="tooltip" data-placement="top" title="Selecione Centro de Custos" style="color:#aaa;font-size:11px;margin-right:4px;">' +
+                        '<i class="far fa-edit"></i></a>' +
+                        '<span class="lbl-parcela">' + ln.ccNome + '</span></td>';
             } else {
                 html += '<td style="vertical-align:middle;padding:4px 8px;"></td>';
+                html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ln.ccNome + '</span></td>';
             }
-            html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ln.ccNome + '</span></td>';
             html += '<td style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker fase2-conta" id="' + idxConta + '" multiple data-live-search="true" data-size="8" data-width="100%">';
             html += '<option value="" disabled>...</option>' + optionsConta;
             html += '</select></td>';
