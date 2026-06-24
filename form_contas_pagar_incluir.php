@@ -1991,10 +1991,8 @@ $data_sistema = date("Y-m-d");
 
         $('#habilitar_rateio').on('change', function () {
             var on = $(this).is(':checked');
-            var $local = $('#codigo_fazenda');
 
             if (on) {
-                // Valida se o valor foi digitado antes de habilitar o rateio
                 var vlrTotal = ctpGetValorTotal();
                 if (!vlrTotal || vlrTotal <= 0) {
                     $(this).prop('checked', false);
@@ -2002,62 +2000,36 @@ $data_sistema = date("Y-m-d");
                     $('#vlr_primeira_parcela').focus();
                     return;
                 }
-                // Rateio ON → oculta CC e Conta Contábil, apenas Local vira selectpicker múltiplo
+                // Rateio ON → esconde campos simples, mostra seção de rateio
+                $('#col_local').hide();
                 $('#col_cc').hide();
                 $('#col_conta').hide();
-
-                $local.find('option').prop('selected', false);
-                $local.attr('multiple', 'multiple')
-                      .attr('data-live-search', 'true')
-                      .attr('data-size', '8')
-                      .addClass('selectpicker');
-                $local.selectpicker({ actionsBox: true, width: '100%', noneSelectedText: '...' });
-                $local.val([]);
-                $local.selectpicker('refresh');
-
-                var $bs = $local.closest('.bootstrap-select');
-                $bs.css('width', '100%');
-                $bs.find('.bs-select-all').hide();
-                $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
-
-                // Monitora seleção para mostrar/ocultar coluna do botão Confirmar
-                $local.on('changed.bs.select.rateio', function () {
-                    var selecionados = $local.val();
-                    if (selecionados && selecionados.length > 0) {
-                        $('#col_btn_confirmar_locais').show();
-                    } else {
-                        $('#col_btn_confirmar_locais').hide();
-                        $('#secao_distribuir_rateio').hide();
-                        $('#linhas_rateio').empty();
-                        $('#rodape_rateio').remove();
-                    }
-                });
+                $('#secao_distribuir_rateio').show();
+                // Garante que os selectpickers estão renderizados após exibição
+                $('#rat_sel_local, #rat_sel_cc, #rat_sel_conta').selectpicker('refresh');
 
             } else {
-                // Rateio OFF → restaura CC e Conta Contábil, destrói selectpicker do Local
+                // Rateio OFF → restaura campos simples, limpa rateio
+                $('#col_local').show();
                 $('#col_cc').show();
                 $('#col_conta').show();
-
-                $local.off('changed.bs.select.rateio');
-                if ($local.hasClass('selectpicker')) {
-                    $local.selectpicker('destroy');
-                }
-                $local.removeAttr('multiple')
-                      .removeAttr('data-live-search')
-                      .removeAttr('data-size')
-                      .removeClass('selectpicker')
-                      .addClass('form-control');
-
-                $local.val('');
-
-                $('#col_btn_confirmar_locais').hide();
                 $('#secao_distribuir_rateio').hide();
-                $('#linhas_rateio').empty();
-                $('#rodape_rateio').remove();
-
+                $('#rat_tabela_wrap').empty();
+                $('#rat_rodape').hide();
+                try {
+                    $('#rat_sel_local').selectpicker('deselectAll');
+                    $('#rat_sel_cc').selectpicker('deselectAll');
+                    $('#rat_sel_conta').selectpicker('deselectAll');
+                } catch(e) {}
+                ratCache = {};
                 $('#rateio_json').val('');
-                RT.reset();
+                $('#rateio_status').hide();
             }
+        });
+
+        // Regenera tabela sempre que qualquer um dos 3 selects mudar
+        $(document).on('changed.bs.select', '#rat_sel_local, #rat_sel_cc, #rat_sel_conta', function () {
+            ratGerarTabela();
         });
     });
 
