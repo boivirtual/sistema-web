@@ -2069,27 +2069,27 @@ $data_sistema = date("Y-m-d");
             optionsCC += '<option value="' + cc.id + '">' + cc.nome + '</option>';
         });
 
-        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:100%;">';
-        html += '<tbody>';
+        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:100%;table-layout:fixed;">';
+        html += '<colgroup><col style="width:16%"><col style="width:16%"><col style="width:26%"><col style="width:14%"><col style="width:9%"><col style="width:9%"></colgroup><tbody>';
 
         $.each(selecionados, function(i, idLocal) {
             var $opt = $local.find('option[value="' + idLocal + '"]');
             var nomeLocal = $opt.data('nome') || $opt.text();
             var idxCC = 'cc_rateio_' + i;
+            var isLast = (i === selecionados.length - 1);
             html += '<tr class="linha-fase1" data-local-id="' + idLocal + '" data-local-nome="' + nomeLocal.replace(/"/g,'&quot;') + '">';
-            html += '<td style="white-space:nowrap;vertical-align:middle;padding-right:12px;"><span class="lbl-parcela">' + nomeLocal + '</span></td>';
-            html += '<td style="vertical-align:middle;min-width:420px;"><select class="selectpicker fase1-cc" id="' + idxCC + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsCC + '</select></td>';
+            html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + nomeLocal + '</span></td>';
+            html += '<td colspan="2" style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker fase1-cc" id="' + idxCC + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsCC + '</select></td>';
+            if (isLast) {
+                html += '<td colspan="2" style="vertical-align:middle;padding:4px 8px;"><button type="button" class="btn btn-primary" onclick="confirmarTodoCC()">Confirmar</button></td><td></td>';
+            } else {
+                html += '<td colspan="3"></td>';
+            }
             html += '</tr>';
         });
 
         html += '</tbody></table>';
         $('#linhas_rateio').html(html);
-
-        $('#linhas_rateio').after(
-            '<div id="rodape_fase1" style="display:flex;justify-content:flex-end;margin-top:8px;">' +
-            '<button type="button" class="btn btn-primary" onclick="confirmarTodoCC()">Confirmar</button>' +
-            '</div>'
-        );
 
         $('#linhas_rateio .fase1-cc').each(function() {
             var $s = $(this);
