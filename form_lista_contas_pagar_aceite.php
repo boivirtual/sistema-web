@@ -257,7 +257,7 @@
                         echo "<tr>";
                         echo "<td width='2%'><input type='checkbox' class='checkbox1' name='id_ctp' value='" . $ctp_id . "' onClick='somar_total_para_baixar()'></td>";
                         echo "<td width='10%'>" . $numero_id . "</td>";
-                        echo "<td width='3%' align='center'>" . $parcela . "</td>";
+                        echo "<td width='3%' align='center'>" . $parcela_display . "</td>";
                         echo "<td width='15%'>" . $nome_for . "</td>";
                         echo "<td width='15%'>" . $desc_fazenda . "</td>";
                         echo "<td width='10%'>" . $desc_conta . "</td>";
