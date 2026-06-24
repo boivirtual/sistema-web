@@ -396,7 +396,7 @@ $data_sistema = date("Y-m-d");
                                         </div>
                                         <!-- Botão Confirmar Locais — aparece ao lado do Local quando rateio ON -->
                                         <div class="col-md-2" id="col_btn_confirmar_locais" style="display:none; padding-top:25px;">
-                                            <button type="button" id="btn_confirmar_locais" class="btn btn-primary" style="white-space:nowrap; width:100%;" onclick="confirmarLocaisRateio()">
+                                            <button type="button" id="btn_confirmar_locais" class="btn btn-primary" style="white-space:nowrap;" onclick="confirmarLocaisRateio()">
                                                 Confirmar
                                             </button>
                                         </div>
