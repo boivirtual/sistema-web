@@ -251,7 +251,7 @@
                         // Ícone de expansão do rateio — só na 1ª linha do documento
                         $icon_rateio = '';
                         if ($tem_rateio) {
-                            $icon_rateio = ' <button type="button" onclick="toggleRateio(' . intval($ctp_id) . ')" title="Ver distribuição do rateio" style="background:none;border:none;padding:0 3px;cursor:pointer;color:#337ab7;font-size:13px;"><i class="fas fa-sitemap"></i></button>';
+                            $icon_rateio = ' <button type="button" onclick="toggleRateio(' . intval($ctp_id) . ')" data-toggle="tooltip" data-placement="right" title="Ver distribuição do rateio" style="background:none;border:none;padding:0 3px;cursor:pointer;color:#337ab7;font-size:13px;"><i class="fas fa-info-circle"></i></button>';
                         }
 
                         echo "<tr>";
