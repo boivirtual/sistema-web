@@ -482,7 +482,7 @@
                                 }
 
                                 // Ícone para abrir modal de rateio
-                                $icon_rateio = ' <button type="button" onclick="toggleRateio(' . intval($ctp_id) . ')" title="Ver distribuição do rateio" style="background:none;border:none;padding:0 2px;cursor:pointer;color:#337ab7;font-size:12px;"><i class="fas fa-sitemap"></i></button>';
+                                $icon_rateio = ' <button type="button" onclick="toggleRateio(' . intval($ctp_id) . ')" data-toggle="tooltip" data-placement="right" title="Ver distribuição do rateio" style="background:none;border:none;padding:0 2px;cursor:pointer;color:#337ab7;font-size:12px;"><i class="fas fa-info-circle"></i></button>';
 
                             } elseif (is_null($registro_ctp->ctp_codigo_conta)) {
                                 // Formato legado: fazenda preenchida mas conta via rateio
