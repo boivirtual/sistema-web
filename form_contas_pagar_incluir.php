@@ -2079,11 +2079,11 @@ $data_sistema = date("Y-m-d");
             var isLast = (i === selecionados.length - 1);
             html += '<tr class="linha-fase1" data-local-id="' + idLocal + '" data-local-nome="' + nomeLocal.replace(/"/g,'&quot;') + '">';
             html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + nomeLocal + '</span></td>';
-            html += '<td colspan="2" style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker fase1-cc" id="' + idxCC + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsCC + '</select></td>';
+            html += '<td style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker fase1-cc" id="' + idxCC + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsCC + '</select></td>';
             if (isLast) {
-                html += '<td colspan="2" style="vertical-align:middle;padding:4px 8px;"><button type="button" class="btn btn-primary" onclick="confirmarTodoCC()">Confirmar</button></td><td></td>';
+                html += '<td style="vertical-align:middle;padding:4px 8px;"><button type="button" class="btn btn-primary" onclick="confirmarTodoCC()">Confirmar</button></td><td colspan="3"></td>';
             } else {
-                html += '<td colspan="3"></td>';
+                html += '<td colspan="4"></td>';
             }
             html += '</tr>';
         });
