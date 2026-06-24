@@ -534,7 +534,7 @@
                                 echo "</td>";
 
                                 echo "<td width='2%'>";
-                                echo "<a style='color:#ccc' data-toggle='tooltip' data-placement='right' title='Falta Aceite'>".$numero_parcela."</a>";
+                                echo "<a style='color:#ccc' data-toggle='tooltip' data-placement='right' title='Falta Aceite'>".$parcela_display."</a>";
                                 "</td>";
 
                                 echo "<td width='14%'>";
