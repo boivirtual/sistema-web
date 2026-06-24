@@ -1349,6 +1349,7 @@ function consultar_ctp() {
      '&periodo_label=' + encodeURIComponent(periodo_label), function() {
         $('#lista_contas_pagar').show();
         ctpRestaurarPosicao();
+        $('[data-toggle="tooltip"]').tooltip();
     });
 }
 
