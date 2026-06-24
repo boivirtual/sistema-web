@@ -2142,15 +2142,18 @@ $data_sistema = date("Y-m-d");
         var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:100%;table-layout:fixed;">';
         html += '<colgroup><col style="width:16%"><col style="width:16%"><col style="width:26%"><col style="width:14%"><col style="width:9%"><col style="width:9%"></colgroup><tbody>';
 
+        var lastLocalId = null;
         $.each(linhas, function(i, ln) {
             var idxConta = 'conta_rateio_' + i;
             var isLast = (i === linhas.length - 1);
+            var showLocal = (ln.localId !== lastLocalId);
+            lastLocalId = ln.localId;
             html += '<tr class="linha-fase2"';
             html += ' data-local-id="'   + ln.localId   + '"';
             html += ' data-local-nome="' + ln.localNome.replace(/"/g,'&quot;') + '"';
             html += ' data-cc-id="'      + ln.ccId      + '"';
             html += ' data-cc-nome="'    + ln.ccNome.replace(/"/g,'&quot;') + '">';
-            html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ln.localNome + '</span></td>';
+            html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + (showLocal ? ln.localNome : '') + '</span></td>';
             html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ln.ccNome    + '</span></td>';
             html += '<td style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker fase2-conta" id="' + idxConta + '" multiple data-live-search="true" data-size="8" data-width="100%">';
             html += '<option value="" disabled>...</option>' + optionsConta;
