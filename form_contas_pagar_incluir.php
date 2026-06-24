@@ -2571,7 +2571,7 @@ $data_sistema = date("Y-m-d");
             var $bs = $s.closest('.bootstrap-select');
             $bs.css({ 'width': '100%', 'display': 'block' });
             $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
-            $bs.find('.dropdown-menu').css({ 'min-width': '220px', 'width': 'auto' });
+            $bs.find('.dropdown-menu').css({ 'min-width': '360px', 'width': 'auto' });
         });
 
         $('#tbl_rateio [data-toggle="tooltip"]').tooltip();
