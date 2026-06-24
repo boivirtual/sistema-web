@@ -1987,8 +1987,9 @@ $data_sistema = date("Y-m-d");
                 $('#col_cc').hide();
                 $('#col_conta').hide();
 
-                // Mover Local e botão Confirmar para dentro do fieldset
-                $('#col_local, #col_btn_confirmar_locais').appendTo('#slot_local_rateio');
+                // Mover select Local para dentro da tabela (coluna Local) e botão para célula ao lado
+                $('#td_local_select').append($local);
+                $('#td_local_confirm').append($('#col_btn_confirmar_locais button')).children().hide();
                 $('#secao_distribuir_rateio').show();
                 $('#rateio_preview_header').show();
                 $('#linhas_rateio').hide();
