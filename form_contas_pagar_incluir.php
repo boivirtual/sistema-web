@@ -2574,6 +2574,7 @@ $data_sistema = date("Y-m-d");
             $bs.find('.dropdown-menu').css({ 'min-width': '220px', 'width': 'auto' });
         });
 
+        $('#tbl_rateio [data-toggle="tooltip"]').tooltip();
         fixarConfirmarContaButton();
     }
 
