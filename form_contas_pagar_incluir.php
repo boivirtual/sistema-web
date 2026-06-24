@@ -2472,7 +2472,7 @@ $data_sistema = date("Y-m-d");
     // ── Reabre seleção de locais a partir da fase 2 ──
     function editarLocaisRateio() {
         var locaisAtuais = [];
-        $('#tbl_rateio tbody tr.linha-fase2').each(function() {
+        $('#tbl_rateio tbody tr.linha-fase1, #tbl_rateio tbody tr.linha-fase2').each(function() {
             var localId = String($(this).data('local-id'));
             if (locaisAtuais.indexOf(localId) === -1) locaisAtuais.push(localId);
         });
