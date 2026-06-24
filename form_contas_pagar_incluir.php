@@ -453,9 +453,9 @@ $data_sistema = date("Y-m-d");
                                                     </thead>
                                                     <tbody>
                                                         <tr id="tr_local_input">
-                                                            <td id="td_local_select" style="vertical-align:middle; padding:4px 6px;"></td>
-                                                            <td id="td_local_confirm" style="vertical-align:middle; padding:4px 6px; width:1%; white-space:nowrap;"></td>
-                                                            <td colspan="4"></td>
+                                                            <td id="td_local_select" colspan="2" style="vertical-align:middle; padding:4px 6px;"></td>
+                                                            <td id="td_local_confirm" style="vertical-align:middle; padding:4px 6px; white-space:nowrap;"></td>
+                                                            <td colspan="3"></td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
