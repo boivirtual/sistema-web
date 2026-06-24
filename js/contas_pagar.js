@@ -573,7 +573,7 @@ $(document).ready(function(){
        "aoColumns": [
             null,
             null,
-            null,
+            { "orderable": false },
             null,
             null,
             null,
