@@ -109,7 +109,8 @@ if (!$resultado) {
 
 $sql = ("UPDATE contas_pagar SET ctp_situacao='P',
 	                             ctp_numero_doc='$numero_doc',
-	                             ctp_conta_pagamento='$forma_pgto'
+	                             ctp_conta_pagamento='$forma_pgto',
+	                             ctp_tipo_documento='$tipo_doc'
 	                       WHERE ctp_id='$chave'");
 $resultado = mysqli_query($conector, $sql);
 				
