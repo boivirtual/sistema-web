@@ -716,6 +716,7 @@
                                                   data-wvalor="'.$total_a_pagar.'"
                                                   data-wvencimento="'.$data_vencimento.'"
                                                   data-wformapag="'.$codigo_forma_pagto.'"
+                                                  data-wtipodoc="'.$tipo_doc_ctp.'"
                                                   >
                                                   <i class="icon_folder_download" data-toggle="tooltip" data-placement="left"  title="Baixar esse registro" ></i>
                                                   </a>';
@@ -735,6 +736,7 @@
                                                   data-wvalor="'.$total_a_pagar.'"
                                                   data-wvencimento="'.$data_vencimento.'"
                                                   data-wformapag="'.$codigo_forma_pagto.'"
+                                                  data-wtipodoc="'.$tipo_doc_ctp.'"
                                                   >
                                                   <i class="icon_folder_download" data-toggle="tooltip" data-placement="left"  title="Baixar esse registro" ></i>
                                                   </a>';
