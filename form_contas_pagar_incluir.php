@@ -2156,10 +2156,11 @@ $data_sistema = date("Y-m-d");
             html += ' data-cc-id="'      + ln.ccId      + '"';
             html += ' data-cc-nome="'    + ln.ccNome.replace(/"/g,'&quot;') + '">';
             if (showLocal) {
-                html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
-                        '<span class="lbl-parcela">' + ln.localNome + '</span>' +
-                        ' <a href="#" onclick="editarCCDoLocal(\'' + ln.localId + '\',\'' + ln.localNome.replace(/'/g,"\\'") + '\');return false;" style="color:#aaa;font-size:11px;">' +
-                        '<i class="far fa-edit"></i></a></td>';
+                html += '<td style="vertical-align:middle;padding:4px 8px;">' +
+                        '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+                        '<span class="lbl-parcela" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + ln.localNome + '</span>' +
+                        '<a href="#" onclick="editarCCDoLocal(\'' + ln.localId + '\',\'' + ln.localNome.replace(/'/g,"\\'") + '\');return false;" title="Selecione Centro de Custos" style="color:#aaa;font-size:11px;flex-shrink:0;margin-left:4px;">' +
+                        '<i class="far fa-edit"></i></a></div></td>';
             } else {
                 html += '<td style="vertical-align:middle;padding:4px 8px;"></td>';
             }
