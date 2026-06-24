@@ -2166,6 +2166,9 @@ $data_sistema = date("Y-m-d");
             html += '</tr>';
         });
 
+        html += '<tr id="tr_editar_locais"><td style="padding:4px 8px;">' +
+                '<a href="#" onclick="editarLocaisRateio();return false;" title="Selecionar Locais" style="color:#aaa;font-size:14px;">' +
+                '<i class="far fa-edit"></i></a></td><td colspan="5"></td></tr>';
         html += '</tbody></table>';
         $('#linhas_rateio').html(html);
 
