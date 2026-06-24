@@ -386,7 +386,8 @@ function consultar_ctp(flag) {
         '&array_fornecedor=' + array_fornecedor +
         '&array_conta='      + array_conta +
         '&array_fazenda='    + array_fazenda +
-        '&limpa_filtros='    + flag
+        '&limpa_filtros='    + flag,
+        function() { $('[data-toggle="tooltip"]').tooltip(); }
     );
 }
 
