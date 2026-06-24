@@ -1979,9 +1979,15 @@ $data_sistema = date("Y-m-d");
                     $('#vlr_primeira_parcela').focus();
                     return;
                 }
-                // Rateio ON → oculta CC e Conta Contábil, apenas Local vira selectpicker múltiplo
+                // Rateio ON → oculta CC e Conta Contábil, move Local para dentro do fieldset
                 $('#col_cc').hide();
                 $('#col_conta').hide();
+
+                // Mover Local e botão Confirmar para dentro do fieldset
+                $('#col_local, #col_btn_confirmar_locais').appendTo('#slot_local_rateio');
+                $('#secao_distribuir_rateio').show();
+                $('#rateio_preview_header').show();
+                $('#linhas_rateio').hide();
 
                 $local.find('option').prop('selected', false);
                 $local.attr('multiple', 'multiple')
