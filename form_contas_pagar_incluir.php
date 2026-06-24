@@ -2007,7 +2007,7 @@ $data_sistema = date("Y-m-d");
                 var $bs = $local.closest('.bootstrap-select');
                 $bs.css('width', '100%');
                 $bs.find('.bs-select-all').hide();
-                $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
+                $bs.find('.dropdown-menu').css({ 'min-width': '250px', 'max-width': 'none', 'width': 'auto' });
 
                 // Monitora seleção para mostrar/ocultar coluna do botão Confirmar
                 $local.on('changed.bs.select.rateio', function () {
