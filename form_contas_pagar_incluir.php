@@ -2033,9 +2033,13 @@ $data_sistema = date("Y-m-d");
 
                 $local.val('');
 
+                // Mover Local de volta para LINHA 2
+                $('#col_local').insertAfter('#col_habilitar_rateio');
+                $('#col_btn_confirmar_locais').insertAfter('#col_local');
+
                 $('#col_btn_confirmar_locais').hide();
                 $('#secao_distribuir_rateio').hide();
-                $('#linhas_rateio').empty();
+                $('#linhas_rateio').hide().empty();
                 $('#rodape_rateio').remove();
 
                 $('#rateio_json').val('');
