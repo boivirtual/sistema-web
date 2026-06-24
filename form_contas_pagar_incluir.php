@@ -394,6 +394,13 @@ $data_sistema = date("Y-m-d");
                                                 ?>
                                             </select>
                                         </div>
+                                        <!-- Botão Confirmar Locais — aparece ao lado do Local quando rateio ON -->
+                                        <div class="col-md-2" id="col_btn_confirmar_locais" style="display:none; padding-top:25px;">
+                                            <button type="button" id="btn_confirmar_locais" class="btn btn-primary" style="white-space:nowrap; width:100%;" onclick="confirmarLocaisRateio()">
+                                                Confirmar
+                                            </button>
+                                        </div>
+
                                         <div class="form-group col-md-3" id="col_cc">
                                             <label for="codigo_cc" class="control-label"><span class="required">*</span> Centro de Custos</label>
                                             <select class="form-control" id="codigo_cc" name="codigo_cc">
@@ -427,61 +434,13 @@ $data_sistema = date("Y-m-d");
                                     </div>
                                     <!-- FIM LINHA 2 -->
 
-                                    <!-- ===== SEÇÃO DISTRIBUIR RATEIO (tabela dinâmica) ===== -->
+                                    <!-- ===== SEÇÃO DISTRIBUIR RATEIO (aparece dinamicamente) ===== -->
                                     <div id="secao_distribuir_rateio" style="display:none; margin-top:10px;">
                                         <fieldset class="scheduler-border">
                                             <legend class="scheduler-border fonte-legend">Distribuir Rateio</legend>
-
-                                            <!-- 3 multi-selects: alterar qualquer um regenera a tabela -->
-                                            <div class="row">
-                                                <div class="form-group col-md-4">
-                                                    <label class="control-label">Local</label>
-                                                    <select id="rat_sel_local" class="selectpicker" multiple
-                                                            data-live-search="true" data-size="8" data-width="100%"
-                                                            title="Selecione os locais...">
-                                                        <?php foreach ($arr_local_rat_js as $loc): ?>
-                                                        <option value="<?php echo $loc['id']; ?>"><?php echo htmlspecialchars($loc['nome']); ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group col-md-4">
-                                                    <label class="control-label">Centro de Custos</label>
-                                                    <select id="rat_sel_cc" class="selectpicker" multiple
-                                                            data-live-search="true" data-size="8" data-width="100%"
-                                                            title="Selecione os centros de custo...">
-                                                        <?php foreach ($arr_cc_rat_js as $cc): ?>
-                                                        <option value="<?php echo htmlspecialchars($cc['id']); ?>"><?php echo htmlspecialchars($cc['nome']); ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group col-md-4">
-                                                    <label class="control-label">Conta Contábil</label>
-                                                    <select id="rat_sel_conta" class="selectpicker" multiple
-                                                            data-live-search="true" data-size="8" data-width="100%"
-                                                            title="Selecione as contas...">
-                                                        <?php foreach ($arr_conta_rat_js as $ct): ?>
-                                                            <?php if ($ct['nivel'] == 1): ?>
-                                                            <option value="<?php echo htmlspecialchars($ct['id']); ?>" disabled style="color:#777;font-weight:600;"><?php echo htmlspecialchars($ct['nome']); ?></option>
-                                                            <?php elseif ($ct['nivel'] == 2): ?>
-                                                            <option value="<?php echo htmlspecialchars($ct['id']); ?>" disabled style="color:#888;">&nbsp;&nbsp;&nbsp;&nbsp;<?php echo htmlspecialchars($ct['nome']); ?></option>
-                                                            <?php else: ?>
-                                                            <option value="<?php echo htmlspecialchars($ct['id']); ?>">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo htmlspecialchars($ct['nome']); ?></option>
-                                                            <?php endif; ?>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                </div>
+                                            <div id="linhas_rateio">
+                                                <!-- linhas geradas dinamicamente por JS -->
                                             </div>
-
-                                            <!-- Tabela dinâmica gerada por JS (produto cartesiano dos 3 selects) -->
-                                            <div id="rat_tabela_wrap"></div>
-
-                                            <!-- Botão confirmar (aparece quando há linhas) -->
-                                            <div id="rat_rodape" style="display:none; text-align:right; margin-top:10px;">
-                                                <button type="button" id="btn_confirmar_rateio_final" class="btn btn-primary" onclick="confirmarRateioFinal()">
-                                                    Confirmar Rateio
-                                                </button>
-                                            </div>
-
                                         </fieldset>
                                     </div>
                                     <!-- FIM SEÇÃO DISTRIBUIR RATEIO -->
@@ -1972,12 +1931,9 @@ $data_sistema = date("Y-m-d");
             mask.money.call(this, e);
         });
         $(document).on('blur', '.rat-valor', function() {
-            // Ao sair: converte formato US → BR, salva no cache e recalcula
+            // Ao sair: converte formato US → BR e recalcula
             var n = parseFloat($(this).val()) || 0;
             $(this).val(formatMoney(n));
-            var key = $(this).data('key');
-            if (key) ratCache[key] = { valor: $(this).val() };
-            ratResetConfirmacao();
             recalcularRateio();
         });
 
@@ -1994,8 +1950,10 @@ $data_sistema = date("Y-m-d");
 
         $('#habilitar_rateio').on('change', function () {
             var on = $(this).is(':checked');
+            var $local = $('#codigo_fazenda');
 
             if (on) {
+                // Valida se o valor foi digitado antes de habilitar o rateio
                 var vlrTotal = ctpGetValorTotal();
                 if (!vlrTotal || vlrTotal <= 0) {
                     $(this).prop('checked', false);
@@ -2003,136 +1961,354 @@ $data_sistema = date("Y-m-d");
                     $('#vlr_primeira_parcela').focus();
                     return;
                 }
-                // Rateio ON → esconde campos simples, mostra seção de rateio
-                $('#col_local').hide();
+                // Rateio ON → oculta CC e Conta Contábil, apenas Local vira selectpicker múltiplo
                 $('#col_cc').hide();
                 $('#col_conta').hide();
-                $('#secao_distribuir_rateio').show();
-                // Garante que os selectpickers estão renderizados após exibição
-                $('#rat_sel_local, #rat_sel_cc, #rat_sel_conta').selectpicker('refresh');
+
+                $local.find('option').prop('selected', false);
+                $local.attr('multiple', 'multiple')
+                      .attr('data-live-search', 'true')
+                      .attr('data-size', '8')
+                      .addClass('selectpicker');
+                $local.selectpicker({ actionsBox: true, width: '100%', noneSelectedText: '...' });
+                $local.val([]);
+                $local.selectpicker('refresh');
+
+                var $bs = $local.closest('.bootstrap-select');
+                $bs.css('width', '100%');
+                $bs.find('.bs-select-all').hide();
+                $bs.find('.dropdown-menu').css({ 'min-width': '0', 'max-width': '100%', 'width': '100%' });
+
+                // Monitora seleção para mostrar/ocultar coluna do botão Confirmar
+                $local.on('changed.bs.select.rateio', function () {
+                    var selecionados = $local.val();
+                    if (selecionados && selecionados.length > 0) {
+                        $('#col_btn_confirmar_locais').show();
+                    } else {
+                        $('#col_btn_confirmar_locais').hide();
+                        $('#secao_distribuir_rateio').hide();
+                        $('#linhas_rateio').empty();
+                        $('#rodape_rateio').remove();
+                    }
+                });
 
             } else {
-                // Rateio OFF → restaura campos simples, limpa rateio
-                $('#col_local').show();
+                // Rateio OFF → restaura CC e Conta Contábil, destrói selectpicker do Local
                 $('#col_cc').show();
                 $('#col_conta').show();
-                $('#secao_distribuir_rateio').hide();
-                $('#rat_tabela_wrap').empty();
-                $('#rat_rodape').hide();
-                try {
-                    $('#rat_sel_local').selectpicker('deselectAll');
-                    $('#rat_sel_cc').selectpicker('deselectAll');
-                    $('#rat_sel_conta').selectpicker('deselectAll');
-                } catch(e) {}
-                ratCache = {};
-                $('#rateio_json').val('');
-                $('#rateio_status').hide();
-            }
-        });
 
-        // Regenera tabela sempre que qualquer um dos 3 selects mudar
-        $(document).on('changed.bs.select', '#rat_sel_local, #rat_sel_cc, #rat_sel_conta', function () {
-            ratGerarTabela();
+                $local.off('changed.bs.select.rateio');
+                if ($local.hasClass('selectpicker')) {
+                    $local.selectpicker('destroy');
+                }
+                $local.removeAttr('multiple')
+                      .removeAttr('data-live-search')
+                      .removeAttr('data-size')
+                      .removeClass('selectpicker')
+                      .addClass('form-control');
+
+                $local.val('');
+
+                $('#col_btn_confirmar_locais').hide();
+                $('#secao_distribuir_rateio').hide();
+                $('#linhas_rateio').empty();
+                $('#rodape_rateio').remove();
+
+                $('#rateio_json').val('');
+                RT.reset();
+            }
         });
     });
 
-    // ── Cache de valores digitados: preserva ao regenerar tabela ──
-    var ratCache = {};
+    // ── FASE 1: Confirma locais → tabela com selectpicker CC por local (1 confirmar global) ──
+    function confirmarLocaisRateio() {
+        var $local = $('#codigo_fazenda');
+        var selecionados = $local.val();
+        if (!selecionados || selecionados.length === 0) return;
 
-    // ── Lookup de nome nos arrays JS ──
-    function ratNome(id, arr) {
-        for (var i = 0; i < arr.length; i++) {
-            if (String(arr[i].id) === String(id)) return arr[i].nome;
-        }
-        return id;
-    }
+        $('#col_btn_confirmar_locais').hide();
+        $('#rodape_fase1').remove();
 
-    // ── Escapa atributos HTML ──
-    function ratEsc(s) {
-        return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-
-    // ── Gera a tabela como produto cartesiano dos 3 selects ──
-    function ratGerarTabela() {
-        var locais = $('#rat_sel_local').val()  || [];
-        var ccs    = $('#rat_sel_cc').val()     || [];
-        var contas = $('#rat_sel_conta').val()  || [];
-
-        // Produto cartesiano: Local × CC × Conta
-        var combos = [];
-        locais.forEach(function(lId) {
-            ccs.forEach(function(cId) {
-                contas.forEach(function(ctId) {
-                    combos.push({ localId: lId, ccId: cId, contaId: ctId });
-                });
-            });
+        var optionsCC = '';
+        $.each(ccOpcoes, function(i, cc) {
+            optionsCC += '<option value="' + cc.id + '">' + cc.nome + '</option>';
         });
 
-        if (combos.length === 0) {
-            $('#rat_tabela_wrap').empty();
-            $('#rat_rodape').hide();
-            return;
-        }
+        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:auto;">';
+        html += '<thead><tr><th style="white-space:nowrap;padding-right:16px;">Local</th><th style="white-space:nowrap;">Centro de Custos</th></tr></thead><tbody>';
 
-        var html = '<table class="tbl-parcelas" id="tbl_rateio"><thead><tr>';
-        html += '<th style="width:20%;">Local</th>';
-        html += '<th style="width:20%;">Centro de Custos</th>';
-        html += '<th style="width:28%;">Conta Contábil</th>';
-        html += '<th style="width:16%;text-align:right;">Valor (R$)</th>';
-        html += '<th style="width:10%;text-align:right;">%</th>';
-        html += '</tr></thead><tbody>';
-
-        combos.forEach(function(combo) {
-            var key       = combo.localId + '_' + combo.ccId + '_' + combo.contaId;
-            var cached    = ratCache[key] || {};
-            var localNome = ratNome(combo.localId, CTP_LOCAIS);
-            var ccNome    = ratNome(combo.ccId,    ccOpcoes);
-            var contaNome = ratNome(combo.contaId, contaOpcoes);
-
-            html += '<tr class="linha-valor-rateio">';
-            html += '<td><span class="lbl-parcela">' + localNome + '</span>';
-            html += '<input type="hidden" name="rat2_local_id[]"   value="' + ratEsc(combo.localId) + '">';
-            html += '<input type="hidden" name="rat2_local_nome[]" value="' + ratEsc(localNome) + '"></td>';
-            html += '<td><span class="lbl-parcela">' + ccNome + '</span>';
-            html += '<input type="hidden" name="rat2_cc_id[]"   value="' + ratEsc(combo.ccId) + '">';
-            html += '<input type="hidden" name="rat2_cc_nome[]" value="' + ratEsc(ccNome) + '"></td>';
-            html += '<td><span class="lbl-parcela">' + contaNome + '</span>';
-            html += '<input type="hidden" name="rat2_conta_id[]"   value="' + ratEsc(combo.contaId) + '">';
-            html += '<input type="hidden" name="rat2_conta_nome[]" value="' + ratEsc(contaNome) + '"></td>';
-            html += '<td style="text-align:right;">';
-            html += '<input type="text" class="form-control rat-valor" name="rat2_valor[]"';
-            html += ' data-key="' + ratEsc(key) + '" placeholder="0,00"';
-            html += ' value="' + ratEsc(cached.valor || '') + '"';
-            html += ' style="height:30px;font-size:13px;text-align:right;"></td>';
-            html += '<td style="text-align:right;">';
-            html += '<input type="text" class="form-control rat-perc" name="rat2_perc[]" readonly';
-            html += ' style="height:30px;font-size:13px;text-align:right;background:#f9f9f9;color:#555;"></td>';
+        $.each(selecionados, function(i, idLocal) {
+            var $opt = $local.find('option[value="' + idLocal + '"]');
+            var nomeLocal = $opt.data('nome') || $opt.text();
+            var idxCC = 'cc_rateio_' + i;
+            html += '<tr class="linha-fase1" data-local-id="' + idLocal + '" data-local-nome="' + nomeLocal.replace(/"/g,'&quot;') + '">';
+            html += '<td style="white-space:nowrap;vertical-align:middle;padding-right:12px;"><span class="lbl-parcela">' + nomeLocal + '</span></td>';
+            html += '<td style="vertical-align:middle;min-width:420px;"><select class="selectpicker fase1-cc" id="' + idxCC + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsCC + '</select></td>';
             html += '</tr>';
         });
 
-        // Linha de totais (IDs mantidos para recalcularRateio() continuar funcionando)
+        html += '</tbody></table>';
+        $('#linhas_rateio').html(html);
+
+        $('#linhas_rateio').after(
+            '<div id="rodape_fase1" style="display:flex;justify-content:flex-end;margin-top:8px;">' +
+            '<button type="button" class="btn btn-primary" onclick="confirmarTodoCC()">Confirmar</button>' +
+            '</div>'
+        );
+
+        $('#linhas_rateio .fase1-cc').each(function() {
+            var $s = $(this);
+            $s.find('option:first').prop('selected', true);
+            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'count > 1', countSelectedText: '{0} selecionados' });
+            var $bs = $s.closest('.bootstrap-select');
+            $bs.css({ 'width': '100%', 'display': 'block' });
+            $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
+            $bs.find('.dropdown-menu').css({ 'width': '100%' });
+        });
+
+        $('#secao_distribuir_rateio').show();
+    }
+
+    // ── FASE 2: Lê CC de todas as linhas → tabela com selectpicker Conta por linha Local+CC ──
+    function confirmarTodoCC() {
+        document.activeElement && document.activeElement.blur();
+        var linhas = [];
+        var valido = true;
+
+        $('#tbl_rateio tbody tr.linha-fase1').each(function() {
+            var localId   = $(this).data('local-id');
+            var localNome = $(this).data('local-nome');
+            var ccIds = [];
+            $(this).find('.fase1-cc option:selected').each(function() {
+                ccIds.push($(this).val());
+            });
+            if (ccIds.length === 0) {
+                alert('Selecione pelo menos um Centro de Custos para cada local.');
+                valido = false; return false;
+            }
+            $.each(ccIds, function(j, ccId) {
+                var ccNome = ccId;
+                $.each(ccOpcoes, function(k, cc) { if (String(cc.id) === String(ccId)) { ccNome = cc.nome; return false; } });
+                linhas.push({ localId: localId, localNome: localNome, ccId: ccId, ccNome: ccNome });
+            });
+        });
+
+        if (!valido) return;
+        $('#rodape_fase1').remove();
+
+        var optionsConta = '';
+        $.each(contaOpcoes, function(k, cta) {
+            if (cta.nivel === 1)      optionsConta += '<option value="' + cta.id + '" disabled style="color:#777;font-weight:600;">' + cta.nome + '</option>';
+            else if (cta.nivel === 2) optionsConta += '<option value="' + cta.id + '" disabled style="color:#888;">&nbsp;&nbsp;&nbsp;&nbsp;' + cta.nome + '</option>';
+            else                      optionsConta += '<option value="' + cta.id + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + cta.nome + '</option>';
+        });
+
+        var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:auto;">';
+        html += '<thead><tr><th style="white-space:nowrap;padding-right:16px;">Local</th><th style="white-space:nowrap;padding-right:16px;">Centro de Custos</th><th style="white-space:nowrap;">Conta Contábil</th></tr></thead><tbody>';
+
+        $.each(linhas, function(i, ln) {
+            var idxConta = 'conta_rateio_' + i;
+            html += '<tr class="linha-fase2"';
+            html += ' data-local-id="'   + ln.localId   + '"';
+            html += ' data-local-nome="' + ln.localNome.replace(/"/g,'&quot;') + '"';
+            html += ' data-cc-id="'      + ln.ccId      + '"';
+            html += ' data-cc-nome="'    + ln.ccNome.replace(/"/g,'&quot;') + '">';
+            html += '<td style="white-space:nowrap;vertical-align:middle;padding-right:12px;"><span class="lbl-parcela">' + ln.localNome + '</span></td>';
+            html += '<td style="white-space:nowrap;vertical-align:middle;padding-right:12px;"><span class="lbl-parcela">' + ln.ccNome    + '</span></td>';
+            html += '<td style="vertical-align:middle;min-width:420px;"><select class="selectpicker fase2-conta" id="' + idxConta + '" multiple data-live-search="true" data-size="8" data-width="100%">';
+            html += '<option value="" disabled>...</option>' + optionsConta;
+            html += '</select></td></tr>';
+        });
+
+        html += '</tbody></table>';
+        $('#linhas_rateio').html(html);
+
+        $('#linhas_rateio').after(
+            '<div id="rodape_fase2" style="display:flex;justify-content:flex-end;margin-top:8px;">' +
+            '<button type="button" class="btn btn-primary" onclick="confirmarTodaConta()">Confirmar</button>' +
+            '</div>'
+        );
+
+        $('#linhas_rateio .fase2-conta').each(function() {
+            var $s = $(this);
+            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'count > 1', countSelectedText: '{0} selecionadas' });
+            var $bs = $s.closest('.bootstrap-select');
+            $bs.css({ 'width': '100%', 'display': 'block' });
+            $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
+            $bs.find('.dropdown-menu').css({ 'width': '100%' });
+        });
+    }
+
+    // ── FASE 3: Lê Conta de todas as linhas → tabela final com Valor/% ──
+    function confirmarTodaConta() {
+        var linhas = [];
+        var valido = true;
+
+        $('#tbl_rateio tbody tr.linha-fase2').each(function() {
+            var localId   = $(this).data('local-id');
+            var localNome = $(this).data('local-nome');
+            var ccId      = $(this).data('cc-id');
+            var ccNome    = $(this).data('cc-nome');
+            var contaIds = [];
+            $(this).find('.fase2-conta option:selected').each(function() {
+                if ($(this).val()) contaIds.push($(this).val());
+            });
+            if (contaIds.length === 0) {
+                alert('Selecione pelo menos uma Conta Contábil para cada linha.');
+                valido = false; return false;
+            }
+            $.each(contaIds, function(k, contaId) {
+                var contaNome = contaId;
+                $.each(contaOpcoes, function(m, ct) { if (String(ct.id) === String(contaId)) { contaNome = ct.nome; return false; } });
+                linhas.push({ localId: localId, localNome: localNome, ccId: ccId, ccNome: ccNome, contaId: contaId, contaNome: contaNome });
+            });
+        });
+
+        if (!valido) return;
+        $('#rodape_fase2').remove();
+
+        var html = '<table class="tbl-parcelas" id="tbl_rateio"><thead><tr>';
+        html += '<th style="width:16%;">Local</th>';
+        html += '<th style="width:16%;">Centro de Custos</th>';
+        html += '<th style="width:26%;">Conta Contábil</th>';
+        html += '<th style="width:14%;text-align:right;">Valor (R$)</th>';
+        html += '<th style="width:9%;text-align:right;">%</th>';
+        html += '<th style="width:9%;"></th>';
+        html += '</tr></thead><tbody>';
+
+        $.each(linhas, function(i, ln) {
+            html += gerarLinhaValorRateio(ln.localId, ln.localNome, ln.ccId, ln.ccNome, ln.contaId, ln.contaNome);
+        });
+
         html += '<tr id="tr_rateio_restante">';
-        html += '<td colspan="3" style="text-align:right;font-size:12px;color:#666;padding:6px 8px;border-top:1px solid #ddd;">';
-        html += 'Total Digitado: <span id="span_rat_total" style="color:#27ae60;font-weight:600;font-size:13px;margin-right:14px;">R$ 0,00</span>';
-        html += '&nbsp;&nbsp;&nbsp;Restante a distribuir:</td>';
+        html += '<td colspan="4" style="text-align:right;font-size:12px;color:#666;padding:6px 8px;border-top:1px solid #ddd;">Total Digitado: <span id="span_rat_total" style="color:#27ae60;font-weight:600;font-size:13px;margin-right:14px;">R$ 0,00</span>&nbsp;&nbsp;&nbsp;Restante a distribuir:</td>';
         html += '<td id="td_rat_vlr_rest" style="font-size:13px;font-weight:600;color:#c0392b;text-align:right;padding:6px 8px;white-space:nowrap;border-top:1px solid #ddd;">R$ 0,00</td>';
         html += '<td id="td_rat_pct_rest" style="font-size:13px;font-weight:600;color:#c0392b;text-align:right;padding:6px 8px;border-top:1px solid #ddd;">0,00%</td>';
+        html += '</tr></tbody></table>';
+
+        $('#linhas_rateio').html(html);
+
+        $('#linhas_rateio').after(
+            '<div id="rodape_rateio" style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:4px 2px;">' +
+            '<a href="#" onclick="adicionarLinhaRateio();return false;" style="font-size:13px;font-weight:500;color:#128cb8;text-decoration:none;"><i class="fas fa-plus"></i> Adicionar linha</a>' +
+            '<button type="button" id="btn_confirmar_rateio_final" class="btn btn-primary" onclick="confirmarRateioFinal()">Confirmar Rateio</button>' +
+            '</div>'
+        );
+
+        recalcularRateio();
+    }
+    // ── Gera HTML de uma linha de valor/rateio ──
+    function gerarLinhaValorRateio(localId, localNome, ccId, ccNome, contaId, contaNome) {
+        var uid = (localId + '_' + ccId + '_' + contaId).replace(/\W/g,'_') + '_' + Date.now();
+        var html = '<tr class="linha-valor-rateio">';
+        html += '<td><span class="lbl-parcela">' + localNome + '</span>' +
+                    '<input type="hidden" name="rat2_local_id[]"   value="' + localId   + '">' +
+                    '<input type="hidden" name="rat2_local_nome[]" value="' + localNome + '">' +
+                '</td>';
+        html += '<td><span class="lbl-parcela">' + ccNome + '</span>' +
+                    '<input type="hidden" name="rat2_cc_id[]"   value="' + ccId   + '">' +
+                    '<input type="hidden" name="rat2_cc_nome[]" value="' + ccNome + '">' +
+                '</td>';
+        html += '<td><span class="lbl-parcela">' + contaNome + '</span>' +
+                    '<input type="hidden" name="rat2_conta_id[]"   value="' + contaId   + '">' +
+                    '<input type="hidden" name="rat2_conta_nome[]" value="' + contaNome + '">' +
+                '</td>';
+        html += '<td style="text-align:right;">' +
+                    '<input type="text" class="form-control rat-valor" placeholder="0,00" name="rat2_valor[]"' +
+                    ' style="height:30px;font-size:13px;text-align:right;">' +
+                '</td>';
+        html += '<td style="text-align:right;">' +
+                    '<input type="text" class="form-control rat-perc" placeholder="0,00%" name="rat2_perc[]" readonly' +
+                    ' style="height:30px;font-size:13px;text-align:right;background:#f9f9f9;color:#555;">' +
+                '</td>';
+        html += '<td style="text-align:center;">' +
+                    '<button type="button" class="btn btn-xs" onclick="excluirLinhaRateio(this)" title="Remover" style="background:transparent;border:none;color:#2980b9;padding:2px 6px;">' +
+                    '<i class="fas fa-trash"></i></button>' +
+                '</td>';
         html += '</tr>';
-        html += '</tbody></table>';
+        return html;
+    }
 
-        $('#rat_tabela_wrap').html(html);
-        $('#rat_rodape').show();
+    // ── Remove uma linha de rateio ──
+    function excluirLinhaRateio(btn) {
+        $(btn).closest('tr').remove();
+        recalcularRateio();
+        // Se não restam linhas, reabilita Confirmar Rateio
+        if ($('.linha-valor-rateio').length === 0) {
+            $('#btn_confirmar_rateio_final').removeClass('btn-success').addClass('btn-primary')
+                .text('Confirmar Rateio').prop('disabled', false);
+        }
+    }
 
-        ratResetConfirmacao();
+    // ── Adiciona linha em branco para distribuição manual ──
+    function adicionarLinhaRateio() {
+        // Linha com selects simples para escolher Local, CC e Conta
+        var optLocal = '', optCC = '', optConta = '';
+
+        // Opções de Local (das fazendas disponíveis no select principal)
+        $('#codigo_fazenda option:not([disabled])').each(function() {
+            optLocal += '<option value="' + $(this).val() + '" data-nome="' + $(this).data('nome') + '">' + $(this).text() + '</option>';
+        });
+        $.each(ccOpcoes, function(i, cc) {
+            optCC += '<option value="' + cc.id + '"' + (cc.id==='001'?' selected':'') + '>' + cc.nome + '</option>';
+        });
+        $.each(contaOpcoes, function(i, ct) {
+            if (ct.nivel === 1) optConta += '<option value="' + ct.id + '" disabled style="color:#777;font-weight:600;">' + ct.nome + '</option>';
+            else if (ct.nivel === 2) optConta += '<option value="' + ct.id + '" disabled style="color:#888;">    ' + ct.nome + '</option>';
+            else optConta += '<option value="' + ct.id + '">        ' + ct.nome + '</option>';
+        });
+
+        var uid = 'manual_' + Date.now();
+        var html = '<tr class="linha-valor-rateio linha-manual" id="tr_' + uid + '">';
+        html += '<td><select class="form-control sel-local-manual" style="height:30px;font-size:12px;">' +
+                '<option value="">...</option>' + optLocal + '</select></td>';
+        html += '<td><select class="form-control sel-cc-manual" style="height:30px;font-size:12px;">' +
+                optCC + '</select></td>';
+        html += '<td><select class="form-control sel-conta-manual" style="height:30px;font-size:12px;">' +
+                '<option value="">...</option>' + optConta + '</select></td>';
+        html += '<td style="text-align:right;">' +
+                '<input type="text" class="form-control rat-valor" placeholder="0,00" name="rat2_valor[]"' +
+                ' style="height:30px;font-size:13px;text-align:right;"></td>';
+        html += '<td><input type="text" class="form-control rat-perc" placeholder="0,00%" name="rat2_perc[]" readonly' +
+                ' style="height:30px;font-size:13px;text-align:right;background:#f9f9f9;color:#555;"></td>';
+        html += '<td style="text-align:center;"><button type="button" class="btn btn-primary btn-xs"' +
+                ' onclick="confirmarLinhaManual(this)" style="white-space:nowrap; font-size:11px; padding:3px 7px;">Confirmar</button></td>';
+        html += '</tr>';
+
+        // Insere antes da linha de totais
+        $('#tr_rateio_restante').before(html);
         recalcularRateio();
     }
 
-    // ── Reseta estado do botão Confirmar Rateio ──
-    function ratResetConfirmacao() {
-        $('#btn_confirmar_rateio_final')
-            .removeClass('btn-success').addClass('btn-primary')
-            .html('Confirmar Rateio').prop('disabled', false);
-        $('#rateio_json').val('');
+    // ── Confirma linha adicionada manualmente ──
+    function confirmarLinhaManual(btn) {
+        var $tr = $(btn).closest('tr');
+
+        var $selLocal = $tr.find('.sel-local-manual');
+        var $selCC    = $tr.find('.sel-cc-manual');
+        var $selConta = $tr.find('.sel-conta-manual');
+
+        var localId   = $selLocal.val();
+        var localNome = $selLocal.find('option:selected').data('nome') || $selLocal.find('option:selected').text();
+        var ccId      = $selCC.val();
+        var ccNome    = $selCC.find('option:selected').text();
+        var contaId   = $selConta.val();
+        var contaNome = $selConta.find('option:selected').text();
+
+        if (!localId || localId === '') { alert('Selecione o Local.'); return; }
+        if (!ccId   || ccId   === '') { alert('Selecione o Centro de Custos.'); return; }
+        if (!contaId || contaId === '') { alert('Selecione a Conta Contábil.'); return; }
+
+        // Pega o valor já digitado na linha antes de substituir
+        var valorAtual = $tr.find('.rat-valor').val() || '';
+
+        // Gera linha normal (com lixeira)
+        var novaLinha = $(gerarLinhaValorRateio(localId, localNome, ccId, ccNome, contaId, contaNome));
+        if (valorAtual) {
+            novaLinha.find('.rat-valor').val(valorAtual);
+        }
+        $tr.replaceWith(novaLinha);
+        recalcularRateio();
     }
 
     // ── Recalcula restante e percentuais em tempo real ──
