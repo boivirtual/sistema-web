@@ -438,9 +438,7 @@ $data_sistema = date("Y-m-d");
                                     <div id="secao_distribuir_rateio" style="display:none; margin-top:10px;">
                                         <fieldset class="scheduler-border">
                                             <legend class="scheduler-border fonte-legend">Distribuir Rateio</legend>
-                                            <!-- Local select movido aqui quando rateio ON -->
-                                            <div class="row" id="slot_local_rateio" style="margin-bottom:6px;"></div>
-                                            <!-- Cabeçalho preview (visível antes de qualquer fase) -->
+                                            <!-- Tabela preview: cabeçalho + linha do select Local -->
                                             <div id="rateio_preview_header" style="overflow-x:auto;">
                                                 <table class="tbl-parcelas" style="width:100%;">
                                                     <thead>
@@ -453,7 +451,13 @@ $data_sistema = date("Y-m-d");
                                                             <th style="width:8%;"></th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody></tbody>
+                                                    <tbody>
+                                                        <tr id="tr_local_input">
+                                                            <td id="td_local_select" style="vertical-align:middle; padding:4px 6px;"></td>
+                                                            <td id="td_local_confirm" style="vertical-align:middle; padding:4px 6px; width:1%; white-space:nowrap;"></td>
+                                                            <td colspan="4"></td>
+                                                        </tr>
+                                                    </tbody>
                                                 </table>
                                             </div>
                                             <div id="linhas_rateio" style="display:none;">
