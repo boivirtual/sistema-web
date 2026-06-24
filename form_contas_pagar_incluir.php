@@ -2473,6 +2473,107 @@ $data_sistema = date("Y-m-d");
         $('#habilitar_rateio').prop('checked', true); // garante que o flag está ativo
     }
 
+    // ── Move botão Confirmar Conta para a última linha-fase2 ──
+    function fixarConfirmarContaButton() {
+        $('#tbl_rateio tbody tr.linha-fase2 .td-confirmar-conta').html('');
+        $('#tbl_rateio tbody tr.linha-fase2:last .td-confirmar-conta').html(
+            '<button type="button" class="btn btn-primary" onclick="confirmarTodaConta()">Confirmar</button>'
+        );
+    }
+
+    // ── Reabre seleção de CC para um Local específico (fase 2) ──
+    function editarCCDoLocal(localId, localNome) {
+        var ccIdsAtuais = [];
+        var $linhasDoLocal = $('#tbl_rateio tbody tr.linha-fase2[data-local-id="' + localId + '"]');
+        $linhasDoLocal.each(function() { ccIdsAtuais.push(String($(this).data('cc-id'))); });
+
+        var $insertBefore = $linhasDoLocal.last().next('tr');
+
+        $linhasDoLocal.each(function() {
+            var $sp = $(this).find('.selectpicker');
+            if ($sp.length) $sp.selectpicker('destroy');
+        });
+        $linhasDoLocal.remove();
+        fixarConfirmarContaButton();
+
+        var optionsCC = '';
+        $.each(ccOpcoes, function(k, cc) {
+            optionsCC += '<option value="' + cc.id + '">' + cc.nome + '</option>';
+        });
+
+        var selectId = 'editar_cc_sel_' + localId;
+        var editorHtml = '<tr id="tr_editar_cc_' + localId + '" class="tr-editar-cc"' +
+            ' data-local-id="' + localId + '" data-local-nome="' + localNome.replace(/"/g,'&quot;') + '">' +
+            '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + localNome + '</span></td>' +
+            '<td style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker" id="' + selectId + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsCC + '</select></td>' +
+            '<td style="vertical-align:middle;padding:4px 8px;"><button type="button" class="btn btn-primary" onclick="confirmarCCDoLocal(\'' + localId + '\',\'' + localNome.replace(/'/g,"\\'") + '\')">Confirmar</button></td>' +
+            '<td colspan="3"></td></tr>';
+
+        if ($insertBefore.length) { $insertBefore.before(editorHtml); } else { $('#tbl_rateio tbody').append(editorHtml); }
+
+        var $s = $('#' + selectId);
+        $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
+        $s.val(ccIdsAtuais);
+        $s.selectpicker('refresh');
+        var $bs = $s.closest('.bootstrap-select');
+        $bs.css({ 'width': '100%', 'display': 'block' });
+        $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
+        $bs.find('.dropdown-menu').css({ 'min-width': '220px', 'width': 'auto' });
+    }
+
+    // ── Confirma nova seleção de CC para um Local e reconstrói suas linhas ──
+    function confirmarCCDoLocal(localId, localNome) {
+        var selectId = 'editar_cc_sel_' + localId;
+        var $select  = $('#' + selectId);
+        var newCcIds = $select.val();
+        if (!newCcIds || newCcIds.length === 0) { alert('Selecione pelo menos um Centro de Custos.'); return; }
+
+        var optionsConta = '';
+        $.each(contaOpcoes, function(k, c) { optionsConta += '<option value="' + c.id + '">' + c.nome + '</option>'; });
+
+        var localNomeEsc = localNome.replace(/"/g,'&quot;');
+        var localNomeJs  = localNome.replace(/'/g,"\\'");
+        var newRowsHtml  = '';
+
+        $.each(newCcIds, function(i, ccId) {
+            var ccNome = ccId;
+            $.each(ccOpcoes, function(k, cc) { if (String(cc.id) === String(ccId)) { ccNome = cc.nome; return false; } });
+            var idxConta = 'conta_edit_' + localId + '_' + ccId;
+            newRowsHtml += '<tr class="linha-fase2"' +
+                ' data-local-id="' + localId + '" data-local-nome="' + localNomeEsc + '"' +
+                ' data-cc-id="' + ccId + '" data-cc-nome="' + ccNome.replace(/"/g,'&quot;') + '">';
+            if (i === 0) {
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
+                               '<span class="lbl-parcela">' + localNome + '</span>' +
+                               ' <a href="#" onclick="editarCCDoLocal(\'' + localId + '\',\'' + localNomeJs + '\');return false;" style="color:#aaa;font-size:11px;">' +
+                               '<i class="far fa-edit"></i></a></td>';
+            } else {
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;"></td>';
+            }
+            newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ccNome + '</span></td>';
+            newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker fase2-conta" id="' + idxConta + '" multiple data-live-search="true" data-size="8" data-width="100%">';
+            newRowsHtml += '<option value="" disabled>...</option>' + optionsConta + '</select></td>';
+            newRowsHtml += '<td class="td-confirmar-conta" style="vertical-align:middle;padding:4px 8px;"></td>';
+            newRowsHtml += '<td colspan="2"></td></tr>';
+        });
+
+        $select.selectpicker('destroy');
+        var $editorRow = $('#tr_editar_cc_' + localId);
+        $editorRow.before(newRowsHtml);
+        $editorRow.remove();
+
+        $.each(newCcIds, function(i, ccId) {
+            var $s = $('#conta_edit_' + localId + '_' + ccId);
+            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
+            var $bs = $s.closest('.bootstrap-select');
+            $bs.css({ 'width': '100%', 'display': 'block' });
+            $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
+            $bs.find('.dropdown-menu').css({ 'min-width': '220px', 'width': 'auto' });
+        });
+
+        fixarConfirmarContaButton();
+    }
+
     // ── Reabre seleção de locais a partir da fase 2 ──
     function editarLocaisRateio() {
         var locaisAtuais = [];
