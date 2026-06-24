@@ -2017,8 +2017,8 @@ $data_sistema = date("Y-m-d");
                     } else {
                         $('#td_local_confirm button').hide();
                         $('#linhas_rateio').hide().empty();
-                        $('#rodape_rateio').remove();
-                        $('#rateio_preview_header').show();
+                        $('#rodape_fase1, #rodape_fase2, #rodape_rateio').remove();
+                        $('#tr_local_input').show();
                     }
                 });
 
