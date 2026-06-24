@@ -685,7 +685,7 @@
                                         echo "<td width='2%'></td>";
                                     }
                                     echo "<td width='4%'>".$doc_parcela."</td>";
-                                    echo "<td width='2%'>".$numero_parcela."</td>";
+                                    echo "<td width='2%'>".$parcela_display."</td>";
                                     echo "<td width='14%'>".$razao."</td>";
                                     echo "<td width='14%'>".$desc_fazenda."</td>";
                                     echo "<td width='15%'>".$desc_conta."</td>";
