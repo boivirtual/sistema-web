@@ -2545,15 +2545,15 @@ $data_sistema = date("Y-m-d");
                 ' data-local-id="' + localId + '" data-local-nome="' + localNomeEsc + '"' +
                 ' data-cc-id="' + ccId + '" data-cc-nome="' + ccNome.replace(/"/g,'&quot;') + '">';
             if (i === 0) {
-                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;">' +
-                               '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-                               '<span class="lbl-parcela" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + localNome + '</span>' +
-                               '<a href="#" onclick="editarCCDoLocal(\'' + localId + '\',\'' + localNomeJs + '\');return false;" title="Selecione Centro de Custos" style="color:#aaa;font-size:11px;flex-shrink:0;margin-left:4px;">' +
-                               '<i class="far fa-edit"></i></a></div></td>';
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + localNome + '</span></td>';
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
+                               '<a href="#" onclick="editarCCDoLocal(\'' + localId + '\',\'' + localNomeJs + '\');return false;" data-toggle="tooltip" data-placement="top" title="Selecione Centro de Custos" style="color:#aaa;font-size:11px;margin-right:4px;">' +
+                               '<i class="far fa-edit"></i></a>' +
+                               '<span class="lbl-parcela">' + ccNome + '</span></td>';
             } else {
                 newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;"></td>';
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ccNome + '</span></td>';
             }
-            newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ccNome + '</span></td>';
             newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker fase2-conta" id="' + idxConta + '" multiple data-live-search="true" data-size="8" data-width="100%">';
             newRowsHtml += '<option value="" disabled>...</option>' + optionsConta + '</select></td>';
             newRowsHtml += '<td class="td-confirmar-conta" style="vertical-align:middle;padding:4px 8px;"></td>';
