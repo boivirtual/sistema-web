@@ -37,22 +37,38 @@
 
         /* 1. Alinha o container de texto à direita */
         .bootstrap-select .bs-actionsbox {
-            text-align: right; 
-            padding: 5px 5px 5px 5px; /* Ajusta o padding para melhor visualização */
+            text-align: right;
+            padding: 5px 5px 5px 5px;
         }
 
         /* 2. Garante que o link de deselect seja um bloco de texto que se mova */
         .bootstrap-select .bs-actionsbox .bs-deselect-all {
-            display: inline-block; /* Garante que o link se comporte como um bloco inline */
-            float: none; /* Garante que não haja float de versões antigas do Bootstrap */
+            display: inline-block;
+            float: none;
             border: none;
-            padding: 0; /* Remove padding interno que possa atrapalhar */
+            padding: 0;
             color: #007aff;
             background: transparent;
             font-size: 13px;
-            font-weight: 500; 
-            width: 40%;       
+            font-weight: 500;
+            width: 40%;
         }
+
+        /* Tabela de rateio (estilo igual ao form de inclusão) */
+        .tbl-parcelas { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
+        .tbl-parcelas th {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+            padding: 6px 8px;
+            border-bottom: 2px solid #ddd;
+            white-space: nowrap;
+            background: #f7f7f7;
+        }
+        .tbl-parcelas td { padding: 5px 6px; vertical-align: middle; }
+        .tbl-parcelas tbody tr:nth-child(even) td { background-color: #fafafa; }
+        .lbl-parcela { font-size: 12px; color: #555; font-weight: 600; white-space: nowrap; }
+        .tbl-parcelas input.form-control { height: 30px; font-size: 13px; padding: 4px 8px; }
     </style>
 
 </head>
