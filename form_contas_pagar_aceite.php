@@ -400,12 +400,11 @@ var _eratContas = <?php echo json_encode($arr_conta_rat_js, JSON_UNESCAPED_UNICO
                 <div style="overflow-x:auto;">
                     <table class="tbl-parcelas" id="tbl_erat">
                         <colgroup>
+                            <col style="width:20%">
+                            <col style="width:18%">
+                            <col style="width:32%">
                             <col style="width:16%">
-                            <col style="width:16%">
-                            <col style="width:26%">
                             <col style="width:14%">
-                            <col style="width:9%">
-                            <col style="width:9%">
                         </colgroup>
                         <thead>
                             <tr>
@@ -414,7 +413,6 @@ var _eratContas = <?php echo json_encode($arr_conta_rat_js, JSON_UNESCAPED_UNICO
                                 <th>Conta Contábil</th>
                                 <th style="text-align:right;">Valor (R$)</th>
                                 <th style="text-align:right;">%</th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="tbody_erat"></tbody>
