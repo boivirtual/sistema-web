@@ -620,7 +620,7 @@ function _eratGerarLinha(ln, showLocal, showCC) {
         tr += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
             '<span class="lbl-parcela">' + localNome + '</span>' +
             ' <a href="#" onclick="eratEditarLocal(this);return false;"' +
-            ' style="color:#337ab7;font-size:11px;margin-left:4px;" data-toggle="tooltip" title="Editar Local"><i class="far fa-edit"></i></a>' +
+            ' style="color:#337ab7;font-size:11px;margin-left:4px;" data-toggle="tooltip" title="Selecionar Local"><i class="fas fa-pen"></i></a>' +
             '<input type="hidden" class="erat-local-id"   value="' + localId   + '">' +
             '<input type="hidden" class="erat-local-nome" value="' + localNome + '">' +
             '</td>';
