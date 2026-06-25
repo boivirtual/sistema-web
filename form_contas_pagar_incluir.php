@@ -2746,6 +2746,32 @@ $data_sistema = date("Y-m-d");
         );
     }
 
+    function _bindReplicarConta($s) {
+        var _ultimaSelecao = null;
+        $s.on('hidden.bs.select', function() {
+            var vals = $(this).val();
+            if (!vals || vals.length === 0) return;
+
+            var valsKey = vals.slice().sort().join(',');
+            if (valsKey === _ultimaSelecao) return;
+            _ultimaSelecao = valsKey;
+
+            var $self = $(this);
+            var $vazios = $('#tbl_rateio .fase2-conta').not($self).filter(function() {
+                var v = $(this).val();
+                return !v || v.length === 0;
+            });
+            if ($vazios.length === 0) return;
+
+            var msg = 'Deseja replicar esta seleção para as ' + $vazios.length + ' linha(s) seguinte(s)?';
+            if (!confirm(msg)) return;
+
+            $vazios.each(function() {
+                $(this).val(vals).selectpicker('refresh');
+            });
+        });
+    }
+
     function _temEditorAberto() {
         if ($('#tr_local_input').is(':visible')) return true;
         if ($('#tbl_rateio .tr-editar-cc, #tbl_rateio .tr-editar-conta').length > 0) return true;
