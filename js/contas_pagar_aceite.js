@@ -911,21 +911,25 @@ function eratConfirmarCC(btn) {
 
     var currentLocalId = String($tr.find('.erat-local-id').val());
     var localNm        = $tr.find('.erat-local-nome').val();
-    var currentCcId    = String($tr.find('.erat-cc-id').val());
 
-    var $groupRows = $('#tbody_erat tr.linha-valor-rateio').filter(function () {
-        return String($(this).find('.erat-local-id').val()) === currentLocalId &&
-               String($(this).find('.erat-cc-id').val()) === currentCcId;
+    var allCcRows = {};
+    var ccOrder   = [];
+    $('#tbody_erat tr.linha-valor-rateio').each(function () {
+        if (String($(this).find('.erat-local-id').val()) === currentLocalId) {
+            var cid = String($(this).find('.erat-cc-id').val());
+            if (!allCcRows[cid]) { allCcRows[cid] = []; ccOrder.push(cid); }
+            allCcRows[cid].push({
+                conta_id:    $(this).find('.erat-conta-id').val(),
+                conta_nome:  $(this).find('.erat-conta-nome').val(),
+                conta_valor: _eratParseVal($(this).find('.rat-valor').val()),
+                conta_perc:  _eratParseVal($(this).find('.rat-perc').val())
+            });
+        }
     });
 
-    var groupData = [];
-    $groupRows.each(function () {
-        groupData.push({
-            conta_id:    $(this).find('.erat-conta-id').val(),
-            conta_nome:  $(this).find('.erat-conta-nome').val(),
-            conta_valor: _eratParseVal($(this).find('.rat-valor').val()),
-            conta_perc:  _eratParseVal($(this).find('.rat-perc').val())
-        });
+    var template   = allCcRows[ccOrder[0]] || [];
+    var $groupRows = $('#tbody_erat tr.linha-valor-rateio').filter(function () {
+        return String($(this).find('.erat-local-id').val()) === currentLocalId;
     });
 
     var $anchor = $groupRows.first();
@@ -933,8 +937,9 @@ function eratConfirmarCC(btn) {
     for (var l = 0; l < selectedIds.length; l++) {
         var newCcId = selectedIds[l];
         var newCcNm = $sel.find('option[value="' + newCcId + '"]').text().trim();
-        for (var r = 0; r < groupData.length; r++) {
-            var ln = $.extend({}, groupData[r]);
+        var rows = allCcRows[newCcId] || template;
+        for (var r = 0; r < rows.length; r++) {
+            var ln = $.extend({}, rows[r]);
             ln.local_id   = currentLocalId;
             ln.local_nome = localNm;
             ln.cc_id      = newCcId;
