@@ -428,11 +428,6 @@ var _eratContas = <?php echo json_encode($arr_conta_rat_js, JSON_UNESCAPED_UNICO
                         </tbody>
                     </table>
                 </div>
-                <div style="display:flex;justify-content:flex-end;margin-top:10px;">
-                    <button type="button" class="btn btn-info btn-sm" onclick="eratAdicionarLinha()">
-                        <i class="fas fa-plus"></i> Adicionar Linha
-                    </button>
-                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onclick="eratSalvar()" style="float:left;">Salvar Rateio</button>
