@@ -805,12 +805,7 @@ function eratConfirmarLocal(btn) {
     $tr.find('.erat-local-nome').val(localNm);
     $tr.attr('data-local-id', localId).attr('data-local-nome', localNm);
 
-    $td.html(
-        '<span class="lbl-parcela">' + localNm + '</span>' +
-        '<input type="hidden" class="erat-local-id"   value="' + localId + '">' +
-        '<input type="hidden" class="erat-local-nome" value="' + localNm + '">'
-    );
-    _eratFixarIconeLocais();
+    _eratRefreshGrouping();
 }
 
 // ── Editor inline: Centro de Custo ──
