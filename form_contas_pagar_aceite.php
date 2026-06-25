@@ -404,34 +404,44 @@ var _eratContas = <?php echo json_encode($arr_conta_rat_js); ?>;
             </div>
             <div class="modal-body" style="padding:10px 16px;">
                 <div id="erat_aviso" class="alert alert-danger" style="display:none;margin-bottom:8px;"></div>
-                <table class="table table-condensed" id="tbl_erat" style="font-size:12px;margin-bottom:0;">
-                    <thead>
-                        <tr style="background:#f5f7fa;">
-                            <th style="width:22%;">Local</th>
-                            <th style="width:22%;">Centro de Custo</th>
-                            <th style="width:30%;">Conta Contábil</th>
-                            <th style="width:13%;text-align:right;">Valor (R$)</th>
-                            <th style="width:9%;text-align:right;">%</th>
-                            <th style="width:4%;"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody_erat"></tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3" style="text-align:right;font-size:12px;padding-top:8px;">
-                                <strong>Total Digitado:</strong> <span id="erat_span_total" style="color:#2c3e50;">R$ 0,00</span>
-                                &nbsp;&nbsp;<strong>Restante:</strong>
-                                <span id="erat_span_rest" style="font-weight:700;">R$ 0,00</span>
-                                <span id="erat_span_rest_pct" style="font-weight:700;margin-left:4px;">0,00%</span>
-                            </td>
-                            <td colspan="3" style="padding-top:8px;">
-                                <button type="button" class="btn btn-info btn-xs" onclick="eratAdicionarLinha()">
-                                    <i class="fas fa-plus"></i> Adicionar Linha
-                                </button>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                <div style="overflow-x:auto;">
+                    <table class="tbl-parcelas" id="tbl_erat" style="width:100%;table-layout:fixed;">
+                        <colgroup>
+                            <col style="width:16%">
+                            <col style="width:16%">
+                            <col style="width:26%">
+                            <col style="width:14%">
+                            <col style="width:9%">
+                            <col style="width:9%">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Local</th>
+                                <th>Centro de Custos</th>
+                                <th>Conta Contábil</th>
+                                <th style="text-align:right;">Valor (R$)</th>
+                                <th style="text-align:right;">%</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody_erat"></tbody>
+                        <tbody id="tbody_erat_footer">
+                            <tr id="tr_erat_restante">
+                                <td colspan="4" style="text-align:right;font-size:12px;color:#666;padding:6px 8px;border-top:1px solid #ddd;">
+                                    Total Digitado: <span id="span_rat_total" style="color:#27ae60;font-weight:600;font-size:13px;margin-right:14px;">R$ 0,00</span>
+                                    &nbsp;&nbsp;&nbsp;Restante a distribuir:
+                                </td>
+                                <td id="td_rat_vlr_rest" style="font-size:13px;font-weight:600;color:#c0392b;text-align:right;padding:6px 8px;white-space:nowrap;border-top:1px solid #ddd;">R$ 0,00</td>
+                                <td id="td_rat_pct_rest" style="font-size:13px;font-weight:600;color:#c0392b;text-align:right;padding:6px 8px;border-top:1px solid #ddd;">0,00%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+                    <button type="button" class="btn btn-info btn-sm" onclick="eratAdicionarLinha()">
+                        <i class="fas fa-plus"></i> Adicionar Linha
+                    </button>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onclick="eratSalvar()" style="float:left;">
