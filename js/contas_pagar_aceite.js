@@ -818,25 +818,21 @@ function eratEditarLocal(link) {
 }
 
 function eratConfirmarLocal(btn) {
-    var $td          = $(btn).closest('td');
-    var $tr          = $td.closest('tr');
-    var $sel         = $td.find('select');
-    var selectedIds  = $sel.val() || [];
+    var $td         = $(btn).closest('td');
+    var $sel        = $td.find('select');
+    var selectedIds = $sel.val() || [];
 
     if (!selectedIds || selectedIds.length === 0) {
         alert('Selecione pelo menos um Local.');
         return;
     }
 
-    var currentLocalId = String($tr.find('.erat-local-id').val());
-
-    var $groupRows = $('#tbody_erat tr.linha-valor-rateio').filter(function () {
-        return String($(this).find('.erat-local-id').val()) === currentLocalId;
-    });
-
-    var groupData = [];
-    $groupRows.each(function () {
-        groupData.push({
+    var allLocalRows = {};
+    var localOrder   = [];
+    $('#tbody_erat tr.linha-valor-rateio').each(function () {
+        var lid = String($(this).find('.erat-local-id').val());
+        if (!allLocalRows[lid]) { allLocalRows[lid] = []; localOrder.push(lid); }
+        allLocalRows[lid].push({
             cc_id:       $(this).find('.erat-cc-id').val(),
             cc_nome:     $(this).find('.erat-cc-nome').val(),
             conta_id:    $(this).find('.erat-conta-id').val(),
@@ -846,13 +842,17 @@ function eratConfirmarLocal(btn) {
         });
     });
 
-    var $anchor = $groupRows.first();
-    var newHtml = '';
+    var template = allLocalRows[localOrder[0]] || [];
+    var $allRows = $('#tbody_erat tr.linha-valor-rateio');
+    var $anchor  = $allRows.first();
+    var newHtml  = '';
+
     for (var l = 0; l < selectedIds.length; l++) {
         var newLocalId = selectedIds[l];
         var newLocalNm = $sel.find('option[value="' + newLocalId + '"]').text().trim();
-        for (var r = 0; r < groupData.length; r++) {
-            var ln = $.extend({}, groupData[r]);
+        var rows = allLocalRows[newLocalId] || template;
+        for (var r = 0; r < rows.length; r++) {
+            var ln = $.extend({}, rows[r]);
             ln.local_id   = newLocalId;
             ln.local_nome = newLocalNm;
             newHtml += _eratGerarLinha(ln);
@@ -860,7 +860,7 @@ function eratConfirmarLocal(btn) {
     }
 
     $anchor.before(newHtml);
-    $groupRows.remove();
+    $allRows.remove();
     _eratRefreshGrouping();
 }
 
