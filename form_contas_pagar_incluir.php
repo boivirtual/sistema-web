@@ -2836,17 +2836,17 @@ $data_sistema = date("Y-m-d");
         fixarIconeSelecLocais();
     }
 
-    // ── Reabre seleção de locais a partir da fase 2 ──
     // ── Abre seletor de CC para reeditar um local dentro da fase 3 ──
     function editarCCDoLocalFase3(localId, localNome) {
+        var editorId = 'tr_editar_cc_f3_' + String(localId).replace(/\W/g,'_');
+        if ($('#' + editorId).length) return;
+
         var $linhasDoLocal = $('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"]');
         var ccIdsAtuais = [];
         $linhasDoLocal.each(function() {
             var cid = String($(this).data('cc-id'));
             if (ccIdsAtuais.indexOf(cid) === -1) ccIdsAtuais.push(cid);
         });
-        var $insertBefore = $linhasDoLocal.last().next('tr');
-        $linhasDoLocal.remove();
 
         var optionsCC = '';
         $.each(ccOpcoes, function(k, cc) {
@@ -2855,14 +2855,15 @@ $data_sistema = date("Y-m-d");
 
         var selectId    = 'editar_cc_f3_sel_' + String(localId).replace(/\W/g,'_');
         var localNomeJs = localNome.replace(/'/g,"\\'");
-        var editorHtml  = '<tr id="tr_editar_cc_f3_' + String(localId).replace(/\W/g,'_') + '" class="tr-editar-cc"' +
+        var editorHtml  = '<tr id="' + editorId + '" class="tr-editar-cc"' +
             ' data-local-id="' + localId + '" data-local-nome="' + localNome.replace(/"/g,'&quot;') + '">' +
             '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + localNome + '</span></td>' +
             '<td style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker" id="' + selectId + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsCC + '</select></td>' +
             '<td style="vertical-align:middle;padding:4px 8px;"><button type="button" class="btn btn-primary" onclick="confirmarCCDoLocalFase3(\'' + localId + '\',\'' + localNomeJs + '\')">Confirmar</button></td>' +
             '<td colspan="3"></td></tr>';
 
-        if ($insertBefore.length) { $insertBefore.before(editorHtml); } else { $('#tr_rateio_restante').before(editorHtml); }
+        var $firstRow = $linhasDoLocal.first();
+        if ($firstRow.length) { $firstRow.before(editorHtml); } else { $('#tr_rateio_restante').before(editorHtml); }
 
         var $s = $('#' + selectId);
         $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
@@ -2872,6 +2873,7 @@ $data_sistema = date("Y-m-d");
         $bs.css({ 'width': '100%', 'display': 'block' });
         $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
         $bs.find('.dropdown-menu').css({ 'min-width': '280px', 'width': 'auto' });
+        $('#' + editorId).data('cc-ids-antes', ccIdsAtuais);
         fixarIconeSelecLocais();
     }
 
