@@ -2062,6 +2062,19 @@ $data_sistema = date("Y-m-d");
         var selecionados = $local.val();
         if (!selecionados || selecionados.length === 0) return;
 
+        // Se seleção não mudou, apenas fecha o selector sem reconstruir
+        var novosSorted   = selecionados.slice().sort();
+        var antesSorted   = _locaisAntesEdicao.slice().sort();
+        var semMudanca    = (novosSorted.length === antesSorted.length &&
+                            novosSorted.every(function(v, i) { return v === antesSorted[i]; }));
+        if (semMudanca && _locaisAntesEdicao.length > 0) {
+            $('#tr_local_input').hide();
+            return;
+        }
+
+        $('#linhas_rateio').hide().empty();
+        $('#rodape_fase2').remove();
+        $('#rodape_rateio').remove();
         $('#col_btn_confirmar_locais').hide();
         $('#rodape_fase1').remove();
 
