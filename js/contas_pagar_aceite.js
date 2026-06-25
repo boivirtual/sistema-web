@@ -531,18 +531,10 @@ function limpar_filtros_tela_inicial() {
 var _eratCtpId       = 0;
 var _eratPrimeiroCtp = 0;
 var _eratValorTotal  = 0;
-var _eratModo        = null; // null | 'valor' | 'perc'
 
 function _eratFmtMoney(n) {
     n = parseFloat(n) || 0;
     return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function _eratParseVal(s) {
-    if (!s) return 0;
-    s = String(s).replace('%', '').trim();
-    if (s.indexOf(',') !== -1) s = s.replace(/\./g, '').replace(',', '.');
-    return parseFloat(s) || 0;
 }
 
 // ── Gera linha no estilo da tela de inclusão (texto + ícone de edição) ──
