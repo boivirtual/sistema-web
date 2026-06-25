@@ -839,12 +839,7 @@ function eratConfirmarCC(btn) {
     $tr.find('.erat-cc-nome').val(ccNm);
     $tr.attr('data-cc-id', ccId).attr('data-cc-nome', ccNm);
 
-    $td.html(
-        '<span class="lbl-parcela">' + ccNm + '</span>' +
-        ' <a href="#" onclick="eratEditarCC(this);return false;" style="color:#aaa;font-size:11px;margin-left:4px;" data-toggle="tooltip" title="Editar Centro de Custo"><i class="far fa-edit"></i></a>' +
-        '<input type="hidden" class="erat-cc-id"   value="' + ccId + '">' +
-        '<input type="hidden" class="erat-cc-nome" value="' + ccNm + '">'
-    );
+    _eratRefreshGrouping();
 }
 
 // ── Editor inline: Conta Contábil ──
