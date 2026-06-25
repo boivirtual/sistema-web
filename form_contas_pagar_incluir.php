@@ -2044,35 +2044,13 @@ $data_sistema = date("Y-m-d");
                 });
 
             } else {
-                // Rateio OFF → restaura CC e Conta Contábil, destrói selectpicker do Local
-                $('#col_cc').show();
-                $('#col_conta').show();
-
-                $local.off('changed.bs.select.rateio');
-                if ($local.hasClass('selectpicker')) {
-                    $local.selectpicker('destroy');
+                // Se rateio já está configurado, pede confirmação antes de perder os dados
+                if ($('#rateio_status').is(':visible') || $('#linhas_rateio').children().length > 0) {
+                    $(this).prop('checked', true);
+                    $('#modal_fechar_rateio').modal('show');
+                    return;
                 }
-                $local.removeAttr('multiple')
-                      .removeAttr('data-live-search')
-                      .removeAttr('data-size')
-                      .removeClass('selectpicker')
-                      .addClass('form-control');
-
-                $local.val('');
-
-                // Mover select de volta para col_local e botão de volta para col_btn_confirmar_locais
-                $('#col_local label').after($local);
-                $('#btn_fechar_local').remove();
-                $('#col_btn_confirmar_locais').append($('#btn_confirmar_locais'));
-                $('#tr_local_input').show();
-
-                $('#col_btn_confirmar_locais').hide();
-                $('#secao_distribuir_rateio').hide();
-                $('#linhas_rateio').hide().empty();
-                $('#rodape_rateio').remove();
-
-                $('#rateio_json').val('');
-                RT.reset();
+                _executarRateioOff();
             }
         });
     });
