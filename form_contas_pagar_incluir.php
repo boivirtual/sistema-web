@@ -2207,6 +2207,16 @@ $data_sistema = date("Y-m-d");
 
     // ── FASE 3: Lê Conta de todas as linhas → tabela final com Valor/% ──
     function confirmarTodaConta() {
+        // Se algum dropdown de conta está aberto, fecha-o primeiro
+        // (isso dispara hidden.bs.select → diálogo de replicação aparece antes da validação)
+        var $dropdownAberto = $('#tbl_rateio .bootstrap-select.open');
+        if ($dropdownAberto.length) {
+            $dropdownAberto.find('button.dropdown-toggle').trigger('click');
+            return;
+        }
+        // Aguarda o diálogo de replicação ser processado antes de validar
+        if (_replicarContaPendente) return;
+
         var linhas = [];
         var valido = true;
 
