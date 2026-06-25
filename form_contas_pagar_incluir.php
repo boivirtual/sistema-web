@@ -2744,35 +2744,40 @@ $data_sistema = date("Y-m-d");
         );
     }
 
+    function _temEditorAberto() {
+        if ($('#tr_local_input').is(':visible')) return true;
+        if ($('#tbl_rateio .tr-editar-cc, #tbl_rateio .tr-editar-conta').length > 0) return true;
+        return false;
+    }
+
     // ── Reabre seleção de CC para um Local específico (fase 2) ──
     function editarCCDoLocal(localId, localNome) {
-        var ccIdsAtuais = [];
+        if (_temEditorAberto()) return;
+        var editorId = 'tr_editar_cc_' + localId;
+        if ($('#' + editorId).length) return;
+
         var $linhasDoLocal = $('#tbl_rateio tbody tr.linha-fase2[data-local-id="' + localId + '"]');
+        var ccIdsAtuais = [];
         $linhasDoLocal.each(function() { ccIdsAtuais.push(String($(this).data('cc-id'))); });
-
-        var $insertBefore = $linhasDoLocal.last().next('tr');
-
-        $linhasDoLocal.each(function() {
-            var $sp = $(this).find('.selectpicker');
-            if ($sp.length) $sp.selectpicker('destroy');
-        });
-        $linhasDoLocal.remove();
-        fixarConfirmarContaButton();
 
         var optionsCC = '';
         $.each(ccOpcoes, function(k, cc) {
             optionsCC += '<option value="' + cc.id + '">' + cc.nome + '</option>';
         });
 
-        var selectId = 'editar_cc_sel_' + localId;
-        var editorHtml = '<tr id="tr_editar_cc_' + localId + '" class="tr-editar-cc"' +
+        var selectId    = 'editar_cc_sel_' + localId;
+        var localNomeJs = localNome.replace(/'/g,"\\'");
+        var editorHtml  = '<tr id="' + editorId + '" class="tr-editar-cc"' +
             ' data-local-id="' + localId + '" data-local-nome="' + localNome.replace(/"/g,'&quot;') + '">' +
             '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + localNome + '</span></td>' +
             '<td style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker" id="' + selectId + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsCC + '</select></td>' +
-            '<td style="vertical-align:middle;padding:4px 8px;"><button type="button" class="btn btn-primary" onclick="confirmarCCDoLocal(\'' + localId + '\',\'' + localNome.replace(/'/g,"\\'") + '\')">Confirmar</button></td>' +
+            '<td style="vertical-align:middle;padding:4px 8px;">' +
+            '<button type="button" class="btn btn-primary" onclick="confirmarCCDoLocal(\'' + localId + '\',\'' + localNomeJs + '\')">Confirmar</button>' +
+            ' <button type="button" class="btn btn-default" onclick="fecharEdicaoCCFase2(\'' + localId + '\')">Fechar</button></td>' +
             '<td colspan="3"></td></tr>';
 
-        if ($insertBefore.length) { $insertBefore.before(editorHtml); } else { $('#tbl_rateio tbody').append(editorHtml); }
+        var $firstRow = $linhasDoLocal.first();
+        if ($firstRow.length) { $firstRow.before(editorHtml); } else { $('#tbl_rateio tbody').append(editorHtml); }
 
         var $s = $('#' + selectId);
         $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
@@ -2782,6 +2787,15 @@ $data_sistema = date("Y-m-d");
         $bs.css({ 'width': '100%', 'display': 'block' });
         $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
         $bs.find('.dropdown-menu').css({ 'min-width': '280px', 'width': 'auto' });
+        $('#' + editorId).data('cc-ids-antes', ccIdsAtuais);
+    }
+
+    function fecharEdicaoCCFase2(localId) {
+        var $s = $('#editar_cc_sel_' + localId);
+        if ($s.length) $s.selectpicker('destroy');
+        $('#tr_editar_cc_' + localId).remove();
+        fixarConfirmarContaButton();
+        fixarIconeSelecLocais();
     }
 
     // ── Confirma nova seleção de CC para um Local e reconstrói suas linhas ──
