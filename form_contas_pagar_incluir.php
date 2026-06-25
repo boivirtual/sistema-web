@@ -2184,6 +2184,7 @@ $data_sistema = date("Y-m-d");
         });
         $('#linhas_rateio [data-toggle="tooltip"]').tooltip();
         fixarConfirmarContaButton();
+        fixarIconeSelecLocais();
     }
 
     // ── FASE 3: Lê Conta de todas as linhas → tabela final com Valor/% ──
