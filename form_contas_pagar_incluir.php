@@ -1972,11 +1972,27 @@ $data_sistema = date("Y-m-d");
         // Máscara money nos campos de valor do rateio (delegada — funciona em linhas dinâmicas)
         $(document).on('keypress', '.rat-valor', function(e) {
             mask.money.call(this, e);
+            if (_modoRateio !== 'valor') _setModoRateio('valor');
         });
         $(document).on('blur', '.rat-valor', function() {
             // Ao sair: converte formato US → BR e recalcula
             var n = parseFloat($(this).val()) || 0;
             $(this).val(formatMoney(n));
+            recalcularRateio();
+        });
+        // Máscara e handler do campo % — permite dígitos e vírgula
+        $(document).on('keypress', '.rat-perc', function(e) {
+            var c = e.which;
+            if (c === 0 || c === 8) return true;
+            if (c === 44) { return $(this).val().replace('%','').indexOf(',') === -1; } // permite 1 vírgula
+            if (c < 48 || c > 57) return false;
+            if (_modoRateio !== 'perc') _setModoRateio('perc');
+            return true;
+        });
+        $(document).on('blur', '.rat-perc', function() {
+            var raw = $(this).val().replace('%','').replace(',','.');
+            var n = parseFloat(raw) || 0;
+            $(this).val(n > 0 ? n.toFixed(2).replace('.', ',') + '%' : '');
             recalcularRateio();
         });
 
