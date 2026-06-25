@@ -353,13 +353,6 @@
         </section>
     </section>
 
-<!-- Arrays para o editor de rateio (locais / CC / contas) -->
-<script>
-var _eratLocais = <?php echo json_encode($arr_local_rat_js); ?>;
-var _eratCC     = <?php echo json_encode($arr_cc_rat_js); ?>;
-var _eratContas = <?php echo json_encode($arr_conta_rat_js); ?>;
-</script>
-
 <!-- Modal: Editar Rateio -->
 <div class="modal fade" id="modal_editar_rateio" tabindex="-1" role="dialog" data-backdrop="static">
     <div class="modal-dialog" style="width:96%;max-width:1100px;" role="document">
