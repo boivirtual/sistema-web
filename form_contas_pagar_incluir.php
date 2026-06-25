@@ -2014,9 +2014,9 @@ $data_sistema = date("Y-m-d");
                 $local.on('changed.bs.select.rateio', function () {
                     var selecionados = $local.val();
                     if (selecionados && selecionados.length > 0) {
-                        $('#td_local_confirm button').show();
+                        $('#btn_confirmar_locais').show();
                     } else {
-                        $('#td_local_confirm button').hide();
+                        $('#btn_confirmar_locais').hide();
                         $('#linhas_rateio').hide().empty();
                         $('#rodape_fase1, #rodape_fase2, #rodape_rateio').remove();
                         $('#tr_local_input').show();
