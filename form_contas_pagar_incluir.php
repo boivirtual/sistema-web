@@ -2117,6 +2117,7 @@ $data_sistema = date("Y-m-d");
             $bs.find('.dropdown-menu').css({ 'min-width': '280px', 'width': 'auto' });
         });
 
+        $('#btn_fechar_local').remove();
         $('#tr_local_input').hide();
         $('#linhas_rateio').show();
         fixarIconeSelecLocais();
