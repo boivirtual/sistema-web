@@ -926,47 +926,111 @@ function eratConfirmarCC(btn) {
 function eratEditarConta(link) {
     var $td     = $(link).closest('td');
     var $tr     = $td.closest('tr');
-    var contaId = $tr.find('.erat-conta-id').val();
+    var localId = String($tr.find('.erat-local-id').val());
+    var ccId    = String($tr.find('.erat-cc-id').val());
     var contas  = typeof _eratContas !== 'undefined' ? _eratContas : [];
+    var selId   = 'erat_sel_conta_' + Date.now();
+
+    // Coletar todas as contas do mesmo grupo local+cc (para pré-selecionar)
+    var groupContaIds = [];
+    $('#tbody_erat tr.linha-valor-rateio').each(function () {
+        if (String($(this).find('.erat-local-id').val()) === localId &&
+            String($(this).find('.erat-cc-id').val()) === ccId) {
+            groupContaIds.push(String($(this).find('.erat-conta-id').val()));
+        }
+    });
 
     var optConta = '';
     for (var i = 0; i < contas.length; i++) {
-        var ct  = contas[i];
-        var sel = (String(ct.id) === String(contaId)) ? ' selected' : '';
-        if (ct.nivel === 1)      optConta += '<option value="' + ct.id + '" disabled' + sel + ' style="color:#777;font-weight:600;">' + ct.nome + '</option>';
-        else if (ct.nivel === 2) optConta += '<option value="' + ct.id + '" disabled' + sel + ' style="color:#888;">&nbsp;&nbsp;&nbsp;&nbsp;' + ct.nome + '</option>';
-        else                     optConta += '<option value="' + ct.id + '"' + sel + '>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + ct.nome + '</option>';
+        var ct     = contas[i];
+        var isSel  = groupContaIds.indexOf(String(ct.id)) !== -1;
+        var selAttr = isSel ? ' selected' : '';
+        if (ct.nivel === 1) {
+            optConta += '<option value="' + ct.id + '" disabled data-nivel="1"' + selAttr + '>' + ct.nome + '</option>';
+        } else if (ct.nivel === 2) {
+            optConta += '<option value="' + ct.id + '" disabled data-nivel="2"' + selAttr + '>' + ct.nome + '</option>';
+        } else {
+            optConta += '<option value="' + ct.id + '" data-nivel="3"' + selAttr + '>' + ct.nome + '</option>';
+        }
     }
 
     $td.data('orig-html', $td.html()).html(
-        '<select class="form-control" style="height:30px;font-size:12px;display:inline-block;width:auto;max-width:290px;">' + optConta + '</select>' +
-        ' <button type="button" class="btn btn-primary btn-xs" onclick="eratConfirmarConta(this)">OK</button>' +
-        ' <button type="button" class="btn btn-default btn-xs" onclick="eratCancelarEdicao(this)">X</button>'
+        '<select id="' + selId + '" class="selectpicker" multiple data-live-search="true"' +
+        ' data-width="100%" data-container="body" title="Selecione as contas...">' +
+        optConta + '</select>' +
+        '<div style="margin-top:4px;white-space:nowrap;">' +
+        '<button type="button" class="btn btn-primary btn-xs" onclick="eratConfirmarConta(this)">Confirmar</button> ' +
+        '<button type="button" class="btn btn-default btn-xs" onclick="eratCancelarEdicao(this)">Fechar</button>' +
+        '</div>'
     );
+    $('#' + selId).selectpicker();
 }
 
 function eratConfirmarConta(btn) {
-    var $td     = $(btn).closest('td');
-    var $tr     = $td.closest('tr');
-    var $sel    = $td.find('select');
-    var contaId = $sel.val();
-    var contaNm = $sel.find('option:selected').text().trim();
+    var $td         = $(btn).closest('td');
+    var $tr         = $td.closest('tr');
+    var $sel        = $td.find('select');
+    var selectedIds = $sel.val() || [];
 
-    $tr.find('.erat-conta-id').val(contaId);
-    $tr.find('.erat-conta-nome').val(contaNm);
-    $tr.attr('data-conta-id', contaId).attr('data-conta-nome', contaNm);
+    if (!selectedIds || selectedIds.length === 0) {
+        alert('Selecione pelo menos uma Conta Contábil.');
+        return;
+    }
 
-    $td.html(
-        '<span class="lbl-parcela">' + contaNm + '</span>' +
-        ' <a href="#" onclick="eratEditarConta(this);return false;" style="color:#337ab7;font-size:11px;margin-left:4px;" data-toggle="tooltip" title="Editar Conta Contábil"><i class="far fa-edit"></i></a>' +
-        '<input type="hidden" class="erat-conta-id"   value="' + contaId + '">' +
-        '<input type="hidden" class="erat-conta-nome" value="' + contaNm + '">'
-    );
+    var localId = String($tr.find('.erat-local-id').val());
+    var localNm = $tr.find('.erat-local-nome').val();
+    var ccId    = String($tr.find('.erat-cc-id').val());
+    var ccNm    = $tr.find('.erat-cc-nome').val();
+
+    // Mapa de valores existentes para preservar ao confirmar
+    var existing = {};
+    $('#tbody_erat tr.linha-valor-rateio').each(function () {
+        if (String($(this).find('.erat-local-id').val()) === localId &&
+            String($(this).find('.erat-cc-id').val()) === ccId) {
+            var cid = String($(this).find('.erat-conta-id').val());
+            existing[cid] = {
+                valor: _eratParseVal($(this).find('.rat-valor').val()),
+                perc:  _eratParseVal($(this).find('.rat-perc').val())
+            };
+        }
+    });
+
+    var $groupRows = $('#tbody_erat tr.linha-valor-rateio').filter(function () {
+        return String($(this).find('.erat-local-id').val()) === localId &&
+               String($(this).find('.erat-cc-id').val()) === ccId;
+    });
+
+    var $anchor = $groupRows.first();
+    var newHtml = '';
+    for (var i = 0; i < selectedIds.length; i++) {
+        var contaId = selectedIds[i];
+        var contaNm = $sel.find('option[value="' + contaId + '"]').text().trim();
+        var prev    = existing[String(contaId)] || { valor: 0, perc: 0 };
+        newHtml += _eratGerarLinha({
+            local_id:    localId,
+            local_nome:  localNm,
+            cc_id:       ccId,
+            cc_nome:     ccNm,
+            conta_id:    contaId,
+            conta_nome:  contaNm,
+            conta_valor: prev.valor,
+            conta_perc:  prev.perc
+        });
+    }
+
+    $anchor.before(newHtml);
+    $groupRows.remove();
+    _eratRefreshGrouping();
 }
 
 function eratCancelarEdicao(btn) {
     var $td = $(btn).closest('td');
+    var $sp = $td.find('.selectpicker');
+    if ($sp.length) {
+        try { $sp.selectpicker('destroy'); } catch (e) {}
+    }
     $td.html($td.data('orig-html'));
+    $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip();
 }
 
 // ── Abre o modal e carrega dados do rateio via AJAX ──
