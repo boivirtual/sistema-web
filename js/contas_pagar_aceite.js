@@ -593,9 +593,12 @@ function eratRecalcular() {
 
 // ── Gera linha linha-valor-rateio a partir de objeto JSON ──
 // showLocal=false → célula Local fica vazia (mesmo grupo); showCC=false → idem para CC
-function _eratGerarLinha(ln, showLocal, showCC) {
-    if (showLocal === undefined) showLocal = true;
-    if (showCC    === undefined) showCC    = true;
+// showConta=false → oculta ícone de edição da Conta; showLocalIcon=false → oculta ícone do Local mesmo quando showLocal=true
+function _eratGerarLinha(ln, showLocal, showCC, showConta, showLocalIcon) {
+    if (showLocal     === undefined) showLocal     = true;
+    if (showCC        === undefined) showCC        = true;
+    if (showConta     === undefined) showConta     = true;
+    if (showLocalIcon === undefined) showLocalIcon = showLocal;
 
     ln = ln || {};
     var localId   = ln.local_id   || '';
