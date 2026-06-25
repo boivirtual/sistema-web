@@ -2379,7 +2379,8 @@ $data_sistema = date("Y-m-d");
     function confirmarContaDoCC(localId, ccId, localNome, ccNome) {
         var gKey   = (localId + '_' + ccId).replace(/\W/g,'_');
         var $edRow = $('#tr_editar_conta_' + gKey);
-        var valoresAtuais = $edRow.data('valores-atuais') || {};
+        var valoresAtuais  = $edRow.data('valores-atuais') || {};
+        var contaIdsAntes  = $edRow.data('conta-ids-antes') || [];
 
         var contaIds = [];
         $('#editar_conta_sel_' + gKey + ' option:selected').each(function() {
@@ -2387,8 +2388,20 @@ $data_sistema = date("Y-m-d");
         });
         if (contaIds.length === 0) { alert('Selecione pelo menos uma Conta Contábil.'); return; }
 
-        var $insertBefore = $edRow.next('tr');
+        var novosSorted = contaIds.slice().sort();
+        var antesSorted = contaIdsAntes.slice().sort();
+        var semMudanca  = (novosSorted.length === antesSorted.length &&
+                          novosSorted.every(function(v, i) { return v === antesSorted[i]; }));
+        if (semMudanca && contaIdsAntes.length > 0) {
+            $edRow.remove();
+            fixarIconeSelecLocais();
+            return;
+        }
+
+        var $linhasDoGrupo = $('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"][data-cc-id="' + ccId + '"]');
+        var $insertBefore  = $linhasDoGrupo.length > 0 ? $linhasDoGrupo.last().next('tr') : $edRow.next('tr');
         $edRow.remove();
+        $linhasDoGrupo.remove();
 
         var showLocal    = ($('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"]').length === 0);
         var localNomeEsc = localNome.replace(/"/g,'&quot;');
