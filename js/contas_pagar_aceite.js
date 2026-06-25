@@ -705,8 +705,7 @@ function _eratRefreshGrouping() {
 // ── Remove linha ──
 function eratRemoverLinha(btn) {
     $(btn).closest('tr').remove();
-    _eratFixarIconeLocais();
-    eratRecalcular();
+    _eratRefreshGrouping();
 }
 
 // ── Gera linha manual com selects simples (botão + Adicionar Linha) ──
