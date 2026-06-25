@@ -395,7 +395,47 @@ var _eratContas = <?php echo json_encode($arr_conta_rat_js, JSON_UNESCAPED_UNICO
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title"><i class="fas fa-edit" style="color:#337ab7;margin-right:6px;"></i>Editar Rateio &mdash; <span id="erat_titulo_doc" style="font-size:13px;font-weight:400;"></span></h4>
             </div>
-            <div class="modal-body" id="erat_body"></div>
+            <div class="modal-body" id="erat_body" style="padding:10px 16px;">
+                <div id="erat_aviso" class="alert alert-danger" style="display:none;margin-bottom:8px;"></div>
+                <div style="overflow-x:auto;">
+                    <table class="tbl-parcelas" id="tbl_erat">
+                        <colgroup>
+                            <col style="width:16%">
+                            <col style="width:16%">
+                            <col style="width:26%">
+                            <col style="width:14%">
+                            <col style="width:9%">
+                            <col style="width:9%">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Local</th>
+                                <th>Centro de Custos</th>
+                                <th>Conta Contábil</th>
+                                <th style="text-align:right;">Valor (R$)</th>
+                                <th style="text-align:right;">%</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody_erat"></tbody>
+                        <tbody id="tbody_erat_footer">
+                            <tr id="tr_erat_restante">
+                                <td colspan="4" style="text-align:right;font-size:12px;color:#666;padding:6px 8px;border-top:1px solid #ddd;">
+                                    Total Digitado: <span id="span_rat_total" style="color:#27ae60;font-weight:600;font-size:13px;margin-right:14px;">R$ 0,00</span>
+                                    &nbsp;&nbsp;&nbsp;Restante a distribuir:
+                                </td>
+                                <td id="td_rat_vlr_rest" style="font-size:13px;font-weight:600;color:#c0392b;text-align:right;padding:6px 8px;white-space:nowrap;border-top:1px solid #ddd;">R$ 0,00</td>
+                                <td id="td_rat_pct_rest" style="font-size:13px;font-weight:600;color:#c0392b;text-align:right;padding:6px 8px;border-top:1px solid #ddd;">0,00%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+                    <button type="button" class="btn btn-info btn-sm" onclick="eratAdicionarLinha()">
+                        <i class="fas fa-plus"></i> Adicionar Linha
+                    </button>
+                </div>
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onclick="eratSalvar()" style="float:left;">Salvar Rateio</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
