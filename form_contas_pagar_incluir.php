@@ -2350,6 +2350,7 @@ $data_sistema = date("Y-m-d");
 
         $('#tbl_rateio [data-toggle="tooltip"]').tooltip();
         fixarIconeSelecLocais();
+        _modoRateio = null; // libera ambos os campos ao iniciar a fase de valores
         recalcularRateio();
     }
 
