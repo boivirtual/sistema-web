@@ -2471,6 +2471,21 @@ $data_sistema = date("Y-m-d");
         $('#habilitar_rateio').prop('checked', true); // garante que o flag está ativo
     }
 
+    // ── Coloca ícone Selecionar Locais após o nome do primeiro Local da tabela ──
+    function fixarIconeSelecLocais() {
+        $('#tbl_rateio .ico-selec-locais').remove();
+        var $td = $('#tbl_rateio tbody tr:first td:first');
+        if ($td.length) {
+            $td.append(
+                '<a href="#" onclick="editarLocaisRateio();return false;" class="ico-selec-locais"' +
+                ' data-toggle="tooltip" data-placement="top" title="Selecionar Locais"' +
+                ' style="color:#aaa;font-size:11px;margin-left:6px;">' +
+                '<i class="far fa-edit"></i></a>'
+            );
+            $td.find('.ico-selec-locais').tooltip();
+        }
+    }
+
     // ── Move botão Confirmar Conta para a última linha-fase2 ──
     function fixarConfirmarContaButton() {
         $('#tbl_rateio tbody tr.linha-fase2 .td-confirmar-conta').html('');
