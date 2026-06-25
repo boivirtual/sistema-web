@@ -591,22 +591,12 @@ function eratRecalcular() {
     _eratSetModo(_eratModo);
 }
 
-// ── Fixa ícone de editar Local no 1º td da 1ª linha ──
-function _eratFixarIconeLocais() {
-    $('#tbl_erat .ico-erat-locais').remove();
-    var $td = $('#tbody_erat tr:first td:first');
-    if ($td.length) {
-        $td.append(
-            '<a href="#" onclick="eratEditarLocal(this);return false;" class="ico-erat-locais"' +
-            ' data-toggle="tooltip" data-placement="top" title="Editar Local"' +
-            ' style="color:#aaa;font-size:11px;margin-left:6px;"><i class="far fa-edit"></i></a>'
-        );
-        $td.find('.ico-erat-locais').tooltip();
-    }
-}
-
 // ── Gera linha linha-valor-rateio a partir de objeto JSON ──
-function _eratGerarLinha(ln) {
+// showLocal=false → célula Local fica vazia (mesmo grupo); showCC=false → idem para CC
+function _eratGerarLinha(ln, showLocal, showCC) {
+    if (showLocal === undefined) showLocal = true;
+    if (showCC    === undefined) showCC    = true;
+
     ln = ln || {};
     var localId   = ln.local_id   || '';
     var localNome = ln.local_nome  || '';
@@ -625,25 +615,43 @@ function _eratGerarLinha(ln) {
         ' data-conta-id="'   + contaId   + '"' +
         ' data-conta-nome="' + contaNome.replace(/"/g, '&quot;') + '">';
 
-    // Col Local — ícone adicionado depois por _eratFixarIconeLocais
-    tr += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
-        '<span class="lbl-parcela">' + localNome + '</span>' +
-        '<input type="hidden" class="erat-local-id"   value="' + localId   + '">' +
-        '<input type="hidden" class="erat-local-nome" value="' + localNome + '">' +
-        '</td>';
+    // Col Local
+    if (showLocal) {
+        tr += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+            '<span class="lbl-parcela">' + localNome + '</span>' +
+            ' <a href="#" onclick="eratEditarLocal(this);return false;"' +
+            ' style="color:#337ab7;font-size:11px;margin-left:4px;" data-toggle="tooltip" title="Editar Local"><i class="far fa-edit"></i></a>' +
+            '<input type="hidden" class="erat-local-id"   value="' + localId   + '">' +
+            '<input type="hidden" class="erat-local-nome" value="' + localNome + '">' +
+            '</td>';
+    } else {
+        tr += '<td style="vertical-align:middle;padding:4px 8px;">' +
+            '<input type="hidden" class="erat-local-id"   value="' + localId   + '">' +
+            '<input type="hidden" class="erat-local-nome" value="' + localNome + '">' +
+            '</td>';
+    }
 
     // Col CC
-    tr += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
-        '<span class="lbl-parcela">' + ccNome + '</span>' +
-        ' <a href="#" onclick="eratEditarCC(this);return false;" style="color:#aaa;font-size:11px;margin-left:4px;" data-toggle="tooltip" title="Editar Centro de Custo"><i class="far fa-edit"></i></a>' +
-        '<input type="hidden" class="erat-cc-id"   value="' + ccId   + '">' +
-        '<input type="hidden" class="erat-cc-nome" value="' + ccNome + '">' +
-        '</td>';
+    if (showCC) {
+        tr += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
+            '<span class="lbl-parcela">' + ccNome + '</span>' +
+            ' <a href="#" onclick="eratEditarCC(this);return false;"' +
+            ' style="color:#337ab7;font-size:11px;margin-left:4px;" data-toggle="tooltip" title="Editar Centro de Custo"><i class="far fa-edit"></i></a>' +
+            '<input type="hidden" class="erat-cc-id"   value="' + ccId   + '">' +
+            '<input type="hidden" class="erat-cc-nome" value="' + ccNome + '">' +
+            '</td>';
+    } else {
+        tr += '<td style="vertical-align:middle;padding:4px 8px;">' +
+            '<input type="hidden" class="erat-cc-id"   value="' + ccId   + '">' +
+            '<input type="hidden" class="erat-cc-nome" value="' + ccNome + '">' +
+            '</td>';
+    }
 
     // Col Conta
     tr += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
         '<span class="lbl-parcela">' + contaNome + '</span>' +
-        ' <a href="#" onclick="eratEditarConta(this);return false;" style="color:#aaa;font-size:11px;margin-left:4px;" data-toggle="tooltip" title="Editar Conta Contábil"><i class="far fa-edit"></i></a>' +
+        ' <a href="#" onclick="eratEditarConta(this);return false;"' +
+        ' style="color:#337ab7;font-size:11px;margin-left:4px;" data-toggle="tooltip" title="Editar Conta Contábil"><i class="far fa-edit"></i></a>' +
         '<input type="hidden" class="erat-conta-id"   value="' + contaId   + '">' +
         '<input type="hidden" class="erat-conta-nome" value="' + contaNome + '">' +
         '</td>';
@@ -658,13 +666,40 @@ function _eratGerarLinha(ln) {
         '<input type="text" class="form-control rat-perc" placeholder="0,00%"' +
         ' value="' + perc + '" style="height:30px;font-size:13px;text-align:right;"></td>';
 
-    // Col ação
-    tr += '<td style="text-align:center;vertical-align:middle;">' +
-        '<button type="button" class="btn btn-danger btn-xs" onclick="eratRemoverLinha(this)" title="Remover linha"><i class="fas fa-times"></i></button>' +
-        '</td>';
-
     tr += '</tr>';
     return tr;
+}
+
+// ── Reconstrói o tbody aplicando agrupamento visual Local/CC ──
+function _eratRefreshGrouping() {
+    var rows = [];
+    $('#tbody_erat tr.linha-valor-rateio').each(function () {
+        var $tr = $(this);
+        rows.push({
+            local_id:    $tr.find('.erat-local-id').val()   || '',
+            local_nome:  $tr.find('.erat-local-nome').val() || '',
+            cc_id:       $tr.find('.erat-cc-id').val()      || '',
+            cc_nome:     $tr.find('.erat-cc-nome').val()    || '',
+            conta_id:    $tr.find('.erat-conta-id').val()   || '',
+            conta_nome:  $tr.find('.erat-conta-nome').val() || '',
+            conta_valor: _eratParseVal($tr.find('.rat-valor').val()),
+            conta_perc:  _eratParseVal($tr.find('.rat-perc').val())
+        });
+    });
+    var html = '';
+    var prevLocalId = null, prevCcId = null;
+    for (var i = 0; i < rows.length; i++) {
+        var ln = rows[i];
+        var showLocal = (String(ln.local_id) !== String(prevLocalId));
+        var showCC    = showLocal || (String(ln.cc_id) !== String(prevCcId));
+        html += _eratGerarLinha(ln, showLocal, showCC);
+        prevLocalId = ln.local_id;
+        prevCcId    = ln.cc_id;
+    }
+    $('#tbody_erat').html(html);
+    _eratSetModo(_eratModo);
+    eratRecalcular();
+    $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip();
 }
 
 // ── Remove linha ──
