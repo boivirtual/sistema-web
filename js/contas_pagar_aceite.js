@@ -769,8 +769,7 @@ function eratConfirmarLinhaManual(btn) {
         conta_valor: _eratParseVal(valor), conta_perc: 0
     }));
     $tr.replaceWith(novaLinha);
-    _eratFixarIconeLocais();
-    eratRecalcular();
+    _eratRefreshGrouping();
 }
 
 // ── Editor inline: Local ──
