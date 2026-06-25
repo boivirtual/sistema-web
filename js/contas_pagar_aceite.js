@@ -778,6 +778,7 @@ function eratEditarLocal(link) {
     var $tr     = $td.closest('tr');
     var localId = $tr.find('.erat-local-id').val();
     var locais  = typeof _eratLocais !== 'undefined' ? _eratLocais : [];
+    var selId   = 'erat_sel_local_' + Date.now();
 
     var optLocal = '';
     for (var i = 0; i < locais.length; i++) {
@@ -786,23 +787,61 @@ function eratEditarLocal(link) {
     }
 
     $td.data('orig-html', $td.html()).html(
-        '<select class="form-control" style="height:30px;font-size:12px;display:inline-block;width:auto;max-width:190px;">' + optLocal + '</select>' +
-        ' <button type="button" class="btn btn-primary btn-xs" onclick="eratConfirmarLocal(this)">OK</button>' +
-        ' <button type="button" class="btn btn-default btn-xs" onclick="eratCancelarEdicao(this)">X</button>'
+        '<select id="' + selId + '" class="selectpicker" multiple data-live-search="true"' +
+        ' data-width="100%" data-container="body" title="Selecione o local...">' +
+        optLocal + '</select>' +
+        '<div style="margin-top:4px;white-space:nowrap;">' +
+        '<button type="button" class="btn btn-primary btn-xs" onclick="eratConfirmarLocal(this)">Confirmar</button> ' +
+        '<button type="button" class="btn btn-default btn-xs" onclick="eratCancelarEdicao(this)">Fechar</button>' +
+        '</div>'
     );
+    $('#' + selId).selectpicker();
 }
 
 function eratConfirmarLocal(btn) {
-    var $td     = $(btn).closest('td');
-    var $tr     = $td.closest('tr');
-    var $sel    = $td.find('select');
-    var localId = $sel.val();
-    var localNm = $sel.find('option:selected').text().trim();
+    var $td          = $(btn).closest('td');
+    var $tr          = $td.closest('tr');
+    var $sel         = $td.find('select');
+    var selectedIds  = $sel.val() || [];
 
-    $tr.find('.erat-local-id').val(localId);
-    $tr.find('.erat-local-nome').val(localNm);
-    $tr.attr('data-local-id', localId).attr('data-local-nome', localNm);
+    if (!selectedIds || selectedIds.length === 0) {
+        alert('Selecione pelo menos um Local.');
+        return;
+    }
 
+    var currentLocalId = String($tr.find('.erat-local-id').val());
+
+    var $groupRows = $('#tbody_erat tr.linha-valor-rateio').filter(function () {
+        return String($(this).find('.erat-local-id').val()) === currentLocalId;
+    });
+
+    var groupData = [];
+    $groupRows.each(function () {
+        groupData.push({
+            cc_id:       $(this).find('.erat-cc-id').val(),
+            cc_nome:     $(this).find('.erat-cc-nome').val(),
+            conta_id:    $(this).find('.erat-conta-id').val(),
+            conta_nome:  $(this).find('.erat-conta-nome').val(),
+            conta_valor: _eratParseVal($(this).find('.rat-valor').val()),
+            conta_perc:  _eratParseVal($(this).find('.rat-perc').val())
+        });
+    });
+
+    var $anchor = $groupRows.first();
+    var newHtml = '';
+    for (var l = 0; l < selectedIds.length; l++) {
+        var newLocalId = selectedIds[l];
+        var newLocalNm = $sel.find('option[value="' + newLocalId + '"]').text().trim();
+        for (var r = 0; r < groupData.length; r++) {
+            var ln = $.extend({}, groupData[r]);
+            ln.local_id   = newLocalId;
+            ln.local_nome = newLocalNm;
+            newHtml += _eratGerarLinha(ln);
+        }
+    }
+
+    $anchor.before(newHtml);
+    $groupRows.remove();
     _eratRefreshGrouping();
 }
 
