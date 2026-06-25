@@ -2790,6 +2790,20 @@ $data_sistema = date("Y-m-d");
         });
     }
 
+    function _setModoRateio(modo) {
+        _modoRateio = modo;
+        if (modo === 'valor') {
+            $('.rat-valor').prop('readonly', false).css({'background': '', 'color': ''});
+            $('.rat-perc').prop('readonly', true).css({'background': '#f9f9f9', 'color': '#555'});
+        } else if (modo === 'perc') {
+            $('.rat-valor').prop('readonly', true).css({'background': '#f9f9f9', 'color': '#555'});
+            $('.rat-perc').prop('readonly', false).css({'background': '', 'color': ''});
+        } else {
+            $('.rat-valor').prop('readonly', false).css({'background': '', 'color': ''});
+            $('.rat-perc').prop('readonly', false).css({'background': '', 'color': ''});
+        }
+    }
+
     function _temEditorAberto() {
         if ($('#tr_local_input').is(':visible')) return true;
         if ($('#tbl_rateio .tr-editar-cc, #tbl_rateio .tr-editar-conta').length > 0) return true;
