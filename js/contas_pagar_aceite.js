@@ -18,7 +18,10 @@ function toggleRateio(id) {
                 '<h4 class="modal-title"><i class="fas fa-sitemap" style="color:#337ab7;margin-right:6px;"></i>Distribuição do Rateio</h4>' +
                 '</div>' +
                 '<div class="modal-body" style="overflow-x:auto;padding:12px 16px;">' + corpo + '</div>' +
-                '<div class="modal-footer"><button class="btn btn-default" type="button" data-dismiss="modal">Fechar</button></div>' +
+                '<div class="modal-footer">' +
+                '<button class="btn btn-primary" type="button" style="float:left;" onclick="$(\'#modal_rateio_aceite_dyn\').modal(\'hide\');abrirEditarRateio(' + id + ');"><i class="fas fa-edit"></i> Editar</button>' +
+                '<button class="btn btn-default" type="button" data-dismiss="modal">Fechar</button>' +
+                '</div>' +
                 '</div></div></div>';
             $('body').append(modalHtml);
             $('#modal_rateio_aceite_dyn').modal('show');
