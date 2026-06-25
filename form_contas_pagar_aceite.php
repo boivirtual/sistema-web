@@ -363,9 +363,7 @@
             </div>
             <div class="modal-body" id="erat_body"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="eratSalvar()" style="float:left;">
-                    <i class="fas fa-save"></i> Salvar Rateio
-                </button>
+                <button type="button" class="btn btn-primary" onclick="eratSalvar()" style="float:left;">Salvar Rateio</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
             </div>
         </div>
