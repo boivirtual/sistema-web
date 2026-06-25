@@ -552,7 +552,7 @@ function abrirEditarRateio(ctp_id) {
             if (!resp.error) {
                 _eratPrimeiroCtp = resp.primeiro_ctp_id;
                 _eratValorTotal  = resp.valor_total || 0;
-                $('#erat_titulo_doc').text('Documento NÂº ' + resp.numero_doc + ' | Valor Total: R$ ' + _eratFmtMoney(_eratValorTotal));
+                $('#erat_titulo_doc').text('Documento Nº ' + resp.numero_doc + ' | Valor Total: R$ ' + _eratFmtMoney(_eratValorTotal));
             }
         }
     });
