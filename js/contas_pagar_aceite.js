@@ -922,14 +922,21 @@ function abrirEditarRateio(ctp_id) {
 
             var linhas = resp.linhas || [];
             if (linhas.length === 0) {
-                $('#tbody_erat').html('<tr><td colspan="6" style="text-align:center;color:#888;padding:16px;">Sem dados de rateio.</td></tr>');
+                $('#tbody_erat').html('<tr><td colspan="5" style="text-align:center;color:#888;padding:16px;">Sem dados de rateio.</td></tr>');
                 return;
             }
             var html = '';
-            for (var i = 0; i < linhas.length; i++) { html += _eratGerarLinha(linhas[i]); }
+            var prevLocalId = null, prevCcId = null;
+            for (var i = 0; i < linhas.length; i++) {
+                var ln = linhas[i];
+                var showLocal = (String(ln.local_id) !== String(prevLocalId));
+                var showCC    = showLocal || (String(ln.cc_id) !== String(prevCcId));
+                html += _eratGerarLinha(ln, showLocal, showCC);
+                prevLocalId = ln.local_id;
+                prevCcId    = ln.cc_id;
+            }
             $('#tbody_erat').html(html);
             _eratSetModo(null);
-            _eratFixarIconeLocais();
             eratRecalcular();
             $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip();
         },
