@@ -997,7 +997,7 @@ function eratEditarConta(link) {
         '</div>'
     );
     $('#' + selId).selectpicker();
-    $('#' + selId).selectpicker('val', groupContaIds);
+    $('#' + selId).val(groupContaIds).selectpicker('refresh');
 }
 
 function eratConfirmarConta(btn) {
