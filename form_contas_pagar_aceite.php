@@ -418,7 +418,7 @@ var _eratContas = <?php echo json_encode($arr_conta_rat_js, JSON_UNESCAPED_UNICO
                         <tbody id="tbody_erat"></tbody>
                         <tbody id="tbody_erat_footer">
                             <tr id="tr_erat_restante">
-                                <td colspan="4" style="text-align:right;font-size:12px;color:#666;padding:6px 8px;border-top:1px solid #ddd;">
+                                <td colspan="3" style="text-align:right;font-size:12px;color:#666;padding:6px 8px;border-top:1px solid #ddd;">
                                     Total Digitado: <span id="span_rat_total" style="color:#27ae60;font-weight:600;font-size:13px;margin-right:14px;">R$ 0,00</span>
                                     &nbsp;&nbsp;&nbsp;Restante a distribuir:
                                 </td>
