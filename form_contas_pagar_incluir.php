@@ -1888,6 +1888,7 @@ $data_sistema = date("Y-m-d");
     // ── Dados de CC e Conta Contábil disponíveis para JS (gerados pelo PHP) ──
     var ccOpcoes    = <?php echo json_encode($arr_cc_rat_js); ?>;
     var contaOpcoes = <?php echo json_encode($arr_conta_rat_js); ?>;
+    var _locaisAntesEdicao = [];
 
     // ── Controle de formulário não salvo ──
     var _formDirty = false;
