@@ -2226,7 +2226,288 @@ function desabilita_enter (field, event) {
                 i = (i + 1) % field.form.elements.length;
                 field.form.elements[i].focus();
                 return false;
-        } 
+        }
     else
                 return true;
-}      
+}
+
+/* ================================================================
+   EDITOR DE RATEIO — funções compartilhadas (contas_pagar.js)
+   ================================================================ */
+
+var _eratCtpId       = 0;
+var _eratPrimeiroCtp = 0;
+var _eratValorTotal  = 0;
+var _eratModo        = null; // null | 'valor' | 'perc'
+
+function _eratFmtMoney(n) {
+    n = parseFloat(n) || 0;
+    return n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function _eratParseVal(s) {
+    if (!s) return 0;
+    s = String(s).replace('%', '').trim();
+    if (s.indexOf(',') !== -1) s = s.replace(/\./g, '').replace(',', '.');
+    return parseFloat(s) || 0;
+}
+
+function _eratBuildSelect(arr, selId, title, cls) {
+    var html = '<select class="form-control selectpicker ' + cls + '" data-live-search="true" title="' + title + '" style="font-size:11px;">';
+    for (var i = 0; i < arr.length; i++) {
+        var sel = (String(arr[i].id) === String(selId)) ? ' selected' : '';
+        html += '<option value="' + arr[i].id + '"' + sel + '>' + arr[i].nome + '</option>';
+    }
+    html += '</select>';
+    return html;
+}
+
+function _eratGerarLinha(linha) {
+    linha = linha || {};
+    var localId  = linha.local_id   || '';
+    var ccId     = linha.cc_id      || '';
+    var contaId  = linha.conta_id   || '';
+    var valor    = linha.conta_valor > 0 ? _eratFmtMoney(linha.conta_valor) : (linha.local_valor > 0 ? _eratFmtMoney(linha.local_valor) : '');
+    var perc     = linha.conta_perc > 0  ? linha.conta_perc.toFixed(2).replace('.', ',') + '%' : '';
+
+    var selLocal = _eratBuildSelect(
+        typeof _eratLocais !== 'undefined' ? _eratLocais : [],
+        localId, 'Local...', 'erat-local'
+    );
+    var selCC = _eratBuildSelect(
+        typeof _eratCC !== 'undefined' ? _eratCC : [],
+        ccId, 'Centro de Custo...', 'erat-cc'
+    );
+
+    // Contas: filtra apenas nível 3 (analítico) ou todos se não houver nível
+    var contasArr = typeof _eratContas !== 'undefined' ? _eratContas : [];
+    var contasFilt = contasArr.filter(function(c) { return !c.nivel || c.nivel >= 3; });
+    var selConta = _eratBuildSelect(contasFilt, contaId, 'Conta Contábil...', 'erat-conta');
+
+    return '<tr>' +
+        '<td>' + selLocal + '</td>' +
+        '<td>' + selCC + '</td>' +
+        '<td>' + selConta + '</td>' +
+        '<td><input type="text" class="form-control erat-valor" value="' + valor + '" style="height:30px;font-size:12px;text-align:right;" placeholder="0,00"></td>' +
+        '<td><input type="text" class="form-control erat-perc"  value="' + perc  + '" style="height:30px;font-size:12px;text-align:right;" placeholder="0,00%"></td>' +
+        '<td style="text-align:center;vertical-align:middle;">' +
+            '<button type="button" class="btn btn-danger btn-xs" onclick="eratRemoverLinha(this)" title="Remover linha"><i class="fas fa-times"></i></button>' +
+        '</td>' +
+    '</tr>';
+}
+
+function _eratInitSelectpickers() {
+    $('#tbl_erat .selectpicker').each(function () {
+        if (!$(this).data('selectpicker')) {
+            $(this).selectpicker({ noneResultsText: 'Sem resultado {0}', size: 8 });
+        }
+    });
+}
+
+function _eratSetModo(modo) {
+    _eratModo = modo;
+    if (modo === 'valor') {
+        $('#tbl_erat .erat-valor').prop('readonly', false).css({'background':'','color':''});
+        $('#tbl_erat .erat-perc').prop('readonly', true).css({'background':'#f9f9f9','color':'#555'});
+    } else if (modo === 'perc') {
+        $('#tbl_erat .erat-valor').prop('readonly', true).css({'background':'#f9f9f9','color':'#555'});
+        $('#tbl_erat .erat-perc').prop('readonly', false).css({'background':'','color':''});
+    } else {
+        $('#tbl_erat .erat-valor').prop('readonly', false).css({'background':'','color':''});
+        $('#tbl_erat .erat-perc').prop('readonly', false).css({'background':'','color':''});
+    }
+}
+
+function eratRecalcular() {
+    var total = _eratValorTotal;
+    var soma  = 0;
+    if (_eratModo === 'perc') {
+        $('#tbl_erat .erat-perc').each(function () {
+            var pct   = _eratParseVal($(this).val());
+            var valor = total > 0 ? (pct / 100 * total) : 0;
+            $(this).closest('tr').find('.erat-valor').val(valor > 0 ? _eratFmtMoney(valor) : '');
+            soma += valor;
+        });
+    } else {
+        $('#tbl_erat .erat-valor').each(function () {
+            soma += _eratParseVal($(this).val());
+        });
+        $('#tbl_erat .erat-valor').each(function () {
+            var v   = _eratParseVal($(this).val());
+            var pct = total > 0 ? (v / total * 100) : 0;
+            $(this).closest('tr').find('.erat-perc').val(pct > 0 ? pct.toFixed(2).replace('.', ',') + '%' : '');
+        });
+    }
+    var rest = total - soma;
+    $('#erat_span_total').text('R$ ' + _eratFmtMoney(soma));
+    var cor = (Math.abs(rest) < 0.01) ? '#27ae60' : '#c0392b';
+    $('#erat_span_rest').text('R$ ' + _eratFmtMoney(rest)).css('color', cor);
+    $('#erat_span_rest_pct').text((total > 0 ? rest / total * 100 : 0).toFixed(2).replace('.', ',') + '%').css('color', cor);
+    _eratSetModo(_eratModo);
+}
+
+function eratAdicionarLinha() {
+    var html = _eratGerarLinha({});
+    $('#tbody_erat').append(html);
+    _eratInitSelectpickers();
+    _eratSetModo(_eratModo);
+}
+
+function eratRemoverLinha(btn) {
+    $(btn).closest('tr').remove();
+    eratRecalcular();
+}
+
+function abrirEditarRateio(ctp_id) {
+    _eratCtpId = ctp_id;
+    _eratModo  = null;
+    $('#erat_aviso').hide();
+    $('#tbody_erat').html('<tr><td colspan="6" style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>');
+    $('#erat_titulo_doc').text('');
+    $('#erat_span_total').text('R$ 0,00');
+    $('#erat_span_rest').text('R$ 0,00').css('color','');
+    $('#erat_span_rest_pct').text('0,00%').css('color','');
+    $('#modal_editar_rateio').modal('show');
+
+    $.ajax({
+        type: 'POST',
+        url: 'get_rateio_json.php',
+        data: { ctp_id: ctp_id },
+        dataType: 'json',
+        timeout: 15000,
+        success: function (resp) {
+            if (resp.error) {
+                $('#erat_aviso').text(resp.message).show();
+                $('#tbody_erat').html('');
+                return;
+            }
+            _eratPrimeiroCtp = resp.primeiro_ctp_id;
+            _eratValorTotal  = resp.valor_total || 0;
+            $('#erat_titulo_doc').text('Documento Nº ' + resp.numero_doc + ' | Valor Total: R$ ' + _eratFmtMoney(_eratValorTotal));
+
+            var linhas = resp.linhas || [];
+            if (linhas.length === 0) {
+                $('#tbody_erat').html('<tr><td colspan="6" style="text-align:center;color:#888;padding:16px;">Sem dados de rateio.</td></tr>');
+                return;
+            }
+            var html = '';
+            for (var i = 0; i < linhas.length; i++) { html += _eratGerarLinha(linhas[i]); }
+            $('#tbody_erat').html(html);
+            _eratInitSelectpickers();
+            // Estado inicial: sem modo (ambos editáveis)
+            _eratSetModo(null);
+            eratRecalcular();
+        },
+        error: function (xhr, status, err) {
+            $('#erat_aviso').text('Erro ao carregar rateio: ' + status).show();
+            $('#tbody_erat').html('');
+        }
+    });
+}
+
+// Delegação de eventos para os inputs do editor
+$(document).on('keypress', '#tbl_erat .erat-valor', function (e) {
+    var c = e.which;
+    if (c === 0 || c === 8) return true;
+    if (c === 44) { return $(this).val().indexOf(',') === -1; }
+    if (c < 48 || c > 57) return false;
+    if (_eratModo !== 'valor') _eratSetModo('valor');
+    return true;
+});
+$(document).on('blur', '#tbl_erat .erat-valor', function () {
+    var n = _eratParseVal($(this).val());
+    $(this).val(n > 0 ? _eratFmtMoney(n) : '');
+    eratRecalcular();
+});
+$(document).on('keypress', '#tbl_erat .erat-perc', function (e) {
+    var c = e.which;
+    if (c === 0 || c === 8) return true;
+    if (c === 44) { return $(this).val().replace('%','').indexOf(',') === -1; }
+    if (c < 48 || c > 57) return false;
+    if (_eratModo !== 'perc') _eratSetModo('perc');
+    return true;
+});
+$(document).on('blur', '#tbl_erat .erat-perc', function () {
+    var raw = $(this).val().replace('%','').replace(',','.');
+    var n   = parseFloat(raw) || 0;
+    $(this).val(n > 0 ? n.toFixed(2).replace('.', ',') + '%' : '');
+    eratRecalcular();
+});
+
+function eratSalvar() {
+    $('#erat_aviso').hide();
+    var linhas = [];
+    var valido = true;
+
+    $('#tbody_erat tr').each(function () {
+        var $tr      = $(this);
+        var localId  = $tr.find('.erat-local').val()  || '';
+        var localNome= $tr.find('.erat-local option:selected').text().trim();
+        var ccId     = $tr.find('.erat-cc').val()     || '';
+        var ccNome   = $tr.find('.erat-cc option:selected').text().trim();
+        var contaId  = $tr.find('.erat-conta').val()  || '';
+        var contaNome= $tr.find('.erat-conta option:selected').text().trim();
+        var valor    = _eratParseVal($tr.find('.erat-valor').val());
+        var perc     = _eratParseVal($tr.find('.erat-perc').val());
+
+        if (!localId || !contaId) { valido = false; return; }
+
+        // Agrupa por local → cc → conta (estrutura esperada pelo backend)
+        var localExist = null;
+        for (var i = 0; i < linhas.length; i++) {
+            if (String(linhas[i].id) === String(localId)) { localExist = linhas[i]; break; }
+        }
+        if (!localExist) {
+            localExist = { id: localId, nome: localNome, valor: 0, perc: 0, ccs: [] };
+            linhas.push(localExist);
+        }
+        localExist.valor += valor;
+        localExist.perc  += perc;
+
+        var ccExist = null;
+        for (var j = 0; j < localExist.ccs.length; j++) {
+            if (String(localExist.ccs[j].id) === String(ccId)) { ccExist = localExist.ccs[j]; break; }
+        }
+        if (!ccExist) {
+            ccExist = { id: ccId, nome: ccNome, valor: 0, perc: 0, contas: [] };
+            localExist.ccs.push(ccExist);
+        }
+        ccExist.valor += valor;
+        ccExist.perc  += perc;
+
+        ccExist.contas.push({ id: contaId, nome: contaNome, valor: valor, perc: perc });
+    });
+
+    if (!valido) {
+        $('#erat_aviso').text('Preencha Local e Conta Contábil em todas as linhas.').show();
+        return;
+    }
+    if (linhas.length === 0) {
+        $('#erat_aviso').text('Adicione pelo menos uma linha de rateio.').show();
+        return;
+    }
+
+    var rest = parseFloat($('#erat_span_rest').text().replace('R$','').replace(/\./g,'').replace(',','.').trim()) || 0;
+    if (Math.abs(rest) > 0.05) {
+        if (!confirm('O valor restante a distribuir é R$ ' + _eratFmtMoney(rest) + '. Deseja salvar mesmo assim?')) return;
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: 'salvar_rateio_editar.php',
+        data: { primeiro_ctp_id: _eratPrimeiroCtp, rateio_json: JSON.stringify(linhas) },
+        dataType: 'json',
+        timeout: 15000,
+        success: function (resp) {
+            if (resp.error) {
+                $('#erat_aviso').text(resp.message).show();
+                return;
+            }
+            $('#modal_editar_rateio').modal('hide');
+            setTimeout(function () { toggleRateio(_eratCtpId); }, 400);
+        },
+        error: function () {
+            $('#erat_aviso').text('Erro de comunicação ao salvar rateio.').show();
+        }
+    });
+}
