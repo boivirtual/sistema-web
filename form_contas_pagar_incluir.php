@@ -2991,6 +2991,7 @@ $data_sistema = date("Y-m-d");
     }
 
     function editarLocaisRateio() {
+        if (_temEditorAberto()) return;
         _locaisAntesEdicao = [];
         $('#tbl_rateio tbody tr.linha-fase1, #tbl_rateio tbody tr.linha-fase2, #tbl_rateio tbody tr.linha-valor-rateio').each(function() {
             var localId = String($(this).data('local-id'));
