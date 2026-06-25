@@ -2636,33 +2636,45 @@ $data_sistema = date("Y-m-d");
         var total = ctpGetValorTotal();
         if (!total || total <= 0) total = 0;
 
-        var somaValores = 0;
-        $('.rat-valor').each(function() {
-            var raw = $(this).val();
-            // Suporta formato BR (1.500,32) e formato US intermediário (1500.32)
-            var v = raw.indexOf(',') !== -1
-                ? raw.replace(/\./g,'').replace(',','.')
-                : raw;
-            somaValores += parseFloat(v) || 0;
-        });
+        var somaValores = 0, restante = 0;
 
-        var restante = total - somaValores;
+        if (_modoRateio === 'perc') {
+            // Modo %: calcula Valor a partir do percentual digitado
+            $('.rat-perc').each(function() {
+                var raw = $(this).val().replace('%','').replace(',','.');
+                var pct = parseFloat(raw) || 0;
+                var valor = total > 0 ? (pct / 100 * total) : 0;
+                $(this).closest('tr').find('.rat-valor').val(valor > 0 ? formatMoney(valor) : '');
+                somaValores += valor;
+            });
+        } else {
+            // Modo Valor (ou sem modo): calcula % a partir do valor digitado
+            $('.rat-valor').each(function() {
+                var raw = $(this).val();
+                var v = raw.indexOf(',') !== -1
+                    ? raw.replace(/\./g,'').replace(',','.')
+                    : raw;
+                somaValores += parseFloat(v) || 0;
+            });
+            // Atualiza percentuais de cada linha
+            $('.rat-valor').each(function() {
+                var $row = $(this).closest('tr');
+                var v = parseFloat($(this).val().replace(/\./g,'').replace(',','.')) || 0;
+                var pct = total > 0 ? (v / total * 100) : 0;
+                $row.find('.rat-perc').val(pct > 0 ? pct.toFixed(2).replace('.',',') + '%' : '');
+            });
+        }
 
-        // Atualiza percentuais de cada linha
-        $('.rat-valor').each(function() {
-            var $row = $(this).closest('tr');
-            var v = parseFloat($(this).val().replace(/\./g,'').replace(',','.')) || 0;
-            var pct = total > 0 ? (v / total * 100) : 0;
-            $row.find('.rat-perc').val(pct.toFixed(2).replace('.',',') + '%');
-        });
+        restante = total - somaValores;
 
-        // Atualiza soma já distribuída (cresce conforme o usuário digita, sempre verde)
+        // Atualiza soma distribuída e restante
         $('#span_rat_total').text('R$ ' + somaValores.toFixed(2).replace('.',','));
-
-        // Atualiza linha restante (verde quando zerado, vermelho quando há saldo)
         var corRest = (Math.abs(restante) < 0.01) ? '#27ae60' : '#c0392b';
         $('#td_rat_vlr_rest').text('R$ ' + restante.toFixed(2).replace('.',',')).css('color', corRest);
         $('#td_rat_pct_rest').text((total > 0 ? restante/total*100 : 0).toFixed(2).replace('.',',') + '%').css('color', corRest);
+
+        // Garante que novas linhas recebam o estado correto de readonly
+        _setModoRateio(_modoRateio);
     }
 
     // ── Valida e confirma o rateio completo ──
