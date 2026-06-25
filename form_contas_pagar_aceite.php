@@ -91,25 +91,6 @@
 
     $tbl_fornecedor = mysqli_query($conector, "SELECT tbl_pessoa_id, tbl_pessoa_nome FROM tbl_pessoa WHERE tbl_pessoa_lixeira=0 AND (tbl_pessoa_classe=3 OR tbl_pessoa_classe=5) ORDER BY tbl_pessoa_nome ASC");
 
-    // Arrays para o modal de edição de rateio
-    $arr_local_rat_js = [];
-    $rs_loc_erat = mysqli_query($conector, "SELECT tbl_pessoa_id, tbl_pessoa_nome FROM tbl_pessoa WHERE tbl_pessoa_classe=4 AND tbl_pessoa_lixeira=0 ORDER BY tbl_pessoa_nome");
-    while ($r = mysqli_fetch_object($rs_loc_erat)) {
-        $arr_local_rat_js[] = ['id' => $r->tbl_pessoa_id, 'nome' => $r->tbl_pessoa_nome];
-    }
-
-    $arr_cc_rat_js = [];
-    $rs_cc_erat = mysqli_query($conector, "SELECT tbl_cc_codigo_id, tbl_cc_descricao FROM tbl_centro_custo WHERE tbl_cc_lixeira=0 ORDER BY tbl_cc_codigo_id");
-    while ($r = mysqli_fetch_object($rs_cc_erat)) {
-        $arr_cc_rat_js[] = ['id' => $r->tbl_cc_codigo_id, 'nome' => $r->tbl_cc_descricao];
-    }
-
-    $arr_conta_rat_js = [];
-    $rs_cta_erat = mysqli_query($conector, "SELECT tbl_plano_contas_codigo_id, tbl_plano_contas_descricao, tbl_plano_contas_nivel FROM tbl_plano_contas WHERE tbl_plano_contas_debito_credito='D' AND tbl_plano_contas_lixeira=0 ORDER BY tbl_plano_contas_codigo_id");
-    while ($r = mysqli_fetch_object($rs_cta_erat)) {
-        $arr_conta_rat_js[] = ['id' => $r->tbl_plano_contas_codigo_id, 'nome' => $r->tbl_plano_contas_descricao, 'nivel' => (int)$r->tbl_plano_contas_nivel];
-    }
-
     $codigo_usuario = intval($_SESSION['id_usuario']);
 
     $tbl_usuario = "SELECT id_usuario, lixeira_usuario, local_usuario FROM usuario
