@@ -895,7 +895,7 @@ function abrirEditarRateio(ctp_id) {
     _eratModo  = null;
     $('#erat_aviso').hide();
     $('#tbody_erat').html(
-        '<tr><td colspan="6" style="text-align:center;padding:20px;">' +
+        '<tr><td colspan="5" style="text-align:center;padding:20px;">' +
         '<i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>'
     );
     $('#erat_titulo_doc').text('');
