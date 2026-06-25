@@ -2069,6 +2069,7 @@ $data_sistema = date("Y-m-d");
                             novosSorted.every(function(v, i) { return v === antesSorted[i]; }));
         if (semMudanca && _locaisAntesEdicao.length > 0) {
             $('#tr_local_input').hide();
+            _fecharBackdropLocal();
             return;
         }
 
