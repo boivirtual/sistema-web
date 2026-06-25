@@ -2858,9 +2858,8 @@ $data_sistema = date("Y-m-d");
         });
 
         $select.selectpicker('destroy');
-        var $editorRow = $('#tr_editar_cc_' + localId);
-        $editorRow.before(newRowsHtml);
-        $editorRow.remove();
+        $edRow.remove();
+        if ($insertBefore.length && $insertBefore.is('tr')) { $insertBefore.before(newRowsHtml); } else { $('#tbl_rateio tbody').append(newRowsHtml); }
 
         $.each(newCcIds, function(i, ccId) {
             var $s = $('#conta_edit_' + localId + '_' + ccId);
