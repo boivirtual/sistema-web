@@ -897,7 +897,7 @@ function eratEditarCC(link) {
         '</div>'
     );
     $('#' + selId).selectpicker();
-    $('#' + selId).val(currentCcIds).selectpicker('refresh');
+    $('#' + selId).val(currentCcIds).selectpicker('destroy').selectpicker();
 }
 
 function eratConfirmarCC(btn) {
