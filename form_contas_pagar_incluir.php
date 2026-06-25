@@ -2931,7 +2931,8 @@ $data_sistema = date("Y-m-d");
                 '<td style="vertical-align:middle;padding:4px 8px;">' +
                 '<select class="selectpicker" id="editar_conta_sel_' + gKey + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsConta + '</select></td>' +
                 '<td style="vertical-align:middle;padding:4px 8px;">' +
-                '<button type="button" class="btn btn-primary" onclick="confirmarContaDoCC(\'' + localId + '\',\'' + ccId + '\',\'' + localNomeJs + '\',\'' + ccNomeJs + '\')">Confirmar</button></td>' +
+                '<button type="button" class="btn btn-primary" onclick="confirmarContaDoCC(\'' + localId + '\',\'' + ccId + '\',\'' + localNomeJs + '\',\'' + ccNomeJs + '\')">Confirmar</button>' +
+                ' <button type="button" class="btn btn-default" onclick="fecharEdicaoConta(\'' + localId + '\',\'' + ccId + '\')">Fechar</button></td>' +
                 '<td colspan="2"></td></tr>';
         });
 
