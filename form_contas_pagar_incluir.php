@@ -2328,6 +2328,7 @@ $data_sistema = date("Y-m-d");
 
     // ── Abre seletor de Contas para reeditar um grupo Local+CC ──
     function editarContaDoCC(localId, ccId, localNome, ccNome) {
+        if (_temEditorAberto()) return;
         var gKey     = (localId + '_' + ccId).replace(/\W/g,'_');
         var editorId = 'tr_editar_conta_' + gKey;
         if ($('#' + editorId).length) return;
