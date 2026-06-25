@@ -2946,6 +2946,35 @@ $data_sistema = date("Y-m-d");
         fixarIconeSelecLocais();
     }
 
+    function _abrirBackdropLocal() {
+        if (!$('#rateio-backdrop').length) {
+            $('body').append('<div id="rateio-backdrop" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:1040;"></div>');
+        }
+        var $ph   = $('#rateio_preview_header');
+        var rect  = $ph[0].getBoundingClientRect();
+        $ph.css({
+            'position'   : 'fixed',
+            'top'        : rect.top + 'px',
+            'left'       : rect.left + 'px',
+            'width'      : rect.width + 'px',
+            'z-index'    : '1050',
+            'background' : '#fff',
+            'box-shadow' : '0 8px 32px rgba(0,0,0,0.4)',
+            'border-radius': '6px',
+            'padding'    : '8px'
+        });
+        $('#rateio-backdrop').fadeIn(200);
+    }
+
+    function _fecharBackdropLocal() {
+        $('#rateio-backdrop').fadeOut(150, function() { $(this).remove(); });
+        $('#rateio_preview_header').css({
+            'position': '', 'top': '', 'left': '', 'width': '',
+            'z-index': '', 'background': '', 'box-shadow': '',
+            'border-radius': '', 'padding': ''
+        });
+    }
+
     function editarLocaisRateio() {
         _locaisAntesEdicao = [];
         $('#tbl_rateio tbody tr.linha-fase1, #tbl_rateio tbody tr.linha-fase2, #tbl_rateio tbody tr.linha-valor-rateio').each(function() {
@@ -2958,6 +2987,7 @@ $data_sistema = date("Y-m-d");
         $local.val(_locaisAntesEdicao);
         $local.selectpicker('refresh');
         $('#td_local_confirm button').show();
+        _abrirBackdropLocal();
     }
 
     // ── Reabre a configuração do rateio para edição ──
