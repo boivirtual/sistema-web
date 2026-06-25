@@ -3006,6 +3006,35 @@ $data_sistema = date("Y-m-d");
         }
     }
 
+    function _executarRateioOff() {
+        var $local = $('#codigo_fazenda');
+        $('#col_cc').show();
+        $('#col_conta').show();
+        $local.off('changed.bs.select.rateio');
+        if ($local.hasClass('selectpicker')) { $local.selectpicker('destroy'); }
+        $local.removeAttr('multiple').removeAttr('data-live-search').removeAttr('data-size')
+              .removeClass('selectpicker').addClass('form-control');
+        $local.val('');
+        $('#col_local label').after($local);
+        $('#btn_fechar_local').remove();
+        $('#col_btn_confirmar_locais').append($('#btn_confirmar_locais'));
+        $('#tr_local_input').show();
+        $('#col_btn_confirmar_locais').hide();
+        $('#secao_distribuir_rateio').hide();
+        $('#linhas_rateio').hide().empty();
+        $('#rodape_rateio').remove();
+        $('#rateio_status').hide();
+        $('#col_local').show();
+        $('#rateio_json').val('');
+        RT.reset();
+    }
+
+    function confirmarFecharRateio() {
+        $('#modal_fechar_rateio').modal('hide');
+        $('#habilitar_rateio').prop('checked', false);
+        _executarRateioOff();
+    }
+
     function fecharEdicaoLocal() {
         $('#btn_fechar_local').remove();
         $('#tr_local_input').hide();
