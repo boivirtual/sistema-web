@@ -2975,6 +2975,17 @@ $data_sistema = date("Y-m-d");
         $('#tr_local_input').hide();
     }
 
+    function fecharEdicaoCC(localId) {
+        $('#tr_editar_cc_f3_' + String(localId).replace(/\W/g,'_')).remove();
+        fixarIconeSelecLocais();
+    }
+
+    function fecharEdicaoConta(localId, ccId) {
+        var gKey = (localId + '_' + ccId).replace(/\W/g,'_');
+        $('#tr_editar_conta_' + gKey).remove();
+        fixarIconeSelecLocais();
+    }
+
     // ── Reabre a configuração do rateio para edição ──
     function editarRateio() {
         $('#rateio_status').hide();
