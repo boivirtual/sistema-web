@@ -2952,29 +2952,42 @@ $data_sistema = date("Y-m-d");
         if (!$('#rateio-backdrop').length) {
             $('body').append('<div id="rateio-backdrop" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:1040;"></div>');
         }
-        var $ph   = $('#rateio_preview_header');
-        var rect  = $ph[0].getBoundingClientRect();
-        $ph.css({
-            'position'   : 'fixed',
-            'top'        : rect.top + 'px',
-            'left'       : rect.left + 'px',
-            'width'      : rect.width + 'px',
-            'z-index'    : '1050',
-            'background' : '#fff',
-            'box-shadow' : '0 8px 32px rgba(0,0,0,0.4)',
-            'border-radius': '6px',
-            'padding'    : '8px'
-        });
+
+        var $bsWrapper = $('#codigo_fazenda').closest('.bootstrap-select');
+        var $btn       = $('#td_local_confirm button');
+
+        $('<div id="rateio-local-panel"></div>').css({
+            'position'     : 'fixed',
+            'top'          : '50%',
+            'left'         : '50%',
+            'transform'    : 'translate(-50%, -50%)',
+            'z-index'      : '1050',
+            'background'   : '#fff',
+            'border-radius': '8px',
+            'box-shadow'   : '0 8px 32px rgba(0,0,0,0.4)',
+            'padding'      : '20px 24px',
+            'display'      : 'flex',
+            'align-items'  : 'center',
+            'gap'          : '12px',
+            'min-width'    : '480px'
+        }).append(
+            $('<span>').css({'font-size':'13px','font-weight':'600','color':'#555','white-space':'nowrap'}).text('Selecionar Locais:')
+        ).append(
+            $bsWrapper.css('width', '320px')
+        ).append(
+            $btn
+        ).appendTo('body');
+
         $('#rateio-backdrop').fadeIn(200);
     }
 
     function _fecharBackdropLocal() {
+        var $bsWrapper = $('#codigo_fazenda').closest('.bootstrap-select');
+        var $btn       = $('#rateio-local-panel .btn-primary');
+        $('#td_local_select').append($bsWrapper.css('width', ''));
+        $('#td_local_confirm').append($btn);
+        $('#rateio-local-panel').remove();
         $('#rateio-backdrop').fadeOut(150, function() { $(this).remove(); });
-        $('#rateio_preview_header').css({
-            'position': '', 'top': '', 'left': '', 'width': '',
-            'z-index': '', 'background': '', 'box-shadow': '',
-            'border-radius': '', 'padding': ''
-        });
     }
 
     function editarLocaisRateio() {
