@@ -2958,7 +2958,15 @@ $data_sistema = date("Y-m-d");
         var $local = $('#codigo_fazenda');
         $local.val(_locaisAntesEdicao);
         $local.selectpicker('refresh');
-        $('#td_local_confirm button').show();
+        $('#btn_confirmar_locais').show();
+        if (!$('#btn_fechar_local').length) {
+            $('#td_local_confirm').append('<button type="button" id="btn_fechar_local" class="btn btn-default" style="margin-left:6px;" onclick="fecharEdicaoLocal()">Fechar</button>');
+        }
+    }
+
+    function fecharEdicaoLocal() {
+        $('#btn_fechar_local').remove();
+        $('#tr_local_input').hide();
     }
 
     // ── Reabre a configuração do rateio para edição ──
