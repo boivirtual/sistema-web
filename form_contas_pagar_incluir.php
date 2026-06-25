@@ -2188,7 +2188,7 @@ $data_sistema = date("Y-m-d");
                 html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + ln.localNome + '</span></td>';
                 html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
                         '<span class="lbl-parcela">' + ln.ccNome + '</span>' +
-                        ' <a href="#" onclick="editarCCDoLocal(\'' + ln.localId + '\',\'' + ln.localNome.replace(/'/g,"\\'") + '\');return false;" data-toggle="tooltip" data-placement="top" title="Selecione Centro de Custos" style="color:#aaa;font-size:11px;margin-left:4px;">' +
+                        ' <a href="#" onclick="editarCCDoLocal(\'' + ln.localId + '\',\'' + ln.localNome.replace(/'/g,"\\'") + '\');return false;" data-toggle="tooltip" data-placement="top" title="Selecione Centro de Custos" style="color:#337ab7;font-size:11px;margin-left:4px;">' +
                         '<i class="fas fa-pen"></i></a></td>';
             } else {
                 html += '<td style="vertical-align:middle;padding:4px 8px;"></td>';
@@ -2298,7 +2298,7 @@ $data_sistema = date("Y-m-d");
                     '<span class="lbl-parcela">' + ln.ccNome + '</span>' +
                     ' <a href="#" onclick="editarCCDoLocalFase3(\'' + ln.localId + '\',\'' + localNomeJs + '\');return false;"' +
                     ' data-toggle="tooltip" data-placement="top" title="Selecionar Centro de Custos"' +
-                    ' style="color:#aaa;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>' +
+                    ' style="color:#337ab7;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>' +
                     '<input type="hidden" name="rat2_cc_id[]" value="' + ln.ccId + '">' +
                     '<input type="hidden" name="rat2_cc_nome[]" value="' + ln.ccNome + '">' +
                     '</td>';
@@ -2314,7 +2314,7 @@ $data_sistema = date("Y-m-d");
                     '<span class="lbl-parcela">' + ln.contaNome + '</span>' +
                     ' <a href="#" onclick="editarContaDoCC(\'' + ln.localId + '\',\'' + ln.ccId + '\',\'' + localNomeJs + '\',\'' + ccNomeJs + '\');return false;"' +
                     ' data-toggle="tooltip" data-placement="top" title="Selecionar Contas"' +
-                    ' style="color:#aaa;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>' +
+                    ' style="color:#337ab7;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>' +
                     '<input type="hidden" name="rat2_conta_id[]" value="' + ln.contaId + '">' +
                     '<input type="hidden" name="rat2_conta_nome[]" value="' + ln.contaNome + '">' +
                     '</td>';
@@ -2473,7 +2473,7 @@ $data_sistema = date("Y-m-d");
                     '<span class="lbl-parcela">' + ccNome + '</span>' +
                     ' <a href="#" onclick="editarCCDoLocalFase3(\'' + localId + '\',\'' + localNomeJs + '\');return false;"' +
                     ' data-toggle="tooltip" data-placement="top" title="Selecionar Centro de Custos"' +
-                    ' style="color:#aaa;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>' +
+                    ' style="color:#337ab7;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>' +
                     '<input type="hidden" name="rat2_cc_id[]" value="' + ccId + '">' +
                     '<input type="hidden" name="rat2_cc_nome[]" value="' + ccNome + '">' +
                     '</td>';
@@ -2489,7 +2489,7 @@ $data_sistema = date("Y-m-d");
                     '<span class="lbl-parcela">' + contaNome + '</span>' +
                     ' <a href="#" onclick="editarContaDoCC(\'' + localId + '\',\'' + ccId + '\',\'' + localNomeJs + '\',\'' + ccNomeJs + '\');return false;"' +
                     ' data-toggle="tooltip" data-placement="top" title="Selecionar Contas"' +
-                    ' style="color:#aaa;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>' +
+                    ' style="color:#337ab7;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>' +
                     '<input type="hidden" name="rat2_conta_id[]" value="' + contaId + '">' +
                     '<input type="hidden" name="rat2_conta_nome[]" value="' + contaNome + '">' +
                     '</td>';
@@ -2934,7 +2934,7 @@ $data_sistema = date("Y-m-d");
                 newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + localNome + '</span></td>';
                 newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
                                '<span class="lbl-parcela">' + ccNome + '</span>' +
-                               ' <a href="#" onclick="editarCCDoLocal(\'' + localId + '\',\'' + localNomeJs + '\');return false;" data-toggle="tooltip" data-placement="top" title="Selecione Centro de Custos" style="color:#aaa;font-size:11px;margin-left:4px;">' +
+                               ' <a href="#" onclick="editarCCDoLocal(\'' + localId + '\',\'' + localNomeJs + '\');return false;" data-toggle="tooltip" data-placement="top" title="Selecione Centro de Custos" style="color:#337ab7;font-size:11px;margin-left:4px;">' +
                                '<i class="fas fa-pen"></i></a></td>';
             } else {
                 newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;"></td>';
