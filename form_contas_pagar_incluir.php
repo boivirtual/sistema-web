@@ -2757,6 +2757,7 @@ $data_sistema = date("Y-m-d");
     }
 
     var _replicarContaPendente = false;
+    var _modoRateio = null; // null | 'valor' | 'perc'
 
     function _bindReplicarConta($s) {
         var _ultimaSelecao = null;
