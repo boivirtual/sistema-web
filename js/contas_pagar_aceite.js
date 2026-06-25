@@ -866,16 +866,23 @@ function eratConfirmarLocal(btn) {
 
 // ── Editor inline: Centro de Custo ──
 function eratEditarCC(link) {
-    var $td    = $(link).closest('td');
-    var $tr    = $td.closest('tr');
-    var localId = $tr.find('.erat-local-id').val();
-    var ccId   = $tr.find('.erat-cc-id').val();
-    var ccs    = typeof _eratCC !== 'undefined' ? _eratCC : [];
-    var selId  = 'erat_sel_cc_' + Date.now();
+    var $td     = $(link).closest('td');
+    var $tr     = $td.closest('tr');
+    var localId = String($tr.find('.erat-local-id').val());
+    var ccs     = typeof _eratCC !== 'undefined' ? _eratCC : [];
+    var selId   = 'erat_sel_cc_' + Date.now();
+
+    var currentCcIds = [];
+    $('#tbody_erat tr.linha-valor-rateio').each(function () {
+        if (String($(this).find('.erat-local-id').val()) === localId) {
+            var cid = String($(this).find('.erat-cc-id').val());
+            if (cid && currentCcIds.indexOf(cid) === -1) currentCcIds.push(cid);
+        }
+    });
 
     var optCC = '';
     for (var i = 0; i < ccs.length; i++) {
-        var sel = (String(ccs[i].id) === String(ccId)) ? ' selected' : '';
+        var sel = currentCcIds.indexOf(String(ccs[i].id)) !== -1 ? ' selected' : '';
         optCC += '<option value="' + ccs[i].id + '"' + sel + '>' + ccs[i].nome + '</option>';
     }
 
