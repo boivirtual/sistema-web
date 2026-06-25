@@ -2572,6 +2572,7 @@ $data_sistema = date("Y-m-d");
 
         $('#tbl_rateio [data-toggle="tooltip"]').tooltip();
         fixarConfirmarContaButton();
+        fixarIconeSelecLocais();
     }
 
     // ── Reabre seleção de locais a partir da fase 2 ──
