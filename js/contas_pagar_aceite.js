@@ -789,15 +789,19 @@ function eratConfirmarLinhaManual(btn) {
 
 // ── Editor inline: Local ──
 function eratEditarLocal(link) {
-    var $td     = $(link).closest('td');
-    var $tr     = $td.closest('tr');
-    var localId = $tr.find('.erat-local-id').val();
-    var locais  = typeof _eratLocais !== 'undefined' ? _eratLocais : [];
-    var selId   = 'erat_sel_local_' + Date.now();
+    var $td    = $(link).closest('td');
+    var locais = typeof _eratLocais !== 'undefined' ? _eratLocais : [];
+    var selId  = 'erat_sel_local_' + Date.now();
+
+    var currentLocalIds = [];
+    $('#tbody_erat tr.linha-valor-rateio').each(function () {
+        var lid = String($(this).find('.erat-local-id').val());
+        if (lid && currentLocalIds.indexOf(lid) === -1) currentLocalIds.push(lid);
+    });
 
     var optLocal = '';
     for (var i = 0; i < locais.length; i++) {
-        var sel = (String(locais[i].id) === String(localId)) ? ' selected' : '';
+        var sel = currentLocalIds.indexOf(String(locais[i].id)) !== -1 ? ' selected' : '';
         optLocal += '<option value="' + locais[i].id + '"' + sel + '>' + locais[i].nome + '</option>';
     }
 
