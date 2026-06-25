@@ -2906,19 +2906,15 @@ $data_sistema = date("Y-m-d");
     }
 
     function editarLocaisRateio() {
-        var locaisAtuais = [];
+        _locaisAntesEdicao = [];
         $('#tbl_rateio tbody tr.linha-fase1, #tbl_rateio tbody tr.linha-fase2, #tbl_rateio tbody tr.linha-valor-rateio').each(function() {
             var localId = String($(this).data('local-id'));
-            if (localId && locaisAtuais.indexOf(localId) === -1) locaisAtuais.push(localId);
+            if (localId && _locaisAntesEdicao.indexOf(localId) === -1) _locaisAntesEdicao.push(localId);
         });
 
-        $('#linhas_rateio').hide().empty();
-        $('#rodape_fase2').remove();
-        $('#rodape_rateio').remove();
         $('#tr_local_input').show();
-
         var $local = $('#codigo_fazenda');
-        $local.val(locaisAtuais);
+        $local.val(_locaisAntesEdicao);
         $local.selectpicker('refresh');
         $('#td_local_confirm button').show();
     }
