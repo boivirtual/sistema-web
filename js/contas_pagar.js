@@ -2232,17 +2232,17 @@ function desabilita_enter (field, event) {
 }
 
 /* ================================================================
-   EDITOR DE RATEIO — funções compartilhadas (contas_pagar.js)
+   EDITOR DE RATEIO — tela idêntica ao form_contas_pagar_incluir.php
    ================================================================ */
 
 var _eratCtpId       = 0;
 var _eratPrimeiroCtp = 0;
 var _eratValorTotal  = 0;
-var _eratModo        = null; // null | 'valor' | 'perc'
+var _eratModoRateio  = null; // null | 'valor' | 'perc'
 
 function _eratFmtMoney(n) {
     n = parseFloat(n) || 0;
-    return n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function _eratParseVal(s) {
