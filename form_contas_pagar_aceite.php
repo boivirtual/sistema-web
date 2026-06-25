@@ -125,7 +125,16 @@
     $arr_local_rat_js = [];
     $rs_loc_erat = mysqli_query($conector, "SELECT tbl_pessoa_id, tbl_pessoa_nome FROM tbl_pessoa WHERE tbl_pessoa_classe=4 AND tbl_pessoa_lixeira=0 ORDER BY tbl_pessoa_nome");
     while ($r = mysqli_fetch_object($rs_loc_erat)) {
-        $arr_local_rat_js[] = ['id' => $r->tbl_pessoa_id, 'nome' => $r->tbl_pessoa_nome];
+        if (is_array($array_locais_usuario)) {
+            foreach ($array_locais_usuario as $v) {
+                if (trim($v) == $r->tbl_pessoa_id) {
+                    $arr_local_rat_js[] = ['id' => $r->tbl_pessoa_id, 'nome' => $r->tbl_pessoa_nome];
+                    break;
+                }
+            }
+        } else {
+            $arr_local_rat_js[] = ['id' => $r->tbl_pessoa_id, 'nome' => $r->tbl_pessoa_nome];
+        }
     }
 
     $arr_cc_rat_js = [];
