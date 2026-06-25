@@ -2069,6 +2069,7 @@ $data_sistema = date("Y-m-d");
         var semMudanca    = (novosSorted.length === antesSorted.length &&
                             novosSorted.every(function(v, i) { return v === antesSorted[i]; }));
         if (semMudanca && _locaisAntesEdicao.length > 0) {
+            $('#btn_fechar_local').remove();
             $('#tr_local_input').hide();
             return;
         }
