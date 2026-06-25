@@ -2877,6 +2877,7 @@ $data_sistema = date("Y-m-d");
 
     // ── Abre seletor de CC para reeditar um local dentro da fase 3 ──
     function editarCCDoLocalFase3(localId, localNome) {
+        if (_temEditorAberto()) return;
         var editorId = 'tr_editar_cc_f3_' + String(localId).replace(/\W/g,'_');
         if ($('#' + editorId).length) return;
 
