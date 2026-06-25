@@ -2746,6 +2746,8 @@ $data_sistema = date("Y-m-d");
         );
     }
 
+    var _replicarContaPendente = false;
+
     function _bindReplicarConta($s) {
         var _ultimaSelecao = null;
         $s.on('hidden.bs.select', function() {
@@ -2757,8 +2759,9 @@ $data_sistema = date("Y-m-d");
             _ultimaSelecao = valsKey;
 
             var selfEl = this;
-            // Aguarda o stack atual (ex: clique no Confirmar) concluir antes de exibir o diálogo
+            _replicarContaPendente = true; // bloqueia confirmarTodaConta até o diálogo ser exibido
             setTimeout(function() {
+                _replicarContaPendente = false;
                 // Usa 'select.fase2-conta' para não contar os wrappers do bootstrap-select
                 var $vazios = $('#tbl_rateio select.fase2-conta').not(selfEl).filter(function() {
                     var v = $(this).val();
@@ -2772,7 +2775,7 @@ $data_sistema = date("Y-m-d");
                 $vazios.each(function() {
                     $(this).val(vals).selectpicker('refresh');
                 });
-            }, 150);
+            }, 0);
         });
     }
 
