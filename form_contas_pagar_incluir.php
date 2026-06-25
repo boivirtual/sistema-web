@@ -2756,19 +2756,23 @@ $data_sistema = date("Y-m-d");
             if (valsKey === _ultimaSelecao) return;
             _ultimaSelecao = valsKey;
 
-            var $self = $(this);
-            var $vazios = $('#tbl_rateio .fase2-conta').not($self).filter(function() {
-                var v = $(this).val();
-                return !v || v.length === 0;
-            });
-            if ($vazios.length === 0) return;
+            var selfEl = this;
+            // Aguarda o stack atual (ex: clique no Confirmar) concluir antes de exibir o diálogo
+            setTimeout(function() {
+                // Usa 'select.fase2-conta' para não contar os wrappers do bootstrap-select
+                var $vazios = $('#tbl_rateio select.fase2-conta').not(selfEl).filter(function() {
+                    var v = $(this).val();
+                    return !v || v.length === 0;
+                });
+                if ($vazios.length === 0) return;
 
-            var msg = 'Deseja replicar esta seleção para as ' + $vazios.length + ' linha(s) seguinte(s)?';
-            if (!confirm(msg)) return;
+                var msg = 'Deseja replicar esta seleção para as ' + $vazios.length + ' linha(s) seguinte(s)?';
+                if (!confirm(msg)) return;
 
-            $vazios.each(function() {
-                $(this).val(vals).selectpicker('refresh');
-            });
+                $vazios.each(function() {
+                    $(this).val(vals).selectpicker('refresh');
+                });
+            }, 150);
         });
     }
 
