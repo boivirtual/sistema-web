@@ -2770,7 +2770,7 @@ $data_sistema = date("Y-m-d");
             $td.append(
                 '<a href="#" onclick="editarLocaisRateio();return false;" class="ico-selec-locais"' +
                 ' data-toggle="tooltip" data-placement="top" title="Selecionar Locais"' +
-                ' style="color:#aaa;font-size:11px;margin-left:6px;">' +
+                ' style="color:#337ab7;font-size:11px;margin-left:6px;">' +
                 '<i class="fas fa-pen"></i></a>'
             );
             $td.find('.ico-selec-locais').tooltip();
