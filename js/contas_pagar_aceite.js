@@ -703,9 +703,11 @@ function _eratRefreshGrouping() {
     var prevLocalId = null, prevCcId = null;
     for (var i = 0; i < rows.length; i++) {
         var ln = rows[i];
-        var showLocal = (String(ln.local_id) !== String(prevLocalId));
-        var showCC    = showLocal || (String(ln.cc_id) !== String(prevCcId));
-        html += _eratGerarLinha(ln, showLocal, showCC);
+        var showLocal     = (String(ln.local_id) !== String(prevLocalId));
+        var showCC        = showLocal || (String(ln.cc_id) !== String(prevCcId));
+        var showConta     = showCC;
+        var showLocalIcon = (i === 0);
+        html += _eratGerarLinha(ln, showLocal, showCC, showConta, showLocalIcon);
         prevLocalId = ln.local_id;
         prevCcId    = ln.cc_id;
     }
