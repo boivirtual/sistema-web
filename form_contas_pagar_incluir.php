@@ -2103,6 +2103,7 @@ $data_sistema = date("Y-m-d");
 
         $('#tr_local_input').hide();
         $('#linhas_rateio').show();
+        fixarIconeSelecLocais();
     }
 
     // ── FASE 2: Lê CC de todas as linhas → tabela com selectpicker Conta por linha Local+CC ──
