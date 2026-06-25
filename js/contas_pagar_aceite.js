@@ -537,7 +537,31 @@ function _eratFmtMoney(n) {
     return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// ── Gera linha no estilo da tela de inclusão (texto + ícone de edição) ──
+function abrirEditarRateio(ctp_id) {
+    _eratCtpId = ctp_id;
+    $('#erat_titulo_doc').text('');
+    $('#modal_editar_rateio').modal('show');
+
+    $.ajax({
+        type: 'POST',
+        url: 'get_rateio_json.php',
+        data: { ctp_id: ctp_id },
+        dataType: 'json',
+        timeout: 15000,
+        success: function (resp) {
+            if (!resp.error) {
+                _eratPrimeiroCtp = resp.primeiro_ctp_id;
+                _eratValorTotal  = resp.valor_total || 0;
+                $('#erat_titulo_doc').text('Documento Nº ' + resp.numero_doc + ' | Valor Total: R$ ' + _eratFmtMoney(_eratValorTotal));
+            }
+        }
+    });
+}
+
+function eratSalvar() {
+}
+
+// ── RESERVADO: _eratGerarLinha ──
 function _eratGerarLinha(ln) {
     ln = ln || {};
     var localId   = ln.local_id   || '';
