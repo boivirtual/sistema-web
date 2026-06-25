@@ -2886,9 +2886,23 @@ $data_sistema = date("Y-m-d");
         });
         if (ccIds.length === 0) { alert('Selecione pelo menos um Centro de Custos.'); return; }
 
-        var $edRow = $('#tr_editar_cc_f3_' + String(localId).replace(/\W/g,'_'));
-        var $insertBefore = $edRow.next('tr');
+        var $edRow     = $('#tr_editar_cc_f3_' + String(localId).replace(/\W/g,'_'));
+        var ccIdsAntes = $edRow.data('cc-ids-antes') || [];
+
+        var novosSorted = ccIds.slice().sort();
+        var antesSorted = ccIdsAntes.slice().sort();
+        var semMudanca  = (novosSorted.length === antesSorted.length &&
+                          novosSorted.every(function(v, i) { return v === antesSorted[i]; }));
+        if (semMudanca && ccIdsAntes.length > 0) {
+            $edRow.remove();
+            fixarIconeSelecLocais();
+            return;
+        }
+
+        var $linhasDoLocal = $('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"]');
+        var $insertBefore  = $linhasDoLocal.length > 0 ? $linhasDoLocal.last().next('tr') : $edRow.next('tr');
         $edRow.remove();
+        $linhasDoLocal.remove();
 
         var optionsConta = '';
         $.each(contaOpcoes, function(k, ct) {
