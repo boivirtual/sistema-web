@@ -2325,6 +2325,10 @@ $data_sistema = date("Y-m-d");
 
     // ── Abre seletor de Contas para reeditar um grupo Local+CC ──
     function editarContaDoCC(localId, ccId, localNome, ccNome) {
+        var gKey     = (localId + '_' + ccId).replace(/\W/g,'_');
+        var editorId = 'tr_editar_conta_' + gKey;
+        if ($('#' + editorId).length) return;
+
         var $linhasDoGrupo = $('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"][data-cc-id="' + ccId + '"]');
         var contaIdsAtuais = [], valoresAtuais = {};
         $linhasDoGrupo.each(function() {
@@ -2333,26 +2337,20 @@ $data_sistema = date("Y-m-d");
             valoresAtuais[cid] = $(this).find('.rat-valor').val();
         });
 
-        var $insertBefore = $linhasDoGrupo.last().next('tr');
-        $linhasDoGrupo.remove();
-
-        var showLocal = ($('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"]').length === 0);
-
         var optionsConta = '';
         $.each(contaOpcoes, function(k, ct) {
             optionsConta += '<option value="' + ct.id + '">' + ct.nome + '</option>';
         });
 
-        var gKey        = (localId + '_' + ccId).replace(/\W/g,'_');
         var selectId    = 'editar_conta_sel_' + gKey;
         var localNomeJs = localNome.replace(/'/g,"\\'");
         var ccNomeJs    = ccNome.replace(/'/g,"\\'");
 
-        var editorHtml = '<tr id="tr_editar_conta_' + gKey + '" class="tr-editar-conta"' +
+        var editorHtml = '<tr id="' + editorId + '" class="tr-editar-conta"' +
             ' data-local-id="' + localId + '" data-cc-id="' + ccId + '"' +
             ' data-local-nome="' + localNome.replace(/"/g,'&quot;') + '" data-cc-nome="' + ccNome.replace(/"/g,'&quot;') + '">' +
             '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
-            (showLocal ? '<span class="lbl-parcela">' + localNome + '</span>' : '') + '</td>' +
+            '<span class="lbl-parcela">' + localNome + '</span></td>' +
             '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
             '<span class="lbl-parcela">' + ccNome + '</span></td>' +
             '<td style="vertical-align:middle;padding:4px 8px;">' +
@@ -2361,7 +2359,8 @@ $data_sistema = date("Y-m-d");
             '<button type="button" class="btn btn-primary" onclick="confirmarContaDoCC(\'' + localId + '\',\'' + ccId + '\',\'' + localNomeJs + '\',\'' + ccNomeJs + '\')">Confirmar</button></td>' +
             '<td colspan="2"></td></tr>';
 
-        if ($insertBefore.length) { $insertBefore.before(editorHtml); } else { $('#tr_rateio_restante').before(editorHtml); }
+        var $firstRow = $linhasDoGrupo.first();
+        if ($firstRow.length) { $firstRow.before(editorHtml); } else { $('#tr_rateio_restante').before(editorHtml); }
 
         var $s = $('#' + selectId);
         $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
@@ -2371,7 +2370,7 @@ $data_sistema = date("Y-m-d");
         $bs.css({ 'width': '100%', 'display': 'block' });
         $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
         $bs.find('.dropdown-menu').css({ 'min-width': '360px', 'width': 'auto' });
-        $('#tr_editar_conta_' + gKey).data('valores-atuais', valoresAtuais);
+        $('#' + editorId).data('valores-atuais', valoresAtuais).data('conta-ids-antes', contaIdsAtuais);
 
         fixarIconeSelecLocais();
     }
