@@ -2814,6 +2814,14 @@ $data_sistema = date("Y-m-d");
                 $vazios.each(function() {
                     $(this).val(vals).selectpicker('refresh');
                 });
+
+                var $aindaVazios = $('#tbl_rateio select.fase2-conta').filter(function() {
+                    var v = $(this).val();
+                    return !v || v.length === 0;
+                });
+                if ($aindaVazios.length === 0) {
+                    confirmarTodaConta();
+                }
             }, 0);
         });
     }
