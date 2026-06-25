@@ -2218,8 +2218,74 @@ $data_sistema = date("Y-m-d");
         var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:100%;table-layout:fixed;">';
         html += '<colgroup><col style="width:16%"><col style="width:16%"><col style="width:26%"><col style="width:14%"><col style="width:9%"><col style="width:9%"></colgroup><tbody>';
 
+        var lastLocalId = null, lastGroupKey = null;
         $.each(linhas, function(i, ln) {
-            html += gerarLinhaValorRateio(ln.localId, ln.localNome, ln.ccId, ln.ccNome, ln.contaId, ln.contaNome);
+            var groupKey    = ln.localId + '_' + ln.ccId;
+            var showLocal   = (ln.localId !== lastLocalId);
+            var showCC      = (groupKey !== lastGroupKey);
+            lastLocalId     = ln.localId;
+            lastGroupKey    = groupKey;
+            var localNomeJs = ln.localNome.replace(/'/g,"\\'");
+            var ccNomeJs    = ln.ccNome.replace(/'/g,"\\'");
+
+            html += '<tr class="linha-valor-rateio"' +
+                ' data-local-id="'   + ln.localId   + '"' +
+                ' data-local-nome="' + ln.localNome.replace(/"/g,'&quot;') + '"' +
+                ' data-cc-id="'      + ln.ccId      + '"' +
+                ' data-cc-nome="'    + ln.ccNome.replace(/"/g,'&quot;') + '"' +
+                ' data-conta-id="'   + ln.contaId   + '"' +
+                ' data-conta-nome="' + ln.contaNome.replace(/"/g,'&quot;') + '">';
+
+            if (showLocal) {
+                html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+                    '<span class="lbl-parcela">' + ln.localNome + '</span>' +
+                    '<input type="hidden" name="rat2_local_id[]" value="' + ln.localId + '">' +
+                    '<input type="hidden" name="rat2_local_nome[]" value="' + ln.localNome + '">' +
+                    '</td>';
+            } else {
+                html += '<td style="vertical-align:middle;padding:4px 8px;">' +
+                    '<input type="hidden" name="rat2_local_id[]" value="' + ln.localId + '">' +
+                    '<input type="hidden" name="rat2_local_nome[]" value="' + ln.localNome + '">' +
+                    '</td>';
+            }
+
+            if (showCC) {
+                html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
+                    '<span class="lbl-parcela">' + ln.ccNome + '</span>' +
+                    '<input type="hidden" name="rat2_cc_id[]" value="' + ln.ccId + '">' +
+                    '<input type="hidden" name="rat2_cc_nome[]" value="' + ln.ccNome + '">' +
+                    '</td>';
+            } else {
+                html += '<td style="vertical-align:middle;padding:4px 8px;">' +
+                    '<input type="hidden" name="rat2_cc_id[]" value="' + ln.ccId + '">' +
+                    '<input type="hidden" name="rat2_cc_nome[]" value="' + ln.ccNome + '">' +
+                    '</td>';
+            }
+
+            if (showCC) {
+                html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+                    '<span class="lbl-parcela">' + ln.contaNome + '</span>' +
+                    ' <a href="#" onclick="editarContaDoCC(\'' + ln.localId + '\',\'' + ln.ccId + '\',\'' + localNomeJs + '\',\'' + ccNomeJs + '\');return false;"' +
+                    ' data-toggle="tooltip" data-placement="top" title="Selecionar Contas"' +
+                    ' style="color:#aaa;font-size:11px;margin-left:4px;"><i class="far fa-edit"></i></a>' +
+                    '<input type="hidden" name="rat2_conta_id[]" value="' + ln.contaId + '">' +
+                    '<input type="hidden" name="rat2_conta_nome[]" value="' + ln.contaNome + '">' +
+                    '</td>';
+            } else {
+                html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+                    '<span class="lbl-parcela">' + ln.contaNome + '</span>' +
+                    '<input type="hidden" name="rat2_conta_id[]" value="' + ln.contaId + '">' +
+                    '<input type="hidden" name="rat2_conta_nome[]" value="' + ln.contaNome + '">' +
+                    '</td>';
+            }
+
+            html += '<td style="vertical-align:middle;text-align:right;padding:4px 8px;">' +
+                '<input type="text" class="form-control rat-valor" placeholder="0,00" name="rat2_valor[]"' +
+                ' style="height:30px;font-size:13px;text-align:right;"></td>';
+            html += '<td style="vertical-align:middle;text-align:right;padding:4px 8px;">' +
+                '<input type="text" class="form-control rat-perc" placeholder="0,00%" name="rat2_perc[]" readonly' +
+                ' style="height:30px;font-size:13px;text-align:right;background:#f9f9f9;color:#555;"></td>';
+            html += '<td></td></tr>';
         });
 
         html += '<tr id="tr_rateio_restante">';
@@ -2229,16 +2295,164 @@ $data_sistema = date("Y-m-d");
         html += '</tr></tbody></table>';
 
         $('#linhas_rateio').html(html);
-
         $('#linhas_rateio').after(
-            '<div id="rodape_rateio" style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:4px 2px;">' +
-            '<a href="#" onclick="adicionarLinhaRateio();return false;" style="font-size:13px;font-weight:500;color:#128cb8;text-decoration:none;"><i class="fas fa-plus"></i> Adicionar linha</a>' +
+            '<div id="rodape_rateio" style="display:flex;justify-content:flex-end;align-items:center;margin-top:10px;padding:4px 2px;">' +
             '<button type="button" id="btn_confirmar_rateio_final" class="btn btn-primary" onclick="confirmarRateioFinal()">Confirmar Rateio</button>' +
             '</div>'
         );
 
+        $('#tbl_rateio [data-toggle="tooltip"]').tooltip();
+        fixarIconeSelecLocais();
         recalcularRateio();
     }
+
+    // ── Abre seletor de Contas para reeditar um grupo Local+CC ──
+    function editarContaDoCC(localId, ccId, localNome, ccNome) {
+        var $linhasDoGrupo = $('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"][data-cc-id="' + ccId + '"]');
+        var contaIdsAtuais = [], valoresAtuais = {};
+        $linhasDoGrupo.each(function() {
+            var cid = String($(this).data('conta-id'));
+            contaIdsAtuais.push(cid);
+            valoresAtuais[cid] = $(this).find('.rat-valor').val();
+        });
+
+        var $insertBefore = $linhasDoGrupo.last().next('tr');
+        $linhasDoGrupo.remove();
+
+        var showLocal = ($('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"]').length === 0);
+
+        var optionsConta = '';
+        $.each(contaOpcoes, function(k, ct) {
+            optionsConta += '<option value="' + ct.id + '">' + ct.nome + '</option>';
+        });
+
+        var gKey        = (localId + '_' + ccId).replace(/\W/g,'_');
+        var selectId    = 'editar_conta_sel_' + gKey;
+        var localNomeJs = localNome.replace(/'/g,"\\'");
+        var ccNomeJs    = ccNome.replace(/'/g,"\\'");
+
+        var editorHtml = '<tr id="tr_editar_conta_' + gKey + '" class="tr-editar-conta"' +
+            ' data-local-id="' + localId + '" data-cc-id="' + ccId + '"' +
+            ' data-local-nome="' + localNome.replace(/"/g,'&quot;') + '" data-cc-nome="' + ccNome.replace(/"/g,'&quot;') + '">' +
+            '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+            (showLocal ? '<span class="lbl-parcela">' + localNome + '</span>' : '') + '</td>' +
+            '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+            '<span class="lbl-parcela">' + ccNome + '</span></td>' +
+            '<td style="vertical-align:middle;padding:4px 8px;">' +
+            '<select class="selectpicker" id="' + selectId + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsConta + '</select></td>' +
+            '<td style="vertical-align:middle;padding:4px 8px;">' +
+            '<button type="button" class="btn btn-primary" onclick="confirmarContaDoCC(\'' + localId + '\',\'' + ccId + '\',\'' + localNomeJs + '\',\'' + ccNomeJs + '\')">Confirmar</button></td>' +
+            '<td colspan="2"></td></tr>';
+
+        if ($insertBefore.length) { $insertBefore.before(editorHtml); } else { $('#tr_rateio_restante').before(editorHtml); }
+
+        var $s = $('#' + selectId);
+        $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
+        $s.val(contaIdsAtuais);
+        $s.selectpicker('refresh');
+        var $bs = $s.closest('.bootstrap-select');
+        $bs.css({ 'width': '100%', 'display': 'block' });
+        $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
+        $bs.find('.dropdown-menu').css({ 'min-width': '360px', 'width': 'auto' });
+        $('#tr_editar_conta_' + gKey).data('valores-atuais', valoresAtuais);
+
+        fixarIconeSelecLocais();
+    }
+
+    // ── Confirma reedição de Contas de um grupo Local+CC ──
+    function confirmarContaDoCC(localId, ccId, localNome, ccNome) {
+        var gKey   = (localId + '_' + ccId).replace(/\W/g,'_');
+        var $edRow = $('#tr_editar_conta_' + gKey);
+        var valoresAtuais = $edRow.data('valores-atuais') || {};
+
+        var contaIds = [];
+        $('#editar_conta_sel_' + gKey + ' option:selected').each(function() {
+            if ($(this).val()) contaIds.push($(this).val());
+        });
+        if (contaIds.length === 0) { alert('Selecione pelo menos uma Conta Contábil.'); return; }
+
+        var $insertBefore = $edRow.next('tr');
+        $edRow.remove();
+
+        var showLocal    = ($('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"]').length === 0);
+        var localNomeEsc = localNome.replace(/"/g,'&quot;');
+        var ccNomeEsc    = ccNome.replace(/"/g,'&quot;');
+        var localNomeJs  = localNome.replace(/'/g,"\\'");
+        var ccNomeJs     = ccNome.replace(/'/g,"\\'");
+
+        var newRowsHtml = '';
+        $.each(contaIds, function(i, contaId) {
+            var contaNome = '';
+            $.each(contaOpcoes, function(m, ct) { if (String(ct.id) === String(contaId)) { contaNome = ct.nome; return false; } });
+            var valorSalvo = valoresAtuais[contaId] || '';
+            var isFirst    = (i === 0);
+
+            newRowsHtml += '<tr class="linha-valor-rateio"' +
+                ' data-local-id="' + localId + '" data-cc-id="' + ccId + '"' +
+                ' data-conta-id="' + contaId + '"' +
+                ' data-local-nome="' + localNomeEsc + '" data-cc-nome="' + ccNomeEsc + '"' +
+                ' data-conta-nome="' + contaNome.replace(/"/g,'&quot;') + '">';
+
+            if (showLocal && isFirst) {
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+                    '<span class="lbl-parcela">' + localNome + '</span>' +
+                    '<input type="hidden" name="rat2_local_id[]" value="' + localId + '">' +
+                    '<input type="hidden" name="rat2_local_nome[]" value="' + localNome + '">' +
+                    '</td>';
+            } else {
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;">' +
+                    '<input type="hidden" name="rat2_local_id[]" value="' + localId + '">' +
+                    '<input type="hidden" name="rat2_local_nome[]" value="' + localNome + '">' +
+                    '</td>';
+            }
+
+            if (isFirst) {
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
+                    '<span class="lbl-parcela">' + ccNome + '</span>' +
+                    '<input type="hidden" name="rat2_cc_id[]" value="' + ccId + '">' +
+                    '<input type="hidden" name="rat2_cc_nome[]" value="' + ccNome + '">' +
+                    '</td>';
+            } else {
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;">' +
+                    '<input type="hidden" name="rat2_cc_id[]" value="' + ccId + '">' +
+                    '<input type="hidden" name="rat2_cc_nome[]" value="' + ccNome + '">' +
+                    '</td>';
+            }
+
+            if (isFirst) {
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+                    '<span class="lbl-parcela">' + contaNome + '</span>' +
+                    ' <a href="#" onclick="editarContaDoCC(\'' + localId + '\',\'' + ccId + '\',\'' + localNomeJs + '\',\'' + ccNomeJs + '\');return false;"' +
+                    ' data-toggle="tooltip" data-placement="top" title="Selecionar Contas"' +
+                    ' style="color:#aaa;font-size:11px;margin-left:4px;"><i class="far fa-edit"></i></a>' +
+                    '<input type="hidden" name="rat2_conta_id[]" value="' + contaId + '">' +
+                    '<input type="hidden" name="rat2_conta_nome[]" value="' + contaNome + '">' +
+                    '</td>';
+            } else {
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+                    '<span class="lbl-parcela">' + contaNome + '</span>' +
+                    '<input type="hidden" name="rat2_conta_id[]" value="' + contaId + '">' +
+                    '<input type="hidden" name="rat2_conta_nome[]" value="' + contaNome + '">' +
+                    '</td>';
+            }
+
+            newRowsHtml += '<td style="vertical-align:middle;text-align:right;padding:4px 8px;">' +
+                '<input type="text" class="form-control rat-valor" placeholder="0,00" name="rat2_valor[]"' +
+                ' style="height:30px;font-size:13px;text-align:right;"' +
+                (valorSalvo ? ' value="' + valorSalvo + '"' : '') + '></td>';
+            newRowsHtml += '<td style="vertical-align:middle;text-align:right;padding:4px 8px;">' +
+                '<input type="text" class="form-control rat-perc" placeholder="0,00%" name="rat2_perc[]" readonly' +
+                ' style="height:30px;font-size:13px;text-align:right;background:#f9f9f9;color:#555;"></td>';
+            newRowsHtml += '<td></td></tr>';
+        });
+
+        if ($insertBefore.length) { $insertBefore.before(newRowsHtml); } else { $('#tr_rateio_restante').before(newRowsHtml); }
+
+        $('#tbl_rateio [data-toggle="tooltip"]').tooltip();
+        fixarIconeSelecLocais();
+        recalcularRateio();
+    }
+
     // ── Gera HTML de uma linha de valor/rateio ──
     function gerarLinhaValorRateio(localId, localNome, ccId, ccNome, contaId, contaNome) {
         var uid = (localId + '_' + ccId + '_' + contaId).replace(/\W/g,'_') + '_' + Date.now();
