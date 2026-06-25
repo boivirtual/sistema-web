@@ -481,7 +481,7 @@ $data_sistema = date("Y-m-d");
                                                     <span id="rep_resumo_wrap" style="display:none; align-items:center; gap:8px;">
                                                         <span style="font-size:13px; color:#555; font-weight:500;">Repetição *</span>
                                                         <span id="rep_resumo_texto" style="font-size:13px; background:#eaf2ff; color:#2471a3; border:1px solid #aed6f1; border-radius:4px; padding:3px 10px; font-weight:600;"></span>
-                                                        <a href="#" onclick="abrirModalRepeticao(); return false;" style="font-size:12px; color:#888;">
+                                                        <a href="#" onclick="abrirModalRepeticao(); return false;" style="font-size:12px; color:#337ab7;">
                                                             <i class="fas fa-pen"></i> Editar
                                                         </a>
                                                     </span>
