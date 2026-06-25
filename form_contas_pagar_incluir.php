@@ -2117,6 +2117,7 @@ $data_sistema = date("Y-m-d");
         });
 
         $('#tr_local_input').hide();
+        _fecharBackdropLocal();
         $('#linhas_rateio').show();
         fixarIconeSelecLocais();
     }
