@@ -2042,7 +2042,8 @@ $data_sistema = date("Y-m-d");
 
                 // Mover select de volta para col_local e botão de volta para col_btn_confirmar_locais
                 $('#col_local label').after($local);
-                $('#col_btn_confirmar_locais').append($('#td_local_confirm button'));
+                $('#btn_fechar_local').remove();
+                $('#col_btn_confirmar_locais').append($('#btn_confirmar_locais'));
                 $('#tr_local_input').show();
 
                 $('#col_btn_confirmar_locais').hide();
