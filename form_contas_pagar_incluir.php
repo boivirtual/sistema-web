@@ -372,7 +372,7 @@ $data_sistema = date("Y-m-d");
                                                     <i class="fas fa-check-circle"></i> Rateio Configurado
                                                 </span>
                                                 <a href="#" id="link_editar_rateio" onclick="editarRateio(); return false;"
-                                                   style="font-size:12px; color:#888; margin-left:8px; display:inline-block;">
+                                                   style="font-size:12px; color:#337ab7; margin-left:8px; display:inline-block;">
                                                     <i class="fas fa-pen"></i> Editar
                                                 </a>
                                             </div>
