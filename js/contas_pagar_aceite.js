@@ -878,7 +878,7 @@ function eratConfirmarConta(btn) {
 
     $td.html(
         '<span class="lbl-parcela">' + contaNm + '</span>' +
-        ' <a href="#" onclick="eratEditarConta(this);return false;" style="color:#aaa;font-size:11px;margin-left:4px;" data-toggle="tooltip" title="Editar Conta Contábil"><i class="far fa-edit"></i></a>' +
+        ' <a href="#" onclick="eratEditarConta(this);return false;" style="color:#337ab7;font-size:11px;margin-left:4px;" data-toggle="tooltip" title="Editar Conta Contábil"><i class="far fa-edit"></i></a>' +
         '<input type="hidden" class="erat-conta-id"   value="' + contaId + '">' +
         '<input type="hidden" class="erat-conta-nome" value="' + contaNm + '">'
     );
