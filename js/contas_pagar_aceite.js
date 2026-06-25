@@ -815,6 +815,7 @@ function eratEditarLocal(link) {
         '</div>'
     );
     $('#' + selId).selectpicker();
+    $('#' + selId).selectpicker('val', currentLocalIds);
 }
 
 function eratConfirmarLocal(btn) {
