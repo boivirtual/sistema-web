@@ -847,10 +847,12 @@ function eratConfirmarLocal(btn) {
 
 // ── Editor inline: Centro de Custo ──
 function eratEditarCC(link) {
-    var $td  = $(link).closest('td');
-    var $tr  = $td.closest('tr');
-    var ccId = $tr.find('.erat-cc-id').val();
-    var ccs  = typeof _eratCC !== 'undefined' ? _eratCC : [];
+    var $td    = $(link).closest('td');
+    var $tr    = $td.closest('tr');
+    var localId = $tr.find('.erat-local-id').val();
+    var ccId   = $tr.find('.erat-cc-id').val();
+    var ccs    = typeof _eratCC !== 'undefined' ? _eratCC : [];
+    var selId  = 'erat_sel_cc_' + Date.now();
 
     var optCC = '';
     for (var i = 0; i < ccs.length; i++) {
@@ -859,23 +861,64 @@ function eratEditarCC(link) {
     }
 
     $td.data('orig-html', $td.html()).html(
-        '<select class="form-control" style="height:30px;font-size:12px;display:inline-block;width:auto;max-width:210px;">' + optCC + '</select>' +
-        ' <button type="button" class="btn btn-primary btn-xs" onclick="eratConfirmarCC(this)">OK</button>' +
-        ' <button type="button" class="btn btn-default btn-xs" onclick="eratCancelarEdicao(this)">X</button>'
+        '<select id="' + selId + '" class="selectpicker" multiple data-live-search="true"' +
+        ' data-width="100%" data-container="body" title="Selecione o CC...">' +
+        optCC + '</select>' +
+        '<div style="margin-top:4px;white-space:nowrap;">' +
+        '<button type="button" class="btn btn-primary btn-xs" onclick="eratConfirmarCC(this)">Confirmar</button> ' +
+        '<button type="button" class="btn btn-default btn-xs" onclick="eratCancelarEdicao(this)">Fechar</button>' +
+        '</div>'
     );
+    $('#' + selId).selectpicker();
 }
 
 function eratConfirmarCC(btn) {
-    var $td  = $(btn).closest('td');
-    var $tr  = $td.closest('tr');
-    var $sel = $td.find('select');
-    var ccId = $sel.val();
-    var ccNm = $sel.find('option:selected').text().trim();
+    var $td         = $(btn).closest('td');
+    var $tr         = $td.closest('tr');
+    var $sel        = $td.find('select');
+    var selectedIds = $sel.val() || [];
 
-    $tr.find('.erat-cc-id').val(ccId);
-    $tr.find('.erat-cc-nome').val(ccNm);
-    $tr.attr('data-cc-id', ccId).attr('data-cc-nome', ccNm);
+    if (!selectedIds || selectedIds.length === 0) {
+        alert('Selecione pelo menos um Centro de Custo.');
+        return;
+    }
 
+    var currentLocalId = String($tr.find('.erat-local-id').val());
+    var localNm        = $tr.find('.erat-local-nome').val();
+    var currentCcId    = String($tr.find('.erat-cc-id').val());
+
+    var $groupRows = $('#tbody_erat tr.linha-valor-rateio').filter(function () {
+        return String($(this).find('.erat-local-id').val()) === currentLocalId &&
+               String($(this).find('.erat-cc-id').val()) === currentCcId;
+    });
+
+    var groupData = [];
+    $groupRows.each(function () {
+        groupData.push({
+            conta_id:    $(this).find('.erat-conta-id').val(),
+            conta_nome:  $(this).find('.erat-conta-nome').val(),
+            conta_valor: _eratParseVal($(this).find('.rat-valor').val()),
+            conta_perc:  _eratParseVal($(this).find('.rat-perc').val())
+        });
+    });
+
+    var $anchor = $groupRows.first();
+    var newHtml = '';
+    for (var l = 0; l < selectedIds.length; l++) {
+        var newCcId = selectedIds[l];
+        var newCcNm = $sel.find('option[value="' + newCcId + '"]').text().trim();
+        for (var r = 0; r < groupData.length; r++) {
+            var ln = $.extend({}, groupData[r]);
+            ln.local_id   = currentLocalId;
+            ln.local_nome = localNm;
+            ln.cc_id      = newCcId;
+            ln.cc_nome    = newCcNm;
+            newHtml += _eratGerarLinha(ln);
+        }
+    }
+
+    $anchor.before(newHtml);
+    $groupRows.remove();
     _eratRefreshGrouping();
 }
 
