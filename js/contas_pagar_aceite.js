@@ -815,7 +815,7 @@ function eratEditarLocal(link) {
         '</div>'
     );
     $('#' + selId).selectpicker();
-    $('#' + selId).val(currentLocalIds).selectpicker('refresh');
+    $('#' + selId).val(currentLocalIds).selectpicker('destroy').selectpicker();
 }
 
 function eratConfirmarLocal(btn) {
