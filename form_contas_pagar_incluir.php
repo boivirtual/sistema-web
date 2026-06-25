@@ -820,6 +820,26 @@ $data_sistema = date("Y-m-d");
                     </div>
                 </div>
 
+                <!-- Modal: Confirmar desativar rateio -->
+                <div class="modal fade" id="modal_fechar_rateio" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+                    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:480px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">Habilitar Rateio</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p><img src='img/exclamacao.png' class="fa fa-exclamation-triangle" width='20' height='23'/>&nbsp; ATENÇÃO!</p>
+                                <p class="desc_modal">Ao desativar o rateio, toda a configuração realizada será perdida. Deseja continuar?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" onclick="confirmarFecharRateio()">Confirmar</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Modal: Retorno -->
                 <div class="modal fade" id="mensagem_retorno" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
                     <div class="modal-dialog modal-dialog-centered" role="document">
