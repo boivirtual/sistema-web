@@ -2772,7 +2772,7 @@ $data_sistema = date("Y-m-d");
             ' data-local-id="' + localId + '" data-local-nome="' + localNome.replace(/"/g,'&quot;') + '">' +
             '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="lbl-parcela">' + localNome + '</span></td>' +
             '<td style="vertical-align:middle;padding:4px 8px;"><select class="selectpicker" id="' + selectId + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsCC + '</select></td>' +
-            '<td style="vertical-align:middle;padding:4px 8px;">' +
+            '<td style="vertical-align:middle;padding:4px 8px;white-space:nowrap;">' +
             '<button type="button" class="btn btn-primary" onclick="confirmarCCDoLocal(\'' + localId + '\',\'' + localNomeJs + '\')">Confirmar</button>' +
             ' <button type="button" class="btn btn-default" onclick="fecharEdicaoCCFase2(\'' + localId + '\')">Fechar</button></td>' +
             '<td colspan="3"></td></tr>';
