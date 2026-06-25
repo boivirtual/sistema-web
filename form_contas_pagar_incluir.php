@@ -2387,10 +2387,9 @@ $data_sistema = date("Y-m-d");
             '<span class="lbl-parcela">' + ccNome + '</span></td>' +
             '<td style="vertical-align:middle;padding:4px 8px;">' +
             '<select class="selectpicker" id="' + selectId + '" multiple data-live-search="true" data-size="8" data-width="100%">' + optionsConta + '</select></td>' +
-            '<td style="vertical-align:middle;padding:4px 8px;white-space:nowrap;">' +
+            '<td style="vertical-align:middle;padding:4px 8px;white-space:nowrap;" colspan="3">' +
             '<button type="button" class="btn btn-primary" onclick="confirmarContaDoCC(\'' + localId + '\',\'' + ccId + '\',\'' + localNomeJs + '\',\'' + ccNomeJs + '\')">Confirmar</button>' +
-            ' <button type="button" class="btn btn-default" onclick="fecharEdicaoConta(\'' + localId + '\',\'' + ccId + '\')">Fechar</button></td>' +
-            '<td colspan="2"></td></tr>';
+            ' <button type="button" class="btn btn-default" onclick="fecharEdicaoConta(\'' + localId + '\',\'' + ccId + '\')">Fechar</button></td></tr>';
 
         var $firstRow = $linhasDoGrupo.first();
         if ($firstRow.length) { $firstRow.before(editorHtml); } else { $('#tr_rateio_restante').before(editorHtml); }
