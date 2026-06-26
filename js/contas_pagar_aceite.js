@@ -218,7 +218,7 @@ $(document).ready(function () {
             { "sType": "date-br" },
             null,
             { "sType": "date-br" },
-            null, null, null
+            null, null, null, { "orderable": false }
         ],
         "dom": "<'row'<'col-lg-6 col-md-6 col-sm-6'i><'col-lg-6 col-md-6 col-sm-6'f>>",
         initComplete: function () {
