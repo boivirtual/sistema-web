@@ -678,9 +678,9 @@ function _eratGerarLinha(ln, showLocal, showCC, showConta, showLocalIcon, showCC
         ' value="' + valor + '" style="height:30px;font-size:13px;text-align:right;"></td>';
 
     // Col %
-    tr += '<td style="vertical-align:middle;text-align:right;padding:4px 8px;">' +
-        '<input type="text" class="form-control rat-perc" placeholder="0,00%"' +
-        ' value="' + perc + '" style="height:30px;font-size:13px;text-align:right;"></td>';
+    tr += '<td style="vertical-align:middle;text-align:right;padding:4px 2px;">' +
+        '<input type="text" class="form-control rat-perc" placeholder="0%"' +
+        ' value="' + perc + '" style="height:30px;font-size:12px;text-align:right;padding:4px 4px;"></td>';
 
     tr += '</tr>';
     return tr;
