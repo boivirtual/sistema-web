@@ -1,0 +1,94 @@
+<?php
+/**
+ * api/get_anexos.php
+ * Retorna HTML com a lista de anexos/links de uma conta a pagar.
+ * Reutilizável: aceita numero_doc (preferencial) ou ctp_id (fallback).
+ *
+ * GET params:
+ *   numero_doc        — número do documento (busca todos os ctp_id do documento)
+ *   codigo_fornecedor — código do fornecedor (obrigatório quando numero_doc informado)
+ *   ctp_id            — id da parcela (usado quando numero_doc está vazio)
+ */
+
+include "../valida_sessao.inc";
+include "../conecta_mysql.inc";
+
+header('Content-Type: text/html; charset=utf-8');
+
+$numero_doc        = isset($_GET['numero_doc'])        ? trim($_GET['numero_doc'])               : '';
+$codigo_fornecedor = isset($_GET['codigo_fornecedor']) ? intval($_GET['codigo_fornecedor'])       : 0;
+$ctp_id_param      = isset($_GET['ctp_id'])            ? intval($_GET['ctp_id'])                  : 0;
+
+if ($numero_doc !== '' && $numero_doc !== '0') {
+    $nd_esc  = mysqli_real_escape_string($conector, $numero_doc);
+    $for_esc = intval($codigo_fornecedor);
+
+    $ssql = "SELECT a.anexo_id, a.anexo_nome, a.anexo_arquivo, a.anexo_tamanho,
+                    a.anexo_incluido_em, a.anexo_incluido_por
+             FROM tbl_ctp_anexos a
+             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
+             WHERE c.ctp_numero_doc = '$nd_esc'
+               AND c.ctp_codigo_fornecedor = '$for_esc'
+             ORDER BY a.anexo_id ASC";
+
+} elseif ($ctp_id_param > 0) {
+    $ssql = "SELECT anexo_id, anexo_nome, anexo_arquivo, anexo_tamanho,
+                    anexo_incluido_em, anexo_incluido_por
+             FROM tbl_ctp_anexos
+             WHERE anexo_ctp_id = '$ctp_id_param'
+             ORDER BY anexo_id ASC";
+} else {
+    echo '<p class="text-muted" style="padding:10px;">Nenhum documento informado.</p>';
+    exit;
+}
+
+$rs    = mysqli_query($conector, $ssql);
+$total = $rs ? mysqli_num_rows($rs) : 0;
+
+if ($total === 0) {
+    echo '<p class="text-muted" style="padding:10px 0;">Nenhum anexo encontrado para este documento.</p>';
+    mysqli_close($conector);
+    exit;
+}
+
+echo '<ul class="list-group" style="margin-bottom:0;">';
+
+while ($row = mysqli_fetch_object($rs)) {
+    $arquivo  = $row->anexo_arquivo;
+    $is_link  = (stripos($arquivo, 'http://') === 0 || stripos($arquivo, 'https://') === 0);
+
+    if ($is_link) {
+        $href   = htmlspecialchars($arquivo, ENT_QUOTES, 'UTF-8');
+        $icon   = '<i class="fas fa-link" style="color:#5bc0de;margin-right:7px;"></i>';
+        $target = ' target="_blank" rel="noopener noreferrer"';
+        $extra  = '';
+    } else {
+        $href   = '../uploads/ctp/' . rawurlencode($arquivo);
+        $ext    = strtolower(pathinfo($arquivo, PATHINFO_EXTENSION));
+        $inline = ['pdf','jpg','jpeg','png','gif','bmp','webp','svg'];
+        $icon   = '<i class="fas fa-paperclip" style="color:#337ab7;margin-right:7px;"></i>';
+        $target = ' target="_blank" rel="noopener noreferrer"';
+        $extra  = in_array($ext, $inline) ? '' : ' download';
+    }
+
+    $nome     = htmlspecialchars($row->anexo_nome, ENT_QUOTES, 'UTF-8');
+    $incluido = $row->anexo_incluido_em
+                ? date('d/m/Y H:i', strtotime($row->anexo_incluido_em))
+                : '';
+    $por      = htmlspecialchars($row->anexo_incluido_por ?? '', ENT_QUOTES, 'UTF-8');
+
+    echo '<li class="list-group-item" style="padding:9px 14px;border-left:none;border-right:none;">';
+    echo '<a href="' . $href . '"' . $target . $extra . ' style="font-size:13px;">';
+    echo $icon . $nome;
+    echo '</a>';
+    if ($incluido) {
+        echo '<small class="text-muted" style="display:block;font-size:10px;margin-top:3px;">';
+        echo 'Incluído em ' . $incluido . ($por ? ' por <strong>' . $por . '</strong>' : '');
+        echo '</small>';
+    }
+    echo '</li>';
+}
+
+echo '</ul>';
+
+mysqli_close($conector);
