@@ -1067,6 +1067,8 @@ function eratCancelarEdicao(btn) {
     if ($sp.length) {
         try { $sp.selectpicker('destroy'); } catch (e) {}
     }
+    try { $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip('destroy'); } catch (e) {}
+    $('.tooltip').remove();
     $td.html($td.data('orig-html'));
     $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip();
 }
