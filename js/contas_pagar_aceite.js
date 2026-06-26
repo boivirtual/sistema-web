@@ -796,8 +796,13 @@ function _eratRemoveSelectAll(selId) {
     $('#' + selId).closest('.bootstrap-select').find('.bs-actionsbox').css('text-align', 'right');
 }
 
+function _eratTemEditorAberto() {
+    return $('#tbody_erat td .bootstrap-select').length > 0;
+}
+
 // ── Editor inline: Local ──
 function eratEditarLocal(link) {
+    if (_eratTemEditorAberto()) return;
     var $td    = $(link).closest('td');
     var locais = typeof _eratLocais !== 'undefined' ? _eratLocais : [];
     var selId  = 'erat_sel_local_' + Date.now();
