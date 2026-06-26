@@ -3040,7 +3040,7 @@ $data_sistema = date("Y-m-d");
         fixarIconeSelecLocais();
     }
 
-    // ── Confirma CC re-selecionado na fase 3 → abre seletores de Conta por CC ──
+    // ── Confirma CC re-selecionado na fase 3 → preserva CCs existentes, abre editor só para CCs novos ──
     function confirmarCCDoLocalFase3(localId, localNome) {
         var selectId = 'editar_cc_f3_sel_' + String(localId).replace(/\W/g,'_');
         var ccIds = [];
@@ -3062,19 +3062,37 @@ $data_sistema = date("Y-m-d");
             return;
         }
 
-        var $linhasDoLocal = $('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"]');
-        var $insertBefore  = $linhasDoLocal.length > 0 ? $linhasDoLocal.last().next('tr') : $edRow.next('tr');
-        $edRow.remove();
-        $linhasDoLocal.remove();
+        // CCs que foram adicionados e CCs que foram removidos
+        var ccsNovos     = ccIds.filter(function(id) { return ccIdsAntes.indexOf(id) === -1; });
+        var ccsRemovidos = ccIdsAntes.filter(function(id) { return ccIds.indexOf(id) === -1; });
 
+        // Remove apenas as linhas dos CCs que foram desmarcados
+        $.each(ccsRemovidos, function(i, ccId) {
+            $('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"][data-cc-id="' + ccId + '"]').remove();
+        });
+
+        // Ponto de inserção: após os rows existentes do local (que foram mantidos)
+        var $linhasRestantes = $('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"]');
+        var $insertBefore    = $linhasRestantes.length > 0 ? $linhasRestantes.last().next('tr') : $edRow.next('tr');
+        $edRow.remove();
+
+        // Se não há CCs novos, apenas atualiza ícones e encerra
+        if (ccsNovos.length === 0) {
+            fixarIconeSelecLocais();
+            _sincronizarIconesCC();
+            return;
+        }
+
+        // Monta editor de conta apenas para os CCs novos
         var optionsConta = '';
         $.each(contaOpcoes, function(k, ct) {
             optionsConta += '<option value="' + ct.id + '">' + ct.nome + '</option>';
         });
 
-        var localNomeJs = localNome.replace(/'/g,"\\'");
+        var localNomeJs    = localNome.replace(/'/g,"\\'");
+        var temLinhasLocal = $linhasRestantes.length > 0;
         var newRowsHtml = '';
-        $.each(ccIds, function(j, ccId) {
+        $.each(ccsNovos, function(j, ccId) {
             var ccNome = '';
             $.each(ccOpcoes, function(k, cc) { if (String(cc.id) === String(ccId)) { ccNome = cc.nome; return false; } });
             var ccNomeJs = ccNome.replace(/'/g,"\\'");
@@ -3083,7 +3101,7 @@ $data_sistema = date("Y-m-d");
                 ' data-local-id="' + localId + '" data-cc-id="' + ccId + '"' +
                 ' data-local-nome="' + localNome.replace(/"/g,'&quot;') + '" data-cc-nome="' + ccNome.replace(/"/g,'&quot;') + '">' +
                 '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
-                (j === 0 ? '<span class="lbl-parcela">' + localNome + '</span>' : '') + '</td>' +
+                (!temLinhasLocal && j === 0 ? '<span class="lbl-parcela">' + localNome + '</span>' : '') + '</td>' +
                 '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
                 '<span class="lbl-parcela">' + ccNome + '</span></td>' +
                 '<td style="vertical-align:middle;padding:4px 8px;">' +
@@ -3095,7 +3113,7 @@ $data_sistema = date("Y-m-d");
 
         if ($insertBefore.length) { $insertBefore.before(newRowsHtml); } else { $('#tr_rateio_restante').before(newRowsHtml); }
 
-        $.each(ccIds, function(j, ccId) {
+        $.each(ccsNovos, function(j, ccId) {
             var gKey = (localId + '_' + ccId).replace(/\W/g,'_');
             var $s = $('#editar_conta_sel_' + gKey);
             $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
@@ -3107,6 +3125,7 @@ $data_sistema = date("Y-m-d");
         });
 
         fixarIconeSelecLocais();
+        _sincronizarIconesCC();
     }
 
     function editarLocaisRateio() {
