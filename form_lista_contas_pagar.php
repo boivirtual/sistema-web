@@ -545,7 +545,7 @@
                             $icon_anexo = '';
                             if ($tem_anexo) {
                                 $nd_js  = addslashes($numero_doc);
-                                $dd_js  = addslashes($doc_parcela);
+                                $dd_js  = addslashes(!empty($numero_doc) ? (ltrim($numero_doc, '0') ?: '0') : $doc_parcela);
                                 $for_js = intval($codigo_fornecedor);
                                 $id_js  = intval($ctp_id);
                                 $icon_anexo = '<a class="btn" style="font-size:11px;" href="#"'
