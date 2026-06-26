@@ -709,6 +709,7 @@ if ($num_rows_usuario != 0) {
                 <div>
                     <?php
                     include "ajuda.php";
+                    include "modal_anexos.php";
                     ?>
                 </div>
                 <!-- page end-->
