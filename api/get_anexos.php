@@ -51,9 +51,15 @@ if ($total === 0) {
     exit;
 }
 
-echo '<ul class="list-group" style="margin-bottom:0;">';
-
+$rows = [];
 while ($row = mysqli_fetch_object($rs)) {
+    $rows[] = $row;
+}
+$qtd = count($rows);
+
+echo '<ul style="list-style:none;padding:0;margin:0;">';
+
+foreach ($rows as $idx => $row) {
     $arquivo  = $row->anexo_arquivo;
     $is_link  = (stripos($arquivo, 'http://') === 0 || stripos($arquivo, 'https://') === 0);
 
@@ -63,7 +69,7 @@ while ($row = mysqli_fetch_object($rs)) {
         $target = ' target="_blank" rel="noopener noreferrer"';
         $extra  = '';
     } else {
-        $href   = '../uploads/ctp/' . rawurlencode($arquivo);
+        $href   = 'uploads/ctp/' . rawurlencode($arquivo);
         $ext    = strtolower(pathinfo($arquivo, PATHINFO_EXTENSION));
         $inline = ['pdf','jpg','jpeg','png','gif','bmp','webp','svg'];
         $icon   = '<i class="fas fa-paperclip" style="color:#337ab7;margin-right:7px;"></i>';
@@ -76,8 +82,9 @@ while ($row = mysqli_fetch_object($rs)) {
                 ? date('d/m/Y H:i', strtotime($row->anexo_incluido_em))
                 : '';
     $por      = htmlspecialchars($row->anexo_incluido_por ?? '', ENT_QUOTES, 'UTF-8');
+    $borda    = ($idx < $qtd - 1) ? 'border-bottom:1px solid #e8e8e8;' : '';
 
-    echo '<li class="list-group-item" style="padding:9px 14px;border-left:none;border-right:none;">';
+    echo '<li style="padding:9px 14px;' . $borda . '">';
     echo '<a href="' . $href . '"' . $target . $extra . ' style="font-size:13px;">';
     echo $icon . $nome;
     echo '</a>';
