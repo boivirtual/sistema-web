@@ -1037,8 +1037,8 @@ function eratEditarConta(link) {
         '<select id="' + selId + '" class="selectpicker" multiple data-live-search="true"' +
         ' data-width="100%" data-container="body" title="Selecione as contas...">' +
         optConta + '</select></div>' +
-        '<button type="button" class="btn btn-primary btn-xs" onclick="eratConfirmarConta(this)">Confirmar</button>' +
-        '<button type="button" class="btn btn-default btn-xs" onclick="eratCancelarEdicao(this)">Fechar</button>' +
+        '<button type="button" class="btn btn-primary btn-sm" onclick="eratConfirmarConta(this)">Confirmar</button>' +
+        '<button type="button" class="btn btn-default btn-sm" onclick="eratCancelarEdicao(this)">Fechar</button>' +
         '</div>'
     );
     $('#' + selId).selectpicker();
