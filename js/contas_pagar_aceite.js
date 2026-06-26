@@ -936,7 +936,7 @@ function eratEditarCC(link) {
         '</div>'
     );
     $('#' + selId).selectpicker();
-    $('#' + selId).val(currentCcIds).selectpicker('destroy').selectpicker();
+    $('#' + selId).selectpicker('val', currentCcIds);
     _eratRemoveSelectAll(selId);
 }
 
