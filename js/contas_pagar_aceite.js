@@ -1108,11 +1108,8 @@ function eratCancelarEdicao(btn) {
     var $td = $(btn).closest('td');
     var $sp = $td.find('.selectpicker');
     if ($sp.length) {
-        var $bs = $sp.closest('.bootstrap-select');
-        if ($bs.hasClass('open')) {
-            $bs.removeClass('open').trigger('hidden.bs.dropdown');
-        }
         try { $sp.selectpicker('destroy'); } catch (e) {}
+        $('body > .bs-container').remove();
     }
     try { $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip('destroy'); } catch (e) {}
     $('.tooltip').remove();
