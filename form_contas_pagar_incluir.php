@@ -2514,6 +2514,7 @@ $data_sistema = date("Y-m-d");
 
         $('#tbl_rateio [data-toggle="tooltip"]').tooltip();
         fixarIconeSelecLocais();
+        _sincronizarIconesCC();
         recalcularRateio();
     }
 
