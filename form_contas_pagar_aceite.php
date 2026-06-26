@@ -132,12 +132,12 @@
         if (is_array($array_locais_usuario)) {
             foreach ($array_locais_usuario as $v) {
                 if (trim($v) == $r->tbl_pessoa_id) {
-                    $arr_local_rat_js[] = ['id' => $r->tbl_pessoa_id, 'nome' => $r->tbl_pessoa_nome];
+                    $arr_local_rat_js[] = ['id' => (int)$r->tbl_pessoa_id, 'nome' => $r->tbl_pessoa_nome];
                     break;
                 }
             }
         } else {
-            $arr_local_rat_js[] = ['id' => $r->tbl_pessoa_id, 'nome' => $r->tbl_pessoa_nome];
+            $arr_local_rat_js[] = ['id' => (int)$r->tbl_pessoa_id, 'nome' => $r->tbl_pessoa_nome];
         }
     }
 
