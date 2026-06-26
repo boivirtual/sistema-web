@@ -804,8 +804,8 @@ function eratEditarLocal(link) {
 
     var currentLocalIds = [];
     $('#tbody_erat tr.linha-valor-rateio').each(function () {
-        var lid = String($(this).find('.erat-local-id').val());
-        if (lid && currentLocalIds.indexOf(lid) === -1) currentLocalIds.push(lid);
+        var lid = String(parseInt($(this).find('.erat-local-id').val(), 10) || 0);
+        if (lid && lid !== '0' && currentLocalIds.indexOf(lid) === -1) currentLocalIds.push(lid);
     });
 
     var optLocal = '';
