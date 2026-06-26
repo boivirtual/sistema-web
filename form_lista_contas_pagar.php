@@ -313,8 +313,32 @@
                                 . $criterio;
                         }
 
-                        $rs = mysqli_query($conector, $ssql); 
-                               
+                        $rs = mysqli_query($conector, $ssql);
+
+                        // Pré-query: documentos com anexo (lookup O(1) no loop)
+                        $docs_com_anexo  = [];
+                        $ctpids_com_anexo = [];
+                        $rs_anx_docs = mysqli_query($conector,
+                            "SELECT DISTINCT c.ctp_numero_doc, c.ctp_codigo_fornecedor
+                             FROM tbl_ctp_anexos a
+                             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
+                             WHERE c.ctp_numero_doc IS NOT NULL AND c.ctp_numero_doc != ''");
+                        if ($rs_anx_docs) {
+                            while ($ra = mysqli_fetch_object($rs_anx_docs)) {
+                                $docs_com_anexo[$ra->ctp_numero_doc . '|' . $ra->ctp_codigo_fornecedor] = true;
+                            }
+                        }
+                        $rs_anx_ctps = mysqli_query($conector,
+                            "SELECT DISTINCT a.anexo_ctp_id
+                             FROM tbl_ctp_anexos a
+                             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
+                             WHERE c.ctp_numero_doc = '' OR c.ctp_numero_doc IS NULL");
+                        if ($rs_anx_ctps) {
+                            while ($ra = mysqli_fetch_object($rs_anx_ctps)) {
+                                $ctpids_com_anexo[intval($ra->anexo_ctp_id)] = true;
+                            }
+                        }
+
                         $total_geral = 0;
                         $total_pagos = 0;
                         $total_pagos_parcial=0;
