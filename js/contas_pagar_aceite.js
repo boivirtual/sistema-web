@@ -791,6 +791,11 @@ function eratConfirmarLinhaManual(btn) {
     _eratRefreshGrouping();
 }
 
+function _eratRemoveSelectAll(selId) {
+    $('#' + selId).closest('.bootstrap-select').find('.bs-actionsbox .bs-select-all').remove();
+    $('#' + selId).closest('.bootstrap-select').find('.bs-actionsbox').css('text-align', 'right');
+}
+
 // ── Editor inline: Local ──
 function eratEditarLocal(link) {
     var $td    = $(link).closest('td');
