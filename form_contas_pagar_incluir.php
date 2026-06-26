@@ -2776,6 +2776,29 @@ $data_sistema = date("Y-m-d");
         }
     }
 
+    // Garante que o ícone de editar CC aparece apenas na primeira linha de cada local
+    function _sincronizarIconesCC() {
+        var seenLocalIds = {};
+        $('#tbl_rateio tbody tr.linha-valor-rateio').each(function() {
+            var $tr        = $(this);
+            var localId    = String($tr.data('local-id'));
+            var localNome  = String($tr.data('local-nome') || '');
+            var localNomeJs = localNome.replace(/'/g, "\\'");
+            var $ccTd      = $tr.find('td').eq(1);
+            var $ccSpan    = $ccTd.find('span.lbl-parcela');
+            $ccTd.find('a').remove();
+            if ($ccSpan.length && !seenLocalIds[localId]) {
+                $ccSpan.after(
+                    '<a href="#" onclick="editarCCDoLocalFase3(\'' + localId + '\',\'' + localNomeJs + '\');return false;"' +
+                    ' data-toggle="tooltip" data-placement="top" title="Selecionar Centro de Custos"' +
+                    ' style="color:#337ab7;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>'
+                );
+                seenLocalIds[localId] = true;
+            }
+        });
+        $('#tbl_rateio [data-toggle="tooltip"]').tooltip();
+    }
+
     // ── Move botão Confirmar Conta para a última linha-fase2 ──
     function fixarConfirmarContaButton() {
         $('#tbl_rateio tbody tr.linha-fase2 .td-confirmar-conta').html('');
