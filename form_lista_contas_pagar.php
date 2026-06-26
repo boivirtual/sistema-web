@@ -538,6 +538,22 @@
                             $total_a_pagar = $vlr_parcela - $total_pago;
                             $parcela_display = empty($numero_doc) ? $vencimento_edi->format('m/Y') : $numero_parcela;
 
+                            // Ícone de anexo — aparece se o documento tem arquivos/links em tbl_ctp_anexos
+                            $tem_anexo = !empty($numero_doc)
+                                ? isset($docs_com_anexo[$numero_doc . '|' . $codigo_fornecedor])
+                                : isset($ctpids_com_anexo[intval($ctp_id)]);
+                            $icon_anexo = '';
+                            if ($tem_anexo) {
+                                $nd_js  = addslashes($numero_doc);
+                                $dd_js  = addslashes($doc_parcela);
+                                $for_js = intval($codigo_fornecedor);
+                                $id_js  = intval($ctp_id);
+                                $icon_anexo = '<a class="btn" style="font-size:11px;" href="#"'
+                                    . ' onclick="abrirModalAnexos(\'' . $nd_js . '\',' . $for_js . ',' . $id_js . ',\'' . $dd_js . '\');return false;"'
+                                    . ' data-toggle="tooltip" data-placement="left" title="Ver Anexos/Links">'
+                                    . '<i class="fas fa-paperclip" style="color:#337ab7;"></i></a>';
+                            }
+
                             // Define categoria da linha para filtro client-side
                             // Registros sem aceite nunca são "pago" — sempre caem na verificação de data
                             if ($aceite == "S" && ($situacao == "P" || $situacao == "C")) {
