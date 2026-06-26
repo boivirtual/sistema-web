@@ -894,6 +894,7 @@ function eratConfirmarLocal(btn) {
         }
     }
 
+    $('body > .bs-container').remove();
     $anchor.before(newHtml);
     $allRows.remove();
     _eratRefreshGrouping();
