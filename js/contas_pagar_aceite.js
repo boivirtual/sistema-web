@@ -827,6 +827,7 @@ function eratEditarLocal(link) {
     );
     $('#' + selId).selectpicker();
     $('#' + selId).val(currentLocalIds).selectpicker('destroy').selectpicker();
+    _eratRemoveSelectAll(selId);
 }
 
 function eratConfirmarLocal(btn) {
