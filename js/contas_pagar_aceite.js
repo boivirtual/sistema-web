@@ -710,7 +710,8 @@ function _eratRefreshGrouping() {
         var showCC        = showLocal || (String(ln.cc_id) !== String(prevCcId));
         var showConta     = showCC;
         var showLocalIcon = (i === 0);
-        html += _eratGerarLinha(ln, showLocal, showCC, showConta, showLocalIcon);
+        var showCCIcon    = showLocal;
+        html += _eratGerarLinha(ln, showLocal, showCC, showConta, showLocalIcon, showCCIcon);
         prevLocalId = ln.local_id;
         prevCcId    = ln.cc_id;
     }
