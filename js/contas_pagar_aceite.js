@@ -826,7 +826,7 @@ function eratEditarLocal(link) {
         '</div>'
     );
     $('#' + selId).selectpicker();
-    $('#' + selId).val(currentLocalIds).selectpicker('destroy').selectpicker();
+    $('#' + selId).selectpicker('val', currentLocalIds);
     _eratRemoveSelectAll(selId);
 }
 
