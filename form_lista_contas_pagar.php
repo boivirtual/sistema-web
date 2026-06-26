@@ -714,6 +714,7 @@
                                                   >
                                                   <i class="icon_folder_download" data-toggle="tooltip" data-placement="left"  title="Baixar esse registro" ></i>
                                                   </a>';
+                                        echo $icon_anexo;
                                         echo "</div>";
                                     }
                                     echo "</td>";
@@ -786,6 +787,7 @@
                                                   >
                                                   <i class="icon_folder_download" data-toggle="tooltip" data-placement="left"  title="Baixar esse registro" ></i>
                                                   </a>';
+                                        echo $icon_anexo;
                                         echo "</div>";
                                     }
                                     echo "</td>";
