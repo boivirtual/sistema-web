@@ -191,15 +191,12 @@ $(document).ready(function () {
     $('#modal_editar_rateio').on('hide.bs.modal', function () {
         var $sp = $('#tbody_erat .selectpicker');
         if ($sp.length) {
-            var $bs = $sp.closest('.bootstrap-select');
-            if ($bs.hasClass('open')) {
-                $bs.removeClass('open').trigger('hidden.bs.dropdown');
-            }
             try { $sp.selectpicker('destroy'); } catch (e) {}
             var $td = $sp.closest('td');
             var orig = $td.data('orig-html');
             if (orig) $td.html(orig);
         }
+        $('body > .bs-container').remove();
         $('.tooltip').remove();
     });
 
