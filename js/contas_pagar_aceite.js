@@ -912,6 +912,7 @@ function eratEditarCC(link) {
     );
     $('#' + selId).selectpicker();
     $('#' + selId).val(currentCcIds).selectpicker('destroy').selectpicker();
+    _eratRemoveSelectAll(selId);
 }
 
 function eratConfirmarCC(btn) {
