@@ -1015,6 +1015,7 @@ function eratEditarConta(link) {
     );
     $('#' + selId).selectpicker();
     $('#' + selId).val(groupContaIds).selectpicker('destroy').selectpicker();
+    _eratRemoveSelectAll(selId);
 }
 
 function eratConfirmarConta(btn) {
