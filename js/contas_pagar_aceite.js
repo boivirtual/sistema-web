@@ -189,7 +189,7 @@ $(document).ready(function () {
     });
 
     $('#modal_editar_rateio').on('hide.bs.modal', function () {
-        var $sp = $('#tbody_erat .selectpicker');
+        var $sp = $('#tbody_erat').find('.selectpicker');
         if ($sp.length) {
             try { $sp.selectpicker('destroy'); } catch (e) {}
             var $td = $sp.closest('td');
