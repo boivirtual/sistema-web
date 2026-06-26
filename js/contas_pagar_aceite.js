@@ -1042,7 +1042,7 @@ function eratEditarConta(link) {
         '</div>'
     );
     $('#' + selId).selectpicker();
-    $('#' + selId).val(groupContaIds).selectpicker('destroy').selectpicker();
+    $('#' + selId).selectpicker('val', groupContaIds);
     _eratRemoveSelectAll(selId);
 }
 
