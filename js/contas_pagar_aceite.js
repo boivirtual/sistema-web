@@ -886,6 +886,7 @@ function eratConfirmarLocal(btn) {
 
 // ── Editor inline: Centro de Custo ──
 function eratEditarCC(link) {
+    if (_eratTemEditorAberto()) return;
     var $td     = $(link).closest('td');
     var $tr     = $td.closest('tr');
     var localId = String($tr.find('.erat-local-id').val());
