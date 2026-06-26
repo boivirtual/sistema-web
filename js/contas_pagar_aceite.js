@@ -995,6 +995,8 @@ function eratEditarConta(link) {
         }
     }
 
+    try { $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip('destroy'); } catch (e) {}
+    $('.tooltip').remove();
     $td.data('orig-html', $td.html()).html(
         '<select id="' + selId + '" class="selectpicker" multiple data-live-search="true"' +
         ' data-width="100%" data-container="body" title="Selecione as contas...">' +
