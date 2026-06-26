@@ -904,11 +904,12 @@ function eratEditarCC(link) {
     try { $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip('destroy'); } catch (e) {}
     $('.tooltip').remove();
     $td.data('orig-html', $td.html()).html(
+        '<div style="display:flex;align-items:center;gap:4px;width:100%;">' +
+        '<div style="flex:1;min-width:0;">' +
         '<select id="' + selId + '" class="selectpicker" multiple data-live-search="true"' +
         ' data-width="100%" data-container="body" title="Selecione o CC...">' +
-        optCC + '</select>' +
-        '<div style="margin-top:4px;white-space:nowrap;">' +
-        '<button type="button" class="btn btn-primary btn-xs" onclick="eratConfirmarCC(this)">Confirmar</button> ' +
+        optCC + '</select></div>' +
+        '<button type="button" class="btn btn-primary btn-xs" onclick="eratConfirmarCC(this)">Confirmar</button>' +
         '<button type="button" class="btn btn-default btn-xs" onclick="eratCancelarEdicao(this)">Fechar</button>' +
         '</div>'
     );
