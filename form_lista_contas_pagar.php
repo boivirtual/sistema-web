@@ -633,12 +633,14 @@
                                     echo "<td width='19%'>";
                                     echo "<div class='btn-group'>";
                                     echo "<a class='btn' style='font-size: 11px;' href='form_contas_pagar_editar.php?id=".$ctp_id."'><i class='icon_pencil' data-toggle='tooltip' data-placement='left' title='Editar esse registro' ></i></a>";
+                                    echo $icon_anexo;
                                     echo "</div>";
                                 }
                                 else {
                                     echo "<td width='19%'>";
                                     echo "<div class='btn-group'>";
                                     echo "<a class='btn' style='font-size: 11px;' href='form_contas_pagar_editar.php?id=".$ctp_id."'><i class='icon_search' data-toggle='tooltip' data-placement='left' title='Consultar esse registro' ></i></a>";
+                                    echo $icon_anexo;
                                     echo "</div>";
                                 }
                                 echo "</td>";
