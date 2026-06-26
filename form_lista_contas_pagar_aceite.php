@@ -133,6 +133,30 @@
                         $filtros . $order_venc);
                 }
 
+                // Pré-carrega documentos com anexo para ícone na listagem
+                $docs_com_anexo_aceite   = [];
+                $ctpids_com_anexo_aceite = [];
+                $rs_anx_docs = mysqli_query($conector,
+                    "SELECT DISTINCT c.ctp_numero_doc, c.ctp_codigo_fornecedor
+                     FROM tbl_ctp_anexos a
+                     INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
+                     WHERE c.ctp_numero_doc IS NOT NULL AND c.ctp_numero_doc != ''");
+                if ($rs_anx_docs) {
+                    while ($r = mysqli_fetch_object($rs_anx_docs)) {
+                        $docs_com_anexo_aceite[$r->ctp_numero_doc . '|' . $r->ctp_codigo_fornecedor] = true;
+                    }
+                }
+                $rs_anx_ctps = mysqli_query($conector,
+                    "SELECT DISTINCT a.anexo_ctp_id
+                     FROM tbl_ctp_anexos a
+                     INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
+                     WHERE c.ctp_numero_doc = '' OR c.ctp_numero_doc IS NULL");
+                if ($rs_anx_ctps) {
+                    while ($r = mysqli_fetch_object($rs_anx_ctps)) {
+                        $ctpids_com_anexo_aceite[intval($r->anexo_ctp_id)] = true;
+                    }
+                }
+
                 while ($fila = mysqli_fetch_object($rs)) {
                     $ctp_id          = $fila->ctp_id;
                     $data_emissao    = new DateTime($fila->ctp_data_emissao);
