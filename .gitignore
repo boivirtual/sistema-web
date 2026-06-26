@@ -1,0 +1,19 @@
+# Arquivos de conexão e credenciais - NUNCA enviar ao GitHub
+conecta_mysql.inc
+conecta_mysql*.inc
+valida_sessao.inc
+*.env
+config.php
+
+# Pastas desnecessárias
+vendor-copia/
+planilhas_excel - Copia/
+phpmailer - Copia/
+vendor - Copia/
+
+# Arquivos temporários
+*.tmp
+*.log
+*.bak
+Thumbs.db
+.DS_Store
