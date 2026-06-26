@@ -990,6 +990,7 @@ function eratConfirmarCC(btn) {
         }
     }
 
+    $('body > .bs-container').remove();
     $anchor.before(newHtml);
     $groupRows.remove();
     _eratRefreshGrouping();
