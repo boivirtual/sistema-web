@@ -2296,9 +2296,9 @@ $data_sistema = date("Y-m-d");
             if (showCC) {
                 html += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
                     '<span class="lbl-parcela">' + ln.ccNome + '</span>' +
-                    ' <a href="#" onclick="editarCCDoLocalFase3(\'' + ln.localId + '\',\'' + localNomeJs + '\');return false;"' +
+                    (showLocal ? ' <a href="#" onclick="editarCCDoLocalFase3(\'' + ln.localId + '\',\'' + localNomeJs + '\');return false;"' +
                     ' data-toggle="tooltip" data-placement="top" title="Selecionar Centro de Custos"' +
-                    ' style="color:#337ab7;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>' +
+                    ' style="color:#337ab7;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>' : '') +
                     '<input type="hidden" name="rat2_cc_id[]" value="' + ln.ccId + '">' +
                     '<input type="hidden" name="rat2_cc_nome[]" value="' + ln.ccNome + '">' +
                     '</td>';
