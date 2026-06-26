@@ -1109,8 +1109,8 @@ function eratCancelarEdicao(btn) {
     var $sp = $td.find('.selectpicker');
     if ($sp.length) {
         try { $sp.selectpicker('destroy'); } catch (e) {}
-        $('body > .bs-container').remove();
     }
+    $('body > .bs-container').remove();
     try { $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip('destroy'); } catch (e) {}
     $('.tooltip').remove();
     $td.html($td.data('orig-html'));
