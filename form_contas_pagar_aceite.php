@@ -387,6 +387,7 @@
             <div>
                 <?php
                     include "ajuda.php";
+                    include "modal_anexos.php";
                 ?>
             </div>
 
