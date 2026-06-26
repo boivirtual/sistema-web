@@ -606,7 +606,8 @@
                                 echo "<td width='19%'>";
                                 echo "<div class='btn-group'>";
                                 echo "<a class='btn' style='font-size: 11px;' href='form_contas_pagar_editar.php?id=".$ctp_id."'><i class='icon_pencil' data-toggle='tooltip' data-placement='right' title='Editar esse registro' ></i></a>";
-                                echo "<a class='btn' style='font-size: 11px;' href='#'><i class='icon_trash_alt' data-toggle='tooltip' data-placement='right' title='Excluir esse registro' onClick='enviar_lixeira(\"{$ctp_id}\",\"{$doc_parcela}\",\"{$numero_parcela}\",1)' ></i></a>"; 
+                                echo "<a class='btn' style='font-size: 11px;' href='#'><i class='icon_trash_alt' data-toggle='tooltip' data-placement='right' title='Excluir esse registro' onClick='enviar_lixeira(\"{$ctp_id}\",\"{$doc_parcela}\",\"{$numero_parcela}\",1)' ></i></a>";
+                                echo $icon_anexo;
                                 echo "</div>";
                                 echo "</td>";
                             }
