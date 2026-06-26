@@ -406,10 +406,11 @@ var _eratContas = <?php echo json_encode($arr_conta_rat_js, JSON_UNESCAPED_UNICO
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><i class="fas fa-edit" style="color:#337ab7;margin-right:6px;"></i>Editar Rateio &mdash; <span id="erat_titulo_doc" style="font-size:13px;font-weight:400;"></span></h4>
+                <h4 class="modal-title"><i class="fas fa-edit" style="color:#337ab7;margin-right:6px;"></i>Editar Rateio</h4>
             </div>
             <div class="modal-body" id="erat_body" style="padding:10px 16px;">
                 <div id="erat_aviso" class="alert alert-danger" style="display:none;margin-bottom:8px;"></div>
+                <p id="erat_titulo_doc" style="margin:0 0 10px 0;font-size:14px;color:#333;"></p>
                 <div style="overflow-x:auto;">
                     <table class="tbl-parcelas" id="tbl_erat">
                         <colgroup>
