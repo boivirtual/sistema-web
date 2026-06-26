@@ -1178,13 +1178,27 @@ function abrirEditarRateio(ctp_id) {
     });
 }
 
+// ── Máscara monetária estilo calculadora (dígitos empurram da direita) ──
+function _eratMaskMoney() {
+    var el = this;
+    setTimeout(function () {
+        var v = el.value.replace(/\D/g, '');
+        v = String(Number(v));
+        var len = v.length;
+        if (len === 1) v = v.replace(/(\d)/, '0.0$1');
+        else if (len === 2) v = v.replace(/(\d)/, '0.$1');
+        else v = v.replace(/(\d{2})$/, '.$1');
+        el.value = v;
+    }, 1);
+}
+
 // ── Handlers de teclado e blur para rat-valor e rat-perc ──
 $(document).on('keypress', '#tbl_erat .rat-valor', function (e) {
     var c = e.which;
     if (c === 0 || c === 8) return true;
-    if (c === 44) { return $(this).val().indexOf(',') === -1; }
     if (c < 48 || c > 57) return false;
     if (_eratModo !== 'valor') _eratSetModo('valor');
+    _eratMaskMoney.call(this);
     return true;
 });
 $(document).on('blur', '#tbl_erat .rat-valor', function () {
@@ -1205,6 +1219,19 @@ $(document).on('blur', '#tbl_erat .rat-perc', function () {
     var n   = parseFloat(raw) || 0;
     $(this).val(n > 0 ? n.toFixed(2).replace('.', ',') + '%' : '');
     eratRecalcular();
+});
+
+// ── Enter navega como Tab nos campos de valor/% do rateio ──
+$(document).on('keydown', '#tbl_erat input.rat-valor, #tbl_erat input.rat-perc', function (e) {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    $(this).trigger('blur');
+    var $inputs = $('#tbl_erat').find('input.rat-valor, input.rat-perc')
+        .filter(':not([readonly]):not([disabled])').filter(':visible');
+    var idx = $inputs.index(this);
+    if (idx >= 0 && idx < $inputs.length - 1) {
+        $inputs.eq(idx + 1).focus();
+    }
 });
 
 // ── Salvar rateio ──
