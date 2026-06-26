@@ -810,8 +810,9 @@ function eratEditarLocal(link) {
 
     var optLocal = '';
     for (var i = 0; i < locais.length; i++) {
-        var sel = currentLocalIds.indexOf(String(locais[i].id)) !== -1 ? ' selected' : '';
-        optLocal += '<option value="' + locais[i].id + '"' + sel + '>' + locais[i].nome + '</option>';
+        var locId = String(parseInt(locais[i].id, 10) || 0);
+        var sel = currentLocalIds.indexOf(locId) !== -1 ? ' selected' : '';
+        optLocal += '<option value="' + locId + '"' + sel + '>' + locais[i].nome + '</option>';
     }
 
     try { $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip('destroy'); } catch (e) {}
