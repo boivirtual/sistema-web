@@ -402,7 +402,7 @@ var _eratContas = <?php echo json_encode($arr_conta_rat_js, JSON_UNESCAPED_UNICO
 
 <!-- Modal: Editar Rateio -->
 <div class="modal fade" id="modal_editar_rateio" tabindex="-1" role="dialog" data-backdrop="static">
-    <div class="modal-dialog" style="width:96%;max-width:1100px;" role="document">
+    <div class="modal-dialog" style="margin-left:215px;margin-right:15px;width:auto;max-width:1000px;" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
