@@ -305,6 +305,7 @@
                         echo "<td width='12%'>" . $vlr_display . $icon_rateio . "</td>";
                         echo "<td width='19%' style='font-size: 10px;'>" . $descricao_compra . "</td>";
                         echo "<td width='10%'>" . $desc_situacao . "</td>";
+                        echo "<td width='3%'>" . $icon_anexo . "</td>";
                         echo "</tr>";
 
                         $chave_anterior = $registro;
@@ -321,6 +322,7 @@
                         echo "<td width='12%'>" . $vlr_display . "</td>";
                         echo "<td></td>";
                         echo "<td width='10%'>" . $desc_situacao . "</td>";
+                        echo "<td width='3%'>" . $icon_anexo . "</td>";
                         echo "</tr>";
                     }
                 }
