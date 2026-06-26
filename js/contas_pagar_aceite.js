@@ -657,10 +657,11 @@ function _eratGerarLinha(ln, showLocal, showCC, showConta, showLocalIcon, showCC
 
     // Col Conta
     if (showConta) {
-        tr += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
-            '<span class="lbl-parcela">' + contaNome + '</span>' +
-            ' <a href="#" onclick="eratEditarConta(this);return false;"' +
-            ' style="color:#337ab7;font-size:11px;margin-left:4px;" data-toggle="tooltip" title="Selecionar Conta Contábil"><i class="fas fa-pen"></i></a>' +
+        tr += '<td style="vertical-align:middle;padding:4px 8px;">' +
+            '<div style="display:flex;align-items:center;gap:4px;">' +
+            '<span class="lbl-parcela" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + contaNome + '</span>' +
+            '<a href="#" onclick="eratEditarConta(this);return false;" style="flex-shrink:0;color:#337ab7;font-size:11px;" data-toggle="tooltip" title="Selecionar Conta Contábil"><i class="fas fa-pen"></i></a>' +
+            '</div>' +
             '<input type="hidden" class="erat-conta-id"   value="' + contaId   + '">' +
             '<input type="hidden" class="erat-conta-nome" value="' + contaNome + '">' +
             '</td>';
