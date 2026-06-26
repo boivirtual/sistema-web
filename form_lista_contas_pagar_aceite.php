@@ -375,6 +375,7 @@
                 <th>Valor</th>
                 <th>Descrição</th>
                 <th>Pgto</th>
+                <th></th>
             </tr>
         </thead>
         <tfoot>
