@@ -527,14 +527,7 @@ function limpar_filtros_tela_inicial() {
     });
 }
 
-/* ================================================================
-   EDITOR DE RATEIO — funções (contas_pagar_aceite.js)
-   ================================================================ */
-
-var _eratCtpId            = 0;
-var _eratPrimeiroCtp      = 0;
-var _eratValorTotal       = 0;
-var _eratModo             = null; // null | 'valor' | 'perc'
+/* As funções do Editor de Rateio estão em js/rateio_editor.js */
 
 function _eratFmtMoney(n) {
     n = parseFloat(n) || 0;
