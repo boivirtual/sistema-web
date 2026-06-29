@@ -403,7 +403,14 @@
                                             <div class="row m-bot15">
                                                 <div class="col-md-12">
                                                   <label for="descricao_compra" class="control-label"><span class="required">*</span>Descrição da Compra</label>
-                                                  <textarea name="descricao_compra" type="text" class="form-control" id="descricao_compra" rows="3" onkeyup="maiuscula(this)"><?php echo $descricao_compra; ?></textarea>
+                                                  <textarea name="descricao_compra" type="text" class="form-control" id="descricao_compra" rows="1" onkeyup="maiuscula(this)"><?php echo $descricao_compra; ?></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="row m-bot15">
+                                                <div class="col-md-12">
+                                                  <label for="observacoes" class="control-label">Observação</label>
+                                                  <textarea name="observacoes" class="form-control" id="observacoes" rows="2"><?php echo htmlspecialchars($observacoes_ctp ?? ''); ?></textarea>
                                                 </div>
                                             </div>
 
