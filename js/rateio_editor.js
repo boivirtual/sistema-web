@@ -485,10 +485,9 @@ function eratConfirmarCC(btn) {
     var currentLocalId = String($tr.attr('data-local-id') || $tr.find('.erat-local-id').val() || '');
     var localNm        = $tr.attr('data-local-nome') || $tr.find('.erat-local-nome').val() || '';
 
-    // CCs que estavam selecionados ANTES do usuário abrir o editor
-    var origCids = ($sel.attr('data-orig-cids') || '').split(',').filter(Boolean);
+    // CCs que estavam na tabela ANTES do usuário abrir o editor (gravados em _eratOrigCcIds)
     var origCidSet = {};
-    for (var i = 0; i < origCids.length; i++) origCidSet[origCids[i]] = true;
+    for (var i = 0; i < _eratOrigCcIds.length; i++) origCidSet[_eratOrigCcIds[i]] = true;
 
     var allCcRows = {};
     $('#tbody_erat tr.linha-valor-rateio:not(.linha-nova-conta)').each(function () {
