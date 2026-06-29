@@ -1,4 +1,4 @@
-<?php
+﻿<?php
     include "valida_sessao.inc";
     include "conecta_mysql.inc";
  ?>
@@ -468,6 +468,24 @@
                                                 </div>
                                             </div>
 
+                                            <div class="row" style="margin-top:2px;margin-bottom:6px;">
+                                                <div class="col-md-12">
+                                                    <?php
+                                                        $nd_js_ed  = addslashes($numero_ctp);
+                                                        $for_js_ed = intval($codigo_fornecedor);
+                                                        $id_js_ed  = intval($chave_ctp);
+                                                        $auto_inp  = ($qtd_anexos == 0) ? 'true' : 'false';
+                                                    ?>
+                                                    <a href="#" onclick="abrirModalAnexos('<?= $nd_js_ed ?>',<?= $for_js_ed ?>,<?= $id_js_ed ?>,'<?= $nd_js_ed ?>',<?= $auto_inp ?>); return false;"
+                                                       style="font-size:0.9em;font-weight:500;color:#128cb8;">
+                                                        <i class="fas fa-paperclip"></i> Anexos
+                                                        <?php if ($qtd_anexos > 0): ?>
+                                                        <span style="font-size:11px;color:#888;font-weight:400;">(<?= $qtd_anexos ?>)</span>
+                                                        <?php endif; ?>
+                                                    </a>
+                                                </div>
+                                            </div>
+
 											<hr>
 
                                             <div class="row">
@@ -702,7 +720,9 @@ while ($reg_conta_pag = mysqli_fetch_object($conta_pagamento)) {
     </section><!--main-content -->
 
 
-<?php 
+<?php include "modal_anexos.php"; ?>
+
+<?php
   $javascript_file_name = 'contas_pagar.js';
   require 'rodape.php';
 ?>
