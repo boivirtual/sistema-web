@@ -687,7 +687,10 @@ $(document).ready(function(){
     // grava ctp na edição
     $('.confirma_gravar_ctp').click(function(){
         $("#errors").html('');
- 
+
+        var $btn = $(this);
+        $btn.prop('disabled', true);
+
         var dados = $('#form_gravar_contas_pagar').serialize();
 
         $.ajax({
@@ -696,14 +699,32 @@ $(document).ready(function(){
             data:     dados,
             dataType: 'json',
             success: function(data){
+                $btn.prop('disabled', false);
                 if (data.error) {
                     $("#mensagem_erro").modal();
-                    $("#mensagem_erro .modal-body").html(data.message);
-                }
-                else {
+                    $("#mensagem_erro .modal-body").html(data.message || 'Erro ao salvar.');
+                } else {
                     $("#mensagem_retorno").modal();
-                    $("#mensagem_retorno .modal-body").html(data.message);
+                    $("#mensagem_retorno .modal-body").html(data.message || 'Conta alterada com sucesso.');
                 }
+            },
+            error: function(xhr) {
+                $btn.prop('disabled', false);
+                try {
+                    var resp = JSON.parse(xhr.responseText);
+                    if (resp && resp.success) {
+                        $("#mensagem_retorno").modal();
+                        $("#mensagem_retorno .modal-body").html(resp.message || 'Conta alterada com sucesso.');
+                        return;
+                    }
+                    if (resp && resp.error) {
+                        $("#mensagem_erro").modal();
+                        $("#mensagem_erro .modal-body").html(resp.message || 'Erro ao salvar.');
+                        return;
+                    }
+                } catch(e) {}
+                $("#mensagem_erro").modal();
+                $("#mensagem_erro .modal-body").html('Erro ao comunicar com o servidor. Tente novamente.');
             }
         });
     });
