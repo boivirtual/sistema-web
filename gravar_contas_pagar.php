@@ -1020,6 +1020,9 @@ ob_start(function($buffer) {
     }
 
 	if ($tipo_operacao==2) {
+		// Quando a conta tem rateio, Local/CC/Conta devem permanecer NULL no banco
+		$rateio_existente_ed = !empty($_POST['rateio_existente']) && $_POST['rateio_existente'] === '1';
+
 		if (empty($_POST['vlr_parcela'])) {
 			$vlr_parcela = 0.00;
 		}
