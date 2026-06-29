@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 	 function sonumero($str) {
 		return preg_replace("/[^0-9]/", "", $str);
 	}
@@ -1069,7 +1069,8 @@
 	            ctp_descricao_outro_valor='$desc_acrescimo',
 	            ctp_alterado_em='$data_sistema',
 	            ctp_alterado_por='$nomeusuario',
-	            ctp_descricao_compra='$descricao_compra'
+	            ctp_descricao_compra='$descricao_compra',
+	            ctp_observacoes='". mysqli_real_escape_string($conector, $observacoes) ."'
 	            WHERE ctp_id='$ctp_id'";
 	    $resultado = mysqli_query($conector,$sql);
 		$erro_mysql = mysqli_error($conector);
