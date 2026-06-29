@@ -370,12 +370,16 @@ function eratConfirmarLocal(btn) {
         return;
     }
 
+    // IDs que estavam selecionados ANTES do usuário abrir o editor
+    var origLids = ($sel.attr('data-orig-lids') || '').split(',').filter(Boolean);
+    var origLidSet = {};
+    for (var i = 0; i < origLids.length; i++) origLidSet[origLids[i]] = true;
+
     var allLocalRows = {};
-    var localOrder   = [];
     $('#tbody_erat tr.linha-valor-rateio:not(.linha-nova-conta)').each(function () {
         var lid = String($(this).attr('data-local-id') || $(this).find('.erat-local-id').val() || '');
         if (!lid || lid === '0') return;
-        if (!allLocalRows[lid]) { allLocalRows[lid] = []; localOrder.push(lid); }
+        if (!allLocalRows[lid]) allLocalRows[lid] = [];
         allLocalRows[lid].push({
             cc_id:       $(this).find('.erat-cc-id').val(),
             cc_nome:     $(this).find('.erat-cc-nome').val(),
@@ -400,7 +404,8 @@ function eratConfirmarLocal(btn) {
     for (var l = 0; l < selectedIds.length; l++) {
         var newLocalId = selectedIds[l];
         var newLocalNm = localNames[newLocalId];
-        var rows = allLocalRows[newLocalId] || null;
+        // Só preserva dados se o local JÁ ESTAVA selecionado quando o editor foi aberto
+        var rows = origLidSet[newLocalId] ? (allLocalRows[newLocalId] || null) : null;
         if (rows && rows.length > 0) {
             for (var r = 0; r < rows.length; r++) {
                 var ln = $.extend({}, rows[r]);
