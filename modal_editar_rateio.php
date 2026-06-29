@@ -73,7 +73,8 @@ while ($r = mysqli_fetch_object($rs_cta_erat)) {
     #tbl_erat .bootstrap-select > .dropdown-toggle { height: 30px; font-size: 12px; padding: 4px 8px; }
 
     /* Dropdown do rateio (bs-container vai para body): min 230px, max 380px */
-    body > .bs-container .dropdown-menu { min-width: 230px !important; max-width: 380px !important; }
+    body > .bs-container { min-width: 230px !important; }
+    body > .bs-container .dropdown-menu { max-width: 380px !important; overflow-x: hidden; }
     body > .bs-container .dropdown-menu li a span.text { white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis; display: block; }
 
     /* Tabela de rateio */
