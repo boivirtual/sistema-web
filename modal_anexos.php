@@ -42,29 +42,27 @@
 </div>
 
 <script>
-/**
- * Abre o modal de anexos/links para um documento.
- *
- * @param {string} numero_doc        Número do documento
- * @param {number} codigo_fornecedor Código do fornecedor
- * @param {number} ctp_id            ID da parcela (fallback)
- * @param {string} doc_display       Texto exibido no header do modal
- */
+var _ctpAnexosParams = {};
+
 function abrirModalAnexos(numero_doc, codigo_fornecedor, ctp_id, doc_display) {
+    _ctpAnexosParams = { numero_doc: numero_doc, codigo_fornecedor: codigo_fornecedor, ctp_id: ctp_id, doc_display: doc_display };
     $('#modal_anexos_doc').text('— Documento: ' + doc_display);
+    $('#modal_anexos').modal('show');
+    _carregarAnexos();
+}
+
+function _carregarAnexos() {
     $('#modal_anexos_body').html(
         '<p class="text-center text-muted" style="padding:20px 0;">' +
         '<i class="fas fa-spinner fa-spin"></i> Carregando...</p>'
     );
-    $('#modal_anexos').modal('show');
-
     $.ajax({
         type: 'GET',
         url:  'api/get_anexos.php',
         data: {
-            numero_doc:        numero_doc,
-            codigo_fornecedor: codigo_fornecedor,
-            ctp_id:            ctp_id
+            numero_doc:        _ctpAnexosParams.numero_doc,
+            codigo_fornecedor: _ctpAnexosParams.codigo_fornecedor,
+            ctp_id:            _ctpAnexosParams.ctp_id
         },
         success: function (html) {
             $('#modal_anexos_body').html(html);
@@ -77,4 +75,27 @@ function abrirModalAnexos(numero_doc, codigo_fornecedor, ctp_id, doc_display) {
         }
     });
 }
+
+$(document).on('click', '.btn-excluir-anexo', function () {
+    var id   = $(this).data('id');
+    var nome = $(this).data('nome');
+    if (!confirm('Deseja excluir o anexo/link:\n"' + nome + '"?')) return;
+
+    $.ajax({
+        type:     'POST',
+        url:      'api/excluir_anexo.php',
+        data:     { anexo_id: id },
+        dataType: 'json',
+        success: function (resp) {
+            if (resp.ok) {
+                _carregarAnexos();
+            } else {
+                alert('Erro: ' + (resp.msg || 'Não foi possível excluir.'));
+            }
+        },
+        error: function () {
+            alert('Erro ao comunicar com o servidor.');
+        }
+    });
+});
 </script>
