@@ -484,14 +484,18 @@ function eratConfirmarCC(btn) {
     var currentLocalId = String($tr.attr('data-local-id') || $tr.find('.erat-local-id').val() || '');
     var localNm        = $tr.attr('data-local-nome') || $tr.find('.erat-local-nome').val() || '';
 
+    // CCs que estavam selecionados ANTES do usuário abrir o editor
+    var origCids = ($sel.attr('data-orig-cids') || '').split(',').filter(Boolean);
+    var origCidSet = {};
+    for (var i = 0; i < origCids.length; i++) origCidSet[origCids[i]] = true;
+
     var allCcRows = {};
-    var ccOrder   = [];
     $('#tbody_erat tr.linha-valor-rateio:not(.linha-nova-conta)').each(function () {
         var lid = String($(this).attr('data-local-id') || $(this).find('.erat-local-id').val() || '');
         if (lid !== currentLocalId) return;
         var cid = String($(this).attr('data-cc-id') || $(this).find('.erat-cc-id').val() || '');
         if (!cid || cid === '0') return;
-        if (!allCcRows[cid]) { allCcRows[cid] = []; ccOrder.push(cid); }
+        if (!allCcRows[cid]) allCcRows[cid] = [];
         allCcRows[cid].push({
             conta_id:    $(this).find('.erat-conta-id').val(),
             conta_nome:  $(this).find('.erat-conta-nome').val(),
@@ -515,7 +519,8 @@ function eratConfirmarCC(btn) {
     for (var l = 0; l < selectedIds.length; l++) {
         var newCcId = selectedIds[l];
         var newCcNm = ccNames[newCcId];
-        var rows = allCcRows[newCcId] || null;
+        // Só preserva dados se o CC JÁ ESTAVA selecionado quando o editor foi aberto
+        var rows = origCidSet[newCcId] ? (allCcRows[newCcId] || null) : null;
         if (rows && rows.length > 0) {
             for (var r = 0; r < rows.length; r++) {
                 var ln = $.extend({}, rows[r]);
