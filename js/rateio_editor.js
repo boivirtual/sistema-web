@@ -12,7 +12,7 @@ var _eratCallbackPosSalvar = null;
 // ter calculado/aplicado o offsetWidth do botão como largura inline.
 // Chamado no evento shown.bs.select — roda depois que o plugin posicionou tudo.
 function _eratFixDropdownPos() {
-    var $c = $('.bs-container.open');
+    var $c = $('body > .bs-container');
     if (!$c.length) return;
     // Sobrescreve a largura inline que o plugin calculou com um valor fixo legível
     $c.css('width', '260px');
