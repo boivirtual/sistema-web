@@ -372,10 +372,9 @@ function eratConfirmarLocal(btn) {
         return;
     }
 
-    // IDs que estavam selecionados ANTES do usuário abrir o editor
-    var origLids = ($sel.attr('data-orig-lids') || '').split(',').filter(Boolean);
+    // IDs que estavam na tabela ANTES do usuário abrir o editor (gravados em _eratOrigLocalIds)
     var origLidSet = {};
-    for (var i = 0; i < origLids.length; i++) origLidSet[origLids[i]] = true;
+    for (var i = 0; i < _eratOrigLocalIds.length; i++) origLidSet[_eratOrigLocalIds[i]] = true;
 
     var allLocalRows = {};
     $('#tbody_erat tr.linha-valor-rateio:not(.linha-nova-conta)').each(function () {
