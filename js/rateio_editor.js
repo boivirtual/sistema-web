@@ -708,10 +708,10 @@ function eratConfirmarNovaContaLocal(btn) {
         return;
     }
 
-    var localId = String($tr.find('.erat-local-id').val());
-    var localNm = $tr.find('.erat-local-nome').val();
-    var ccId    = String($tr.find('.erat-cc-id').val());
-    var ccNm    = $tr.find('.erat-cc-nome').val();
+    var localId = String($tr.attr('data-local-id') || $tr.find('.erat-local-id').val() || '');
+    var localNm = $tr.attr('data-local-nome')     || $tr.find('.erat-local-nome').val() || '';
+    var ccId    = String($tr.attr('data-cc-id')   || $tr.find('.erat-cc-id').val()    || '');
+    var ccNm    = $tr.attr('data-cc-nome')         || $tr.find('.erat-cc-nome').val()   || '';
 
     var newHtml = '';
     for (var i = 0; i < selectedIds.length; i++) {
