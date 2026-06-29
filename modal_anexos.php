@@ -53,24 +53,32 @@
                 <!-- Seção: adicionar novos anexos/links -->
                 <div id="modal_ma_area" style="padding:4px 0 0 0;">
                     <hr style="margin:10px 0 8px 0;">
-                    <div style="display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;">
-                        <div>
-                            <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">Anexar Documento</label>
-                            <div style="display:flex;align-items:center;gap:6px;">
-                                <input type="file" id="modal_ma_file_0" class="form-control ma-file-input" style="max-width:280px;">
-                                <button type="button" class="btn-ma-add" onclick="_maAdicionarArquivo()" data-toggle="tooltip" data-placement="top" title="Adicionar mais documentos">
-                                    <i class="far fa-plus-square"></i>
+
+                    <a href="#" id="modal_ma_toggle" onclick="_maAbrirInputs(); return false;"
+                       style="font-size:0.9em;font-weight:500;color:#128cb8;">
+                        <i class="fa fa-plus"></i> Anexos
+                    </a>
+
+                    <div id="modal_ma_inputs" style="display:none;">
+                        <div style="display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-top:6px;">
+                            <div>
+                                <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">Anexar Documento</label>
+                                <div style="display:flex;align-items:center;gap:6px;">
+                                    <input type="file" id="modal_ma_file_0" class="form-control ma-file-input" style="max-width:280px;">
+                                    <button type="button" class="btn-ma-add" onclick="_maAdicionarArquivo()" data-toggle="tooltip" data-placement="top" title="Adicionar mais documentos">
+                                        <i class="far fa-plus-square"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">Anexar Link</label>
+                                <button type="button" class="btn-ma-add" onclick="_maAdicionarLink()" data-toggle="tooltip" data-placement="top" title="Adicionar link">
+                                    <i class="fas fa-link"></i>
                                 </button>
                             </div>
                         </div>
-                        <div>
-                            <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">Anexar Link</label>
-                            <button type="button" class="btn-ma-add" onclick="_maAdicionarLink()" data-toggle="tooltip" data-placement="top" title="Adicionar link">
-                                <i class="fas fa-link"></i>
-                            </button>
-                        </div>
+                        <div id="modal_ma_extra"></div>
                     </div>
-                    <div id="modal_ma_extra"></div>
                 </div>
 
             </div>
