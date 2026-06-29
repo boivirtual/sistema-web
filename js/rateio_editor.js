@@ -446,6 +446,7 @@ function eratEditarCC(link) {
         var cid = String($(this).attr('data-cc-id') || $(this).find('.erat-cc-id').val() || '');
         if (cid && cid !== '0' && currentCcIds.indexOf(cid) === -1) currentCcIds.push(cid);
     });
+    _eratOrigCcIds = currentCcIds.slice(); // guarda cópia dos IDs originais
 
     var optCC = '';
     for (var i = 0; i < ccs.length; i++) {
@@ -459,7 +460,6 @@ function eratEditarCC(link) {
         '<div style="display:flex;align-items:center;gap:4px;width:100%;">' +
         '<div style="flex:1;min-width:0;">' +
         '<select id="' + selId + '" class="selectpicker" multiple data-live-search="true"' +
-        ' data-orig-cids="' + currentCcIds.join(',') + '"' +
         ' data-width="100%" data-container="body" title="Selecione o CC...">' +
         optCC + '</select></div>' +
         '<button type="button" class="btn btn-primary btn-sm" onclick="eratConfirmarCC(this)">Confirmar</button>' +
