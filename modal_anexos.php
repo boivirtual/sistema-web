@@ -132,6 +132,7 @@ function abrirModalAnexos(numero_doc, codigo_fornecedor, ctp_id, doc_display, ab
     }
 
     $('#modal_anexos_doc').text('— Documento: ' + doc_display);
+    if (abrirInputs) { _maAbrirInputs(); } else { _maResetar(); }
     $('#modal_anexos').modal('show');
     _carregarAnexos();
 }
