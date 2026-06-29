@@ -414,16 +414,16 @@ function eratEditarCC(link) {
     if (_eratTemEditorAberto()) return;
     var $td     = $(link).closest('td');
     var $tr     = $td.closest('tr');
-    var localId = String($tr.find('.erat-local-id').val());
+    var localId = String($tr.attr('data-local-id') || $tr.find('.erat-local-id').val() || '');
     var ccs     = typeof _eratCC !== 'undefined' ? _eratCC : [];
     var selId   = 'erat_sel_cc_' + Date.now();
 
     var currentCcIds = [];
     $('#tbody_erat tr.linha-valor-rateio').each(function () {
-        if (String($(this).find('.erat-local-id').val()) === localId) {
-            var cid = String($(this).find('.erat-cc-id').val());
-            if (cid && currentCcIds.indexOf(cid) === -1) currentCcIds.push(cid);
-        }
+        var lid = String($(this).attr('data-local-id') || $(this).find('.erat-local-id').val() || '');
+        if (lid !== localId) return;
+        var cid = String($(this).attr('data-cc-id') || $(this).find('.erat-cc-id').val() || '');
+        if (cid && cid !== '0' && currentCcIds.indexOf(cid) === -1) currentCcIds.push(cid);
     });
 
     var optCC = '';
