@@ -1377,6 +1377,12 @@ function eratSalvar() {
             return false;
         }
 
+        if ($tr.hasClass('linha-nova-conta')) {
+            valido = false;
+            $('#erat_aviso').text('Clique em "Confirmar" para selecionar a conta contábil antes de salvar.').show();
+            return false;
+        }
+
         var localId   = $tr.find('.erat-local-id').val()   || '';
         var localNome = $tr.find('.erat-local-nome').val() || '';
         var ccId      = $tr.find('.erat-cc-id').val()      || '';
