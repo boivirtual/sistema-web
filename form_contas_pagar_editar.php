@@ -120,7 +120,11 @@
 
     $tipos_documentos = mysqli_query($conector, "select * from tbl_tipo_documento where tbl_tipo_doc_lixeira=0"); 
 
-    $tbl_local = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0"); 
+    $tbl_local = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0");
+
+    $rs_qtd_an = mysqli_query($conector, "SELECT COUNT(*) as qtd FROM tbl_ctp_anexos WHERE anexo_ctp_id = '$chave_ctp'");
+    $row_qtd_an = $rs_qtd_an ? mysqli_fetch_object($rs_qtd_an) : null;
+    $qtd_anexos = $row_qtd_an ? (int)$row_qtd_an->qtd : 0;
 
     $codigo_usuario = $_SESSION['id_usuario'];
 
