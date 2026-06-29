@@ -872,7 +872,9 @@ function eratConfirmarLocal(btn) {
     var allLocalRows = {};
     var localOrder   = [];
     $('#tbody_erat tr.linha-valor-rateio:not(.linha-nova-conta)').each(function () {
-        var lid = String($(this).find('.erat-local-id').val());
+        // Usa data-local-id do <tr> pois o hidden input pode ter sido removido pelo editor inline
+        var lid = String($(this).attr('data-local-id') || $(this).find('.erat-local-id').val() || '');
+        if (!lid || lid === '0') return;
         if (!allLocalRows[lid]) { allLocalRows[lid] = []; localOrder.push(lid); }
         allLocalRows[lid].push({
             cc_id:       $(this).find('.erat-cc-id').val(),
