@@ -72,13 +72,9 @@ while ($r = mysqli_fetch_object($rs_cta_erat)) {
     #tbl_erat .bootstrap-select { width: 100% !important; }
     #tbl_erat .bootstrap-select > .dropdown-toggle { height: 30px; font-size: 12px; padding: 4px 8px; }
 
-    /* Permite que os dropdowns dos selectpickers apareçam sem ser cortados pelo modal */
-    #modal_editar_rateio .modal-content { overflow: visible !important; }
-    #modal_editar_rateio .modal-body    { overflow: visible !important; }
-    #modal_editar_rateio .modal-header  { border-radius: 5px 5px 0 0; }
-    /* Dropdown: largura mínima 230px (ref. form_contas_pagar_aceite), máximo 380px */
-    #tbl_erat .bootstrap-select .dropdown-menu { min-width: 230px !important; max-width: 380px !important; z-index: 9999 !important; }
-    #tbl_erat .bootstrap-select .dropdown-menu li a span.text { white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis; display: block; }
+    /* Dropdown do rateio (bs-container vai para body): min 230px, max 380px */
+    body > .bs-container .dropdown-menu { min-width: 230px !important; max-width: 380px !important; }
+    body > .bs-container .dropdown-menu li a span.text { white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis; display: block; }
 
     /* Tabela de rateio */
     .tbl-parcelas { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
