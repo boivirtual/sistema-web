@@ -8,6 +8,18 @@
 //   _eratCallbackPosSalvar = function(id) { ... };
 var _eratCallbackPosSalvar = null;
 
+// Repositiona .bs-container se o dropdown ultrapassar a borda direita da tela
+function _eratFixDropdownPos() {
+    var $c = $('.bs-container.open');
+    if (!$c.length) return;
+    var winW  = $(window).width();
+    var cLeft = parseFloat($c.css('left')) || 0;
+    var cW    = $c.outerWidth() || 0;
+    if (cLeft + cW > winW - 5) {
+        $c.css('left', Math.max(0, winW - cW - 5) + 'px');
+    }
+}
+
 var _eratCtpId            = 0;
 var _eratPrimeiroCtp      = 0;
 var _eratValorTotal       = 0;
