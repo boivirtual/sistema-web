@@ -12,6 +12,8 @@ var _eratCtpId            = 0;
 var _eratPrimeiroCtp      = 0;
 var _eratValorTotal       = 0;
 var _eratModo             = null; // null | 'valor' | 'perc'
+var _eratOrigLocalIds     = []; // IDs de locais que estavam na tabela quando o editor de local foi aberto
+var _eratOrigCcIds        = []; // IDs de CCs que estavam na tabela quando o editor de CC foi aberto
 
 $(document).ready(function () {
     $('#modal_editar_rateio').on('hide.bs.modal', function () {
