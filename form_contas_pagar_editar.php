@@ -389,6 +389,7 @@
 
                                             <?php if ($tem_rateio): ?>
                                             <!-- Conta com rateio: exibe resumo em vez dos selects -->
+                                            <input type="hidden" name="rateio_existente" value="1">
                                             <div class="row">
                                                 <div class="form-group col-md-4">
                                                     <label class="control-label"><span class="required">*</span> Local</label>
