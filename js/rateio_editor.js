@@ -309,7 +309,7 @@ function eratEditarLocal(link) {
 
     var currentLocalIds = [];
     $('#tbody_erat tr.linha-valor-rateio').each(function () {
-        var lid = String(parseInt($(this).find('.erat-local-id').val(), 10) || 0);
+        var lid = String(parseInt($(this).attr('data-local-id') || $(this).find('.erat-local-id').val() || 0, 10) || 0);
         if (lid && lid !== '0' && currentLocalIds.indexOf(lid) === -1) currentLocalIds.push(lid);
     });
 
