@@ -868,9 +868,10 @@ function eratConfirmarLocal(btn) {
         return;
     }
 
+    // Coleta apenas linhas confirmadas (ignora nova-conta pendentes)
     var allLocalRows = {};
     var localOrder   = [];
-    $('#tbody_erat tr.linha-valor-rateio').each(function () {
+    $('#tbody_erat tr.linha-valor-rateio:not(.linha-nova-conta)').each(function () {
         var lid = String($(this).find('.erat-local-id').val());
         if (!allLocalRows[lid]) { allLocalRows[lid] = []; localOrder.push(lid); }
         allLocalRows[lid].push({
@@ -883,6 +884,12 @@ function eratConfirmarLocal(btn) {
         });
     });
 
+    // Salva nomes antes das mudanças no DOM
+    var localNames = {};
+    for (var l = 0; l < selectedIds.length; l++) {
+        localNames[selectedIds[l]] = $sel.find('option[value="' + selectedIds[l] + '"]').text().trim();
+    }
+
     var $allRows = $('#tbody_erat tr.linha-valor-rateio');
     var $anchor  = $allRows.first();
     var newHtml  = '';
@@ -891,7 +898,7 @@ function eratConfirmarLocal(btn) {
 
     for (var l = 0; l < selectedIds.length; l++) {
         var newLocalId = selectedIds[l];
-        var newLocalNm = $sel.find('option[value="' + newLocalId + '"]').text().trim();
+        var newLocalNm = localNames[newLocalId];
         var rows = allLocalRows[newLocalId] || null;
         if (rows && rows.length > 0) {
             for (var r = 0; r < rows.length; r++) {
@@ -901,23 +908,28 @@ function eratConfirmarLocal(btn) {
                 newHtml += _eratGerarLinha(ln);
             }
         } else {
-            newHtml += _eratGerarLinha({
-                local_id:    newLocalId,
-                local_nome:  newLocalNm,
-                cc_id:       defaultCcId,
-                cc_nome:     defaultCcNome,
-                conta_id:    '',
-                conta_nome:  '',
-                conta_valor: 0,
-                conta_perc:  0
-            });
+            newHtml += _eratGerarLinhaNovaConta(newLocalId, newLocalNm, defaultCcId, defaultCcNome);
         }
     }
 
     $('body > .bs-container').remove();
-    $anchor.before(newHtml);
-    $allRows.remove();
+    if ($anchor.length) {
+        $anchor.before(newHtml);
+        $allRows.remove();
+    } else {
+        $('#tbody_erat').html(newHtml);
+    }
+
     _eratRefreshGrouping();
+
+    // Inicializa selectpickers das linhas nova-conta recém inseridas
+    $('#tbody_erat tr.linha-nova-conta select.erat-sel-conta-nova').each(function () {
+        if (!$(this).data('selectpicker')) {
+            $(this).selectpicker();
+            var sid = $(this).attr('id');
+            if (sid) _eratRemoveSelectAll(sid);
+        }
+    });
 }
 
 // ── Editor inline: Centro de Custo ──
