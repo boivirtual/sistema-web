@@ -711,7 +711,9 @@ $(document).ready(function(){
             error: function(xhr) {
                 $btn.prop('disabled', false);
                 try {
-                    var resp = JSON.parse(xhr.responseText);
+                    var text = xhr.responseText || '';
+                    var pos  = text.indexOf('{');
+                    var resp = pos >= 0 ? JSON.parse(text.substring(pos)) : null;
                     if (resp && resp.success) {
                         $("#mensagem_retorno").modal();
                         $("#mensagem_retorno .modal-body").html(resp.message || 'Conta alterada com sucesso.');
@@ -724,7 +726,7 @@ $(document).ready(function(){
                     }
                 } catch(e) {}
                 $("#mensagem_erro").modal();
-                $("#mensagem_erro .modal-body").html('Erro ao comunicar com o servidor. Tente novamente.');
+                $("#mensagem_erro .modal-body").html('Erro ao comunicar com o servidor. Verifique o console.');
             }
         });
     });
