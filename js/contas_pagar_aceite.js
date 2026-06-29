@@ -877,20 +877,34 @@ function eratConfirmarLocal(btn) {
         });
     });
 
-    var template = allLocalRows[localOrder[0]] || [];
     var $allRows = $('#tbody_erat tr.linha-valor-rateio');
     var $anchor  = $allRows.first();
     var newHtml  = '';
+    var defaultCcId   = (_eratCC && _eratCC.length > 0) ? String(_eratCC[0].id) : '';
+    var defaultCcNome = (_eratCC && _eratCC.length > 0) ? _eratCC[0].nome : '';
 
     for (var l = 0; l < selectedIds.length; l++) {
         var newLocalId = selectedIds[l];
         var newLocalNm = $sel.find('option[value="' + newLocalId + '"]').text().trim();
-        var rows = allLocalRows[newLocalId] || template;
-        for (var r = 0; r < rows.length; r++) {
-            var ln = $.extend({}, rows[r]);
-            ln.local_id   = newLocalId;
-            ln.local_nome = newLocalNm;
-            newHtml += _eratGerarLinha(ln);
+        var rows = allLocalRows[newLocalId] || null;
+        if (rows && rows.length > 0) {
+            for (var r = 0; r < rows.length; r++) {
+                var ln = $.extend({}, rows[r]);
+                ln.local_id   = newLocalId;
+                ln.local_nome = newLocalNm;
+                newHtml += _eratGerarLinha(ln);
+            }
+        } else {
+            newHtml += _eratGerarLinha({
+                local_id:    newLocalId,
+                local_nome:  newLocalNm,
+                cc_id:       defaultCcId,
+                cc_nome:     defaultCcNome,
+                conta_id:    '',
+                conta_nome:  '',
+                conta_valor: 0,
+                conta_perc:  0
+            });
         }
     }
 
