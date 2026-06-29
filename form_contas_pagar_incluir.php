@@ -3171,7 +3171,7 @@ $data_sistema = date("Y-m-d");
     function editarLocaisRateio() {
         if (_temEditorAberto()) return;
         _locaisAntesEdicao = [];
-        $('#tbl_rateio tbody tr.linha-fase1, #tbl_rateio tbody tr.linha-fase2, #tbl_rateio tbody tr.linha-valor-rateio').each(function() {
+        $('#tbl_rateio tbody tr.linha-fase1, #tbl_rateio tbody tr.linha-fase2, #tbl_rateio tbody tr.linha-valor-rateio, #tbl_rateio tbody tr.tr-novo-local').each(function() {
             var localId = String($(this).data('local-id'));
             if (localId && _locaisAntesEdicao.indexOf(localId) === -1) _locaisAntesEdicao.push(localId);
         });
