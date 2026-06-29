@@ -348,6 +348,7 @@ function eratEditarLocal(link) {
         '<div style="display:flex;align-items:center;gap:4px;width:100%;">' +
         '<div style="flex:1;min-width:0;">' +
         '<select id="' + selId + '" class="selectpicker" multiple data-live-search="true"' +
+        ' data-orig-lids="' + currentLocalIds.join(',') + '"' +
         ' data-width="100%" data-container="body" title="Selecione o local...">' +
         optLocal + '</select></div>' +
         '<button type="button" class="btn btn-primary btn-sm" onclick="eratConfirmarLocal(this)">Confirmar</button>' +
