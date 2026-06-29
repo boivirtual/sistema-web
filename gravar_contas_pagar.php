@@ -226,8 +226,9 @@
 		$desc_juros = $_POST['desc_juros'];
 		$vlr_desconto = $_POST['vlr_desconto'];
 		$desc_desconto = $_POST['desc_desconto'];
-		$vlr_acrescimo = $_POST['vlr_acrescimo'];
+		$vlr_acrescimo  = $_POST['vlr_acrescimo'];
 		$desc_acrescimo = $_POST['desc_acrescimo'];
+		$observacoes    = isset($_POST['observacoes']) ? $_POST['observacoes'] : '';
 	}
 
 	$data_sistema = date("Y-m-d H:i:s");
