@@ -94,7 +94,7 @@
 var _ctpAnexosParams  = {};
 var _ctpAnexosHandler = false;
 
-function abrirModalAnexos(numero_doc, codigo_fornecedor, ctp_id, doc_display) {
+function abrirModalAnexos(numero_doc, codigo_fornecedor, ctp_id, doc_display, abrirInputs) {
     _ctpAnexosParams = { numero_doc: numero_doc, codigo_fornecedor: codigo_fornecedor, ctp_id: ctp_id, doc_display: doc_display };
 
     if (!_ctpAnexosHandler) {
