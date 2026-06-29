@@ -590,15 +590,16 @@ function eratConfirmarConta(btn) {
         return;
     }
 
-    var localId = String($tr.find('.erat-local-id').val());
-    var localNm = $tr.find('.erat-local-nome').val();
-    var ccId    = String($tr.find('.erat-cc-id').val());
-    var ccNm    = $tr.find('.erat-cc-nome').val();
+    var localId = String($tr.attr('data-local-id') || $tr.find('.erat-local-id').val() || '');
+    var localNm = $tr.attr('data-local-nome')     || $tr.find('.erat-local-nome').val() || '';
+    var ccId    = String($tr.attr('data-cc-id')   || $tr.find('.erat-cc-id').val()    || '');
+    var ccNm    = $tr.attr('data-cc-nome')         || $tr.find('.erat-cc-nome').val()   || '';
 
     var existing = {};
     $('#tbody_erat tr.linha-valor-rateio').each(function () {
-        if (String($(this).find('.erat-local-id').val()) === localId &&
-            String($(this).find('.erat-cc-id').val()) === ccId) {
+        var lid  = String($(this).attr('data-local-id') || $(this).find('.erat-local-id').val() || '');
+        var cid2 = String($(this).attr('data-cc-id')    || $(this).find('.erat-cc-id').val()    || '');
+        if (lid === localId && cid2 === ccId) {
             var cid = String($(this).find('.erat-conta-id').val());
             existing[cid] = {
                 valor: _eratParseVal($(this).find('.rat-valor').val()),
@@ -608,8 +609,9 @@ function eratConfirmarConta(btn) {
     });
 
     var $groupRows = $('#tbody_erat tr.linha-valor-rateio').filter(function () {
-        return String($(this).find('.erat-local-id').val()) === localId &&
-               String($(this).find('.erat-cc-id').val()) === ccId;
+        var lid = String($(this).attr('data-local-id') || $(this).find('.erat-local-id').val() || '');
+        var cid = String($(this).attr('data-cc-id')    || $(this).find('.erat-cc-id').val()    || '');
+        return lid === localId && cid === ccId;
     });
 
     var $anchor = $groupRows.first();
