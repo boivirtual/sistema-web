@@ -2254,15 +2254,6 @@ function desabilita_enter (field, event) {
                 return true;
 }
 
-/* ================================================================
-   EDITOR DE RATEIO — tela idêntica ao form_contas_pagar_incluir.php
-   ================================================================ */
-
-var _eratCtpId       = 0;
-var _eratPrimeiroCtp = 0;
-var _eratValorTotal  = 0;
-var _eratModoRateio  = null; // null | 'valor' | 'perc'
-
 function _eratFmtMoney(n) {
     n = parseFloat(n) || 0;
     return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
