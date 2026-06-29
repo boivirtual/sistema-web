@@ -1149,6 +1149,102 @@ function eratCancelarEdicao(btn) {
     $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip();
 }
 
+// ── Gera linha de seleção de conta para local recém adicionado ──
+function _eratGerarLinhaNovaConta(localId, localNome, ccId, ccNome) {
+    var contas = typeof _eratContas !== 'undefined' ? _eratContas : [];
+    var selId  = 'erat_nova_conta_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+
+    var optConta = '';
+    for (var i = 0; i < contas.length; i++) {
+        var ct = contas[i];
+        if (ct.nivel === 1) {
+            optConta += '<option value="' + ct.id + '" disabled data-nivel="1">' + ct.nome + '</option>';
+        } else if (ct.nivel === 2) {
+            optConta += '<option value="' + ct.id + '" disabled data-nivel="2">' + ct.nome + '</option>';
+        } else {
+            optConta += '<option value="' + ct.id + '" data-nivel="3">' + ct.nome + '</option>';
+        }
+    }
+
+    var tr = '<tr class="linha-valor-rateio linha-nova-conta"' +
+        ' data-local-id="' + localId + '"' +
+        ' data-local-nome="' + localNome.replace(/"/g, '&quot;') + '"' +
+        ' data-cc-id="' + ccId + '"' +
+        ' data-cc-nome="' + ccNome.replace(/"/g, '&quot;') + '">';
+
+    // Col Local
+    tr += '<td style="vertical-align:middle;padding:4px 8px;">' +
+        '<span class="lbl-parcela">' + localNome + '</span>' +
+        '<input type="hidden" class="erat-local-id"   value="' + localId   + '">' +
+        '<input type="hidden" class="erat-local-nome" value="' + localNome + '">' +
+        '</td>';
+
+    // Col CC
+    tr += '<td style="vertical-align:middle;padding:4px 8px;">' +
+        '<span class="lbl-parcela">' + ccNome + '</span>' +
+        '<input type="hidden" class="erat-cc-id"   value="' + ccId   + '">' +
+        '<input type="hidden" class="erat-cc-nome" value="' + ccNome + '">' +
+        '</td>';
+
+    // Col Conta + Valor + % (colspan=3): selectpicker + botão Confirmar
+    tr += '<td colspan="3" style="vertical-align:middle;padding:4px 8px;">' +
+        '<div style="display:flex;align-items:center;gap:6px;">' +
+        '<div style="flex:1;min-width:0;">' +
+        '<select id="' + selId + '" class="selectpicker erat-sel-conta-nova" multiple' +
+        ' data-live-search="true" data-width="100%" data-container="body"' +
+        ' title="Selecione as contas...">' +
+        optConta + '</select>' +
+        '</div>' +
+        '<button type="button" class="btn btn-primary btn-sm" style="white-space:nowrap;"' +
+        ' onclick="eratConfirmarNovaContaLocal(this)">Confirmar</button>' +
+        '</div>' +
+        '<input type="hidden" class="erat-conta-id"   value="">' +
+        '<input type="hidden" class="erat-conta-nome" value="">' +
+        '</td>';
+
+    tr += '</tr>';
+    return tr;
+}
+
+// ── Confirma seleção de conta em linha nova-conta ──
+function eratConfirmarNovaContaLocal(btn) {
+    var $tr         = $(btn).closest('tr');
+    var $sel        = $tr.find('select.erat-sel-conta-nova');
+    var selectedIds = $sel.val() || [];
+
+    if (!selectedIds || selectedIds.length === 0) {
+        alert('Selecione pelo menos uma Conta Contábil.');
+        return;
+    }
+
+    var localId = String($tr.find('.erat-local-id').val());
+    var localNm = $tr.find('.erat-local-nome').val();
+    var ccId    = String($tr.find('.erat-cc-id').val());
+    var ccNm    = $tr.find('.erat-cc-nome').val();
+
+    var newHtml = '';
+    for (var i = 0; i < selectedIds.length; i++) {
+        var contaId = selectedIds[i];
+        var contaNm = $sel.find('option[value="' + contaId + '"]').text().trim();
+        newHtml += _eratGerarLinha({
+            local_id:    localId,
+            local_nome:  localNm,
+            cc_id:       ccId,
+            cc_nome:     ccNm,
+            conta_id:    contaId,
+            conta_nome:  contaNm,
+            conta_valor: 0,
+            conta_perc:  0
+        });
+    }
+
+    try { $sel.selectpicker('destroy'); } catch (e) {}
+    $('body > .bs-container').remove();
+    $tr.before(newHtml);
+    $tr.remove();
+    _eratRefreshGrouping();
+}
+
 // ── Abre o modal e carrega dados do rateio via AJAX ──
 function abrirEditarRateio(ctp_id) {
     _eratCtpId = ctp_id;
