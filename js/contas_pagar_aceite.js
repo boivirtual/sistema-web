@@ -985,42 +985,56 @@ function eratConfirmarCC(btn) {
         return;
     }
 
-    var currentLocalId = String($tr.find('.erat-local-id').val());
-    var localNm        = $tr.find('.erat-local-nome').val();
+    // Usa atributos do <tr> pois o td do CC foi substituído pelo editor inline
+    var currentLocalId = String($tr.attr('data-local-id') || $tr.find('.erat-local-id').val() || '');
+    var localNm        = $tr.attr('data-local-nome') || $tr.find('.erat-local-nome').val() || '';
 
+    // Coleta linhas do mesmo local usando data-cc-id do <tr> (não afetado pela substituição do td)
     var allCcRows = {};
     var ccOrder   = [];
-    $('#tbody_erat tr.linha-valor-rateio').each(function () {
-        if (String($(this).find('.erat-local-id').val()) === currentLocalId) {
-            var cid = String($(this).find('.erat-cc-id').val());
-            if (!allCcRows[cid]) { allCcRows[cid] = []; ccOrder.push(cid); }
-            allCcRows[cid].push({
-                conta_id:    $(this).find('.erat-conta-id').val(),
-                conta_nome:  $(this).find('.erat-conta-nome').val(),
-                conta_valor: _eratParseVal($(this).find('.rat-valor').val()),
-                conta_perc:  _eratParseVal($(this).find('.rat-perc').val())
-            });
-        }
+    $('#tbody_erat tr.linha-valor-rateio:not(.linha-nova-conta)').each(function () {
+        var lid = String($(this).attr('data-local-id') || $(this).find('.erat-local-id').val() || '');
+        if (lid !== currentLocalId) return;
+        var cid = String($(this).attr('data-cc-id') || $(this).find('.erat-cc-id').val() || '');
+        if (!cid || cid === '0') return;
+        if (!allCcRows[cid]) { allCcRows[cid] = []; ccOrder.push(cid); }
+        allCcRows[cid].push({
+            conta_id:    $(this).find('.erat-conta-id').val(),
+            conta_nome:  $(this).find('.erat-conta-nome').val(),
+            conta_valor: _eratParseVal($(this).find('.rat-valor').val()),
+            conta_perc:  _eratParseVal($(this).find('.rat-perc').val())
+        });
     });
 
-    var template   = allCcRows[ccOrder[0]] || [];
+    // Salva nomes antes de mexer no DOM
+    var ccNames = {};
+    for (var l = 0; l < selectedIds.length; l++) {
+        ccNames[selectedIds[l]] = $sel.find('option[value="' + selectedIds[l] + '"]').text().trim();
+    }
+
     var $groupRows = $('#tbody_erat tr.linha-valor-rateio').filter(function () {
-        return String($(this).find('.erat-local-id').val()) === currentLocalId;
+        var lid = String($(this).attr('data-local-id') || $(this).find('.erat-local-id').val() || '');
+        return lid === currentLocalId;
     });
-
     var $anchor = $groupRows.first();
     var newHtml = '';
+
     for (var l = 0; l < selectedIds.length; l++) {
         var newCcId = selectedIds[l];
-        var newCcNm = $sel.find('option[value="' + newCcId + '"]').text().trim();
-        var rows = allCcRows[newCcId] || template;
-        for (var r = 0; r < rows.length; r++) {
-            var ln = $.extend({}, rows[r]);
-            ln.local_id   = currentLocalId;
-            ln.local_nome = localNm;
-            ln.cc_id      = newCcId;
-            ln.cc_nome    = newCcNm;
-            newHtml += _eratGerarLinha(ln);
+        var newCcNm = ccNames[newCcId];
+        var rows = allCcRows[newCcId] || null;
+        if (rows && rows.length > 0) {
+            for (var r = 0; r < rows.length; r++) {
+                var ln = $.extend({}, rows[r]);
+                ln.local_id   = currentLocalId;
+                ln.local_nome = localNm;
+                ln.cc_id      = newCcId;
+                ln.cc_nome    = newCcNm;
+                newHtml += _eratGerarLinha(ln);
+            }
+        } else {
+            // Novo CC: abre selectpicker de conta para o usuário selecionar
+            newHtml += _eratGerarLinhaNovaConta(currentLocalId, localNm, newCcId, newCcNm);
         }
     }
 
@@ -1028,6 +1042,15 @@ function eratConfirmarCC(btn) {
     $anchor.before(newHtml);
     $groupRows.remove();
     _eratRefreshGrouping();
+
+    // Inicializa selectpickers das linhas nova-conta recém inseridas
+    $('#tbody_erat tr.linha-nova-conta select.erat-sel-conta-nova').each(function () {
+        if (!$(this).data('selectpicker')) {
+            $(this).selectpicker();
+            var sid = $(this).attr('id');
+            if (sid) _eratRemoveSelectAll(sid);
+        }
+    });
 }
 
 // ── Editor inline: Conta Contábil ──
