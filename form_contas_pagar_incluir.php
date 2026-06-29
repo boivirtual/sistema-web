@@ -2088,6 +2088,46 @@ $data_sistema = date("Y-m-d");
             return;
         }
 
+        // ── Se Phase 3 está ativa, apenas adiciona/remove locais incrementalmente ──
+        var $linhasFase3 = $('#tbl_rateio tbody tr.linha-valor-rateio');
+        if ($linhasFase3.length > 0) {
+            var locaisJaPresentes = [];
+            $linhasFase3.each(function() {
+                var lid = String($(this).data('local-id'));
+                if (locaisJaPresentes.indexOf(lid) === -1) locaisJaPresentes.push(lid);
+            });
+            // Também conta as linhas tr-novo-local pendentes
+            $('#tbl_rateio tbody tr.tr-novo-local').each(function() {
+                var lid = String($(this).data('local-id'));
+                if (locaisJaPresentes.indexOf(lid) === -1) locaisJaPresentes.push(lid);
+            });
+
+            // Remove locais que foram desmarcados
+            var locaisRemovidos = locaisJaPresentes.filter(function(id) {
+                return selecionados.indexOf(id) === -1 && selecionados.indexOf(Number(id)) === -1;
+            });
+            $.each(locaisRemovidos, function(i, localId) {
+                $('#tbl_rateio tbody tr.linha-valor-rateio[data-local-id="' + localId + '"]').remove();
+                $('#tbl_rateio tbody tr.tr-novo-local[data-local-id="' + localId + '"]').remove();
+            });
+
+            // Adiciona locais novos
+            var locaisNovos = selecionados.filter(function(id) {
+                return locaisJaPresentes.indexOf(String(id)) === -1;
+            });
+            $.each(locaisNovos, function(i, idLocal) {
+                var $opt = $local.find('option[value="' + idLocal + '"]');
+                var nomeLocal = $opt.data('nome') || $opt.text();
+                _adicionarNovoLocalFase3(idLocal, nomeLocal);
+            });
+
+            $('#btn_fechar_local').remove();
+            $('#tr_local_input').hide();
+            fixarIconeSelecLocais();
+            recalcularRateio();
+            return;
+        }
+
         $('#linhas_rateio').hide().empty();
         $('#rodape_fase2').remove();
         $('#rodape_rateio').remove();
