@@ -1,5 +1,10 @@
 ﻿<?php
-ob_start();
+// Captura todo output: warnings/notices do PHP ficam no buffer e são descartados
+// antes do JSON, garantindo resposta limpa para o AJAX.
+ob_start(function($buffer) {
+    $pos = strpos($buffer, '{');
+    return $pos !== false ? substr($buffer, $pos) : $buffer;
+});
 
 	 function sonumero($str) {
 		return preg_replace("/[^0-9]/", "", $str);
