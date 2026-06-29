@@ -336,6 +336,7 @@ function eratEditarLocal(link) {
         var lid = String(parseInt($(this).attr('data-local-id') || $(this).find('.erat-local-id').val() || 0, 10) || 0);
         if (lid && lid !== '0' && currentLocalIds.indexOf(lid) === -1) currentLocalIds.push(lid);
     });
+    _eratOrigLocalIds = currentLocalIds.slice(); // guarda cópia dos IDs originais
 
     var optLocal = '';
     for (var i = 0; i < locais.length; i++) {
@@ -350,7 +351,6 @@ function eratEditarLocal(link) {
         '<div style="display:flex;align-items:center;gap:4px;width:100%;">' +
         '<div style="flex:1;min-width:0;">' +
         '<select id="' + selId + '" class="selectpicker" multiple data-live-search="true"' +
-        ' data-orig-lids="' + currentLocalIds.join(',') + '"' +
         ' data-width="100%" data-container="body" title="Selecione o local...">' +
         optLocal + '</select></div>' +
         '<button type="button" class="btn btn-primary btn-sm" onclick="eratConfirmarLocal(this)">Confirmar</button>' +
