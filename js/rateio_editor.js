@@ -466,7 +466,7 @@ function eratEditarCC(link) {
         '<button type="button" class="btn btn-default btn-sm" onclick="eratCancelarEdicao(this)">Fechar</button>' +
         '</div>'
     );
-    $('#' + selId).selectpicker();
+    $('#' + selId).selectpicker({ dropdownAlignRight: 'auto' });
     $('#' + selId).selectpicker('val', currentCcIds);
     _eratRemoveSelectAll(selId);
 }
