@@ -133,6 +133,63 @@
     $row_qtd_an = $rs_qtd_an ? mysqli_fetch_object($rs_qtd_an) : null;
     $qtd_anexos = $row_qtd_an ? (int)$row_qtd_an->qtd : 0;
 
+    // Detecção de rateio: ctp_codigo_fazenda IS NULL indica conta com rateio
+    $tem_rateio = is_null($registro_ctp->ctp_codigo_fazenda)
+               || $registro_ctp->ctp_codigo_fazenda === ''
+               || $registro_ctp->ctp_codigo_fazenda === '000000000';
+
+    $rateio_primeiro_local = 'Rateio';
+    $rateio_total_locais   = 0;
+    $rateio_primeiro_cc    = '';
+    $rateio_total_ccs      = 0;
+    $rateio_primeira_conta = 'Rateio';
+    $rateio_total_contas   = 0;
+
+    if ($tem_rateio) {
+        $nd_esc_rat  = mysqli_real_escape_string($conector, $numero_ctp);
+        $for_esc_rat = intval($codigo_fornecedor);
+        $rs_prim_rat = mysqli_query($conector,
+            "SELECT MIN(c2.ctp_id) AS primeiro_id
+             FROM contas_pagar c1
+             JOIN contas_pagar c2
+               ON c2.ctp_numero_doc        = c1.ctp_numero_doc
+              AND c2.ctp_codigo_fornecedor = c1.ctp_codigo_fornecedor
+              AND c2.ctp_codigo_fazenda IS NULL
+             WHERE c1.ctp_id = '$chave_ctp'");
+        $row_prim_rat     = $rs_prim_rat ? mysqli_fetch_object($rs_prim_rat) : null;
+        $primeiro_ctp_rat = ($row_prim_rat && $row_prim_rat->primeiro_id)
+                          ? (int)$row_prim_rat->primeiro_id : (int)$chave_ctp;
+
+        $rs_locais_rat = mysqli_query($conector,
+            "SELECT rc_nome_local FROM tbl_ctp_rateio
+             WHERE rc_ctp_id = '$primeiro_ctp_rat'
+             GROUP BY rc_codigo_local, rc_nome_local
+             ORDER BY MIN(rc_id) ASC");
+        $rateio_total_locais = $rs_locais_rat ? mysqli_num_rows($rs_locais_rat) : 0;
+        $first_l = $rs_locais_rat ? mysqli_fetch_object($rs_locais_rat) : null;
+        if ($first_l) $rateio_primeiro_local = $first_l->rc_nome_local;
+
+        $rs_ccs_rat = mysqli_query($conector,
+            "SELECT rc_nome_cc FROM tbl_ctp_rateio
+             WHERE rc_ctp_id = '$primeiro_ctp_rat'
+               AND rc_nome_cc IS NOT NULL AND rc_nome_cc != ''
+             GROUP BY rc_codigo_cc, rc_nome_cc
+             ORDER BY MIN(rc_id) ASC");
+        $rateio_total_ccs = $rs_ccs_rat ? mysqli_num_rows($rs_ccs_rat) : 0;
+        $first_cc = $rs_ccs_rat ? mysqli_fetch_object($rs_ccs_rat) : null;
+        if ($first_cc) $rateio_primeiro_cc = $first_cc->rc_nome_cc;
+
+        $rs_contas_rat = mysqli_query($conector,
+            "SELECT rc_nome_conta FROM tbl_ctp_rateio
+             WHERE rc_ctp_id = '$primeiro_ctp_rat'
+               AND rc_nome_conta IS NOT NULL AND rc_nome_conta != ''
+             GROUP BY rc_codigo_conta, rc_nome_conta
+             ORDER BY MIN(rc_id) ASC");
+        $rateio_total_contas = $rs_contas_rat ? mysqli_num_rows($rs_contas_rat) : 0;
+        $first_ct = $rs_contas_rat ? mysqli_fetch_object($rs_contas_rat) : null;
+        if ($first_ct) $rateio_primeira_conta = $first_ct->rc_nome_conta;
+    }
+
     $codigo_usuario = $_SESSION['id_usuario'];
 
     $tbl_usuario = "SELECT * FROM usuario 
