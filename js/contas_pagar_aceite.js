@@ -188,17 +188,8 @@ $(document).ready(function () {
         $selectElement.on('changed.bs.select', atualizarVisibilidadeActionsBox);
     });
 
-    $('#modal_editar_rateio').on('hide.bs.modal', function () {
-        var $sp = $('#tbody_erat').find('.selectpicker');
-        if ($sp.length) {
-            try { $sp.selectpicker('destroy'); } catch (e) {}
-            var $td = $sp.closest('td');
-            var orig = $td.data('orig-html');
-            if (orig) $td.html(orig);
-        }
-        $('body > .bs-container').remove();
-        $('.tooltip').remove();
-    });
+    // Callback do editor de rateio: após salvar, atualiza a visualização
+    _eratCallbackPosSalvar = function(id) { toggleRateio(id); };
 
     $('#tabela_aceite_contas').DataTable({
         "paging":   false,
