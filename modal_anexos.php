@@ -155,6 +155,10 @@ function _carregarAnexos() {
         success: function (html) {
             $('#modal_anexos_body').html(html);
             $('[data-toggle="tooltip"]').tooltip();
+            if (_ctpAnexosAutoInputs && $('#modal_anexos_body li').length === 0) {
+                _maAbrirInputs();
+            }
+            _ctpAnexosAutoInputs = false;
         },
         error: function () {
             $('#modal_anexos_body').html(
