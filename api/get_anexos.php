@@ -95,7 +95,7 @@ foreach ($rows as $idx => $row) {
         echo '</small>';
     }
     echo '</div>';
-    echo '<button class="btn btn-danger btn-xs btn-excluir-anexo" data-id="' . $row->anexo_id . '" data-nome="' . $nome . '" style="margin-left:8px;flex-shrink:0;" title="Excluir">';
+    echo '<button class="btn btn-primary btn-xs btn-excluir-anexo" data-id="' . $row->anexo_id . '" data-nome="' . $nome . '" style="margin-left:8px;flex-shrink:0;" title="Excluir">';
     echo '<i class="fas fa-trash"></i>';
     echo '</button>';
     echo '</li>';
