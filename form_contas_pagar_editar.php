@@ -392,27 +392,30 @@
                                             <div class="row">
                                                 <div class="form-group col-md-4">
                                                     <label class="control-label"><span class="required">*</span> Local</label>
-                                                    <div style="padding-top:5px;">
-                                                        <span class="label label-info" style="font-size:12px;padding:4px 8px;white-space:normal;"><?= htmlspecialchars($rateio_primeiro_local) ?></span>
-                                                        <?php if ($rateio_total_locais > 1): ?><span style="color:#337ab7;font-weight:600;font-size:12px;margin-left:3px;">+<?= $rateio_total_locais - 1 ?></span><?php endif; ?>
+                                                    <div style="padding-top:6px;cursor:default;"
+                                                         title="<?= $rateio_tooltip_locais ?>">
+                                                        <span style="color:#555;font-size:14px;"><?= htmlspecialchars($rateio_primeiro_local) ?></span>
+                                                        <?php if ($rateio_total_locais > 1): ?><span style="color:#337ab7;font-weight:600;font-size:12px;margin-left:4px;">+<?= $rateio_total_locais - 1 ?></span><?php endif; ?>
                                                     </div>
                                                     <input type="hidden" name="codigo_fazenda" value="">
                                                 </div>
                                                 <div class="form-group col-md-4">
                                                     <label class="control-label">Centro de Custo</label>
-                                                    <div style="padding-top:5px;">
+                                                    <div style="padding-top:6px;cursor:default;"
+                                                         title="<?= $rateio_tooltip_ccs ?>">
                                                         <?php if ($rateio_primeiro_cc !== ''): ?>
-                                                        <span class="label label-success" style="font-size:12px;padding:4px 8px;white-space:normal;"><?= htmlspecialchars($rateio_primeiro_cc) ?></span>
-                                                        <?php if ($rateio_total_ccs > 1): ?><span style="color:#337ab7;font-weight:600;font-size:12px;margin-left:3px;">+<?= $rateio_total_ccs - 1 ?></span><?php endif; ?>
-                                                        <?php else: ?><span style="color:#999;font-size:12px;">—</span><?php endif; ?>
+                                                        <span style="color:#555;font-size:14px;"><?= htmlspecialchars($rateio_primeiro_cc) ?></span>
+                                                        <?php if ($rateio_total_ccs > 1): ?><span style="color:#337ab7;font-weight:600;font-size:12px;margin-left:4px;">+<?= $rateio_total_ccs - 1 ?></span><?php endif; ?>
+                                                        <?php else: ?><span style="color:#bbb;font-size:14px;">—</span><?php endif; ?>
                                                     </div>
                                                     <input type="hidden" name="codigo_cc" value="000">
                                                 </div>
                                                 <div class="form-group col-md-4">
                                                     <label class="control-label"><span class="required">*</span> Conta Contábil</label>
-                                                    <div style="padding-top:5px;">
-                                                        <span class="label label-warning" style="font-size:12px;padding:4px 8px;white-space:normal;"><?= htmlspecialchars($rateio_primeira_conta) ?></span>
-                                                        <?php if ($rateio_total_contas > 1): ?><span style="color:#337ab7;font-weight:600;font-size:12px;margin-left:3px;">+<?= $rateio_total_contas - 1 ?></span><?php endif; ?>
+                                                    <div style="padding-top:6px;cursor:default;"
+                                                         title="<?= $rateio_tooltip_contas ?>">
+                                                        <span style="color:#555;font-size:14px;"><?= htmlspecialchars($rateio_primeira_conta) ?></span>
+                                                        <?php if ($rateio_total_contas > 1): ?><span style="color:#337ab7;font-weight:600;font-size:12px;margin-left:4px;">+<?= $rateio_total_contas - 1 ?></span><?php endif; ?>
                                                     </div>
                                                     <input type="hidden" name="codigo_conta" value="0000000">
                                                 </div>
