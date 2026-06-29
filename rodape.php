@@ -23,6 +23,7 @@
 
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/r-2.2.6/datatables.min.js"></script>
 
+<script src="js/rateio_editor.js?<?php echo Versao; ?>" charset="utf-8" type="text/javascript"></script>
 <script src="js/<?= $javascript_file_name; ?>?<?php echo Versao; ?>" charset="utf-8" type="text/javascript" ></script>
 
 <script src="https://igorescobar.github.io/jQuery-Mask-Plugin/js/jquery.mask.min.js?<?php echo Versao; ?>"></script> 
