@@ -534,15 +534,16 @@ function eratEditarConta(link) {
     if (_eratTemEditorAberto()) return;
     var $td     = $(link).closest('td');
     var $tr     = $td.closest('tr');
-    var localId = String($tr.find('.erat-local-id').val());
-    var ccId    = String($tr.find('.erat-cc-id').val());
+    var localId = String($tr.attr('data-local-id') || $tr.find('.erat-local-id').val() || '');
+    var ccId    = String($tr.attr('data-cc-id')    || $tr.find('.erat-cc-id').val()    || '');
     var contas  = typeof _eratContas !== 'undefined' ? _eratContas : [];
     var selId   = 'erat_sel_conta_' + Date.now();
 
     var groupContaIds = [];
     $('#tbody_erat tr.linha-valor-rateio').each(function () {
-        if (String($(this).find('.erat-local-id').val()) === localId &&
-            String($(this).find('.erat-cc-id').val()) === ccId) {
+        var lid = String($(this).attr('data-local-id') || $(this).find('.erat-local-id').val() || '');
+        var cid = String($(this).attr('data-cc-id')    || $(this).find('.erat-cc-id').val()    || '');
+        if (lid === localId && cid === ccId) {
             groupContaIds.push(String($(this).find('.erat-conta-id').val()));
         }
     });
