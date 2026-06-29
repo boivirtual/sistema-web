@@ -2906,7 +2906,7 @@ $data_sistema = date("Y-m-d");
 
     function _temEditorAberto() {
         if ($('#tr_local_input').is(':visible')) return true;
-        if ($('#tbl_rateio .tr-editar-cc, #tbl_rateio .tr-editar-conta').length > 0) return true;
+        if ($('#tbl_rateio .tr-editar-cc, #tbl_rateio .tr-editar-conta, #tbl_rateio .tr-novo-local').length > 0) return true;
         return false;
     }
 
