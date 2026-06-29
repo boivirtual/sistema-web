@@ -84,7 +84,8 @@ foreach ($rows as $idx => $row) {
     $por      = htmlspecialchars($row->anexo_incluido_por ?? '', ENT_QUOTES, 'UTF-8');
     $borda    = ($idx < $qtd - 1) ? 'border-bottom:1px solid #e8e8e8;' : '';
 
-    echo '<li style="padding:9px 14px;' . $borda . '">';
+    echo '<li style="display:flex;align-items:flex-start;padding:9px 14px;' . $borda . '">';
+    echo '<div style="flex:1;">';
     echo '<a href="' . $href . '"' . $target . $extra . ' style="font-size:13px;">';
     echo $icon . $nome;
     echo '</a>';
@@ -93,6 +94,10 @@ foreach ($rows as $idx => $row) {
         echo 'Incluído em ' . $incluido . ($por ? ' por <strong>' . $por . '</strong>' : '');
         echo '</small>';
     }
+    echo '</div>';
+    echo '<button class="btn btn-danger btn-xs btn-excluir-anexo" data-id="' . $row->anexo_id . '" data-nome="' . $nome . '" style="margin-left:8px;flex-shrink:0;" title="Excluir">';
+    echo '<i class="fas fa-trash"></i>';
+    echo '</button>';
     echo '</li>';
 }
 
