@@ -163,10 +163,17 @@ function _carregarAnexos() {
 
 /* ── Funções da seção de adição ── */
 
+function _maAbrirInputs() {
+    $('#modal_ma_toggle').hide();
+    $('#modal_ma_inputs').show();
+}
+
 function _maResetar() {
     $('#modal_ma_file_0').val('');
     $('#modal_ma_extra').empty();
     $('#btn_confirmar_ma').hide();
+    $('#modal_ma_inputs').hide();
+    $('#modal_ma_toggle').show();
 }
 
 function _maAdicionarArquivo() {
