@@ -812,7 +812,7 @@ function _eratRemoveSelectAll(selId) {
 }
 
 function _eratTemEditorAberto() {
-    return $('#tbody_erat td .bootstrap-select').length > 0;
+    return $('#tbody_erat tr:not(.linha-nova-conta) td .bootstrap-select').length > 0;
 }
 
 // ── Editor inline: Local ──
