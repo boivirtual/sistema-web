@@ -38,10 +38,11 @@
                 <h4 class="modal-title">
                     <i class="fas fa-paperclip" style="color:#337ab7;margin-right:6px;"></i>
                     Anexos / Links
-                    <span id="modal_anexos_doc" style="font-size:13px;font-weight:400;color:#888;margin-left:6px;"></span>
                 </h4>
             </div>
-            <div class="modal-body" style="min-height:60px;padding:0 15px 10px 15px;">
+            <div class="modal-body" style="min-height:60px;padding:10px 15px 10px 15px;">
+
+                <p id="modal_anexos_doc" style="margin:0 0 10px 0;font-size:14px;color:#333;font-weight:500;"></p>
 
                 <!-- Lista de anexos existentes (recarregada por AJAX) -->
                 <div id="modal_anexos_body">
