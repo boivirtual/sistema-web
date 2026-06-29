@@ -39,6 +39,11 @@ $(document).ready(function () {
         $('body > .bs-container').remove();
         $('.tooltip').remove();
     });
+
+    // Corrige overflow de qualquer dropdown do editor de rateio
+    $(document).on('shown.bs.select', '#tbl_erat select, #tbl_erat .selectpicker', function () {
+        _eratFixDropdownPos();
+    });
 });
 
 function _eratFmtMoney(n) {
