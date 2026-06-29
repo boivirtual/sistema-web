@@ -691,11 +691,11 @@ $(document).ready(function(){
         var dados = $('#form_gravar_contas_pagar').serialize();
 
         $.ajax({
-            type: "POST",
-            url: 'gravar_contas_pagar.php',
-            data: dados,
+            type:     "POST",
+            url:      'gravar_contas_pagar.php',
+            data:     dados,
+            dataType: 'json',
             success: function(data){
-               // alert (data);
                 if (data.error) {
                     $("#mensagem_erro").modal();
                     $("#mensagem_erro .modal-body").html(data.message);
