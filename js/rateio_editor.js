@@ -421,14 +421,6 @@ function eratConfirmarLocal(btn) {
     }
 
     _eratRefreshGrouping();
-
-    $('#tbody_erat tr.linha-nova-conta select.erat-sel-conta-nova').each(function () {
-        if (!$(this).data('selectpicker')) {
-            $(this).selectpicker();
-            var sid = $(this).attr('id');
-            if (sid) _eratRemoveSelectAll(sid);
-        }
-    });
 }
 
 // ── Editor inline: Centro de Custo ──
