@@ -480,7 +480,7 @@
                                                         $nd_js_ed  = addslashes($numero_ctp);
                                                         $for_js_ed = intval($codigo_fornecedor);
                                                         $id_js_ed  = intval($chave_ctp);
-                                                        $auto_inp  = ($qtd_anexos == 0) ? 'true' : 'false';
+                                                        $auto_inp  = 'true';
                                                     ?>
                                                     <a href="#" onclick="abrirModalAnexos('<?= $nd_js_ed ?>',<?= $for_js_ed ?>,<?= $id_js_ed ?>,'<?= $nd_js_ed ?>',<?= $auto_inp ?>); return false;"
                                                        style="font-size:0.9em;font-weight:500;color:#128cb8;">
