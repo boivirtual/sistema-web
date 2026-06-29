@@ -368,7 +368,7 @@ function eratEditarLocal(link) {
         '<div style="display:flex;align-items:center;gap:4px;width:100%;">' +
         '<div style="flex:1;min-width:0;">' +
         '<select id="' + selId + '" class="selectpicker" multiple data-live-search="true"' +
-        ' data-width="100%" data-container="body" title="Selecione o local...">' +
+        ' data-container="body" title="Selecione o local...">' +
         optLocal + '</select></div>' +
         '<button type="button" class="btn btn-primary btn-sm" onclick="eratConfirmarLocal(this)">Confirmar</button>' +
         '<button type="button" class="btn btn-default btn-sm" onclick="eratCancelarEdicao(this)">Fechar</button>' +
@@ -477,7 +477,7 @@ function eratEditarCC(link) {
         '<div style="display:flex;align-items:center;gap:4px;width:100%;">' +
         '<div style="flex:1;min-width:0;">' +
         '<select id="' + selId + '" class="selectpicker" multiple data-live-search="true"' +
-        ' data-width="100%" data-container="body" title="Selecione o CC...">' +
+        ' data-container="body" title="Selecione o CC...">' +
         optCC + '</select></div>' +
         '<button type="button" class="btn btn-primary btn-sm" onclick="eratConfirmarCC(this)">Confirmar</button>' +
         '<button type="button" class="btn btn-default btn-sm" onclick="eratCancelarEdicao(this)">Fechar</button>' +
@@ -597,7 +597,7 @@ function eratEditarConta(link) {
         '<div style="display:flex;align-items:center;gap:4px;width:100%;">' +
         '<div style="flex:1;min-width:0;">' +
         '<select id="' + selId + '" class="selectpicker" multiple data-live-search="true"' +
-        ' data-width="100%" data-container="body" title="Selecione as contas...">' +
+        ' data-container="body" title="Selecione as contas...">' +
         optConta + '</select></div>' +
         '<button type="button" class="btn btn-primary btn-sm" onclick="eratConfirmarConta(this)">Confirmar</button>' +
         '<button type="button" class="btn btn-default btn-sm" onclick="eratCancelarEdicao(this)">Fechar</button>' +
@@ -720,7 +720,7 @@ function _eratGerarLinhaNovaConta(localId, localNome, ccId, ccNome) {
         '<div style="display:flex;align-items:center;gap:6px;">' +
         '<div style="flex:1;min-width:0;">' +
         '<select id="' + selId + '" class="selectpicker erat-sel-conta-nova" multiple' +
-        ' data-live-search="true" data-width="100%" data-container="body"' +
+        ' data-live-search="true" data-container="body"' +
         ' title="Selecione as contas...">' +
         optConta + '</select>' +
         '</div>' +
