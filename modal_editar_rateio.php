@@ -74,7 +74,9 @@ while ($r = mysqli_fetch_object($rs_cta_erat)) {
     #tbl_erat .bootstrap-select > .dropdown-toggle { height: 30px; font-size: 12px; padding: 4px 8px; }
 
     /* Popup do dropdown (vai para body via data-container):
-       largura controlada pelo JS em rateio_editor.js (shown.bs.select handler) */
+       body > .bs-container tem especificidade 0,1,1 e vence .bootstrap-select (0,1,0)
+       mesmo ambos com !important — por isso funciona em qualquer página que inclua este modal */
+    body > .bs-container { width: 260px !important; }
     body > .bs-container .dropdown-menu { overflow-x: hidden; }
     body > .bs-container .dropdown-menu li a span.text { white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis; display: block; }
 
