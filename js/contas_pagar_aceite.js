@@ -703,6 +703,9 @@ function _eratGerarLinha(ln, showLocal, showCC, showConta, showLocalIcon, showCC
 
 // ── Reconstrói o tbody aplicando agrupamento visual Local/CC ──
 function _eratRefreshGrouping() {
+    // Preserva linhas pendentes de seleção de conta
+    var $novaConta = $('#tbody_erat tr.linha-nova-conta').detach();
+
     var rows = [];
     $('#tbody_erat tr.linha-valor-rateio').each(function () {
         var $tr = $(this);
@@ -731,6 +734,9 @@ function _eratRefreshGrouping() {
         prevCcId    = ln.cc_id;
     }
     $('#tbody_erat').html(html);
+    if ($novaConta.length) {
+        $('#tbody_erat').append($novaConta);
+    }
     _eratSetModo(_eratModo);
     eratRecalcular();
     $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip();
