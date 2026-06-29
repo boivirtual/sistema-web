@@ -529,11 +529,6 @@ function limpar_filtros_tela_inicial() {
 
 /* As funções do Editor de Rateio estão em js/rateio_editor.js */
 
-function _eratFmtMoney(n) {
-    n = parseFloat(n) || 0;
-    return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
 function _eratParseVal(s) {
     if (!s) return 0;
     s = String(s).replace('%', '').trim();
