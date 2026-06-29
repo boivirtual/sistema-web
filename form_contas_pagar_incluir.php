@@ -3220,6 +3220,185 @@ $data_sistema = date("Y-m-d");
         $('#tr_local_input').hide();
     }
 
+    // ── Insere editor inline para novo local adicionado em Phase 3 ──
+    function _adicionarNovoLocalFase3(localId, localNome) {
+        var safeId = String(localId).replace(/\W/g,'_');
+        if ($('#tr_novo_local_' + safeId).length) return;
+
+        var primeiroCCId   = ccOpcoes.length > 0 ? String(ccOpcoes[0].id)   : '';
+        var primeiroCCNome = ccOpcoes.length > 0 ? String(ccOpcoes[0].nome) : '';
+
+        var optionsConta = '';
+        $.each(contaOpcoes, function(k, cta) {
+            if (cta.nivel === 1)      optionsConta += '<option value="' + cta.id + '" disabled style="color:#777;font-weight:600;">' + cta.nome + '</option>';
+            else if (cta.nivel === 2) optionsConta += '<option value="' + cta.id + '" disabled style="color:#888;">&nbsp;&nbsp;&nbsp;&nbsp;' + cta.nome + '</option>';
+            else                      optionsConta += '<option value="' + cta.id + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + cta.nome + '</option>';
+        });
+
+        var optionsCC = '';
+        $.each(ccOpcoes, function(k, cc) {
+            optionsCC += '<option value="' + cc.id + '"' + (String(cc.id) === primeiroCCId ? ' selected' : '') + '>' + cc.nome + '</option>';
+        });
+
+        var localNomeJs  = localNome.replace(/'/g,"\\'");
+        var localNomeEsc = localNome.replace(/"/g,'&quot;');
+        var ccNomeEsc    = primeiroCCNome.replace(/"/g,'&quot;');
+
+        var html = '<tr id="tr_novo_local_' + safeId + '" class="tr-novo-local"' +
+            ' data-local-id="' + localId + '" data-local-nome="' + localNomeEsc + '"' +
+            ' data-cc-id="' + primeiroCCId + '" data-cc-nome="' + ccNomeEsc + '">' +
+            '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+            '<span class="lbl-parcela">' + localNome + '</span>' +
+            '</td>' +
+            '<td style="vertical-align:top;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
+            '<span class="cc-nome-nv lbl-parcela">' + primeiroCCNome + '</span>' +
+            ' <a href="#" onclick="_editarCCNovoLocal(\'' + localId + '\');return false;"' +
+            ' data-toggle="tooltip" data-placement="top" title="Selecionar Centro de Custos"' +
+            ' style="color:#337ab7;font-size:11px;margin-left:4px;" class="ico-editar-cc-nv"><i class="fas fa-pen"></i></a>' +
+            '<div class="cc-editor-nv" style="display:none;margin-top:4px;">' +
+            '<select class="form-control cc-select-nv" style="height:30px;font-size:13px;">' + optionsCC + '</select>' +
+            '<div style="margin-top:4px;">' +
+            '<button type="button" class="btn btn-primary btn-xs" onclick="_confirmarCCNovoLocal(\'' + localId + '\')">OK</button>' +
+            ' <button type="button" class="btn btn-default btn-xs" onclick="_fecharCCNovoLocal(\'' + localId + '\')">Fechar</button>' +
+            '</div></div>' +
+            '</td>' +
+            '<td style="vertical-align:middle;padding:4px 8px;">' +
+            '<select class="selectpicker conta-sel-nv" id="conta_nv_' + safeId + '" multiple data-live-search="true" data-size="8" data-width="100%">' +
+            '<option value="" disabled>...</option>' + optionsConta + '</select>' +
+            '</td>' +
+            '<td style="vertical-align:middle;padding:4px 8px;white-space:nowrap;" colspan="3">' +
+            '<button type="button" class="btn btn-primary" onclick="confirmarNovoLocalFase3(\'' + localId + '\')">Confirmar</button>' +
+            '</td>' +
+            '</tr>';
+
+        $('#tr_rateio_restante').before(html);
+
+        var $s = $('#conta_nv_' + safeId);
+        $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
+        var $bs = $s.closest('.bootstrap-select');
+        $bs.css({ 'width': '100%', 'display': 'block' });
+        $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
+        $bs.find('.dropdown-menu').css({ 'min-width': '360px', 'width': 'auto' });
+
+        $('#tr_novo_local_' + safeId + ' [data-toggle="tooltip"]').tooltip();
+    }
+
+    function _editarCCNovoLocal(localId) {
+        var safeId = String(localId).replace(/\W/g,'_');
+        var $row = $('#tr_novo_local_' + safeId);
+        $row.find('.cc-nome-nv').hide();
+        $row.find('.ico-editar-cc-nv').hide();
+        $row.find('.cc-editor-nv').show();
+    }
+
+    function _fecharCCNovoLocal(localId) {
+        var safeId = String(localId).replace(/\W/g,'_');
+        var $row = $('#tr_novo_local_' + safeId);
+        $row.find('.cc-editor-nv').hide();
+        $row.find('.cc-nome-nv').show();
+        $row.find('.ico-editar-cc-nv').show();
+    }
+
+    function _confirmarCCNovoLocal(localId) {
+        var safeId = String(localId).replace(/\W/g,'_');
+        var $row = $('#tr_novo_local_' + safeId);
+        var $sel = $row.find('.cc-select-nv');
+        var ccId   = $sel.val();
+        var ccNome = $sel.find('option:selected').text();
+        $row.attr('data-cc-id', ccId).attr('data-cc-nome', ccNome.replace(/"/g,'&quot;'));
+        $row.find('.cc-nome-nv').text(ccNome);
+        _fecharCCNovoLocal(localId);
+    }
+
+    function confirmarNovoLocalFase3(localId) {
+        var safeId = String(localId).replace(/\W/g,'_');
+        var $row = $('#tr_novo_local_' + safeId);
+
+        var localNome = String($row.attr('data-local-nome') || '');
+        var ccId      = String($row.attr('data-cc-id')    || '');
+        var ccNome    = String($row.attr('data-cc-nome')  || '');
+
+        var contaIds = [];
+        $('#conta_nv_' + safeId + ' option:selected').each(function() {
+            if ($(this).val()) contaIds.push($(this).val());
+        });
+        if (contaIds.length === 0) { alert('Selecione pelo menos uma Conta Contábil.'); return; }
+
+        $('#conta_nv_' + safeId).selectpicker('destroy');
+
+        var localNomeEsc = localNome.replace(/"/g,'&quot;');
+        var ccNomeEsc    = ccNome.replace(/"/g,'&quot;');
+        var localNomeJs  = localNome.replace(/'/g,"\\'");
+        var ccNomeJs     = ccNome.replace(/'/g,"\\'");
+
+        var newRowsHtml = '';
+        $.each(contaIds, function(i, contaId) {
+            var contaNome = '';
+            $.each(contaOpcoes, function(m, ct) { if (String(ct.id) === String(contaId)) { contaNome = ct.nome; return false; } });
+            var isFirst = (i === 0);
+
+            newRowsHtml += '<tr class="linha-valor-rateio"' +
+                ' data-local-id="' + localId + '" data-cc-id="' + ccId + '"' +
+                ' data-conta-id="' + contaId + '"' +
+                ' data-local-nome="' + localNomeEsc + '" data-cc-nome="' + ccNomeEsc + '"' +
+                ' data-conta-nome="' + contaNome.replace(/"/g,'&quot;') + '">';
+
+            if (isFirst) {
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+                    '<span class="lbl-parcela">' + localNome + '</span>' +
+                    '<input type="hidden" name="rat2_local_id[]" value="' + localId + '">' +
+                    '<input type="hidden" name="rat2_local_nome[]" value="' + localNome + '">' +
+                    '</td>';
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;white-space:nowrap;">' +
+                    '<span class="lbl-parcela">' + ccNome + '</span>' +
+                    ' <a href="#" onclick="editarCCDoLocalFase3(\'' + localId + '\',\'' + localNomeJs + '\');return false;"' +
+                    ' data-toggle="tooltip" data-placement="top" title="Selecionar Centro de Custos"' +
+                    ' style="color:#337ab7;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>' +
+                    '<input type="hidden" name="rat2_cc_id[]" value="' + ccId + '">' +
+                    '<input type="hidden" name="rat2_cc_nome[]" value="' + ccNome + '">' +
+                    '</td>';
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+                    '<span class="lbl-parcela">' + contaNome + '</span>' +
+                    ' <a href="#" onclick="editarContaDoCC(\'' + localId + '\',\'' + ccId + '\',\'' + localNomeJs + '\',\'' + ccNomeJs + '\');return false;"' +
+                    ' data-toggle="tooltip" data-placement="top" title="Selecionar Contas"' +
+                    ' style="color:#337ab7;font-size:11px;margin-left:4px;"><i class="fas fa-pen"></i></a>' +
+                    '<input type="hidden" name="rat2_conta_id[]" value="' + contaId + '">' +
+                    '<input type="hidden" name="rat2_conta_nome[]" value="' + contaNome + '">' +
+                    '</td>';
+            } else {
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;">' +
+                    '<input type="hidden" name="rat2_local_id[]" value="' + localId + '">' +
+                    '<input type="hidden" name="rat2_local_nome[]" value="' + localNome + '">' +
+                    '</td>';
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;">' +
+                    '<input type="hidden" name="rat2_cc_id[]" value="' + ccId + '">' +
+                    '<input type="hidden" name="rat2_cc_nome[]" value="' + ccNome + '">' +
+                    '</td>';
+                newRowsHtml += '<td style="vertical-align:middle;padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+                    '<span class="lbl-parcela">' + contaNome + '</span>' +
+                    '<input type="hidden" name="rat2_conta_id[]" value="' + contaId + '">' +
+                    '<input type="hidden" name="rat2_conta_nome[]" value="' + contaNome + '">' +
+                    '</td>';
+            }
+
+            newRowsHtml += '<td style="vertical-align:middle;text-align:right;padding:4px 8px;">' +
+                '<input type="text" class="form-control rat-valor" placeholder="0,00" name="rat2_valor[]"' +
+                ' style="height:30px;font-size:13px;text-align:right;"></td>';
+            newRowsHtml += '<td style="vertical-align:middle;text-align:right;padding:4px 8px;">' +
+                '<input type="text" class="form-control rat-perc" placeholder="0,00%" name="rat2_perc[]"' +
+                ' style="height:30px;font-size:13px;text-align:right;"></td>';
+            newRowsHtml += '<td></td></tr>';
+        });
+
+        $row.before(newRowsHtml);
+        $row.remove();
+
+        $('#tbl_rateio [data-toggle="tooltip"]').tooltip();
+        fixarIconeSelecLocais();
+        _sincronizarIconesCC();
+        recalcularRateio();
+    }
+
     function fecharEdicaoCC(localId) {
         $('#tr_editar_cc_f3_' + String(localId).replace(/\W/g,'_')).remove();
         fixarIconeSelecLocais();
