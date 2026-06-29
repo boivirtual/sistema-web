@@ -8,16 +8,19 @@
 //   _eratCallbackPosSalvar = function(id) { ... };
 var _eratCallbackPosSalvar = null;
 
-// Repositiona .bs-container se o dropdown ultrapassar a borda direita da tela
-// (a largura já é fixada via CSS !important em modal_editar_rateio.php)
+// Corrige a largura e posição do .bs-container após o Bootstrap Select
+// ter calculado/aplicado o offsetWidth do botão como largura inline.
+// Chamado no evento shown.bs.select — roda depois que o plugin posicionou tudo.
 function _eratFixDropdownPos() {
     var $c = $('.bs-container.open');
     if (!$c.length) return;
+    // Sobrescreve a largura inline que o plugin calculou com um valor fixo legível
+    $c.css('width', '260px');
+    // Garante que não ultrapassa a borda direita da janela
     var winW  = $(window).width();
     var cLeft = parseFloat($c.css('left')) || 0;
-    var cW    = $c.outerWidth() || 0;
-    if (cLeft + cW > winW - 5) {
-        $c.css('left', Math.max(0, winW - cW - 5) + 'px');
+    if (cLeft + 260 > winW - 5) {
+        $c.css('left', Math.max(0, winW - 265) + 'px');
     }
 }
 
