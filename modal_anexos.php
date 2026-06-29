@@ -42,10 +42,38 @@
 </div>
 
 <script>
-var _ctpAnexosParams = {};
+var _ctpAnexosParams  = {};
+var _ctpAnexosHandler = false;
 
 function abrirModalAnexos(numero_doc, codigo_fornecedor, ctp_id, doc_display) {
     _ctpAnexosParams = { numero_doc: numero_doc, codigo_fornecedor: codigo_fornecedor, ctp_id: ctp_id, doc_display: doc_display };
+
+    if (!_ctpAnexosHandler) {
+        $(document).on('click', '.btn-excluir-anexo', function () {
+            var id   = $(this).data('id');
+            var nome = $(this).data('nome');
+            if (!confirm('Deseja excluir o anexo/link:\n"' + nome + '"?')) return;
+
+            $.ajax({
+                type:     'POST',
+                url:      'api/excluir_anexo.php',
+                data:     { anexo_id: id },
+                dataType: 'json',
+                success: function (resp) {
+                    if (resp.ok) {
+                        _carregarAnexos();
+                    } else {
+                        alert('Erro: ' + (resp.msg || 'Não foi possível excluir.'));
+                    }
+                },
+                error: function () {
+                    alert('Erro ao comunicar com o servidor.');
+                }
+            });
+        });
+        _ctpAnexosHandler = true;
+    }
+
     $('#modal_anexos_doc').text('— Documento: ' + doc_display);
     $('#modal_anexos').modal('show');
     _carregarAnexos();
@@ -75,27 +103,4 @@ function _carregarAnexos() {
         }
     });
 }
-
-$(document).on('click', '.btn-excluir-anexo', function () {
-    var id   = $(this).data('id');
-    var nome = $(this).data('nome');
-    if (!confirm('Deseja excluir o anexo/link:\n"' + nome + '"?')) return;
-
-    $.ajax({
-        type:     'POST',
-        url:      'api/excluir_anexo.php',
-        data:     { anexo_id: id },
-        dataType: 'json',
-        success: function (resp) {
-            if (resp.ok) {
-                _carregarAnexos();
-            } else {
-                alert('Erro: ' + (resp.msg || 'Não foi possível excluir.'));
-            }
-        },
-        error: function () {
-            alert('Erro ao comunicar com o servidor.');
-        }
-    });
-});
 </script>
