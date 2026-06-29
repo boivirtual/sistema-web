@@ -381,6 +381,37 @@
 
                                             </div>
 
+                                            <?php if ($tem_rateio): ?>
+                                            <!-- Conta com rateio: exibe resumo em vez dos selects -->
+                                            <div class="row">
+                                                <div class="form-group col-md-4">
+                                                    <label class="control-label"><span class="required">*</span> Local</label>
+                                                    <div style="padding-top:5px;">
+                                                        <span class="label label-info" style="font-size:12px;padding:4px 8px;white-space:normal;"><?= htmlspecialchars($rateio_primeiro_local) ?></span>
+                                                        <?php if ($rateio_total_locais > 1): ?><span style="color:#337ab7;font-weight:600;font-size:12px;margin-left:3px;">+<?= $rateio_total_locais - 1 ?></span><?php endif; ?>
+                                                    </div>
+                                                    <input type="hidden" name="codigo_fazenda" value="">
+                                                </div>
+                                                <div class="form-group col-md-4">
+                                                    <label class="control-label">Centro de Custo</label>
+                                                    <div style="padding-top:5px;">
+                                                        <?php if ($rateio_primeiro_cc !== ''): ?>
+                                                        <span class="label label-success" style="font-size:12px;padding:4px 8px;white-space:normal;"><?= htmlspecialchars($rateio_primeiro_cc) ?></span>
+                                                        <?php if ($rateio_total_ccs > 1): ?><span style="color:#337ab7;font-weight:600;font-size:12px;margin-left:3px;">+<?= $rateio_total_ccs - 1 ?></span><?php endif; ?>
+                                                        <?php else: ?><span style="color:#999;font-size:12px;">—</span><?php endif; ?>
+                                                    </div>
+                                                    <input type="hidden" name="codigo_cc" value="000">
+                                                </div>
+                                                <div class="form-group col-md-4">
+                                                    <label class="control-label"><span class="required">*</span> Conta Contábil</label>
+                                                    <div style="padding-top:5px;">
+                                                        <span class="label label-warning" style="font-size:12px;padding:4px 8px;white-space:normal;"><?= htmlspecialchars($rateio_primeira_conta) ?></span>
+                                                        <?php if ($rateio_total_contas > 1): ?><span style="color:#337ab7;font-weight:600;font-size:12px;margin-left:3px;">+<?= $rateio_total_contas - 1 ?></span><?php endif; ?>
+                                                    </div>
+                                                    <input type="hidden" name="codigo_conta" value="0000000">
+                                                </div>
+                                            </div>
+                                            <?php else: ?>
                                             <div class="row">
                                                 <div class="form-group col-md-4">
                                                     <label for="codigo_fazenda" class="control-label"><span class="required">*</span> Local</label>
@@ -388,23 +419,23 @@
 
                                                     <option value="000000000">...</option>
 
-                                                    <?php 
-                                                        while($reg_local = mysqli_fetch_object($tbl_local)) { 
-                                                            
+                                                    <?php
+                                                        while($reg_local = mysqli_fetch_object($tbl_local)) {
+
                                                             foreach ($array_locais_usuario as $value) {
                                                                 $value = ltrim($value);
                                                                 $value = rtrim($value);
                                                                 if ($value==$reg_local->tbl_pessoa_id) {
                                                                     if ($reg_local->tbl_pessoa_id==$codigo_fazenda) {
-                                                                    echo '<option value="'.$value.'" selected>' .$reg_local->tbl_pessoa_nome. '</option>'; 
+                                                                    echo '<option value="'.$value.'" selected>' .$reg_local->tbl_pessoa_nome. '</option>';
                                                                     }
                                                                     else {
-                                                                    echo '<option value="'.$value.'">' .$reg_local->tbl_pessoa_nome. '</option>'; 
+                                                                    echo '<option value="'.$value.'">' .$reg_local->tbl_pessoa_nome. '</option>';
 
                                                                     }
                                                                 }
                                                             }
-                                                        } 
+                                                        }
                                                     ?>
                                                     </select>
                                                 </div>
@@ -416,15 +447,15 @@
 
                                                       <?php while($registo_cc = mysqli_fetch_object($c_custo)) { ?>
 
-                                                      <option value="<?php 
+                                                      <option value="<?php
                                                        	echo $registo_cc->tbl_cc_codigo_id ?>"
 
-                                                       	<?php 
-                                                      		if($registo_cc->tbl_cc_codigo_id==$codigo_c_custo) 
+                                                       	<?php
+                                                      		if($registo_cc->tbl_cc_codigo_id==$codigo_c_custo)
                                                          		{ echo "selected"; }
                                                   		?>>
-                                                        
-                                                      <?php 
+
+                                                      <?php
                                                           echo $registo_cc->tbl_cc_descricao;
                                                       ?>
                                                       </option>
@@ -440,15 +471,15 @@
 
 	                                                  <?php while($registo_pcontas = mysqli_fetch_object($plano_contas)) { ?>
 
-	                                                  <option value="<?php 
+	                                                  <option value="<?php
 	                                                   echo $registo_pcontas->tbl_plano_contas_codigo_id ?>"
 
-	                                                    <?php 
-	                                                      if($registo_pcontas->tbl_plano_contas_codigo_id==$codigo_conta) 
+	                                                    <?php
+	                                                      if($registo_pcontas->tbl_plano_contas_codigo_id==$codigo_conta)
 	                                                         { echo "selected"; }
 	                                                  ?>>
-                                                    
-	                                                  <?php 
+
+	                                                  <?php
 	                                                      echo $registo_pcontas->tbl_plano_contas_descricao;
 	                                                  ?>
 	                                                  </option>
@@ -456,6 +487,7 @@
 	                                                </select>
                                                 </div>
                                             </div>
+                                            <?php endif; ?>
 
                                             <div class="row m-bot15">
                                                 <div class="col-md-12">
