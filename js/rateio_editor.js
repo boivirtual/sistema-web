@@ -183,7 +183,19 @@ function _eratGerarLinha(ln, showLocal, showCC, showConta, showLocalIcon, showCC
 
 // ── Reconstrói o tbody aplicando agrupamento visual Local/CC ──
 function _eratRefreshGrouping() {
-    var $novaConta = $('#tbody_erat tr.linha-nova-conta').detach();
+    // Coleta dados das linhas nova-conta e destrói selectpickers antes de remover
+    var novaContaList = [];
+    $('#tbody_erat tr.linha-nova-conta').each(function () {
+        var $tr = $(this);
+        try { $tr.find('select.erat-sel-conta-nova').selectpicker('destroy'); } catch(e) {}
+        novaContaList.push({
+            localId:   String($tr.attr('data-local-id') || ''),
+            localNome: $tr.attr('data-local-nome') || '',
+            ccId:      String($tr.attr('data-cc-id') || ''),
+            ccNome:    $tr.attr('data-cc-nome') || ''
+        });
+    });
+    $('#tbody_erat tr.linha-nova-conta').remove();
 
     var rows = [];
     $('#tbody_erat tr.linha-valor-rateio').each(function () {
@@ -213,9 +225,19 @@ function _eratRefreshGrouping() {
         prevCcId    = ln.cc_id;
     }
     $('#tbody_erat').html(html);
-    if ($novaConta.length) {
-        $('#tbody_erat').append($novaConta);
+
+    // Recria linhas nova-conta do zero (HTML + selectpicker frescos)
+    for (var n = 0; n < novaContaList.length; n++) {
+        var d = novaContaList[n];
+        var $novaRow = $(_eratGerarLinhaNovaConta(d.localId, d.localNome, d.ccId, d.ccNome));
+        $('#tbody_erat').append($novaRow);
+        $novaRow.find('select.erat-sel-conta-nova').each(function () {
+            $(this).selectpicker();
+            var sid = $(this).attr('id');
+            if (sid) _eratRemoveSelectAll(sid);
+        });
     }
+
     _eratSetModo(_eratModo);
     eratRecalcular();
     $('#modal_editar_rateio [data-toggle="tooltip"]').tooltip();
