@@ -586,7 +586,7 @@ function eratEditarConta(link) {
         '<button type="button" class="btn btn-default btn-sm" onclick="eratCancelarEdicao(this)">Fechar</button>' +
         '</div>'
     );
-    $('#' + selId).selectpicker();
+    $('#' + selId).selectpicker({ dropdownAlignRight: 'auto' });
     $('#' + selId).selectpicker('val', groupContaIds);
     _eratRemoveSelectAll(selId);
 }
