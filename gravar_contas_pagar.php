@@ -1058,13 +1058,17 @@ ob_start(function($buffer) {
 			$vlr_acrescimo = str_replace(',','.', str_replace('.','', $_POST['vlr_acrescimo']));
 		}
 
-	    $sql = "UPDATE contas_pagar SET
+		$upd_fazenda = $rateio_existente_ed ? 'NULL' : "'$codigo_local'";
+	$upd_conta   = $rateio_existente_ed ? 'NULL' : "'$codigo_conta'";
+	$upd_ccusto  = $rateio_existente_ed ? 'NULL' : "'$codigo_c_custo'";
+
+    $sql = "UPDATE contas_pagar SET
                 ctp_numero_doc='$numero_doc',
                 ctp_numero_documento='$numero_doc',
 	            ctp_nome_fornecedor='$razao',
-	            ctp_codigo_fazenda='$codigo_local',
-	            ctp_codigo_conta='$codigo_conta',
-	            ctp_codigo_centro_custos='$codigo_c_custo',
+	            ctp_codigo_fazenda=$upd_fazenda,
+	            ctp_codigo_conta=$upd_conta,
+	            ctp_codigo_centro_custos=$upd_ccusto,
 	            ctp_tipo_documento='$tipo_documento',
 	            ctp_conta_pagamento='$codigo_forma_pag',
 	            ctp_numero_cheque='$numero_cheque',
