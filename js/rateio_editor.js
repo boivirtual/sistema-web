@@ -234,7 +234,7 @@ function _eratRefreshGrouping() {
         var $novaRow = $(_eratGerarLinhaNovaConta(d.localId, d.localNome, d.ccId, d.ccNome));
         $('#tbody_erat').append($novaRow);
         $novaRow.find('select.erat-sel-conta-nova').each(function () {
-            $(this).selectpicker();
+            $(this).selectpicker({ dropdownAlignRight: 'auto' });
             var sid = $(this).attr('id');
             if (sid) _eratRemoveSelectAll(sid);
         });
