@@ -68,15 +68,14 @@ while ($r = mysqli_fetch_object($rs_cta_erat)) {
 ?>
 
 <style>
-    /* Selectpicker dentro da tabela do rateio — largura fixa, igual ao
-       form_contas_pagar_aceite.php (.bootstrap-select { width: 230px !important; }),
-       que é a referência que funciona corretamente */
-    #tbl_erat .bootstrap-select { width: 230px !important; }
+    /* Botão do selectpicker dentro da tabela: ocupa só o espaço flex:1 da célula (~140px),
+       deixando espaço para os botões Confirmar/Fechar ao lado */
+    #tbl_erat .bootstrap-select { width: 100% !important; }
     #tbl_erat .bootstrap-select > .dropdown-toggle { height: 30px; font-size: 12px; padding: 4px 8px; }
 
-    /* Dropdown do rateio (bs-container vai para body) acompanha a mesma largura */
-    body > .bs-container { width: 230px !important; }
-    body > .bs-container .dropdown-menu { width: 230px !important; max-width: 280px !important; overflow-x: hidden; }
+    /* Popup do dropdown (vai para body via data-container):
+       largura controlada pelo JS em rateio_editor.js (shown.bs.select handler) */
+    body > .bs-container .dropdown-menu { overflow-x: hidden; }
     body > .bs-container .dropdown-menu li a span.text { white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis; display: block; }
 
     /* Tabela de rateio */
