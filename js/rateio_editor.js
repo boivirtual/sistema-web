@@ -8,15 +8,11 @@
 //   _eratCallbackPosSalvar = function(id) { ... };
 var _eratCallbackPosSalvar = null;
 
-// Corrige largura/posição do .bs-container do Bootstrap Select (que calcula
-// width errado dentro de um td com display:flex) e evita overflow na tela
+// Repositiona .bs-container se o dropdown ultrapassar a borda direita da tela
+// (a largura já é fixada via CSS !important em modal_editar_rateio.php)
 function _eratFixDropdownPos() {
     var $c = $('.bs-container.open');
     if (!$c.length) return;
-    var MAX_W = 280;
-    if ($c.outerWidth() > MAX_W) {
-        $c.css('width', MAX_W + 'px');
-    }
     var winW  = $(window).width();
     var cLeft = parseFloat($c.css('left')) || 0;
     var cW    = $c.outerWidth() || 0;
