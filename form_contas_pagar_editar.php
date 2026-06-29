@@ -476,6 +476,13 @@
                                                 </div>
                                             </div>
 
+                                            <div class="row m-bot15" style="margin-top:6px;">
+                                                <div class="col-md-12">
+                                                  <label for="observacoes" class="control-label">Observação</label>
+                                                  <textarea name="observacoes" class="form-control" id="observacoes" rows="2"><?php echo htmlspecialchars($observacoes_ctp ?? ''); ?></textarea>
+                                                </div>
+                                            </div>
+
                                             <div class="row" style="margin-top:2px;margin-bottom:6px;">
                                                 <div class="col-md-12">
                                                     <?php
