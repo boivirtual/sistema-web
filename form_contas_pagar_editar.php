@@ -91,6 +91,7 @@
     $data_agendamento = new DateTime($registro_ctp->ctp_data_agendamento); 
     $nome_fornecedor = $registro_ctp->ctp_nome_fornecedor;
     $descricao_compra = $registro_ctp->ctp_descricao_compra;
+    $observacoes_ctp  = $registro_ctp->ctp_observacoes;
     $tipo_documento = $registro_ctp->ctp_tipo_documento;
 
     if($agendamento=="S") {
