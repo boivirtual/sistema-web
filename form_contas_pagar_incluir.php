@@ -2268,6 +2268,7 @@ $data_sistema = date("Y-m-d");
         var $dropdownAberto = $('#tbl_rateio .bootstrap-select.open');
         if ($dropdownAberto.length) {
             $dropdownAberto.find('button.dropdown-toggle').trigger('click');
+            setTimeout(confirmarTodaConta, 50);
             return;
         }
         // Aguarda o diálogo de replicação ser processado antes de validar
