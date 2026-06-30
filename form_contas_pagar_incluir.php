@@ -3428,9 +3428,8 @@ $data_sistema = date("Y-m-d");
             $('#col_local').hide();
             $('#rateio_status').show();
         } else {
-            $('#secao_distribuir_rateio').hide();
-            $('#col_local').show();
-            $('#col_btn_confirmar_locais').hide();
+            $('#habilitar_rateio').prop('checked', false);
+            _executarRateioOff();
         }
     }
 
