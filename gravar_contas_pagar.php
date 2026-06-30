@@ -166,7 +166,9 @@ ob_start(function($buffer) {
 	$codigo_c_custo = $_POST['codigo_cc'];
 
     // Quando rateio está ativo, Local/Conta Contábil/CC não são obrigatórios
-    $tem_rateio = !empty($_POST['rateio_json']) && $_POST['rateio_json'] !== '[]' && $_POST['rateio_json'] !== 'null';
+    // (rateio_json: novo rateio sendo definido na inclusão; rateio_existente: rateio já gravado, mantido na edição)
+    $tem_rateio = (!empty($_POST['rateio_json']) && $_POST['rateio_json'] !== '[]' && $_POST['rateio_json'] !== 'null')
+        || (!empty($_POST['rateio_existente']) && $_POST['rateio_existente'] === '1');
 
 	if (!isset($_POST['codigo_fazenda'])) {
 		$codigo_local = '';
