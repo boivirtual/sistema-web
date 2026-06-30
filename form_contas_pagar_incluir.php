@@ -2846,7 +2846,7 @@ $data_sistema = date("Y-m-d");
     function fixarConfirmarContaButton() {
         $('#tbl_rateio tbody tr.linha-fase2 .td-confirmar-conta').html('');
         $('#tbl_rateio tbody tr.linha-fase2:last .td-confirmar-conta').html(
-            '<button type="button" class="btn btn-success" onclick="confirmarTodaConta()">Confirmar</button>'
+            '<button type="button" class="btn btn-primary" onclick="confirmarTodaConta()">Confirmar</button>'
         );
     }
 
