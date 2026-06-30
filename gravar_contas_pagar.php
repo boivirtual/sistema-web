@@ -326,6 +326,11 @@ ob_start(function($buffer) {
             echo json_encode(array('error' => true, 'message' => 'Informe a Descrição da Compra.'));
             mysqli_close($conector); exit;
         }
+        if (empty($numero_doc_n)) {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Informe o Número do Documento.'));
+            mysqli_close($conector); exit;
+        }
         if (!$tem_rateio && (empty($codigo_local_str) || $codigo_local_str == '000000000')) {
             header('Content-type: application/json');
             echo json_encode(array('error' => true, 'message' => 'Informe a Fazenda/Local.'));
