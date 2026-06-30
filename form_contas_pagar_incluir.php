@@ -3422,6 +3422,18 @@ $data_sistema = date("Y-m-d");
             .text('Confirmar Rateio').prop('disabled', false);
     }
 
+    function voltarRateio() {
+        if ($('#rateio_json').val()) {
+            $('#secao_distribuir_rateio').hide();
+            $('#col_local').hide();
+            $('#rateio_status').show();
+        } else {
+            $('#secao_distribuir_rateio').hide();
+            $('#col_local').show();
+            $('#col_btn_confirmar_locais').hide();
+        }
+    }
+
     (function () {
         // Aguarda o DOM estar pronto para garantir que contas_pagar.js já definiu gravar_conta
         window.gravar_conta = function () {
