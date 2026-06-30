@@ -3418,7 +3418,7 @@ $data_sistema = date("Y-m-d");
         $('#secao_distribuir_rateio').show();
         // Reabilita o botão Confirmar Rateio
         $('#btn_confirmar_rateio_final')
-            .removeClass('btn-success').addClass('btn-primary')
+            .removeClass('btn-success').addClass('btn-default')
             .text('Confirmar Rateio').prop('disabled', false);
     }
 
