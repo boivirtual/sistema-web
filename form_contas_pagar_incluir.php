@@ -2597,7 +2597,7 @@ $data_sistema = date("Y-m-d");
         recalcularRateio();
         // Se não restam linhas, reabilita Confirmar Rateio
         if ($('.linha-valor-rateio').length === 0) {
-            $('#btn_confirmar_rateio_final').removeClass('btn-success').addClass('btn-primary')
+            $('#btn_confirmar_rateio_final').removeClass('btn-success').addClass('btn-default')
                 .text('Confirmar Rateio').prop('disabled', false);
         }
     }
