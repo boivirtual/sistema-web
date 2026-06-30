@@ -2384,7 +2384,7 @@ $data_sistema = date("Y-m-d");
         $('#linhas_rateio').html(html);
         $('#linhas_rateio').after(
             '<div id="rodape_rateio" style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:4px 2px;">' +
-            '<button type="button" id="btn_confirmar_rateio_final" class="btn btn-primary" onclick="confirmarRateioFinal()">Confirmar Rateio</button>' +
+            '<button type="button" id="btn_confirmar_rateio_final" class="btn btn-default" onclick="confirmarRateioFinal()">Confirmar Rateio</button>' +
             '<button type="button" class="btn btn-default" onclick="voltarRateio()">Fechar</button>' +
             '</div>'
         );
