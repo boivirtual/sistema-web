@@ -306,6 +306,14 @@ $data_sistema = date("Y-m-d");
                                     <div class="tab-content">
                                     <div id="dados" class="tab-pane active">
 
+                                    <!-- ===== BOTÕES (topo) ===== -->
+                                    <div class="row" style="margin-bottom: 10px;">
+                                        <div class="form-group col-md-12">
+                                            <button type="button" class="btn btn-primary confirmar_gravar" onclick="confirmar_incluir()">Confirmar</button>
+                                            <button type="button" class="btn btn-info pull-right fecha_editar_dados">Voltar</button>
+                                        </div>
+                                    </div>
+
                                     <!-- ===== LINHA 1: Fornecedor | Emissão | Descrição | Valor | Nº Documento ===== -->
                                     <div class="row">
 
