@@ -85,7 +85,7 @@ foreach ($rows as $idx => $row) {
     echo '<li style="display:flex;align-items:flex-start;padding:9px 14px;' . $borda . '">';
     echo '<div style="flex:1;">';
     echo '<a href="' . $href . '"' . $target . $extra . ' style="font-size:13px;">';
-    echo $icon . $nome;
+    echo $nome;
     echo '</a>';
     if ($incluido) {
         echo '<small class="text-muted" style="display:block;font-size:10px;margin-top:3px;">';
