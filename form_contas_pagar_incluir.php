@@ -719,10 +719,10 @@ $data_sistema = date("Y-m-d");
                                                 </div>
                                                 <div style="margin-left: 16px;">
                                                     <label class="control-label">Anexar Link</label>
-                                                    <div style="display: flex; align-items: center;">
-                                                        <button type="button" class="btn-anexo-add" onclick="adicionarLink()" data-toggle='tooltip' data-placement='top' title="Adicionar link">
-                                                            <i class="fas fa-link" style="font-size: 16px;"></i>
-                                                        </button>
+                                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                                        <i class="fas fa-link" style="color:#337ab7;font-size:16px;flex-shrink:0;"></i>
+                                                        <input type="text" id="link_desc_input" class="form-control" placeholder="Descrição do link" style="max-width: 200px;">
+                                                        <input type="url" id="link_url_input" class="form-control" placeholder="https://..." style="max-width: 220px;" onkeydown="onLinkUrlKeydown(event)" onblur="onLinkUrlBlur()">
                                                     </div>
                                                     <div id="lista_links"></div>
                                                 </div>
