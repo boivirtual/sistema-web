@@ -317,7 +317,7 @@ function _maConfirmar() {
         }
     });
 
-    $('#modal_ma_extra .ma-link-row').each(function () {
+    $('#modal_ma_lista_links .ma-link-row').each(function () {
         var url  = $(this).find('.ma-link-url').val().trim();
         var desc = $(this).find('.ma-link-desc').val().trim();
         if (url) {
