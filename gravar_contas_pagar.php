@@ -710,12 +710,17 @@ ob_start(function($buffer) {
             $razao_r = isset($_POST['nome_for']) ? mysqli_real_escape_string($conector, $_POST['nome_for']) : '';
         }
 
-        // Validações
+        // Validações (ordem: Fornecedor, Emissão, Descrição, Valor, Local,
+        // Centro de Custos e Código Contábil só quando sem rateio, Vencimento, Banco/Conta Pagamento)
+        if (empty($codigo_for_r))    { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Fornecedor.']); mysqli_close($conector); exit; }
         if (empty($data_emissao_r))  { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe a Data de Emissão.']); mysqli_close($conector); exit; }
-        if (empty($rep_prim_venc))   { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o 1º Vencimento da recorrência.']); mysqli_close($conector); exit; }
-        if ($rep_banco == 0)          { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Banco/Conta Pagamento da recorrência.']); mysqli_close($conector); exit; }
+        if (empty($descricao_r))     { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe a Descrição da Compra.']); mysqli_close($conector); exit; }
         if ($vlr_r <= 0)              { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Valor.']); mysqli_close($conector); exit; }
         if (!$tem_rateio && empty($codigo_local_r))  { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Local.']); mysqli_close($conector); exit; }
+        if (!$tem_rateio && empty($codigo_ccusto_r)) { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Centro de Custos.']); mysqli_close($conector); exit; }
+        if (!$tem_rateio && $codigo_conta_r == '0000000') { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Código Contábil.']); mysqli_close($conector); exit; }
+        if (empty($rep_prim_venc))   { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Vencimento.']); mysqli_close($conector); exit; }
+        if ($rep_banco == 0)          { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Banco/Conta Pagamento.']); mysqli_close($conector); exit; }
 
         // UUID do grupo de repetição
         $uuid_grupo = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
