@@ -1845,10 +1845,6 @@ $data_sistema = date("Y-m-d");
             hiddenUrl.name = 'anexo_link_url[]';
             hiddenUrl.value = url;
 
-            var icone = document.createElement('i');
-            icone.className = 'fas fa-link';
-            icone.style.cssText = 'color:#337ab7;font-size:14px;flex-shrink:0;';
-
             var texto = document.createElement('span');
             texto.textContent = desc + ' — ' + url;
             texto.style.cssText = 'max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
@@ -1859,7 +1855,6 @@ $data_sistema = date("Y-m-d");
 
             var btnRemover = criarBotaoRemover(function () { removerAnexo(btnRemover); });
 
-            div.appendChild(icone);
             div.appendChild(texto);
             div.appendChild(btnRemover);
             div.appendChild(hiddenDesc);
