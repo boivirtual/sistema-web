@@ -178,52 +178,132 @@ function _maAbrirInputs() {
 }
 
 function _maResetar() {
-    $('#modal_ma_file_0').val('');
-    $('#modal_ma_extra').empty();
+    $('#modal_ma_picker').val('');
+    $('#modal_ma_link_desc').val('');
+    $('#modal_ma_link_url').val('');
+    $('#modal_ma_lista_anexos').empty();
+    $('#modal_ma_lista_links').empty();
     $('#btn_confirmar_ma').hide();
     $('#modal_ma_inputs').hide();
     $('#modal_ma_toggle').show();
 }
 
-function _maAdicionarArquivo() {
-    var div = $('<div>').css({ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' });
-    div.html(
-        '<input type="file" class="form-control ma-file-input" style="max-width:280px;">' +
-        '<button type="button" class="btn-ma-add" onclick="_maRemover(this)" title="Remover">' +
-        '<i class="far fa-times-circle" style="font-size:16px;color:#c0392b;"></i></button>'
-    );
-    div.find('.ma-file-input').on('change', _maAtualizarBotao);
-    $('#modal_ma_extra').append(div);
+function _maCriarBotaoRemover(onRemove) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn-ma-add';
+    btn.title = 'Remover';
+    btn.setAttribute('data-toggle', 'tooltip');
+    btn.setAttribute('data-placement', 'top');
+    btn.innerHTML = '<i class="fas fa-trash" style="font-size:12px; color:#337ab7;"></i>';
+    btn.onclick = onRemove;
+    $(btn).tooltip();
+    return btn;
 }
 
-function _maAdicionarLink() {
-    var div = $('<div class="ma-link-row">').css({ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', flexWrap: 'nowrap' });
-    div.html(
-        '<i class="fas fa-link" style="color:#337ab7;font-size:14px;flex-shrink:0;"></i>' +
-        '<input type="text" class="form-control ma-link-desc" placeholder="Descrição do link" style="max-width:180px;">' +
-        '<input type="url"  class="form-control ma-link-url"  placeholder="https://..." style="max-width:260px;">' +
-        '<button type="button" class="btn-ma-add" onclick="_maRemover(this)" title="Remover">' +
-        '<i class="far fa-times-circle" style="font-size:16px;color:#c0392b;"></i></button>'
-    );
-    div.find('.ma-link-url').on('input', _maAtualizarBotao);
-    $('#modal_ma_extra').append(div);
+function _maOnPickerChange(input) {
+    if (!input.files || !input.files.length) return;
+    _maCriarLinhaAnexoArquivo(input.files[0]);
+    input.value = ''; // limpa para permitir escolher o próximo arquivo
+    _maAtualizarBotao();
 }
 
-function _maRemover(btn) {
-    $(btn).closest('div').remove();
+function _maCriarLinhaAnexoArquivo(file) {
+    var dt = new DataTransfer();
+    dt.items.add(file);
+
+    var hidden = document.createElement('input');
+    hidden.type = 'file';
+    hidden.className = 'ma-file-input';
+    hidden.style.display = 'none';
+    hidden.files = dt.files;
+
+    var nome = document.createElement('span');
+    nome.textContent = file.name;
+    nome.style.cssText = 'max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+
+    var icone = document.createElement('i');
+    icone.className = 'fas fa-paperclip';
+    icone.style.cssText = 'color:#337ab7;font-size:14px;flex-shrink:0;';
+
+    var div = document.createElement('div');
+    div.className = 'linha-anexo-arquivo';
+    div.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:6px;';
+
+    var btnRemover = _maCriarBotaoRemover(function () { _maRemoverLinha(div); });
+
+    div.appendChild(icone);
+    div.appendChild(nome);
+    div.appendChild(btnRemover);
+    div.appendChild(hidden);
+    $('#modal_ma_lista_anexos').append(div);
+}
+
+// Enter no campo URL sai do foco (dispara _maOnLinkUrlBlur) em vez de tentar submeter algo.
+function _maOnLinkUrlKeydown(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        event.target.blur();
+    }
+}
+
+// Ao sair do foco da URL, se preenchida, cria a linha de exibição do link
+// e limpa os inputs fixos de Descrição/URL para o próximo link.
+function _maOnLinkUrlBlur() {
+    var $desc = $('#modal_ma_link_desc');
+    var $url  = $('#modal_ma_link_url');
+    var url = $url.val().trim();
+    if (!url) return; // nada digitado
+
+    var desc = $desc.val().trim() || url;
+    _maCriarLinhaLink(desc, url);
+
+    $desc.val('');
+    $url.val('');
+    _maAtualizarBotao();
+}
+
+function _maCriarLinhaLink(desc, url) {
+    var hiddenDesc = document.createElement('input');
+    hiddenDesc.type = 'hidden';
+    hiddenDesc.className = 'ma-link-desc';
+    hiddenDesc.value = desc;
+
+    var hiddenUrl = document.createElement('input');
+    hiddenUrl.type = 'hidden';
+    hiddenUrl.className = 'ma-link-url';
+    hiddenUrl.value = url;
+
+    var icone = document.createElement('i');
+    icone.className = 'fas fa-link';
+    icone.style.cssText = 'color:#337ab7;font-size:14px;flex-shrink:0;';
+
+    var texto = document.createElement('span');
+    texto.textContent = desc + ' — ' + url;
+    texto.style.cssText = 'max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+
+    var div = document.createElement('div');
+    div.className = 'ma-link-row';
+    div.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:6px;';
+
+    var btnRemover = _maCriarBotaoRemover(function () { _maRemoverLinha(div); });
+
+    div.appendChild(icone);
+    div.appendChild(texto);
+    div.appendChild(btnRemover);
+    div.appendChild(hiddenDesc);
+    div.appendChild(hiddenUrl);
+    $('#modal_ma_lista_links').append(div);
+}
+
+function _maRemoverLinha(div) {
+    $(div).remove();
     _maAtualizarBotao();
 }
 
 function _maAtualizarBotao() {
-    var temAlgo = false;
-    $('.ma-file-input').each(function () {
-        if (this.files && this.files.length > 0) { temAlgo = true; return false; }
-    });
-    if (!temAlgo) {
-        $('.ma-link-url').each(function () {
-            if ($(this).val().trim()) { temAlgo = true; return false; }
-        });
-    }
+    var temAlgo = $('#modal_ma_lista_anexos').children().length > 0
+               || $('#modal_ma_lista_links').children().length > 0;
     $('#btn_confirmar_ma').toggle(temAlgo);
 }
 
