@@ -1807,8 +1807,11 @@ $data_sistema = date("Y-m-d");
             btn.type = 'button';
             btn.className = 'btn-anexo-add';
             btn.title = 'Remover';
+            btn.setAttribute('data-toggle', 'tooltip');
+            btn.setAttribute('data-placement', 'top');
             btn.innerHTML = '<i class="fas fa-trash" style="font-size:12px; color:#337ab7;"></i>';
             btn.onclick = onRemove;
+            $(btn).tooltip();
             return btn;
         }
 
