@@ -1502,8 +1502,84 @@ $data_sistema = date("Y-m-d");
             return true;
         }
 
-        // Ponto de entrada do botão Confirmar — valida parcelamento antes de gravar
+        // ----------------------------------------------------------------
+        // Validação dos campos obrigatórios, na ordem exigida pelo negócio:
+        // Fornecedor, Emissão, Descrição, Valor, (sem rateio) Local, Centro
+        // de Custos, Código Contábil, Vencimento, Banco/Conta Pagamento.
+        // Número do Documento NÃO é obrigatório.
+        // ----------------------------------------------------------------
+        function validarCamposObrigatoriosPagar() {
+            function erro(msg, $campo) {
+                $('#mensagem_erro').modal();
+                $('#mensagem_erro .modal-body').html(msg);
+                if ($campo && $campo.length) {
+                    $('#mensagem_erro').one('hidden.bs.modal', function () {
+                        $campo.focus();
+                    });
+                }
+                return false;
+            }
+
+            var codigoFor = $('#codigo_cli_for').val();
+            if (!codigoFor || codigoFor === '999999999') {
+                return erro('Informe o Fornecedor.', $('#codigo_cli_for'));
+            }
+            if (!$('#data_emissao').val()) {
+                return erro('Informe a Data de Emissão.', $('#data_emissao'));
+            }
+            if (!$('#descricao_compra').val().trim()) {
+                return erro('Informe a Descrição da Compra.', $('#descricao_compra'));
+            }
+            if (ctpGetValorTotal() <= 0) {
+                return erro('Informe o Valor.', $('#vlr_primeira_parcela'));
+            }
+
+            if (!$('#habilitar_rateio').is(':checked')) {
+                var local = $('#codigo_fazenda').val();
+                if (!local || (Array.isArray(local) && local.length === 0)) {
+                    return erro('Informe o Local.', $('#codigo_fazenda'));
+                }
+                if (!$('#codigo_cc').val()) {
+                    return erro('Informe o Centro de Custos.', $('#codigo_cc'));
+                }
+                var conta = $('#codigo_conta').val();
+                if (!conta || conta === '0000000') {
+                    return erro('Informe o Código Contábil.', $('#codigo_conta'));
+                }
+            }
+
+            if ($('#repetir_lancamento').is(':checked')) {
+                if (!$('#rep_primeiro_venc').val()) {
+                    return erro('Informe o Vencimento.', $('#rep_primeiro_venc'));
+                }
+                var repBanco = $('#rep_banco').val();
+                if (!repBanco || repBanco === '0') {
+                    return erro('Informe o Banco/Conta Pagamento.', $('#rep_banco'));
+                }
+            } else {
+                var n = parseInt($('#parcelamento').val());
+                if (n === 0) {
+                    if (!$('#data_vencimento').val()) {
+                        return erro('Informe o Vencimento.', $('#data_vencimento'));
+                    }
+                    var banco = $('#codigo_forma_rec').val();
+                    if (!banco || banco === '0') {
+                        return erro('Informe o Banco/Conta Pagamento.', $('#codigo_forma_rec'));
+                    }
+                } else if (n >= 1) {
+                    if (!$('#primeiro_vencimento').val()) {
+                        return erro('Informe o Vencimento.', $('#primeiro_vencimento'));
+                    }
+                    // Banco/Conta Pagamento de cada parcela é validado em validarParcelamento()
+                }
+            }
+
+            return true;
+        }
+
+        // Ponto de entrada do botão Confirmar — valida campos obrigatórios e parcelamento antes de gravar
         function confirmar_incluir() {
+            if (!validarCamposObrigatoriosPagar()) return;
             if (!validarParcelamento()) return;
             // Se rateio novo estiver ativo, vai direto gravar (sem modal de fazendas)
             // Se rateio desligado com 1 só fazenda, também vai direto
