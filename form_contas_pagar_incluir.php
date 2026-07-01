@@ -1737,31 +1737,6 @@ $data_sistema = date("Y-m-d");
             if ($('#repetir_lancamento').is(':checked')) gerarPreviewRecorrencias();
         });
 
-        // ================================================================
-        // VALIDAÇÃO EXTRA: inclui repetição na confirmação
-        // ================================================================
-        var _validarParcelamento_original = window.validarParcelamento;
-        window.validarParcelamento_completo = function() {
-            // Se repetição ativa, pula validação de parcelamento
-            if ($('#repetir_lancamento').is(':checked')) {
-                var banco = $('#rep_banco').val();
-                var venc  = $('#rep_primeiro_venc').val();
-                if (!venc) {
-                    $('#mensagem_erro').modal();
-                    $('#mensagem_erro .modal-body').html('Informe o 1º Vencimento da recorrência.');
-                    return false;
-                }
-                if (!banco || banco === '0') {
-                    $('#mensagem_erro').modal();
-                    $('#mensagem_erro .modal-body').html('Informe o Banco/Conta Pagamento da recorrência.');
-                    return false;
-                }
-                return true;
-            }
-            return typeof _validarParcelamento_original === 'function'
-                ? _validarParcelamento_original()
-                : true;
-        };
 
         // ----------------------------------------------------------------
         // Anexos
