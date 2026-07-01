@@ -66,7 +66,7 @@
 
     $select_fields = "SELECT cp.ctp_id, cp.ctp_data_emissao, cp.ctp_data_vencimento,
                              cp.ctp_codigo_banco, cp.ctp_numero_cheque,
-                             cp.ctp_numero_doc, cp.ctp_numero_documento,
+                             cp.ctp_numero_doc, cp.ctp_numero_documento, cp.ctp_grupo_repeticao,
                              cp.ctp_parcela, cp.ctp_codigo_fornecedor, cp.ctp_nome_fornecedor,
                              cp.ctp_codigo_fazenda, cp.ctp_codigo_conta,
                              cp.ctp_descricao_compra, cp.ctp_situacao,
