@@ -269,10 +269,6 @@ function _maCriarLinhaLink(desc, url) {
     hiddenUrl.className = 'ma-link-url';
     hiddenUrl.value = url;
 
-    var icone = document.createElement('i');
-    icone.className = 'fas fa-link';
-    icone.style.cssText = 'color:#337ab7;font-size:14px;flex-shrink:0;';
-
     var texto = document.createElement('span');
     texto.textContent = desc + ' — ' + url;
     texto.style.cssText = 'max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
@@ -283,7 +279,6 @@ function _maCriarLinhaLink(desc, url) {
 
     var btnRemover = _maCriarBotaoRemover(function () { _maRemoverLinha(div); });
 
-    div.appendChild(icone);
     div.appendChild(texto);
     div.appendChild(btnRemover);
     div.appendChild(hiddenDesc);
