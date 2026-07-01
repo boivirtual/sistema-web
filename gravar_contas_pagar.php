@@ -322,30 +322,11 @@ ob_start(function($buffer) {
         $vlr_total_n = isset($_POST['vlr_primeira_parcela']) ? str_replace(',', '.', str_replace('.', '', $_POST['vlr_primeira_parcela'])) : 0;
         $vlr_total_n = floatval($vlr_total_n);
 
-        // --- Validações comuns ---
-        if (empty($descricao_n)) {
-            header('Content-type: application/json');
-            echo json_encode(array('error' => true, 'message' => 'Informe a Descrição da Compra.'));
-            mysqli_close($conector); exit;
-        }
-        if (empty($numero_doc_n)) {
-            header('Content-type: application/json');
-            echo json_encode(array('error' => true, 'message' => 'Informe o Número do Documento.'));
-            mysqli_close($conector); exit;
-        }
-        if (!$tem_rateio && (empty($codigo_local_str) || $codigo_local_str == '000000000')) {
-            header('Content-type: application/json');
-            echo json_encode(array('error' => true, 'message' => 'Informe a Fazenda/Local.'));
-            mysqli_close($conector); exit;
-        }
+        // --- Validações comuns (ordem: Fornecedor, Emissão, Descrição, Valor,
+        //     Local, Centro de Custos e Código Contábil só quando sem rateio) ---
         if (empty($codigo_for_n)) {
             header('Content-type: application/json');
             echo json_encode(array('error' => true, 'message' => 'Informe o Fornecedor.'));
-            mysqli_close($conector); exit;
-        }
-        if (!$tem_rateio && $codigo_conta_n == '0000000') {
-            header('Content-type: application/json');
-            echo json_encode(array('error' => true, 'message' => 'Informe a Conta Contábil.'));
             mysqli_close($conector); exit;
         }
         if (empty($data_emissao_n)) {
@@ -353,9 +334,29 @@ ob_start(function($buffer) {
             echo json_encode(array('error' => true, 'message' => 'Informe a Data de Emissão.'));
             mysqli_close($conector); exit;
         }
+        if (empty($descricao_n)) {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Informe a Descrição da Compra.'));
+            mysqli_close($conector); exit;
+        }
         if ($vlr_total_n <= 0) {
             header('Content-type: application/json');
-            echo json_encode(array('error' => true, 'message' => 'Informe o Valor da compra.'));
+            echo json_encode(array('error' => true, 'message' => 'Informe o Valor.'));
+            mysqli_close($conector); exit;
+        }
+        if (!$tem_rateio && (empty($codigo_local_str) || $codigo_local_str == '000000000')) {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Informe o Local.'));
+            mysqli_close($conector); exit;
+        }
+        if (!$tem_rateio && empty($codigo_ccusto_n)) {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Informe o Centro de Custos.'));
+            mysqli_close($conector); exit;
+        }
+        if (!$tem_rateio && $codigo_conta_n == '0000000') {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Informe o Código Contábil.'));
             mysqli_close($conector); exit;
         }
 
