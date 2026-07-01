@@ -1813,49 +1813,31 @@ $data_sistema = date("Y-m-d");
             return btn;
         }
 
-        function adicionarLink() {
-            var div = document.createElement('div');
-            div.className = 'linha-anexo-link';
-            div.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:nowrap;';
-
-            var icone = document.createElement('i');
-            icone.className = 'fas fa-link';
-            icone.style.cssText = 'color:#337ab7;font-size:14px;flex-shrink:0;';
-
-            var inputDesc = document.createElement('input');
-            inputDesc.type = 'text';
-            inputDesc.name = 'anexo_link_desc[]';
-            inputDesc.className = 'form-control';
-            inputDesc.placeholder = 'Descrição do link';
-            inputDesc.style.maxWidth = '200px';
-
-            var inputUrl = document.createElement('input');
-            inputUrl.type = 'url';
-            inputUrl.name = 'anexo_link_url[]';
-            inputUrl.className = 'form-control';
-            inputUrl.placeholder = 'https://...';
-            inputUrl.style.maxWidth = '320px';
-            inputUrl.onblur = function () { confirmarLinhaLink(div, inputDesc, inputUrl); };
-
-            var btnRemover = criarBotaoRemover(function () { removerAnexo(btnRemover); });
-
-            div.appendChild(icone);
-            div.appendChild(inputDesc);
-            div.appendChild(inputUrl);
-            div.appendChild(btnRemover);
-            document.getElementById('lista_links').appendChild(div);
-            inputDesc.focus();
+        // Enter no campo URL sai do foco (dispara onLinkUrlBlur) em vez de tentar submeter o formulário.
+        function onLinkUrlKeydown(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                event.target.blur();
+            }
         }
 
-        // Ao sair do foco da URL, se preenchida, transforma a linha editável
-        // numa linha de exibição (igual ao anexo de arquivo), guardando os
-        // valores em inputs hidden com os mesmos nomes já usados no backend.
-        function confirmarLinhaLink(div, inputDesc, inputUrl) {
+        // Ao sair do foco da URL, se preenchida, cria a linha de exibição do
+        // link (igual ao chip do anexo de arquivo) e limpa os inputs fixos
+        // de Descrição/URL para permitir digitar o próximo link direto.
+        function onLinkUrlBlur() {
+            var inputDesc = document.getElementById('link_desc_input');
+            var inputUrl  = document.getElementById('link_url_input');
             var url = inputUrl.value.trim();
-            if (!url) return; // nada digitado, mantém editável
+            if (!url) return; // nada digitado
 
             var desc = inputDesc.value.trim() || url;
+            criarLinhaLink(desc, url);
 
+            inputDesc.value = '';
+            inputUrl.value = '';
+        }
+
+        function criarLinhaLink(desc, url) {
             var hiddenDesc = document.createElement('input');
             hiddenDesc.type = 'hidden';
             hiddenDesc.name = 'anexo_link_desc[]';
@@ -1874,14 +1856,18 @@ $data_sistema = date("Y-m-d");
             texto.textContent = desc + ' — ' + url;
             texto.style.cssText = 'max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
 
+            var div = document.createElement('div');
+            div.className = 'linha-anexo-link';
+            div.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:6px;';
+
             var btnRemover = criarBotaoRemover(function () { removerAnexo(btnRemover); });
 
-            div.innerHTML = '';
             div.appendChild(icone);
             div.appendChild(texto);
             div.appendChild(btnRemover);
             div.appendChild(hiddenDesc);
             div.appendChild(hiddenUrl);
+            document.getElementById('lista_links').appendChild(div);
         }
 
         function removerAnexo(btn) {
