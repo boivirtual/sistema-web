@@ -1808,16 +1808,85 @@ $data_sistema = date("Y-m-d");
             document.getElementById('lista_anexos').appendChild(div);
         }
 
+        function criarBotaoRemover(onRemove) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn-anexo-add';
+            btn.title = 'Remover';
+            btn.innerHTML = '<i class="fas fa-trash" style="font-size:14px; color:#337ab7;"></i>';
+            btn.onclick = onRemove;
+            return btn;
+        }
+
         function adicionarLink() {
             var div = document.createElement('div');
+            div.className = 'linha-anexo-link';
             div.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:nowrap;';
-            div.innerHTML =
-                '<i class="fas fa-link" style="color:#337ab7;font-size:14px;flex-shrink:0;"></i>' +
-                '<input type="text" name="anexo_link_desc[]" class="form-control" placeholder="Descrição do link" style="max-width:200px;">' +
-                '<input type="url"  name="anexo_link_url[]"  class="form-control" placeholder="https://..." style="max-width:320px;">' +
-                '<button type="button" class="btn-anexo-add" onclick="removerAnexo(this)" title="Remover">' +
-                '<i class="far fa-times-circle" style="font-size:16px; color:#c0392b;"></i></button>';
-            document.getElementById('lista_anexos').appendChild(div);
+
+            var icone = document.createElement('i');
+            icone.className = 'fas fa-link';
+            icone.style.cssText = 'color:#337ab7;font-size:14px;flex-shrink:0;';
+
+            var inputDesc = document.createElement('input');
+            inputDesc.type = 'text';
+            inputDesc.name = 'anexo_link_desc[]';
+            inputDesc.className = 'form-control';
+            inputDesc.placeholder = 'Descrição do link';
+            inputDesc.style.maxWidth = '200px';
+
+            var inputUrl = document.createElement('input');
+            inputUrl.type = 'url';
+            inputUrl.name = 'anexo_link_url[]';
+            inputUrl.className = 'form-control';
+            inputUrl.placeholder = 'https://...';
+            inputUrl.style.maxWidth = '320px';
+            inputUrl.onblur = function () { confirmarLinhaLink(div, inputDesc, inputUrl); };
+
+            var btnRemover = criarBotaoRemover(function () { removerAnexo(btnRemover); });
+
+            div.appendChild(icone);
+            div.appendChild(inputDesc);
+            div.appendChild(inputUrl);
+            div.appendChild(btnRemover);
+            document.getElementById('lista_links').appendChild(div);
+            inputDesc.focus();
+        }
+
+        // Ao sair do foco da URL, se preenchida, transforma a linha editável
+        // numa linha de exibição (igual ao anexo de arquivo), guardando os
+        // valores em inputs hidden com os mesmos nomes já usados no backend.
+        function confirmarLinhaLink(div, inputDesc, inputUrl) {
+            var url = inputUrl.value.trim();
+            if (!url) return; // nada digitado, mantém editável
+
+            var desc = inputDesc.value.trim() || url;
+
+            var hiddenDesc = document.createElement('input');
+            hiddenDesc.type = 'hidden';
+            hiddenDesc.name = 'anexo_link_desc[]';
+            hiddenDesc.value = desc;
+
+            var hiddenUrl = document.createElement('input');
+            hiddenUrl.type = 'hidden';
+            hiddenUrl.name = 'anexo_link_url[]';
+            hiddenUrl.value = url;
+
+            var icone = document.createElement('i');
+            icone.className = 'fas fa-link';
+            icone.style.cssText = 'color:#337ab7;font-size:14px;flex-shrink:0;';
+
+            var texto = document.createElement('span');
+            texto.textContent = desc + ' — ' + url;
+            texto.style.cssText = 'max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+
+            var btnRemover = criarBotaoRemover(function () { removerAnexo(btnRemover); });
+
+            div.innerHTML = '';
+            div.appendChild(icone);
+            div.appendChild(texto);
+            div.appendChild(btnRemover);
+            div.appendChild(hiddenDesc);
+            div.appendChild(hiddenUrl);
         }
 
         function removerAnexo(btn) {
