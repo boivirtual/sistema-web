@@ -61,24 +61,27 @@
                     </a>
 
                     <div id="modal_ma_inputs" style="display:none;">
-                        <div style="display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-top:6px;">
+                        <div style="display:flex;align-items:flex-start;gap:48px;flex-wrap:wrap;margin-top:6px;">
                             <div>
-                                <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">Anexar Documento</label>
+                                <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">
+                                    <i class="fas fa-paperclip" style="color:#337ab7;"></i> Anexar Documento
+                                </label>
                                 <div style="display:flex;align-items:center;gap:6px;">
-                                    <input type="file" id="modal_ma_file_0" class="form-control ma-file-input" style="max-width:280px;">
-                                    <button type="button" class="btn-ma-add" onclick="_maAdicionarArquivo()" data-toggle="tooltip" data-placement="top" title="Adicionar mais documentos">
-                                        <i class="far fa-plus-square"></i>
-                                    </button>
+                                    <input type="file" id="modal_ma_picker" class="form-control" style="max-width:280px;" onchange="_maOnPickerChange(this)">
                                 </div>
+                                <div id="modal_ma_lista_anexos"></div>
                             </div>
-                            <div>
-                                <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">Anexar Link</label>
-                                <button type="button" class="btn-ma-add" onclick="_maAdicionarLink()" data-toggle="tooltip" data-placement="top" title="Adicionar link">
-                                    <i class="fas fa-link"></i>
-                                </button>
+                            <div style="margin-left:16px;">
+                                <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">
+                                    <i class="fas fa-link" style="color:#337ab7;"></i> Anexar Link
+                                </label>
+                                <div style="display:flex;align-items:center;gap:6px;">
+                                    <input type="text" id="modal_ma_link_desc" class="form-control" placeholder="Descrição do link" style="max-width:180px;">
+                                    <input type="url" id="modal_ma_link_url" class="form-control" placeholder="https://..." style="max-width:220px;" onkeydown="_maOnLinkUrlKeydown(event)" onblur="_maOnLinkUrlBlur()">
+                                </div>
+                                <div id="modal_ma_lista_links"></div>
                             </div>
                         </div>
-                        <div id="modal_ma_extra"></div>
                     </div>
                 </div>
 
