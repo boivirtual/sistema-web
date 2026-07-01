@@ -536,7 +536,8 @@
                             }
 
                             $total_a_pagar = $vlr_parcela - $total_pago;
-                            $parcela_display = empty($numero_doc) ? $vencimento_edi->format('m/Y') : $numero_parcela;
+                            $eh_repeticao = !empty($registro_ctp->ctp_grupo_repeticao);
+                            $parcela_display = $eh_repeticao ? $vencimento_edi->format('m/Y') : $numero_parcela;
 
                             // Ícone de anexo — aparece se o documento tem arquivos/links em tbl_ctp_anexos
                             $tem_anexo = !empty($numero_doc)
