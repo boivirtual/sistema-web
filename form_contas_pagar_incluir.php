@@ -1766,13 +1766,44 @@ $data_sistema = date("Y-m-d");
         // ----------------------------------------------------------------
         // Anexos
         // ----------------------------------------------------------------
-        function adicionarAnexo() {
+        function onAnexoPickerChange(input) {
+            if (!input.files || !input.files.length) return;
+            criarLinhaAnexoArquivo(input.files[0]);
+            input.value = ''; // limpa para permitir escolher o próximo arquivo
+        }
+
+        function criarLinhaAnexoArquivo(file) {
+            var dt = new DataTransfer();
+            dt.items.add(file);
+
+            var hidden = document.createElement('input');
+            hidden.type = 'file';
+            hidden.name = 'anexo[]';
+            hidden.style.display = 'none';
+            hidden.files = dt.files;
+
+            var nome = document.createElement('span');
+            nome.textContent = file.name;
+            nome.style.cssText = 'max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+
+            var icone = document.createElement('i');
+            icone.className = 'fas fa-paperclip';
+            icone.style.cssText = 'color:#337ab7;font-size:14px;flex-shrink:0;';
+
+            var btnRemover = document.createElement('button');
+            btnRemover.type = 'button';
+            btnRemover.className = 'btn-anexo-add';
+            btnRemover.title = 'Remover';
+            btnRemover.onclick = function () { removerAnexo(btnRemover); };
+            btnRemover.innerHTML = '<i class="far fa-times-circle" style="font-size:16px; color:#c0392b;"></i>';
+
             var div = document.createElement('div');
+            div.className = 'linha-anexo-arquivo';
             div.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:6px;';
-            div.innerHTML =
-                '<input type="file" name="anexo[]" class="form-control" style="max-width:320px;">' +
-                '<button type="button" class="btn-anexo-add" onclick="removerAnexo(this)" title="Remover">' +
-                '<i class="far fa-times-circle" style="font-size:16px; color:#c0392b;"></i></button>';
+            div.appendChild(icone);
+            div.appendChild(nome);
+            div.appendChild(btnRemover);
+            div.appendChild(hidden);
             document.getElementById('lista_anexos').appendChild(div);
         }
 
