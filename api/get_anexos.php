@@ -65,14 +65,12 @@ foreach ($rows as $idx => $row) {
 
     if ($is_link) {
         $href   = htmlspecialchars($arquivo, ENT_QUOTES, 'UTF-8');
-        $icon   = '<i class="fas fa-link" style="color:#5bc0de;margin-right:7px;"></i>';
         $target = ' target="_blank" rel="noopener noreferrer"';
         $extra  = '';
     } else {
         $href   = 'uploads/ctp/' . rawurlencode($arquivo);
         $ext    = strtolower(pathinfo($arquivo, PATHINFO_EXTENSION));
         $inline = ['pdf','jpg','jpeg','png','gif','bmp','webp','svg'];
-        $icon   = '<i class="fas fa-paperclip" style="color:#337ab7;margin-right:7px;"></i>';
         $target = ' target="_blank" rel="noopener noreferrer"';
         $extra  = in_array($ext, $inline) ? '' : ' download';
     }
