@@ -82,10 +82,14 @@ foreach ($rows as $idx => $row) {
     $por      = htmlspecialchars($row->anexo_incluido_por ?? '', ENT_QUOTES, 'UTF-8');
     $borda    = ($idx < $qtd - 1) ? 'border-bottom:1px solid #e8e8e8;' : '';
 
+    $icone = $is_link
+        ? '<i class="fas fa-link" style="font-size:12px;color:#337ab7;margin-right:7px;"></i>'
+        : '<i class="fas fa-paperclip" style="font-size:12px;color:#337ab7;margin-right:7px;"></i>';
+
     echo '<li style="display:flex;align-items:flex-start;padding:9px 14px;' . $borda . '">';
     echo '<div style="flex:1;">';
     echo '<a href="' . $href . '"' . $target . $extra . ' style="font-size:13px;">';
-    echo $nome;
+    echo $icone . $nome;
     echo '</a>';
     if ($incluido) {
         echo '<small class="text-muted" style="display:block;font-size:10px;margin-top:3px;">';
