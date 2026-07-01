@@ -222,17 +222,12 @@ function _maCriarLinhaAnexoArquivo(file) {
     nome.textContent = file.name;
     nome.style.cssText = 'max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
 
-    var icone = document.createElement('i');
-    icone.className = 'fas fa-paperclip';
-    icone.style.cssText = 'color:#337ab7;font-size:14px;flex-shrink:0;';
-
     var div = document.createElement('div');
     div.className = 'linha-anexo-arquivo';
     div.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:6px;';
 
     var btnRemover = _maCriarBotaoRemover(function () { _maRemoverLinha(div); });
 
-    div.appendChild(icone);
     div.appendChild(nome);
     div.appendChild(btnRemover);
     div.appendChild(hidden);
