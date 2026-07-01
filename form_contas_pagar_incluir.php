@@ -713,10 +713,7 @@ $data_sistema = date("Y-m-d");
                                                 <div>
                                                     <label class="control-label">Anexar Documento</label>
                                                     <div style="display: flex; align-items: center; gap: 6px;">
-                                                        <input type="file" name="anexo[]" id="anexo_0" class="form-control" style="max-width: 320px;">
-                                                        <button type="button" class="btn-anexo-add" onclick="adicionarAnexo()" data-toggle='tooltip' data-placement='top' title="Adicionar mais documentos">
-                                                            <i class="far fa-plus-square" style="font-size: 16px;"></i>
-                                                        </button>
+                                                        <input type="file" id="anexo_picker" class="form-control" style="max-width: 320px;" onchange="onAnexoPickerChange(this)">
                                                     </div>
                                                 </div>
                                                 <div>
