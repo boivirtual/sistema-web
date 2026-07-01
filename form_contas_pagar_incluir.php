@@ -1796,7 +1796,7 @@ $data_sistema = date("Y-m-d");
             btnRemover.className = 'btn-anexo-add';
             btnRemover.title = 'Remover';
             btnRemover.onclick = function () { removerAnexo(btnRemover); };
-            btnRemover.innerHTML = '<i class="far fa-times-circle" style="font-size:16px; color:#c0392b;"></i>';
+            btnRemover.innerHTML = '<i class="fas fa-trash" style="font-size:14px; color:#337ab7;"></i>';
 
             var div = document.createElement('div');
             div.className = 'linha-anexo-arquivo';
