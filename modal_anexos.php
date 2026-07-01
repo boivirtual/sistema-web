@@ -77,7 +77,7 @@
                                 </label>
                                 <div style="display:flex;align-items:center;gap:6px;">
                                     <input type="text" id="modal_ma_link_desc" class="form-control" placeholder="Descrição do link" style="max-width:180px;">
-                                    <input type="url" id="modal_ma_link_url" class="form-control" placeholder="https://..." style="max-width:220px;" onkeydown="_maOnLinkUrlKeydown(event)" onblur="_maOnLinkUrlBlur()">
+                                    <input type="url" id="modal_ma_link_url" class="form-control" placeholder="https://..." style="max-width:220px;" onkeydown="_maOnLinkUrlKeydown(event)" onblur="_maOnLinkUrlBlur()" data-toggle="tooltip" data-placement="top" title="Após digitar o https://, tecle ENTER para confirmar o Link">
                                 </div>
                                 <div id="modal_ma_lista_links"></div>
                             </div>
