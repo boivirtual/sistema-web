@@ -1,11 +1,16 @@
 {
-  "model": "claude-sonnet-4-6",
   "permissions": {
     "allow": [
       "PowerShell(head -20)",
-      "PowerShell(git *)"
+      "PowerShell(git *)",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(ls /c/wamp64/bin/php/ 2>/dev/null)",
+      "Bash(/c/wamp64/bin/php/php8.1.31/php.exe -l \"C:\\\\wamp64\\\\www\\\\reproducao\\\\sistema\\\\form_contas_pagar_incluir.php\")",
+      "Bash(git check-ignore *)"
     ]
   },
+  "model": "claude-sonnet-4-6",
   "hooks": {
     "PostToolUse": [
       {
@@ -13,8 +18,8 @@
         "hooks": [
           {
             "type": "command",
-            "shell": "powershell",
             "command": "cd 'C:\\wamp64\\www\\reproducao\\sistema'; $status = git status --porcelain; if ($status) { $files = ($status -split \"`n\" | ForEach-Object { $_.Substring(3).Trim() }) -join ', '; git add -A; git commit -m \"Ajuste: $files\"; git push origin master }",
+            "shell": "powershell",
             "timeout": 60,
             "statusMessage": "Enviando alterações para o GitHub..."
           }

@@ -709,23 +709,24 @@ $data_sistema = date("Y-m-d");
                                     <!-- ===== ANEXO ===== -->
                                     <div class="row">
                                         <div class="form-group col-md-12">
-                                            <div style="display: flex; align-items: flex-end; gap: 24px;">
+                                            <div style="display: flex; align-items: flex-start; gap: 48px;">
                                                 <div>
                                                     <label class="control-label">Anexar Documento</label>
                                                     <div style="display: flex; align-items: center; gap: 6px;">
                                                         <input type="file" id="anexo_picker" class="form-control" style="max-width: 320px;" onchange="onAnexoPickerChange(this)">
                                                     </div>
+                                                    <div id="lista_anexos"></div>
                                                 </div>
-                                                <div>
+                                                <div style="margin-left: 16px;">
                                                     <label class="control-label">Anexar Link</label>
                                                     <div style="display: flex; align-items: center;">
                                                         <button type="button" class="btn-anexo-add" onclick="adicionarLink()" data-toggle='tooltip' data-placement='top' title="Adicionar link">
                                                             <i class="fas fa-link" style="font-size: 16px;"></i>
                                                         </button>
                                                     </div>
+                                                    <div id="lista_links"></div>
                                                 </div>
                                             </div>
-                                            <div id="lista_anexos"></div>
                                         </div>
                                     </div>
 
