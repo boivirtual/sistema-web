@@ -3568,18 +3568,6 @@ $data_sistema = date("Y-m-d");
         // Aguarda o DOM estar pronto para garantir que contas_pagar.js já definiu gravar_conta
         window.gravar_conta = function () {
 
-            // ── Número do Documento é obrigatório, exceto quando Repetir Lançamento estiver ativo ──
-            var repetirAtivo = $('#repetir_lancamento').is(':checked');
-            var numeroDoc    = $('#number_doc').val().trim();
-            if (!repetirAtivo && !numeroDoc) {
-                $('#mensagem_erro').modal();
-                $('#mensagem_erro .modal-body').html('Informe o Número do Documento.');
-                $('#mensagem_erro').one('hidden.bs.modal', function () {
-                    $('#number_doc').focus();
-                });
-                return;
-            }
-
             // ── Coleta dados do modal de rateio por fazenda (igual ao original) ──
             var array_fazendas_arr = [];
             var grupo_itens        = '';
