@@ -127,8 +127,6 @@ function abrirModalAnexos(numero_doc, codigo_fornecedor, ctp_id, doc_display, ab
             });
         });
 
-        $('#modal_ma_file_0').on('change', _maAtualizarBotao);
-
         $('#modal_anexos').on('hidden.bs.modal', function () {
             _maResetar();
         });
