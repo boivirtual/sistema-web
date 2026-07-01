@@ -721,7 +721,7 @@ $data_sistema = date("Y-m-d");
                                                     <label class="control-label"><i class="fas fa-link" style="color:#337ab7;"></i> Anexar Link</label>
                                                     <div style="display: flex; align-items: center; gap: 6px;">
                                                         <input type="text" id="link_desc_input" class="form-control" placeholder="Descrição do link" style="max-width: 200px;">
-                                                        <input type="url" id="link_url_input" class="form-control" placeholder="https://..." style="max-width: 220px;" onkeydown="onLinkUrlKeydown(event)" onblur="onLinkUrlBlur()">
+                                                        <input type="url" id="link_url_input" class="form-control" placeholder="https://..." style="max-width: 220px;" onkeydown="onLinkUrlKeydown(event)" onblur="onLinkUrlBlur()" data-toggle="tooltip" data-placement="top" title="Após digitar o https://, tecle ENTER para confirmar o Link">
                                                     </div>
                                                     <div id="lista_links"></div>
                                                 </div>
