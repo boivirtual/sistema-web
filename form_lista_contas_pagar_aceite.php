@@ -169,7 +169,8 @@
                     }
 
                     $parcela          = $fila->ctp_parcela;
-                    $parcela_display  = empty($numero_id) ? $data_vencimento->format('m/Y') : $parcela;
+                    $eh_repeticao     = !empty($fila->ctp_grupo_repeticao);
+                    $parcela_display  = $eh_repeticao ? $data_vencimento->format('m/Y') : $parcela;
                     $codigo_for       = $fila->ctp_codigo_fornecedor;
                     $nome_for         = $fila->ctp_nome_fornecedor;
                     $codigo_fazenda   = $fila->ctp_codigo_fazenda;
