@@ -7,7 +7,8 @@
       "mcp__Claude_in_Chrome__tabs_context_mcp",
       "Bash(ls /c/wamp64/bin/php/ 2>/dev/null)",
       "Bash(/c/wamp64/bin/php/php8.1.31/php.exe -l \"C:\\\\wamp64\\\\www\\\\reproducao\\\\sistema\\\\form_contas_pagar_incluir.php\")",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(/c/wamp64/bin/php/php8.1.31/php.exe -l \"C:\\\\wamp64\\\\www\\\\reproducao\\\\sistema\\\\modal_anexos.php\")"
     ]
   },
   "model": "claude-sonnet-4-6",

@@ -71,7 +71,7 @@
                                 </div>
                                 <div id="modal_ma_lista_anexos"></div>
                             </div>
-                            <div style="margin-left:16px;">
+                            <div>
                                 <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">
                                     <i class="fas fa-link" style="color:#337ab7;"></i> Anexar Link
                                 </label>
