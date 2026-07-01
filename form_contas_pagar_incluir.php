@@ -1786,16 +1786,11 @@ $data_sistema = date("Y-m-d");
             nome.textContent = file.name;
             nome.style.cssText = 'max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
 
-            var icone = document.createElement('i');
-            icone.className = 'fas fa-paperclip';
-            icone.style.cssText = 'color:#337ab7;font-size:14px;flex-shrink:0;';
-
             var btnRemover = criarBotaoRemover(function () { removerAnexo(btnRemover); });
 
             var div = document.createElement('div');
             div.className = 'linha-anexo-arquivo';
             div.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:6px;';
-            div.appendChild(icone);
             div.appendChild(nome);
             div.appendChild(btnRemover);
             div.appendChild(hidden);
