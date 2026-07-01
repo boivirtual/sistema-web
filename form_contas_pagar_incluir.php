@@ -711,14 +711,14 @@ $data_sistema = date("Y-m-d");
                                         <div class="form-group col-md-12">
                                             <div style="display: flex; align-items: flex-start; gap: 48px;">
                                                 <div>
-                                                    <label class="control-label">Anexar Documento</label>
+                                                    <label class="control-label"><i class="fas fa-paperclip" style="color:#337ab7;"></i> Anexar Documento</label>
                                                     <div style="display: flex; align-items: center; gap: 6px;">
                                                         <input type="file" id="anexo_picker" class="form-control" style="max-width: 320px;" onchange="onAnexoPickerChange(this)">
                                                     </div>
                                                     <div id="lista_anexos"></div>
                                                 </div>
                                                 <div style="margin-left: 16px;">
-                                                    <label class="control-label">Anexar Link</label>
+                                                    <label class="control-label"><i class="fas fa-link" style="color:#337ab7;"></i> Anexar Link</label>
                                                     <div style="display: flex; align-items: center; gap: 6px;">
                                                         <input type="text" id="link_desc_input" class="form-control" placeholder="Descrição do link" style="max-width: 200px;">
                                                         <input type="url" id="link_url_input" class="form-control" placeholder="https://..." style="max-width: 220px;" onkeydown="onLinkUrlKeydown(event)" onblur="onLinkUrlBlur()">
