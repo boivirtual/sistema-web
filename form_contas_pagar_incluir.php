@@ -1523,8 +1523,9 @@ $data_sistema = date("Y-m-d");
             }
 
             var codigoFor = $('#codigo_cli_for').val();
-            if (!codigoFor || codigoFor === '999999999') {
-                return erro('Informe o Fornecedor.', $('#codigo_cli_for'));
+            var nomeForManual = ($('#nome_for').val() || '').trim();
+            if ((!codigoFor || codigoFor === '999999999') && !nomeForManual) {
+                return erro('Informe o Fornecedor ou digite o nome do fornecedor não cadastrado.', $('#codigo_cli_for'));
             }
             if (!$('#data_emissao').val()) {
                 return erro('Informe a Data de Emissão.', $('#data_emissao'));
