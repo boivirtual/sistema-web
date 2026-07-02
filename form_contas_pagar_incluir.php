@@ -2101,9 +2101,9 @@ $data_sistema = date("Y-m-d");
             var $selFor = $('#codigo_cli_for');
             var suprimirLimpeza = false;
 
-            function getMenuFor() {
+            function getMenuInnerFor() {
                 var inst = $selFor.data('selectpicker');
-                return inst && inst.$menu ? inst.$menu : $();
+                return inst && inst.$menuInner ? inst.$menuInner : $();
             }
 
             function atualizarBadgeFor(texto) {
@@ -2117,9 +2117,8 @@ $data_sistema = date("Y-m-d");
             }
 
             function garantirBoxManualFor() {
-                var $menu = getMenuFor();
-                alert('DEBUG shown.bs.select disparou.\n$menu.length = ' + $menu.length + '\nbox já existe = ' + $menu.find('.fornecedor-manual-box').length);
-                if (!$menu.length || $menu.find('.fornecedor-manual-box').length) return;
+                var $menuInner = getMenuInnerFor();
+                if (!$menuInner.length || $menuInner.find('.fornecedor-manual-box').length) return;
 
                 var valorAtual = $('#nome_for').val() || '';
                 var $box = $(
@@ -2130,17 +2129,8 @@ $data_sistema = date("Y-m-d");
                         '<input type="text" class="form-control input-sm" id="nome_for_inline" placeholder="Digite o nome do fornecedor..." autocomplete="off">' +
                     '</div>'
                 );
-                $menu.append($box);
+                $menuInner.append($box);
                 $box.find('#nome_for_inline').val(valorAtual);
-
-                var cs = window.getComputedStyle($menu[0]);
-                alert('DEBUG apos append:\n' +
-                    'box visible? ' + $box.is(':visible') + '\n' +
-                    'box offsetHeight = ' + $box[0].offsetHeight + '\n' +
-                    'menu overflow = ' + cs.overflow + ' / overflowY = ' + cs.overflowY + '\n' +
-                    'menu maxHeight = ' + cs.maxHeight + '\n' +
-                    'menu scrollHeight = ' + $menu[0].scrollHeight + ' / clientHeight = ' + $menu[0].clientHeight + '\n' +
-                    'menu display = ' + cs.display + ' position = ' + cs.position);
             }
 
             $selFor.on('shown.bs.select', garantirBoxManualFor);
