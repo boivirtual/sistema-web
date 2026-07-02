@@ -2167,6 +2167,12 @@ $data_sistema = date("Y-m-d");
             });
         })();
 
+        // Retrigger do preview de recorrência quando descrição ou valor mudam
+        // (movido para cá: precisa de jQuery, que só carrega após rodape.php)
+        $(document).on('blur', '#descricao_compra, #vlr_primeira_parcela', function () {
+            if ($('#repetir_lancamento').is(':checked')) gerarPreviewRecorrencias();
+        });
+
         // Máscara money nos campos de valor do rateio (delegada — funciona em linhas dinâmicas)
         $(document).on('keypress', '.rat-valor', function(e) {
             mask.money.call(this, e);
