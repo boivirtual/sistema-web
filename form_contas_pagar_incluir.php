@@ -2122,14 +2122,14 @@ $data_sistema = date("Y-m-d");
 
                 var valorAtual = $('#nome_for').val() || '';
                 var $box = $(
-                    '<div class="fornecedor-manual-box" style="padding:8px 10px;border-top:1px solid #e5e5e5;background:#f9f9f9;">' +
+                    '<div class="fornecedor-manual-box" style="padding:8px 10px;border-bottom:1px solid #e5e5e5;background:#f9f9f9;">' +
                         '<label style="font-weight:600;font-size:12px;margin-bottom:3px;display:block;color:#555;">' +
-                            '<i class="fas fa-pen"></i> Fornecedor não cadastrado? Digite o nome:' +
+                            '<i class="fas fa-pen"></i> Para fornecedor não cadastrado, digite o nome:' +
                         '</label>' +
                         '<input type="text" class="form-control input-sm" id="nome_for_inline" placeholder="Digite o nome do fornecedor..." autocomplete="off">' +
                     '</div>'
                 );
-                $menuInner.append($box);
+                $menuInner.prepend($box);
                 $box.find('#nome_for_inline').val(valorAtual);
             }
 
