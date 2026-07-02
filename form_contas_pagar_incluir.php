@@ -2102,6 +2102,76 @@ $data_sistema = date("Y-m-d");
     // ── Handler do toggle Rateio ──
     $(document).ready(function () {
 
+        // ── Fornecedor não cadastrado: input digitável embutido no próprio dropdown ──
+        (function () {
+            var $selFor = $('#codigo_cli_for');
+            var suprimirLimpeza = false;
+
+            function getMenuFor() {
+                return $selFor.parent().children('.dropdown-menu').first();
+            }
+
+            function atualizarBadgeFor(texto) {
+                var $badge = $('#nome_for_badge');
+                texto = (texto || '').trim();
+                if (texto !== '') {
+                    $badge.text('Fornecedor: ' + texto).show();
+                } else {
+                    $badge.hide();
+                }
+            }
+
+            function garantirBoxManualFor() {
+                var $menu = getMenuFor();
+                if (!$menu.length || $menu.find('.fornecedor-manual-box').length) return;
+
+                var valorAtual = $('#nome_for').val() || '';
+                var $box = $(
+                    '<div class="fornecedor-manual-box" style="padding:8px 10px;border-top:1px solid #e5e5e5;background:#f9f9f9;">' +
+                        '<label style="font-weight:600;font-size:12px;margin-bottom:3px;display:block;color:#555;">' +
+                            '<i class="fas fa-pen"></i> Fornecedor não cadastrado? Digite o nome:' +
+                        '</label>' +
+                        '<input type="text" class="form-control input-sm" id="nome_for_inline" placeholder="Digite o nome do fornecedor..." autocomplete="off">' +
+                    '</div>'
+                );
+                $menu.append($box);
+                $box.find('#nome_for_inline').val(valorAtual);
+            }
+
+            $selFor.on('shown.bs.select', garantirBoxManualFor);
+
+            // Digitação → grava no hidden #nome_for e força a seleção do "..."
+            $(document).on('input', '#nome_for_inline', function () {
+                var texto = $(this).val();
+                $('#nome_for').val(texto);
+                atualizarBadgeFor(texto);
+                if ($selFor.val() !== '999999999') {
+                    suprimirLimpeza = true;
+                    $selFor.selectpicker('val', '999999999');
+                    suprimirLimpeza = false;
+                }
+            });
+
+            // Evita que teclas (setas, Enter, etc.) sejam capturadas pela navegação da lista
+            $(document).on('keydown', '#nome_for_inline', function (e) {
+                e.stopPropagation();
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    $selFor.selectpicker('toggle'); // fecha o dropdown
+                }
+            });
+
+            // Ao escolher um fornecedor real da lista, limpa o nome digitado manualmente
+            $selFor.on('changed.bs.select', function () {
+                if (suprimirLimpeza) return;
+                if ($selFor.val() !== '999999999') {
+                    $('#nome_for').val('');
+                    $('#nome_for_inline').val('');
+                    atualizarBadgeFor('');
+                }
+            });
+        })();
+
         // Máscara money nos campos de valor do rateio (delegada — funciona em linhas dinâmicas)
         $(document).on('keypress', '.rat-valor', function(e) {
             mask.money.call(this, e);
