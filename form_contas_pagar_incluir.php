@@ -2132,6 +2132,15 @@ $data_sistema = date("Y-m-d");
                 );
                 $menu.append($box);
                 $box.find('#nome_for_inline').val(valorAtual);
+
+                var cs = window.getComputedStyle($menu[0]);
+                alert('DEBUG apos append:\n' +
+                    'box visible? ' + $box.is(':visible') + '\n' +
+                    'box offsetHeight = ' + $box[0].offsetHeight + '\n' +
+                    'menu overflow = ' + cs.overflow + ' / overflowY = ' + cs.overflowY + '\n' +
+                    'menu maxHeight = ' + cs.maxHeight + '\n' +
+                    'menu scrollHeight = ' + $menu[0].scrollHeight + ' / clientHeight = ' + $menu[0].clientHeight + '\n' +
+                    'menu display = ' + cs.display + ' position = ' + cs.position);
             }
 
             $selFor.on('shown.bs.select', garantirBoxManualFor);
