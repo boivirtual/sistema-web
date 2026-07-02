@@ -2102,7 +2102,8 @@ $data_sistema = date("Y-m-d");
             var suprimirLimpeza = false;
 
             function getMenuFor() {
-                return $selFor.parent().children('.dropdown-menu').first();
+                var inst = $selFor.data('selectpicker');
+                return inst && inst.$menu ? inst.$menu : $();
             }
 
             function atualizarBadgeFor(texto) {
