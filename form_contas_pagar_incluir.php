@@ -2118,6 +2118,7 @@ $data_sistema = date("Y-m-d");
 
             function garantirBoxManualFor() {
                 var $menu = getMenuFor();
+                alert('DEBUG shown.bs.select disparou.\n$menu.length = ' + $menu.length + '\nbox já existe = ' + $menu.find('.fornecedor-manual-box').length);
                 if (!$menu.length || $menu.find('.fornecedor-manual-box').length) return;
 
                 var valorAtual = $('#nome_for').val() || '';
