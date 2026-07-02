@@ -332,6 +332,8 @@ $data_sistema = date("Y-m-d");
                                                     </option>
                                                 <?php } ?>
                                             </select>
+                                            <input type="hidden" id="nome_for" name="nome_for" value="">
+                                            <small id="nome_for_badge" style="display:none;color:#27ae60;font-weight:600;"></small>
                                         </div>
 
                                         <div class="form-group col-md-2">
