@@ -1811,12 +1811,6 @@ $data_sistema = date("Y-m-d");
             return p[2] + '/' + p[1] + '/' + p[0];
         }
 
-        // Regatilha preview quando descrição ou valor mudam
-        $(document).on('blur', '#descricao_compra, #vlr_primeira_parcela', function() {
-            if ($('#repetir_lancamento').is(':checked')) gerarPreviewRecorrencias();
-        });
-
-
         // ----------------------------------------------------------------
         // Anexos
         // ----------------------------------------------------------------
