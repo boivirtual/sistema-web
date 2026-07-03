@@ -356,7 +356,7 @@
 
                                             <div class="row"> 
                                                 <div class="form-group col-md-6">
-                                                    <label for="codigo_cli_for" class="control-label"><span class="required">*</span> Razão/Nome</label>
+                                                    <label for="codigo_cli_for" class="control-label"><span class="required">*</span> Fornecedor</label>
 	                                                <select class="form-control" id="codigo_cli_for" name="codigo_cli_for" readonly="">
 
 	                                                  <option value="999999999" selected="selected">Sem Fornecedor Cadastrado</option>
