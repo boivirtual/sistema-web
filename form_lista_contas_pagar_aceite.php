@@ -345,7 +345,7 @@
 
                     <div class="col-md-2">
                         <label class="control-label">&nbsp;</label>
-                        <button type="button" class="form-control btn btn-primary" onclick="exibe_filtros_aceite()"
+                        <button type="button" class="form-control btn btn-info" onclick="exibe_filtros_aceite()"
                         data-toggle='tooltip' data-placement='top' title="Mais Filtros"><i class="fas fa-filter"></i> + Filtros</button>
                     </div>
 
