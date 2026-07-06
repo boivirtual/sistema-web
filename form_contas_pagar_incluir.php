@@ -2487,6 +2487,11 @@ $data_sistema = date("Y-m-d");
 
     // ── FASE 3: Lê Conta de todas as linhas → tabela final com Valor/% ──
     function confirmarTodaConta() {
+        // Se a Fase 2 já não existe mais (ex.: retry tardio de uma chamada anterior que já
+        // concluiu via replicação automática de contas), não há nada a confirmar. Sem essa
+        // guarda, esse retry reconstrói a tabela vazia e duplica o rodapé Confirmar/Fechar.
+        if ($('#tbl_rateio tbody tr.linha-fase2').length === 0) return;
+
         // Se algum dropdown de conta está aberto, fecha-o primeiro
         // (isso dispara hidden.bs.select → diálogo de replicação aparece antes da validação)
         var $dropdownAberto = $('#tbl_rateio .bootstrap-select.open');
