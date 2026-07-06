@@ -1153,6 +1153,23 @@ $data_sistema = date("Y-m-d");
                 redistribuirIgual(n);
                 atualizarTotais(n);
             }
+
+            // Rateio: zera os valores digitados mantendo Local/CC/Conta já configurados
+            if ($('#habilitar_rateio').is(':checked')) {
+                if ($('#secao_distribuir_rateio').is(':visible')) {
+                    zerarValoresRateio();
+                } else if ($('#rateio_status').is(':visible')) {
+                    editarRateio();
+                    zerarValoresRateio();
+                }
+            }
+        }
+
+        // Zera os valores/percentuais do rateio (mantém as linhas Local/CC/Conta)
+        function zerarValoresRateio() {
+            $('.rat-valor').val('');
+            $('.rat-perc').val('');
+            recalcularRateio();
         }
 
         // ----------------------------------------------------------------
