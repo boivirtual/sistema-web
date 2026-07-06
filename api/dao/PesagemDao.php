@@ -225,6 +225,7 @@ class PesagemDao {
                     tbl_pesagem_incluido_por,
                     tbl_pesagem_lixeira,
                     tbl_pesagem_tipo_registro,
+                    tbl_pesagem_origem,
                     tbl_pesagem_qtd_animais_a_pesar,
                     tbl_pesagem_criterios_apartacao
                 ) VALUES (
@@ -239,6 +240,7 @@ class PesagemDao {
                     '{$pesagem->getIncluidoPor()}',
                     0,
                     'ONLINE',
+                    'APP',
                     '{$pesagem->getQuantidadeAnimais()}',
                     '{$pesagem->getCriteriosApartacao()}'
                 )";
