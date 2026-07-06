@@ -358,31 +358,34 @@
                                             <div class="row"> 
                                                 <div class="form-group col-md-6">
                                                     <label for="codigo_cli_for" class="control-label"><span class="required">*</span> Fornecedor</label>
-	                                                <select class="form-control" id="codigo_cli_for" name="codigo_cli_for" readonly="">
+	                                                <select class="form-control" id="codigo_cli_for" name="codigo_cli_for" <?php echo $aceite_travado ? 'disabled' : ''; ?>>
 
 	                                                  <option value="999999999" selected="selected">Sem Fornecedor Cadastrado</option>
 
 	                                                  <?php while($registo_cli_for = mysqli_fetch_object($cli_for)) { ?>
 
-	                                                  <option value="<?php 
+	                                                  <option value="<?php
 	                                                   echo $registo_cli_for->tbl_pessoa_id ?>"
 
-                                                      <?php 
-                                                          if($registo_cli_for->tbl_pessoa_id==$codigo_fornecedor) 
+                                                      <?php
+                                                          if($registo_cli_for->tbl_pessoa_id==$codigo_fornecedor)
                                                              { echo "selected"; }
                                                       ?>>
-	                                                    
-	                                                  <?php 
+
+	                                                  <?php
 	                                                      echo $registo_cli_for->tbl_pessoa_nome;
 	                                                  ?>
 	                                                  </option>
 	                                                  <?php } ?>
 
 	                                                </select>
+                                                    <?php if ($aceite_travado): ?>
+                                                    <input type="hidden" name="codigo_cli_for" value="<?php echo $codigo_fornecedor; ?>">
+                                                    <?php endif; ?>
                                                 </div>
                                                     <div class="form-group col-md-6">
                                                     <label for="nome_for" class="control-label">&nbsp;</label>
-                                                    <input name="nome_for" type="text" class="form-control" id="nome_for" aria-describedby="passwordHelpBlock" onkeyup="maiuscula(this)"
+                                                    <input name="nome_for" type="text" class="form-control" id="nome_for" aria-describedby="passwordHelpBlock" onkeyup="maiuscula(this)" <?php echo $aceite_travado ? 'readonly' : ''; ?>
                                                     <?php echo "value='".$nome_fornecedor."'";?>>
                                                     </div>
 
