@@ -524,7 +524,7 @@
                                                 <div class="form-group col-md-6">
                                                      <label for="data_vencimento" class="control-label"><span class="required">*</span>
                                                      Data de Vencimento</label>
-                                                    <input name="data_vencimento" type="date" class="form-control" id="data_vencimento"
+                                                    <input name="data_vencimento" type="date" class="form-control" id="data_vencimento" <?php echo $aceite_travado ? 'readonly' : ''; ?>
                                                     <?php echo "value='".$data_vencimento."'";?>>
                                                 </div>
                                             </div>
