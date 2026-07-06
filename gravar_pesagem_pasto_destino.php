@@ -225,7 +225,8 @@
 			'$pasto',
 			null,
 			null,
-			0
+			0,
+			'WEB'
 		)";
 
 	    $resultado = mysqli_query($conector,$sql);
