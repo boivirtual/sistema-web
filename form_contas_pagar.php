@@ -755,6 +755,7 @@ if ($num_rows_usuario != 0) {
         if (dataIniSessao && dataFimSessao) {
             var dIni   = parseDateLocal(dataIniSessao);
             var dFim   = parseDateLocal(dataFimSessao);
+            var labelSalvo = $('#periodo_label_sessao').val();
             var primDia = new Date(dIni.getFullYear(), dIni.getMonth(), 1);
             var ultDia  = new Date(dFim.getFullYear(), dFim.getMonth() + 1, 0);
             var ehMesUnico = (dIni.getTime() === primDia.getTime()) &&
@@ -766,9 +767,15 @@ if ($num_rows_usuario != 0) {
                 // Período é um mês completo: navega para ele com setas ativas
                 dataSelecionada = new Date(dIni);
                 atualizarMesAno();
+                // "Este Mês"/"Mês Passado" produzem um mês completo igual à navegação por
+                // setas; restaura o label (linha de filtros) e o rádio do modal sem travar
+                // as setas, igual ao comportamento ao aplicar o filtro pela primeira vez.
+                if (labelSalvo === 'Este Mês' || labelSalvo === 'Mês Passado') {
+                    $('#periodo_label').val(labelSalvo);
+                    ctpFiltroModal.radio = (labelSalvo === 'Este Mês') ? 'mes' : 'mes_passado';
+                }
             } else {
                 // Período não é mês único: restaura datas e usa o label salvo na sessão
-                var labelSalvo = $('#periodo_label_sessao').val();
                 $('#data_inicial').val(dataIniSessao);
                 $('#data_final').val(dataFimSessao);
                 if (labelSalvo) {
