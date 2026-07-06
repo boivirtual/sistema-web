@@ -532,7 +532,7 @@
 	                                        <div class="row">
                                                 <div class="form-group col-md-4">
                                                     <label for="vlr_parcela" class="control-label"><span class="required">*</span>Valor da Parcela</label>
-                                                    <input name="vlr_parcela" type="text" class="form-control" id="vlr_parcela" placeholder="0,00" onkeypress="digita_valor()" onblur="exibe_valor_parcela()" 
+                                                    <input name="vlr_parcela" type="text" class="form-control" id="vlr_parcela" placeholder="0,00" onkeypress="digita_valor()" onblur="exibe_valor_parcela()" <?php echo $aceite_travado ? 'readonly' : ''; ?>
                                                     <?php echo "value='".number_format($vlr_parcela, 2, ',', '.')."'";?>>
                                                 </div>
                                             </div>
