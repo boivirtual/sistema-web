@@ -533,7 +533,8 @@
 			null,
 			null,
 			0,
-			'ONLINE'
+			'ONLINE',
+			'WEB'
 		)";
 
 	    $resultado = mysqli_query($conector,$sql);
