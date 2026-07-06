@@ -343,7 +343,8 @@
 			null,
 			null,
 			0,
-			'$tipo_registro'
+			'$tipo_registro',
+			'WEB'
 		)";
 
 	    $resultado = mysqli_query($conector,$sql);
