@@ -2244,6 +2244,16 @@ $data_sistema = date("Y-m-d");
                     $('#vlr_primeira_parcela').focus();
                     return;
                 }
+                // Limpa qualquer resíduo de uma sessão de rateio anterior (defensivo:
+                // garante que reabrir o toggle nunca duplique os botões Confirmar/Fechar)
+                $('#rodape_fase1, #rodape_fase2, #rodape_rateio').remove();
+                $local.off('changed.bs.select.rateio');
+                try {
+                    if ($local.hasClass('selectpicker') || $local.data('selectpicker')) {
+                        $local.selectpicker('destroy');
+                    }
+                } catch (e) { /* resíduo inconsistente de sessão anterior — ignora */ }
+
                 // Rateio ON → oculta CC e Conta Contábil, move Local para dentro do fieldset
                 $('#col_cc').hide();
                 $('#col_conta').hide();
@@ -2257,6 +2267,8 @@ $data_sistema = date("Y-m-d");
                 $('#secao_distribuir_rateio').show();
 
                 $local.find('option').prop('selected', false);
+                $local.removeAttr('multiple').removeAttr('data-live-search').removeAttr('data-size')
+                      .removeClass('selectpicker').addClass('form-control');
                 $local.attr('multiple', 'multiple')
                       .attr('data-live-search', 'true')
                       .attr('data-size', '8')
