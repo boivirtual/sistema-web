@@ -13,9 +13,10 @@ if (isset($dados['bd']) && isset($dados['fazendas'])) {
     $sql = "SELECT p.*, f.tbl_pessoa_nome as fazenda_nome 
             FROM tbl_pesagem p
             LEFT JOIN tbl_pessoa f ON p.tbl_pesagem_codigo_local = f.tbl_pessoa_id
-            WHERE p.tbl_pesagem_codigo_local IN ($ids) 
-            AND p.tbl_pesagem_finalizada = 'N' 
+            WHERE p.tbl_pesagem_codigo_local IN ($ids)
+            AND p.tbl_pesagem_finalizada = 'N'
             AND p.tbl_pesagem_lixeira = 0
+            AND p.tbl_pesagem_origem = 'APP'
             ORDER BY p.tbl_pesagem_id DESC";
 
     $res = mysqli_query($con, $sql);

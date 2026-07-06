@@ -743,7 +743,7 @@
                                 <input name="raca_animal" type="hidden" id="raca_animal">
                                 <input name="pelagem_animal" type="hidden" id="pelagem_animal">
                                 <input name="mae_animal" type="hidden" id="mae_animal">
-                                <input name="ultimo_peso_animal" type="text" id="ultimo_peso_animal">
+                                <input name="ultimo_peso_animal" type="hidden" id="ultimo_peso_animal">
 
                                 <div class="tab-content">
                                     <div class="alert alert-danger alert_erro_animal" id="alert_erro_animal" hidden="true">
