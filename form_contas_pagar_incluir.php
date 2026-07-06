@@ -2244,16 +2244,6 @@ $data_sistema = date("Y-m-d");
                     $('#vlr_primeira_parcela').focus();
                     return;
                 }
-                // Limpa qualquer resíduo de uma sessão de rateio anterior (defensivo:
-                // garante que reabrir o toggle nunca duplique os botões Confirmar/Fechar)
-                $('#rodape_fase1, #rodape_fase2, #rodape_rateio').remove();
-                $local.off('changed.bs.select.rateio');
-                try {
-                    if ($local.hasClass('selectpicker') || $local.data('selectpicker')) {
-                        $local.selectpicker('destroy');
-                    }
-                } catch (e) { /* resíduo inconsistente de sessão anterior — ignora */ }
-
                 // Rateio ON → oculta CC e Conta Contábil, move Local para dentro do fieldset
                 $('#col_cc').hide();
                 $('#col_conta').hide();
@@ -2267,8 +2257,6 @@ $data_sistema = date("Y-m-d");
                 $('#secao_distribuir_rateio').show();
 
                 $local.find('option').prop('selected', false);
-                $local.removeAttr('multiple').removeAttr('data-live-search').removeAttr('data-size')
-                      .removeClass('selectpicker').addClass('form-control');
                 $local.attr('multiple', 'multiple')
                       .attr('data-live-search', 'true')
                       .attr('data-size', '8')
@@ -2535,7 +2523,6 @@ $data_sistema = date("Y-m-d");
 
         if (!valido) return;
         $('#rodape_fase2').remove();
-        $('#rodape_rateio').remove(); // evita duplicar Confirmar/Fechar se a função rodar mais de uma vez
 
         var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:100%;table-layout:fixed;">';
         html += '<colgroup><col style="width:16%"><col style="width:16%"><col style="width:26%"><col style="width:14%"><col style="width:9%"><col style="width:9%"></colgroup><tbody>';
@@ -3427,33 +3414,25 @@ $data_sistema = date("Y-m-d");
 
     function _executarRateioOff() {
         var $local = $('#codigo_fazenda');
-
-        // Limpeza visual garantida primeiro — mesmo que o teardown do selectpicker
-        // abaixo falhe, a tela não fica com resíduo de rodapé/tabela duplicado
         $('#col_cc').show();
         $('#col_conta').show();
-        $('#tr_local_input').show();
-        $('#col_btn_confirmar_locais').hide();
-        $('#secao_distribuir_rateio').hide();
-        $('#linhas_rateio').hide().empty();
-        $('#rodape_fase1, #rodape_fase2, #rodape_rateio').remove();
-        $('#rateio_status').hide();
-        $('#col_local').show();
-        $('#rateio_json').val('');
-        RT.reset();
-
         $local.off('changed.bs.select.rateio');
-        try {
-            if ($local.hasClass('selectpicker') || $local.data('selectpicker')) {
-                $local.selectpicker('destroy');
-            }
-        } catch (e) { /* selectpicker já inconsistente — ignora e continua a limpeza */ }
+        if ($local.hasClass('selectpicker')) { $local.selectpicker('destroy'); }
         $local.removeAttr('multiple').removeAttr('data-live-search').removeAttr('data-size')
               .removeClass('selectpicker').addClass('form-control');
         $local.val('');
         $('#col_local label').after($local);
         $('#btn_fechar_local').remove();
         $('#col_btn_confirmar_locais').append($('#btn_confirmar_locais'));
+        $('#tr_local_input').show();
+        $('#col_btn_confirmar_locais').hide();
+        $('#secao_distribuir_rateio').hide();
+        $('#linhas_rateio').hide().empty();
+        $('#rodape_rateio').remove();
+        $('#rateio_status').hide();
+        $('#col_local').show();
+        $('#rateio_json').val('');
+        RT.reset();
     }
 
     function confirmarFecharRateio() {
