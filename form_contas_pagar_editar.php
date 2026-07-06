@@ -86,8 +86,9 @@
     $codigo_conta_pag= $registro_ctp->ctp_conta_pagamento; 
     $numero_cheque = $registro_ctp->ctp_numero_cheque; 
     $situacao = $registro_ctp->ctp_situacao; 
-    $aceite = $registro_ctp->ctp_aceite; 
-    $agendamento=$registro_ctp->ctp_agendamento; 
+    $aceite = $registro_ctp->ctp_aceite;
+    $aceite_travado = ($aceite == 'S'); // com Aceite dado: bloqueia Fornecedor, Vencimento e Valor da Parcela
+    $agendamento=$registro_ctp->ctp_agendamento;
     $data_agendamento = new DateTime($registro_ctp->ctp_data_agendamento); 
     $nome_fornecedor = $registro_ctp->ctp_nome_fornecedor;
     $descricao_compra = $registro_ctp->ctp_descricao_compra;
