@@ -2938,7 +2938,7 @@ $data_sistema = date("Y-m-d");
             // Atualiza percentuais de cada linha
             $('.rat-valor').each(function() {
                 var $row = $(this).closest('tr');
-                var v = parseFloat($(this).val().replace(/\./g,'').replace(',','.')) || 0;
+                var v = ctpParseMoney($(this).val());
                 var pct = total > 0 ? (v / total * 100) : 0;
                 $row.find('.rat-perc').val(pct > 0 ? pct.toFixed(2).replace('.',',') + '%' : '');
             });
