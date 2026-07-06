@@ -2244,7 +2244,9 @@ $data_sistema = date("Y-m-d");
                     $('#vlr_primeira_parcela').focus();
                     return;
                 }
-                // Rateio ON → oculta CC e Conta Contábil, move Local para dentro do fieldset
+                // Rateio ON → oculta Local (label + select), CC e Conta Contábil da linha 2;
+                // o select Local é movido para dentro do fieldset "Distribuir Rateio" abaixo
+                $('#col_local').hide();
                 $('#col_cc').hide();
                 $('#col_conta').hide();
 
