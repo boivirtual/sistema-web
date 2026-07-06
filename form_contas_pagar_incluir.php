@@ -1093,8 +1093,11 @@ $data_sistema = date("Y-m-d");
         function ctpParseMoney(str) {
             if (!str) return 0;
             str = String(str).trim();
-            // Remove pontos de milhar e troca vírgula por ponto
-            str = str.replace(/\./g, '').replace(',', '.');
+            if (str.indexOf(',') !== -1) {
+                // Formato BR ("4.000,00"): remove pontos de milhar e troca vírgula por ponto
+                str = str.replace(/\./g, '').replace(',', '.');
+            }
+            // Sem vírgula: já é um número puro (ex.: "4000.00" vindo da máscara antes do blur reformatar)
             var v = parseFloat(str);
             return isNaN(v) ? 0 : v;
         }
