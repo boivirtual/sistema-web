@@ -2929,11 +2929,7 @@ $data_sistema = date("Y-m-d");
         } else {
             // Modo Valor (ou sem modo): calcula % a partir do valor digitado
             $('.rat-valor').each(function() {
-                var raw = $(this).val();
-                var v = raw.indexOf(',') !== -1
-                    ? raw.replace(/\./g,'').replace(',','.')
-                    : raw;
-                somaValores += parseFloat(v) || 0;
+                somaValores += ctpParseMoney($(this).val());
             });
             // Atualiza percentuais de cada linha
             $('.rat-valor').each(function() {
