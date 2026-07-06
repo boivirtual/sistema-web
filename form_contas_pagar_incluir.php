@@ -1153,8 +1153,7 @@ $data_sistema = date("Y-m-d");
             exibe_valor_primeira_parcela(); // formata exibição (função do contas_pagar.js)
             var n = parseInt($('#parcelamento').val());
             if (n > 0) {
-                redistribuirIgual(n);
-                atualizarTotais(n);
+                zerarValoresParcelas(n);
             }
 
             // Rateio: zera os valores digitados mantendo Local/CC/Conta já configurados
@@ -1173,6 +1172,15 @@ $data_sistema = date("Y-m-d");
             $('.rat-valor').val('');
             $('.rat-perc').val('');
             recalcularRateio();
+        }
+
+        // Zera os valores/percentuais das parcelas (mantém datas, banco, tipo doc e pago)
+        function zerarValoresParcelas(n) {
+            for (var i = 0; i < n; i++) {
+                $('#parc_valor_' + i).val('');
+                $('#parc_perc_' + i).val('');
+            }
+            atualizarTotais(n);
         }
 
         // ----------------------------------------------------------------
