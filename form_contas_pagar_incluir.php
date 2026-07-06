@@ -2200,7 +2200,9 @@ $data_sistema = date("Y-m-d");
         });
         $(document).on('blur', '.rat-valor', function() {
             // Ao sair: converte formato US → BR e recalcula
-            var n = parseFloat($(this).val()) || 0;
+            // (usa ctpParseMoney, não parseFloat: um valor já formatado como "1.000,00"
+            // faria o parseFloat puro parar no ponto de milhar e virar 1,00)
+            var n = ctpParseMoney($(this).val());
             $(this).val(formatMoney(n));
             recalcularRateio();
         });
