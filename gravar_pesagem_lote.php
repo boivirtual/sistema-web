@@ -506,7 +506,8 @@
 			tbl_pesagem_categoria,
 			tbl_pesagem_sexo,
 			tbl_pesagem_codigo_movimentacao,
-			tbl_pesagem_tipo_registro
+			tbl_pesagem_tipo_registro,
+			tbl_pesagem_origem
 	        ) VALUES (
 	        'L',
 	        '$data_pesagem',
