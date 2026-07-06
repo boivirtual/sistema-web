@@ -279,7 +279,8 @@
 			'$codigo_pasto',
 			null,
 			null,
-			'$numero_movimentacao'
+			'$numero_movimentacao',
+			'WEB'
 		)";
 
 	    $resultado = mysqli_query($conector,$sql);
