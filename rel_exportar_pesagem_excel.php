@@ -1624,7 +1624,8 @@
             tbl_pesagem_lixeira_em,
             tbl_pesagem_lixeira_por,
             tbl_pesagem_codigo_movimentacao,
-            tbl_pesagem_tipo_registro
+            tbl_pesagem_tipo_registro,
+            tbl_pesagem_origem
 
             ) VALUES (
             'I',
