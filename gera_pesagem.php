@@ -129,7 +129,8 @@ $sql = "INSERT INTO tbl_pesagem (
                     null,
                     null,
                     null,
-                    0
+                    0,
+                    'WEB'
                 )";
 
 $resultado = mysqli_query($conector,$sql);
