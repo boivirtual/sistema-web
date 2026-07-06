@@ -2388,7 +2388,7 @@ $data_sistema = date("Y-m-d");
         $('#linhas_rateio .fase1-cc').each(function() {
             var $s = $(this);
             $s.find('option:first').prop('selected', true);
-            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
+            $s.selectpicker({ actionsBox: true, noneSelectedText: '...', selectedTextFormat: 'values' });
             var $bs = $s.closest('.bootstrap-select');
             $bs.css({ 'width': '100%', 'display': 'block' });
             $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
@@ -2471,7 +2471,7 @@ $data_sistema = date("Y-m-d");
 
         $('#linhas_rateio .fase2-conta').each(function() {
             var $s = $(this);
-            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
+            $s.selectpicker({ actionsBox: true, noneSelectedText: '...', selectedTextFormat: 'values' });
             var $bs = $s.closest('.bootstrap-select');
             $bs.css({ 'width': '100%', 'display': 'block' });
             $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
@@ -2666,7 +2666,7 @@ $data_sistema = date("Y-m-d");
         if ($firstRow.length) { $firstRow.before(editorHtml); } else { $('#tr_rateio_restante').before(editorHtml); }
 
         var $s = $('#' + selectId);
-        $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
+        $s.selectpicker({ actionsBox: true, noneSelectedText: '...', selectedTextFormat: 'values' });
         $s.val(contaIdsAtuais);
         $s.selectpicker('refresh');
         var $bs = $s.closest('.bootstrap-select');
@@ -3171,7 +3171,7 @@ $data_sistema = date("Y-m-d");
         if ($firstRow.length) { $firstRow.before(editorHtml); } else { $('#tbl_rateio tbody').append(editorHtml); }
 
         var $s = $('#' + selectId);
-        $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
+        $s.selectpicker({ actionsBox: true, noneSelectedText: '...', selectedTextFormat: 'values' });
         $s.val(ccIdsAtuais);
         $s.selectpicker('refresh');
         var $bs = $s.closest('.bootstrap-select');
@@ -3254,7 +3254,7 @@ $data_sistema = date("Y-m-d");
 
         $.each(newCcIds, function(i, ccId) {
             var $s = $('#conta_edit_' + localId + '_' + ccId);
-            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
+            $s.selectpicker({ actionsBox: true, noneSelectedText: '...', selectedTextFormat: 'values' });
             var $bs = $s.closest('.bootstrap-select');
             $bs.css({ 'width': '100%', 'display': 'block' });
             $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
@@ -3300,7 +3300,7 @@ $data_sistema = date("Y-m-d");
         if ($firstRow.length) { $firstRow.before(editorHtml); } else { $('#tr_rateio_restante').before(editorHtml); }
 
         var $s = $('#' + selectId);
-        $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
+        $s.selectpicker({ actionsBox: true, noneSelectedText: '...', selectedTextFormat: 'values' });
         $s.val(ccIdsAtuais);
         $s.selectpicker('refresh');
         var $bs = $s.closest('.bootstrap-select');
@@ -3387,7 +3387,7 @@ $data_sistema = date("Y-m-d");
         $.each(ccsNovos, function(j, ccId) {
             var gKey = (localId + '_' + ccId).replace(/\W/g,'_');
             var $s = $('#editar_conta_sel_' + gKey);
-            $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
+            $s.selectpicker({ actionsBox: true, noneSelectedText: '...', selectedTextFormat: 'values' });
             var $bs = $s.closest('.bootstrap-select');
             $bs.css({ 'width': '100%', 'display': 'block' });
             $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
@@ -3505,7 +3505,7 @@ $data_sistema = date("Y-m-d");
         $('#tr_rateio_restante').before(html);
 
         var $s = $('#conta_nv_' + safeId);
-        $s.selectpicker({ actionsBox: false, noneSelectedText: '...', selectedTextFormat: 'values' });
+        $s.selectpicker({ actionsBox: true, noneSelectedText: '...', selectedTextFormat: 'values' });
         var $bs = $s.closest('.bootstrap-select');
         $bs.css({ 'width': '100%', 'display': 'block' });
         $bs.find('button.dropdown-toggle').css({ 'height': '30px', 'font-size': '13px', 'padding': '4px 8px', 'width': '100%', 'overflow': 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
