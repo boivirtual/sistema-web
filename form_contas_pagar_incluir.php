@@ -2535,6 +2535,7 @@ $data_sistema = date("Y-m-d");
 
         if (!valido) return;
         $('#rodape_fase2').remove();
+        $('#rodape_rateio').remove(); // evita duplicar Confirmar/Fechar se a função rodar mais de uma vez
 
         var html = '<table class="tbl-parcelas" id="tbl_rateio" style="width:100%;table-layout:fixed;">';
         html += '<colgroup><col style="width:16%"><col style="width:16%"><col style="width:26%"><col style="width:14%"><col style="width:9%"><col style="width:9%"></colgroup><tbody>';
