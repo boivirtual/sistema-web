@@ -34,13 +34,13 @@ $banco = "04527017000152";
 $conector = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
   
 if ($conector === FALSE) {
-   exit ("Falha na conexão com o banco de dados: " . mysqli_error($conector));
+   exit ("Falha na conexï¿½o com o banco de dados: " . mysqli_error($conector));
 }
   
 $bancoselecionado = mysqli_select_db($conector,$banco);
 
 if ($bancoselecionado === FALSE) {
-  exit ("Falha na seleção do banco de dados: " . mysql_error($conector));
+  exit ("Falha na seleï¿½ï¿½o do banco de dados: " . mysql_error($conector));
 }
  
 $arquivo = "planilhas_excel/paca.csv";
@@ -55,7 +55,7 @@ $filtros = 'FAZENDA PACA->Controle Ganho de Peso->Sexo:Todos';
 $fp = fopen($arquivo, 'r');
 
 if ($fp === FALSE) {
-   exit ("Falha na seleção do arquivo texto: " . mysql_error($conector));
+   exit ("Falha na seleï¿½ï¿½o do arquivo texto: " . mysql_error($conector));
 }
 
 $arq = fopen($arquivo,'r');
@@ -104,7 +104,8 @@ $sql = "INSERT INTO tbl_pesagem (
                     tbl_pesagem_pasto,
                     tbl_pesagem_categoria,
                     tbl_pesagem_sexo,
-                    tbl_pesagem_codigo_movimentacao
+                    tbl_pesagem_codigo_movimentacao,
+                    tbl_pesagem_origem
                     ) VALUES (
                     'I',
                     '$data_pesagem',
@@ -147,7 +148,7 @@ echo 'Pesagem: ' . $numero_pesagem . $filtros . '</br>';
 $fp = fopen($arquivo, 'r');
 
 if ($fp === FALSE) {
-   exit ("Falha na seleção do arquivo texto: " . mysql_error($conector));
+   exit ("Falha na seleï¿½ï¿½o do arquivo texto: " . mysql_error($conector));
 }
 
 $arq = fopen($arquivo,'r');
@@ -174,7 +175,7 @@ while(!feof($arq)) {
         $peso = $linha[8];
 
         if ($linha[2]=='F') {
-            $sexo = 'Fêmea';
+            $sexo = 'Fï¿½mea';
         }
         else {
             $sexo = 'Macho';
