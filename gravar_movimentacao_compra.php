@@ -254,7 +254,8 @@
 			tbl_pesagem_pasto,
 			tbl_pesagem_categoria,
 			tbl_pesagem_sexo,
-			tbl_pesagem_codigo_movimentacao
+			tbl_pesagem_codigo_movimentacao,
+			tbl_pesagem_origem
 	        ) VALUES (
 	        'L',
 	        '$data_movimentacao',
