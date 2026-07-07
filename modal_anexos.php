@@ -298,6 +298,15 @@ function _maAtualizarBotao() {
 }
 
 function _maConfirmar() {
+    // Descrição do link digitada sem o link confirmado (não vira uma linha em modal_ma_lista_links)
+    var descPendente = $('#modal_ma_link_desc').val().trim();
+    var urlPendente  = $('#modal_ma_link_url').val().trim();
+    if (descPendente && !urlPendente) {
+        alert('Informe o Link (https://) ou apague a Descrição do Link.');
+        $('#modal_ma_link_url').focus();
+        return;
+    }
+
     var fd = new FormData();
     fd.append('ctp_id', _ctpAnexosParams.ctp_id);
 
