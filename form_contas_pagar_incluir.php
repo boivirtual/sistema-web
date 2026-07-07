@@ -1605,6 +1605,11 @@ $data_sistema = date("Y-m-d");
                 }
             }
 
+            // Descrição do link digitada sem o link confirmado (não vira anexo_link_url[])
+            if (($('#link_desc_input').val() || '').trim() && !($('#link_url_input').val() || '').trim()) {
+                return erro('Informe o Link (https://) ou apague a Descrição do Link.', $('#link_url_input'));
+            }
+
             return true;
         }
 
