@@ -2164,20 +2164,27 @@ $data_sistema = date("Y-m-d");
 
             function garantirBoxManualFor() {
                 var $dropdownMenu = getDropdownMenuFor();
-                if (!$dropdownMenu.length || $dropdownMenu.find('.fornecedor-manual-box').length) return;
+                if (!$dropdownMenu.length) return;
 
-                var valorAtual = $('#nome_for').val() || '';
-                var $box = $(
-                    '<div class="fornecedor-manual-box" style="padding:8px 10px;border-bottom:1px solid #e5e5e5;background:#f9f9f9;">' +
-                        '<label style="font-weight:600;font-size:12px;margin-bottom:3px;display:block;color:#555;">' +
-                            '<i class="fas fa-pen"></i> Para fornecedor não cadastrado, digite o nome abaixo:' +
-                        '</label>' +
-                        '<input type="text" class="form-control input-sm" id="nome_for_inline" placeholder="Digite o nome do fornecedor..." autocomplete="off">' +
-                    '</div>'
-                );
-                // Prepend no .dropdown-menu (não no .inner) para ficar antes da caixa de busca
-                $dropdownMenu.prepend($box);
-                $box.find('#nome_for_inline').val(valorAtual);
+                if (!$dropdownMenu.find('.fornecedor-manual-box').length) {
+                    var valorAtual = $('#nome_for').val() || '';
+                    var $box = $(
+                        '<div class="fornecedor-manual-box" style="padding:8px 10px;border-bottom:1px solid #e5e5e5;background:#f9f9f9;">' +
+                            '<label style="font-weight:600;font-size:12px;margin-bottom:3px;display:block;color:#555;">' +
+                                '<i class="fas fa-pen"></i> Para fornecedor não cadastrado, digite o nome abaixo:' +
+                            '</label>' +
+                            '<input type="text" class="form-control input-sm" id="nome_for_inline" placeholder="Digite o nome do fornecedor..." autocomplete="off">' +
+                        '</div>'
+                    );
+                    // Prepend no .dropdown-menu (não no .inner) para ficar antes da caixa de busca
+                    $dropdownMenu.prepend($box);
+                    $box.find('#nome_for_inline').val(valorAtual);
+                }
+
+                // Foca no campo de nome manual em vez da busca padrão do bootstrap-select
+                setTimeout(function () {
+                    $dropdownMenu.find('#nome_for_inline').trigger('focus');
+                }, 0);
             }
 
             $selFor.on('shown.bs.select', garantirBoxManualFor);
