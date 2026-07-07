@@ -2134,9 +2134,8 @@ $data_sistema = date("Y-m-d");
             var $selFor = $('#codigo_cli_for');
             var suprimirLimpeza = false;
 
-            function getMenuInnerFor() {
-                var inst = $selFor.data('selectpicker');
-                return inst && inst.$menuInner ? inst.$menuInner : $();
+            function getDropdownMenuFor() {
+                return $selFor.closest('.bootstrap-select').find('.dropdown-menu').first();
             }
 
             function atualizarBadgeFor(texto) {
@@ -2150,19 +2149,20 @@ $data_sistema = date("Y-m-d");
             }
 
             function garantirBoxManualFor() {
-                var $menuInner = getMenuInnerFor();
-                if (!$menuInner.length || $menuInner.find('.fornecedor-manual-box').length) return;
+                var $dropdownMenu = getDropdownMenuFor();
+                if (!$dropdownMenu.length || $dropdownMenu.find('.fornecedor-manual-box').length) return;
 
                 var valorAtual = $('#nome_for').val() || '';
                 var $box = $(
                     '<div class="fornecedor-manual-box" style="padding:8px 10px;border-bottom:1px solid #e5e5e5;background:#f9f9f9;">' +
                         '<label style="font-weight:600;font-size:12px;margin-bottom:3px;display:block;color:#555;">' +
-                            '<i class="fas fa-pen"></i> Para fornecedor não cadastrado, digite o nome:' +
+                            '<i class="fas fa-pen"></i> Para fornecedor não cadastrado, digite o nome abaixo:' +
                         '</label>' +
                         '<input type="text" class="form-control input-sm" id="nome_for_inline" placeholder="Digite o nome do fornecedor..." autocomplete="off">' +
                     '</div>'
                 );
-                $menuInner.prepend($box);
+                // Prepend no .dropdown-menu (não no .inner) para ficar antes da caixa de busca
+                $dropdownMenu.prepend($box);
                 $box.find('#nome_for_inline').val(valorAtual);
             }
 
