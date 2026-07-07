@@ -225,7 +225,7 @@ if ($num_rows_usuario != 0) {
     $codigo_c_custo     = $_SESSION['codigo_c_custo_ctp'] ?? '';
     $local              = $_SESSION['codigo_local_ctp']   ?? '';
     $contas             = $_SESSION['codigo_conta_ctp']   ?? '';
-    $periodo_label_sessao = $_SESSION['periodo_label_ctp'] ?? '';
+    $periodo_label_sessao = $stored_label;
 
     ?>
 
