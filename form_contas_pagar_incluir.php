@@ -186,6 +186,20 @@ $data_sistema = date("Y-m-d");
 
         /* Ajuste selectpicker */
         .bootstrap-select { width: 100% !important; }
+        .bootstrap-select .bs-searchbox { position: relative; }
+        .bootstrap-select .bs-searchbox input.form-control { padding-left: 28px; }
+        .bootstrap-select .bs-searchbox::before {
+            content: "\f002";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 12px;
+            pointer-events: none;
+        }
         .bootstrap-select .bs-actionsbox { text-align: right; padding: 5px; }
         .bootstrap-select .bs-actionsbox .bs-deselect-all {
             display: inline-block;
