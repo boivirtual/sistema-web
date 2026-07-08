@@ -75,9 +75,10 @@ else {
     exit;
 }
 
-$nome_relatorio = "Pesagem - Consultar";
+$nome_relatorio = "Pesagem Finalizada";
 
-$spreadsheet->getActiveSheet()->mergeCells('A1:K1');
+$spreadsheet->getActiveSheet()->mergeCells('A1:I1');
+$spreadsheet->getActiveSheet()->mergeCells('J1:K1');
 $spreadsheet->getActiveSheet()->mergeCells('B2:C2');
 $spreadsheet->getActiveSheet()->mergeCells('E2:F2');
 $spreadsheet->getActiveSheet()->mergeCells('B3:C3');
