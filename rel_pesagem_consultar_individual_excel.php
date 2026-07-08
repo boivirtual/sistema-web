@@ -212,7 +212,7 @@ if (!empty($codigos_pais)) {
     $rs_pais_semem = mysqli_query($conector, $sql_pais_semem);
 
     while ($reg_pai_semem = mysqli_fetch_object($rs_pais_semem)) {
-        $dados_pais_semem[$reg_pai_semem->tbl_semem_codigo_id] = $reg_pai_semem->tbl_semem_nome;
+        $dados_pais_semem[$reg_pai_semem->tbl_semem_codigo_id] = corrigir_utf8($reg_pai_semem->tbl_semem_nome);
     }
 
     $sql_pais_animal = "SELECT tbl_animal_codigo_id, tbl_animal_codigo_alfa, tbl_animal_codigo_numerico FROM tbl_animais WHERE tbl_animal_codigo_id IN (" . implode(',', $codigos_pais) . ")";
