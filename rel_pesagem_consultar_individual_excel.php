@@ -175,6 +175,38 @@ while ($reg_categoria = mysqli_fetch_object($tab_categoria)) {
     ];
 }
 
+// Lookup do Pai (mesma lógica de ler_pesagem_consulta.php)
+$codigos_pais = [];
+
+$tbl_animais_local = mysqli_query($conector, "SELECT * FROM tbl_animais
+    WHERE tbl_animal_codigo_fazenda = '$codigo_local' AND
+          tbl_animal_ativo = 'S'");
+
+while ($reg_animal = mysqli_fetch_object($tbl_animais_local)) {
+    if ($reg_animal->tbl_animal_codigo_pai) {
+        $codigos_pais[] = $reg_animal->tbl_animal_codigo_pai;
+    }
+}
+
+$dados_pais_semem = [];
+$dados_pais_animal = [];
+
+if (!empty($codigos_pais)) {
+    $sql_pais_semem = "SELECT tbl_semem_codigo_id, tbl_semem_nome FROM tbl_semem WHERE tbl_semem_codigo_id IN (" . implode(',', $codigos_pais) . ")";
+    $rs_pais_semem = mysqli_query($conector, $sql_pais_semem);
+
+    while ($reg_pai_semem = mysqli_fetch_object($rs_pais_semem)) {
+        $dados_pais_semem[$reg_pai_semem->tbl_semem_codigo_id] = $reg_pai_semem->tbl_semem_nome;
+    }
+
+    $sql_pais_animal = "SELECT tbl_animal_codigo_id, tbl_animal_codigo_alfa, tbl_animal_codigo_numerico FROM tbl_animais WHERE tbl_animal_codigo_id IN (" . implode(',', $codigos_pais) . ")";
+    $rs_pais_animal = mysqli_query($conector, $sql_pais_animal);
+
+    while ($reg_pai_animal = mysqli_fetch_object($rs_pais_animal)) {
+        $dados_pais_animal[$reg_pai_animal->tbl_animal_codigo_id] = $reg_pai_animal->tbl_animal_codigo_alfa . ' ' . intval($reg_pai_animal->tbl_animal_codigo_numerico);
+    }
+}
+
 $tbl_itens = mysqli_query($conector, "SELECT * FROM tbl_item_pesagem
     INNER JOIN tbl_animais
             ON tbl_animal_codigo_id = tbl_ite_pesagem_codigo_id_animal
