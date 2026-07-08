@@ -336,6 +336,11 @@ if ($num_rows != 0) {
         $spreadsheet->getActiveSheet()->getStyle('I' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
         $spreadsheet->getActiveSheet()->getStyle('J' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $spreadsheet->getActiveSheet()->getStyle('K' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $spreadsheet->getActiveSheet()->getStyle('L' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('M' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $spreadsheet->getActiveSheet()->getStyle('N' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $spreadsheet->getActiveSheet()->getStyle('O' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $spreadsheet->getActiveSheet()->getStyle('P' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
     }
 }
 
