@@ -184,7 +184,8 @@
                                 echo "<td width='8%' style='color:#b8b6b6'>Finalizada</td>";
                                 echo "<td width='8%' style='color:#b8b6b6'>";    
                                 echo "<div width='14%' class='btn-group'>";
-                                echo "<a class='btn' href='form_pesagem_animais_consultar_individual.php?id=".$codigo."'><i class='icon_search_alt' data-toggle='tooltip' data-placement='left' title='Consultar esse registro' ></i></a>"; 
+                                echo "<a class='btn' href='form_pesagem_animais_consultar_individual.php?id=".$codigo."'><i class='icon_search_alt' data-toggle='tooltip' data-placement='left' title='Consultar esse registro' ></i></a>";
+                                echo "<a class='btn' href='#'><i class='fa fa-file-excel-o' data-toggle='tooltip' data-placement='left' title='Imprimir tabela Excel' onClick='imprimir_pesagem_individual_excel(\"{$codigo}\")'></i></a>";
                                 echo "</div>";
                                 echo "</td>";
                             }
