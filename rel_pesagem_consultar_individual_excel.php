@@ -30,27 +30,14 @@ function corrigir_utf8($valor) {
     return mb_convert_encoding($valor, 'UTF-8', 'ISO-8859-1');
 }
 
-@ session_start();
-$cnpj_cliente = $_SESSION['id_cliente'];
+// abre banco de dados (mesma conexão/credenciais usadas pelo resto do sistema)
+include "conecta_mysql.inc";
 
-// abre banco de dados
-$servidor = "localhost";
-$usuario_bd = "root";
-$banco = $cnpj_cliente;
-$senha_bd = "a2ngei9Mxh";
-
-$conector = mysqli_connect($servidor, $usuario_bd, $senha_bd);
-
-if (mysqli_connect_error()) {
-    print_r("Falha na conexão: ", mysqli_connect_error());
-    exit;
-}
-
-$bancoselecionado = mysqli_select_db($conector, $banco);
-
-if ($bancoselecionado === FALSE) {
-    print_r("Falha na seleção do banco de dados: " . mysqli_error($conector));
-    exit;
+// conecta_mysql.inc liga um buffer de saída e pode imprimir avisos/headers próprios;
+// descarta tudo isso antes de gravar o Excel, senão qualquer byte a mais no início
+// corrompe o .xlsx (os headers já enviados via header() não são afetados por isso).
+if (ob_get_level() > 0) {
+    ob_end_clean();
 }
 
 $pesagem_id = $_REQUEST["pesagem_id"];
