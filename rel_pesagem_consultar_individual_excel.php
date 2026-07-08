@@ -319,6 +319,11 @@ if ($num_rows != 0) {
         $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(9, $linha, $observacao);
         $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(10, $linha, $mae);
         $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(11, $linha, $descricao_categoria);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(12, $linha, $idade_meses);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(13, $linha, $raca);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(14, $linha, $pelagem);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(15, $linha, $codigo_pai_alfa_numerico);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(16, $linha, $observacao_animal);
 
         $spreadsheet->getActiveSheet()->getStyle('A' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
         $spreadsheet->getActiveSheet()->getStyle('B' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
