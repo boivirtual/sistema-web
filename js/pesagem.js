@@ -5929,6 +5929,10 @@ function imprimir_pesagem(pesagem_id) {
     location.href = "rel_pesagem_excel.php?pesagem_id=" + pesagem_id;
 }
 
+function imprimir_pesagem_individual_excel(pesagem_id) {
+    window.open("rel_pesagem_consultar_individual_excel.php?pesagem_id=" + pesagem_id, "_blank");
+}
+
 function imprimir_pesagem_lote(pesagem_id) {
     location.href = "rel_pesagem_excel_lote.php?pesagem_id=" + pesagem_id;
 }
