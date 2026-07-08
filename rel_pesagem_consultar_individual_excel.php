@@ -221,10 +221,23 @@ if ($num_rows != 0) {
     while ($reg_itens = mysqli_fetch_object($tbl_itens)) {
         $codigo_animal = intval($reg_itens->tbl_ite_pesagem_codigo_animal);
         $peso = intval($reg_itens->tbl_ite_pesagem_peso);
-        $sexo = utf8_encode($reg_itens->tbl_ite_pesagem_sexo);
-        $apartacao = utf8_encode($reg_itens->tbl_ite_pesagem_criterio_apartacao);
-        $observacao = utf8_encode($reg_itens->tbl_ite_pesagem_observacao);
+        $sexo = $reg_itens->tbl_ite_pesagem_sexo;
+        $apartacao = $reg_itens->tbl_ite_pesagem_criterio_apartacao;
+        $observacao = $reg_itens->tbl_ite_pesagem_observacao;
         $mae = $reg_itens->tbl_ite_pesagem_mae;
+        $raca = $reg_itens->tbl_ite_pesagem_raca;
+        $pelagem = $reg_itens->tbl_ite_pesagem_pelagem;
+        $observacao_animal = $reg_itens->tbl_animal_observacao;
+
+        $id_pai_animal = $reg_itens->tbl_animal_codigo_pai;
+        $codigo_pai_alfa_numerico = '';
+
+        if (isset($dados_pais_semem[$id_pai_animal])) {
+            $codigo_pai_alfa_numerico = $dados_pais_semem[$id_pai_animal];
+        }
+        elseif (isset($dados_pais_animal[$id_pai_animal])) {
+            $codigo_pai_alfa_numerico = $dados_pais_animal[$id_pai_animal];
+        }
 
         $data_nasc = $reg_itens->tbl_ite_pesagem_nascimento;
         $data_nasc = str_replace("/", "-", $data_nasc);
