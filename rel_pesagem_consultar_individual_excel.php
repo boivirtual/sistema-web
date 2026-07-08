@@ -14,6 +14,22 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 // Instanciamos a classe
 $spreadsheet = new Spreadsheet();
 
+// O banco tem registros antigos gravados em Latin1 misturados com registros em UTF-8.
+// Se already for UTF-8 válido, mantém como está; senão, converte de Latin1 para UTF-8.
+// (Aplicar utf8_encode()/mb_convert_encoding() sempre, sem essa checagem, corrompe os
+// registros que já estão em UTF-8 - vira dupla-codificação, tipo "Ã­" no lugar de "í").
+function corrigir_utf8($valor) {
+    if ($valor === null || $valor === '') {
+        return $valor;
+    }
+
+    if (mb_check_encoding($valor, 'UTF-8')) {
+        return $valor;
+    }
+
+    return mb_convert_encoding($valor, 'UTF-8', 'ISO-8859-1');
+}
+
 @ session_start();
 $cnpj_cliente = $_SESSION['id_cliente'];
 
