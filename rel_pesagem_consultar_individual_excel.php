@@ -88,7 +88,7 @@ $spreadsheet->getActiveSheet()->mergeCells('B5:K5');
 
 $spreadsheet->setActiveSheetIndex(0)
     ->setCellValue('A1', $nome_relatorio)
-    ->setCellValue('K1', 'Data: ' . $data_sistema)
+    ->setCellValue('J1', 'Data: ' . $data_sistema)
     ->setCellValue('A2', 'Nº do Documento: ')
     ->setCellValue('B2', $pesagem_id)
     ->setCellValue('D2', 'Data da Pesagem: ')
