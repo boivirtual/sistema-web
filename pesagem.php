@@ -6,9 +6,7 @@ $data_impressao = date("Y-m-d H:i:s");
 $cnpj_cliente = $_SESSION['id_cliente'];
 
 // abre banco de dados
-$servidor = "localhost";
-$usuario_bd = "root";
-$senha_bd = "a2ngei9Mxh";
+include_once "conecta_mysql_credenciais.inc";
 $banco = $cnpj_cliente;
 
 $conector = mysqli_connect($servidor, $usuario_bd, $senha_bd);

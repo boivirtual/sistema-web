@@ -174,7 +174,6 @@ $senha_bd = "";
 $banco = "landes";
 
 // Servidor
-//$senha_bd = "a2ngei9Mxh";
 //$banco = "landes";
 
 $conector = mysqli_connect($servidor, $usuario_bd, $senha_bd);

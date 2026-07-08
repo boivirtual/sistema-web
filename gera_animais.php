@@ -26,9 +26,7 @@ $data_sistema = date("Y-m-d H:i:s");
 $data_movimentacao=date("Y-m-d");
 
 
-$servidor = "127.0.0.1";
-$usuario_bd = "root";
-$senha_bd = "a2ngei9Mxh";
+include_once "conecta_mysql_credenciais.inc";
 $banco = "97174041604";
    
 $conector = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);

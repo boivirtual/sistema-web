@@ -23,13 +23,11 @@ $cnpj_cliente = $_SESSION['id_cliente'];
 $controle_estoque = $_SESSION['controle_estoque'];
 
 // abre banco de dados
-$servidor = "localhost";
-$usuario_bd = "root";
 $banco = $cnpj_cliente;
 //$senha_bd = "";
 
 // Servidor
-$senha_bd = "a2ngei9Mxh";
+include_once "conecta_mysql_credenciais.inc";
 
   $conector = mysqli_connect($servidor, $usuario_bd, $senha_bd);
   

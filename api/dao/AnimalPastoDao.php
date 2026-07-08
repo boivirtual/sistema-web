@@ -1,11 +1,11 @@
 <?php
-include_once __DIR__ . "/../../conecta_mysql_credenciais.inc";
 class AnimalPastoDao{
 
     private $con;
     private $systemDateHour;
 
     public function __construct($banco){
+        include_once __DIR__ . "/../../conecta_mysql_credenciais.inc";
         $this->con = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
         $this->systemDateHour = date("Y-m-d H:i:s");
     }

@@ -22,10 +22,8 @@ $spreadsheet = new Spreadsheet();
 $cnpj_cliente = $_SESSION['id_cliente'];
 
 // abre banco de dados
-$servidor = "localhost";
-$usuario_bd = "root";
 $banco = $cnpj_cliente;
-$senha_bd = "a2ngei9Mxh";
+include_once "conecta_mysql_credenciais.inc";
 
 $conector = mysqli_connect($servidor, $usuario_bd, $senha_bd);
 
