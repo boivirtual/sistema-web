@@ -28,11 +28,16 @@ execute obrigatoriamente os comandos abaixo antes de encerrar a tarefa:
 cd "C:\wamp64\www\reproducao\sistema"
 git add -A
 git commit -m "descrição resumida do que foi alterado"
-git push origin main
+git push origin master
 ```
 
 Nunca deixe alterações sem fazer o push. Cada sessão de trabalho deve
 terminar com o repositório GitHub atualizado.
+
+**Importante:** todo o trabalho deste projeto acontece na branch `master`
+(é ela que está atualizada e é usada para as releases). A branch `main`
+existe no repositório remoto mas está desatualizada e não deve receber
+commits nem pushes — deixe-a como está.
 
 ---
 
