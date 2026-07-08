@@ -1,12 +1,13 @@
 <?php
 
+include_once __DIR__ . "/../../conecta_mysql_credenciais.inc";
 class UsuarioDao{
     
     private $con;
     private $data;
 
     public function __construct(){
-        $this->con = mysqli_connect('localhost', 'root', 'a2ngei9Mxh', 'acesso_boi_virtual');
+        $this->con = mysqli_connect($servidor, $usuario_bd, $senha_bd, 'acesso_boi_virtual');
         $this->data = date("Y-m-d H:i:s");
     }
 

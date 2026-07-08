@@ -1,11 +1,12 @@
 <?php
+include_once __DIR__ . "/../../../conecta_mysql_credenciais.inc";
 // list_finalizadas.php
 require_once __DIR__ . '/../../dao/PesagemDao.php';
 
 $dados = json_decode(file_get_contents('php://input'), true);
 
 if (isset($dados['bd']) && isset($dados['fazendas'])) {
-    $con = mysqli_connect('localhost', 'root', 'a2ngei9Mxh', $dados['bd']);
+    $con = mysqli_connect($servidor, $usuario_bd, $senha_bd, $dados['bd']);
     mysqli_set_charset($con, "utf8");
 
     // Filtra pelos IDs das fazendas que o usuário tem acesso

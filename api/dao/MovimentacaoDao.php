@@ -1,8 +1,9 @@
 <?php
+include_once __DIR__ . "/../../conecta_mysql_credenciais.inc";
 class MovimentacaoDao{
 
     public function __construct($db){
-        $this->con = mysqli_connect('localhost', 'root', 'a2ngei9Mxh', $db);
+        $this->con = mysqli_connect($servidor, $usuario_bd, $senha_bd, $db);
         $this->systemDate = date('Y-m-d H:i:s');
     }
 
