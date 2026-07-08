@@ -30,14 +30,20 @@ function corrigir_utf8($valor) {
     return mb_convert_encoding($valor, 'UTF-8', 'ISO-8859-1');
 }
 
-// abre banco de dados (mesma conexão/credenciais usadas pelo resto do sistema)
-include "conecta_mysql.inc";
+// Credenciais isoladas em arquivo próprio (fora do Git, coberto pelo .gitignore).
+// Não usamos o conecta_mysql.inc aqui porque ele tem um BOM gravado antes do "<?php"
+// e chama ob_start()/header() - em uma página HTML normal isso passa despercebido,
+// mas corrompe um binário exato como o .xlsx (que precisa começar com a assinatura do ZIP).
+include "conecta_mysql_credenciais.inc";
 
-// conecta_mysql.inc liga um buffer de saída e pode imprimir avisos/headers próprios;
-// descarta tudo isso antes de gravar o Excel, senão qualquer byte a mais no início
-// corrompe o .xlsx (os headers já enviados via header() não são afetados por isso).
-if (ob_get_level() > 0) {
-    ob_end_clean();
+@ session_start();
+$banco = $_SESSION['id_cliente'];
+
+$conector = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
+
+if (mysqli_connect_error()) {
+    print_r("Falha na conexão: " . mysqli_connect_error());
+    exit;
 }
 
 $pesagem_id = $_REQUEST["pesagem_id"];
