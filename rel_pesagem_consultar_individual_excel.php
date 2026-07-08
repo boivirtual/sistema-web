@@ -120,21 +120,32 @@ $spreadsheet->setActiveSheetIndex(0)
     ->setCellValue("H8", "Apartação")
     ->setCellValue("I8", "Observação da Pesagem")
     ->setCellValue("J8", "Mãe")
-    ->setCellValue("K8", "Categoria");
+    ->setCellValue("K8", "Categoria")
+    ->setCellValue("L8", "Idade em Meses")
+    ->setCellValue("M8", "Raça")
+    ->setCellValue("N8", "Pelagem")
+    ->setCellValue("O8", "Pai")
+    ->setCellValue("P8", "Observação");
 
-$spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(14);
+$spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(22);
 $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(12);
 $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(14);
-$spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(14);
+$spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(20);
 $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(16);
 $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(10);
-$spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(14);
+$spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(22);
 $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(16);
 $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(24);
 $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(13);
 $spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(16);
+$spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(15);
+$spreadsheet->getActiveSheet()->getColumnDimension('M')->setWidth(14);
+$spreadsheet->getActiveSheet()->getColumnDimension('N')->setWidth(14);
+$spreadsheet->getActiveSheet()->getColumnDimension('O')->setWidth(16);
+$spreadsheet->getActiveSheet()->getColumnDimension('P')->setWidth(24);
 
-$spreadsheet->getActiveSheet()->getStyle('A1:K1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+$spreadsheet->getActiveSheet()->getStyle('A1:I1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+$spreadsheet->getActiveSheet()->getStyle('J1:K1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 $spreadsheet->getActiveSheet()->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 $spreadsheet->getActiveSheet()->getStyle('D2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 $spreadsheet->getActiveSheet()->getStyle('A3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
