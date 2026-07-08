@@ -152,10 +152,10 @@ $spreadsheet->getActiveSheet()->getStyle('A3')->getAlignment()->setHorizontal(Al
 $spreadsheet->getActiveSheet()->getStyle('D3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 $spreadsheet->getActiveSheet()->getStyle('G3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 $spreadsheet->getActiveSheet()->getStyle('A4:A5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-$spreadsheet->getActiveSheet()->getStyle('A8:K8')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+$spreadsheet->getActiveSheet()->getStyle('A8:P8')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-$spreadsheet->getActiveSheet()->getStyle('A8:K8')->getFill()->setFillType(Fill::FILL_SOLID);
-$spreadsheet->getActiveSheet()->getStyle('A8:K8')->getFill()->getStartColor()->setARGB('D6DBDF');
+$spreadsheet->getActiveSheet()->getStyle('A8:P8')->getFill()->setFillType(Fill::FILL_SOLID);
+$spreadsheet->getActiveSheet()->getStyle('A8:P8')->getFill()->getStartColor()->setARGB('D6DBDF');
 
 $spreadsheet->getActiveSheet()->getStyle('B5:K5')->getFont()->setColor(new Color(Color::COLOR_GRAY));
 $spreadsheet->getActiveSheet()->getStyle('B5:K5')->getFont()->setSize(10);
