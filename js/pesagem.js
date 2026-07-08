@@ -2915,7 +2915,7 @@ function SalvarIncluirEdicao() {
     $td.eq(19).addClass("mens_repetido").hide();
     $td.eq(20).addClass("id_repetido").hide();
 
-    if (!modoNovoMotivoAtivo) {
+    if (typeof modoNovoMotivoAtivo === "undefined" || !modoNovoMotivoAtivo) {
         $td.eq(0).hide();
     }
 
