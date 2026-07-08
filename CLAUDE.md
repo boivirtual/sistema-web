@@ -1,5 +1,16 @@
 # CLAUDE.md — Instruções para o Assistente
 
+## Premissa obrigatória nº 1: Idioma
+
+Todas as respostas, explicações, mensagens e textos escritos pelo assistente
+devem ser **obrigatoriamente em Português do Brasil**, independentemente do
+idioma usado na pergunta. Isso inclui mensagens de commit, comentários de
+resposta e qualquer texto exibido ao usuário. Código, nomes de variáveis e
+termos técnicos que já estejam em inglês por convenção do sistema podem
+permanecer em inglês.
+
+---
+
 ## Projeto
 **Nome:** Boi Virtual — Sistema Web  
 **Tecnologias:** PHP, MySQL, Bootstrap 3, jQuery, DataTables, Font Awesome 5  
