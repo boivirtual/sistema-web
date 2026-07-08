@@ -66,7 +66,7 @@ if ($num_rows != 0) {
     $data_pesagem = new DateTime($reg_pesagem->tbl_pesagem_data);
     $data_pesagem_edi = $data_pesagem->format('d/m/Y');
 
-    $nome_inclusao = utf8_encode($reg_pesagem->tbl_pesagem_incluido_por);
+    $nome_inclusao = $reg_pesagem->tbl_pesagem_incluido_por;
     $data_inclusao = new DateTime($reg_pesagem->tbl_pesagem_incluido_em);
     $incluido_por = $nome_inclusao . ' em ' . $data_inclusao->format('d/m/Y');
 }
