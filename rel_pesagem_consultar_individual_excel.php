@@ -69,9 +69,9 @@ if ($num_rows != 0) {
 
     $desc_local = $reg_pesagem->tbl_pessoa_nome;
     $codigo_local = $reg_pesagem->tbl_pesagem_codigo_local;
-    $desc_motivo = $reg_pesagem->tab_descricao_epoca_pesagem;
-    $desc_filtro = $reg_pesagem->tbl_pesagem_filtros;
-    $desc_lote = $reg_pesagem->tbl_pesagem_lote;
+    $desc_motivo = corrigir_utf8($reg_pesagem->tab_descricao_epoca_pesagem);
+    $desc_filtro = corrigir_utf8($reg_pesagem->tbl_pesagem_filtros);
+    $desc_lote = corrigir_utf8($reg_pesagem->tbl_pesagem_lote);
     $animais_pesados = intval($reg_pesagem->tbl_pesagem_qtd_animais_pesados);
     $peso_kg = $reg_pesagem->tbl_pesagem_peso_kg;
     $peso_arroba = $reg_pesagem->tbl_pesagem_peso_arroba;
