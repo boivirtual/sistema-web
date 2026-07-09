@@ -1140,20 +1140,63 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
     }
 }
 
-    function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$conta_fim,$wfazendas,$wfornecedor,$wcc){
+    function montar_fatias_conta_rateio($conector, $ctp_id, $cod_conta_header, $total_pagar, $valor_pago, $total_vencidas, $total_avencer) {
+        if ($cod_conta_header !== null && $cod_conta_header !== '') {
+            return [[
+                'cod_conta' => $cod_conta_header,
+                'total_pagar' => $total_pagar,
+                'valor_pago' => $valor_pago,
+                'total_vencidas' => $total_vencidas,
+                'total_avencer' => $total_avencer,
+            ]];
+        }
+
+        $linhas_rateio = array();
+        $soma_rateio = 0;
+
+        $rs = mysqli_query($conector, "SELECT rc_codigo_conta, rc_valor_conta FROM tbl_ctp_rateio
+            WHERE rc_ctp_id='$ctp_id' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''");
+
+        while ($r = mysqli_fetch_object($rs)) {
+            $linhas_rateio[] = $r;
+            $soma_rateio += $r->rc_valor_conta;
+        }
+
+        if (count($linhas_rateio) == 0 || $soma_rateio == 0) {
+            // rateio feito só até local/CC, sem conta contábil definida
+            return array();
+        }
+
+        $fatias = array();
+
+        foreach ($linhas_rateio as $r) {
+            $prop = $r->rc_valor_conta / $soma_rateio;
+            $fatias[] = [
+                'cod_conta' => $r->rc_codigo_conta,
+                'total_pagar' => $total_pagar * $prop,
+                'valor_pago' => $valor_pago * $prop,
+                'total_vencidas' => $total_vencidas * $prop,
+                'total_avencer' => $total_avencer * $prop,
+            ];
+        }
+
+        return $fatias;
+    }
+
+    function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$conta_fim,$wfazendas,$wfornecedor,$wcc,$fazendas_ids='',$cc_ids=''){
+
+        $wconta_notas = " AND (ctp_codigo_conta='$conta_inicio' OR (ctp_codigo_conta IS NULL AND ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE rc_codigo_conta='$conta_inicio')))";
 
         if ($tipo_data=="E"){
             $contas_pag = mysqli_query($conector, "SELECT * FROM contas_pagar
                 WHERE ctp_data_emissao >='$data_inicial' AND
-                      ctp_data_emissao <='$data_final' AND
-                      ctp_codigo_conta='$conta_inicio'" . $wfazendas . $wcc . $wfornecedor . 
+                      ctp_data_emissao <='$data_final'" . $wconta_notas . $wfazendas . $wcc . $wfornecedor .
                 " ORDER BY ctp_codigo_conta, ctp_data_emissao, ctp_numero_doc ASC");
         }
         else if ($tipo_data=="V"){
             $contas_pag = mysqli_query($conector, "SELECT * FROM contas_pagar
                 WHERE ctp_data_vencimento >='$data_inicial' AND
-                      ctp_data_vencimento <='$data_final' AND
-                      ctp_codigo_conta='$conta_inicio'" . $wfazendas . $wcc . $wfornecedor . 
+                      ctp_data_vencimento <='$data_final'" . $wconta_notas . $wfazendas . $wcc . $wfornecedor .
                 " ORDER BY ctp_codigo_conta, ctp_data_vencimento, ctp_numero_doc ASC");
         }
         else {
@@ -1161,16 +1204,15 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                 INNER JOIN contas_pagar
                         ON bcp_id=ctp_id
                 WHERE bcp_data_pagamento >='$data_inicial' AND
-                      bcp_data_pagamento <='$data_final' AND
-                      ctp_codigo_conta='$conta_inicio'" . $wfazendas . $wcc . $wfornecedor . 
-                " ORDER BY ctp_codigo_conta, bcp_data_pagamento, bcp_numero_id  ASC"); 
+                      bcp_data_pagamento <='$data_final'" . $wconta_notas . $wfazendas . $wcc . $wfornecedor .
+                " ORDER BY ctp_codigo_conta, bcp_data_pagamento, bcp_numero_id  ASC");
         }
 
 
-        $num_rows_conta = mysqli_num_rows($contas_pag);
         $ind_array = 0;
+        $array_contas = array();
 
-        while ($registro_contas_pag = mysqli_fetch_object($contas_pag)){  
+        while ($registro_contas_pag = mysqli_fetch_object($contas_pag)){
             $valor_parcela = $registro_contas_pag->ctp_valor_parcela;
             $valor_desconto = $registro_contas_pag->ctp_valor_desconto;
             $valor_juros = $registro_contas_pag->ctp_valor_juros;
@@ -1192,32 +1234,25 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
             $desc_situacao="";
             $valor_pago=0;
 
-            $tbl_pessoa = mysqli_query($conector, "SELECT tbl_pessoa_nome
-            FROM tbl_pessoa 
-            WHERE tbl_pessoa_id='$codigo_fazenda'");
-                                                                                         
-            $registro_pessoa = mysqli_fetch_object($tbl_pessoa);
-            $desc_pessoa = utf8_encode($registro_pessoa->tbl_pessoa_nome);
-            
             if ($conta_pgto!=0){
                 $conta_pagamento = mysqli_query($conector, "SELECT tbl_conta_pagamento_descricao
-                FROM tbl_conta_pagamento 
+                FROM tbl_conta_pagamento
                 WHERE tbl_conta_pagamento_id='$conta_pgto'");
-                                                                                         
+
                 $registro_conta_pagamento = mysqli_fetch_object($conta_pagamento);
                 $desc_conta_pgto = utf8_encode($registro_conta_pagamento->tbl_conta_pagamento_descricao);
             }
             else {
-                $desc_conta_pgto = '';  
+                $desc_conta_pgto = '';
             }
 
             $data_pag_edi='';
 
             if ($situacao == "P" || $situacao == "C"){
                 $conta_baixada = mysqli_query($conector, "SELECT bcp_valor_pagamento,bcp_data_pagamento
-                FROM baixa_contas_pagar 
+                FROM baixa_contas_pagar
                 WHERE bcp_id='$ctp_id'");
-                                                                                         
+
                 while ($registro_conta_baixada = mysqli_fetch_object($conta_baixada)) {
                     $ctp_valor_pago = $registro_conta_baixada->bcp_valor_pagamento;
                     $valor_pago = $valor_pago + $ctp_valor_pago;
@@ -1228,7 +1263,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
             }
             else if ($tipo_data=="P"){
                 $valor_pago = $registro_contas_pag->bcp_valor_pagamento;
-            } 
+            }
 
             $total_pagar = $valor_parcela - $valor_desconto + $valor_juros + $valor_outro;
 
@@ -1238,14 +1273,14 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                 } else {
                     $desc_situacao = "";
                 }
-            } 
+            }
             else if ($situacao == "P") {
                 $desc_situacao = " Pago";
-            } 
+            }
             else if ($situacao == "C") {
                 if ($vencimento < $data_sistema) {
                     $desc_situacao = " P Parc Vencida";
-                } 
+                }
                 else {
                     $desc_situacao = " P Parc";
                 }
@@ -1257,11 +1292,39 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
 
             $doc_imp = $numero_id . '/' . $parcela;
 
-            $dados = [$doc_imp,$razao,$emissao_edi->format('d/m/Y'), $vencimento_edi->format('d/m/Y'),number_format($total_pagar,2,',','.'), $data_pag_edi, number_format($valor_pago,2,',','.'), $desc_situacao, $desc_conta_pgto, $numero_cheque, $desc_pessoa];
+            if ($codigo_fazenda === null) {
+                // Documento rateado: uma linha por local que participa desta conta contábil
+                $wlocal_rateio = ($fazendas_ids!='') ? " AND rc_codigo_local IN($fazendas_ids)" : '';
+                $wcc_rateio = ($cc_ids!='') ? " AND (rc_codigo_cc IS NULL OR rc_codigo_cc IN($cc_ids))" : '';
 
-            $array_contas[$ind_array] = $dados;
+                $rateio_res = mysqli_query($conector, "SELECT rc_nome_local, rc_valor_conta
+                    FROM tbl_ctp_rateio
+                    WHERE rc_ctp_id='$ctp_id' AND rc_codigo_conta='$conta_inicio'" . $wlocal_rateio . $wcc_rateio);
 
-            $ind_array++;
+                while ($reg_rateio = mysqli_fetch_object($rateio_res)) {
+                    $desc_pessoa = utf8_encode($reg_rateio->rc_nome_local);
+                    $valor_fatia = $reg_rateio->rc_valor_conta;
+                    $valor_pago_fatia = ($total_pagar != 0) ? $valor_pago * ($valor_fatia / $total_pagar) : 0;
+
+                    $dados = [$doc_imp,$razao,$emissao_edi->format('d/m/Y'), $vencimento_edi->format('d/m/Y'),number_format($valor_fatia,2,',','.'), $data_pag_edi, number_format($valor_pago_fatia,2,',','.'), $desc_situacao, $desc_conta_pgto, $numero_cheque, $desc_pessoa];
+
+                    $array_contas[$ind_array] = $dados;
+                    $ind_array++;
+                }
+            }
+            else {
+                $tbl_pessoa = mysqli_query($conector, "SELECT tbl_pessoa_nome
+                FROM tbl_pessoa
+                WHERE tbl_pessoa_id='$codigo_fazenda'");
+
+                $registro_pessoa = mysqli_fetch_object($tbl_pessoa);
+                $desc_pessoa = utf8_encode($registro_pessoa->tbl_pessoa_nome);
+
+                $dados = [$doc_imp,$razao,$emissao_edi->format('d/m/Y'), $vencimento_edi->format('d/m/Y'),number_format($total_pagar,2,',','.'), $data_pag_edi, number_format($valor_pago,2,',','.'), $desc_situacao, $desc_conta_pgto, $numero_cheque, $desc_pessoa];
+
+                $array_contas[$ind_array] = $dados;
+                $ind_array++;
+            }
         }
         return $array_contas;
     }
