@@ -1501,10 +1501,6 @@ function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final
         $valor_pago=0;
             
         $desc_pessoa = '';
-                                                                                         
-        $registro_pessoa = mysqli_fetch_object($tbl_pessoa);
-        //$desc_pessoa = utf8_encode($registro_pessoa->tbl_pessoa_nome);
-        $desc_pessoa = $registro_pessoa->tbl_pessoa_nome;
 
         if ($conta_pgto!=0){
             $conta_pagamento = mysqli_query($conector, "SELECT tbl_conta_pagamento_descricao
