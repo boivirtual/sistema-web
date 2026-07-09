@@ -854,7 +854,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                                     echo '<td align="right">'.number_format($valor_conta,2,',','.').'</td>';
 
                                     if ($tipo_rel=="A"){
-                                        $array_contas=ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$conta_fim,$wfazendas,$wfornecedor,$wcc);
+                                        $array_contas=ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$conta_fim,$wfazendas,$wfornecedor,$wcc,$fazendas,$centro_custo);
 
                                         for ($k=0; $k < count($array_contas); $k++) { 
                                             if ($k==0){
@@ -998,7 +998,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                             echo '<td align="right">'.number_format($valor_conta,2,',','.').'</td>';
 
                             if ($tipo_rel=="A"){
-                                $array_contas=ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$conta_fim,$wfazendas,$wfornecedor,$wcc);
+                                $array_contas=ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$conta_fim,$wfazendas,$wfornecedor,$wcc,$fazendas,$centro_custo);
 
                                 for ($k=0; $k < count($array_contas); $k++) { 
                                     if ($k==0){
@@ -1092,7 +1092,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                 echo '<td align="right">'.number_format($valor_conta,2,',','.').'</td>';
 
                 if ($tipo_rel=="A"){
-                    $array_contas=ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$conta_fim,$wfazendas,$wfornecedor,$wcc);
+                    $array_contas=ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$conta_fim,$wfazendas,$wfornecedor,$wcc,$fazendas,$centro_custo);
 
                     for ($k=0; $k < count($array_contas); $k++) { 
                         if ($k==0){
