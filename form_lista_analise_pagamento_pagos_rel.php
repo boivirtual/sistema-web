@@ -853,7 +853,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                                                 echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Vencimento</td>';
                                                 echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Valor</td>';
                                                 echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Pagamento</td>';
-                                                echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Vlr Recebido</td>';
+                                                echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Vlr Pago</td>';
                                                 echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Situação</td>';
                                                 echo '</tr>';
 
@@ -998,7 +998,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                                         echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Vencimento</td>';
                                         echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Valor</td>';
                                         echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Pagamento</td>';
-                                        echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Vlr Recebido</td>';
+                                        echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Vlr Pago</td>';
                                         echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Situação</td>';
                                         echo '</tr>';
                                         
@@ -1091,7 +1091,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                             echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Vencimento</td>';
                             echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Valor</td>';
                             echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Pagamento</td>';
-                            echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Vlr Recebido</td>';
+                            echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Vlr Pago</td>';
                             echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Situação</td>';
                             echo '</tr>';
 
