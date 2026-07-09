@@ -1113,7 +1113,7 @@ function listar_contas_pagar_tela(opcao) {
     if (codigo_local_filtro != "") {
         codigo_local_filtro = "Local: " + codigo_local_filtro + "->";
     } else {
-        codigo_local_filtro = "Local: Todas";
+        codigo_local_filtro = "Local: Todas->";
     }
 
     var options = $("#codigo_cc option:selected");
