@@ -96,9 +96,7 @@
     $wcc = '';
 
     if ($codigo_cc!='') {
-        $wcc = " AND ctp_codigo_centro_custos IN(";
-        $wcc.= $centro_custo;
-        $wcc.= ")";
+        $wcc = " AND (ctp_codigo_centro_custos IN($centro_custo) OR (ctp_codigo_centro_custos IS NULL AND ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE rc_codigo_cc IN ($centro_custo))))";
     }
 
     $a_vencer='';
