@@ -805,7 +805,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
 									$spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(8, $linha, $valor_conta);
 
 									if ($tipo_rel=="A"){
-                                    	$array_contas=ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$wfazendas,$wfornecedor,$wcc);
+                                    	$array_contas=ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$wfazendas,$wfornecedor,$wcc,$fazendas,$centro_custo);
 
 	                                    for ($k=0; $k < count($array_contas); $k++) { 
 	                                        if ($k==0){
@@ -1053,7 +1053,7 @@ $data_vencimento_edi = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($array_
 							$spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(8, $linha, $valor_conta);
 
 							if ($tipo_rel=="A"){
-                                $array_contas=ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$wfazendas,$wfornecedor,$wcc);
+                                $array_contas=ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$wfazendas,$wfornecedor,$wcc,$fazendas,$centro_custo);
 	                            for ($k=0; $k < count($array_contas); $k++) { 
 	                                if ($k==0){
 
@@ -1244,7 +1244,7 @@ $data_vencimento_edi = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($array_
 				$spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(8, $linha, $valor_conta);
 
 				if ($tipo_rel=="A"){
-                    $array_contas=ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$wfazendas,$wfornecedor,$wcc);
+                    $array_contas=ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$wfazendas,$wfornecedor,$wcc,$fazendas,$centro_custo);
 
 	                    for ($k=0; $k < count($array_contas); $k++) { 
 	                        if ($k==0){
