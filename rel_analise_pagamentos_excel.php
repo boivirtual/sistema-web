@@ -1500,9 +1500,7 @@ function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final
         $desc_situacao="";
         $valor_pago=0;
             
-        $tbl_pessoa = mysqli_query($conector, "SELECT tbl_pessoa_nome
-        	FROM tbl_pessoa 
-            WHERE tbl_pessoa_id='$codigo_fazenda'");
+        $desc_pessoa = '';
                                                                                          
         $registro_pessoa = mysqli_fetch_object($tbl_pessoa);
         //$desc_pessoa = utf8_encode($registro_pessoa->tbl_pessoa_nome);
