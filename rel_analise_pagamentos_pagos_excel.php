@@ -687,6 +687,25 @@ $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(6, $linha, $total_ven
 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(7, $linha, $total_pago_conta_sintetica);
 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(8, $linha, $total_conta_sintetica);
 
+if ($total_sem_conta != 0) {
+    $linha++;
+
+    $celulas = 'A'.$linha.':H'.$linha;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('F0E68C');
+    $spreadsheet->getActiveSheet()->getStyle('A'.$linha) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+
+    $celulas = 'E'.$linha.':H'.$linha;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2);
+    $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+
+    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $linha, 'RATEIO SEM CONTA DEFINIDA');
+    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(5, $linha, $total_avencer_sem_conta);
+    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(6, $linha, $total_vencido_sem_conta);
+    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(7, $linha, $total_pago_sem_conta);
+    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(8, $linha, $total_sem_conta);
+}
+
 $index_conta_sintetica=0;
 
 for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
