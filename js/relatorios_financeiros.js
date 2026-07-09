@@ -1127,7 +1127,7 @@ function listar_contas_pagar_tela(opcao) {
     if (codigo_cc_filtro != "") {
         codigo_cc_filtro = "C.Custos: " + codigo_cc_filtro + "->";
     } else {
-        codigo_cc_filtro = "C.Custos: Todos";
+        codigo_cc_filtro = "C.Custos: Todos->";
     }
 
     var data_ini = data_inicial.split("-");
