@@ -414,77 +414,94 @@ $linha=4;
 
         if (substr($conta_inicio, 3, 4)==0 && substr($conta_fim, 3, 4)!=9999){
             if ($cod_conta==$conta_fim){
-                $codigo_sub_conta = substr($cod_conta, 0, 3);
-                $codigo_conta_sintetica = substr($cod_conta, 0, 1);
-                $total_conta_sintetica = $total_conta_sintetica + $total_pagar;
-                $total_pago_conta_sintetica = $total_pago_conta_sintetica + $valor_pago;
+                $fatias = montar_fatias_conta_rateio($conector, $ctp_id, $registro_contas_pagar->ctp_codigo_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer);
 
-                for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
-                    if ($arry_conta_sintetica[$i]==$codigo_conta_sintetica) {
-                        $j=$i;
-                        $j++;
-
-                        // valor da parcela
-                        $j++;
-                        $arry_conta_sintetica[$j]=$arry_conta_sintetica[$j] + $total_pagar;
-
-                        // valor pago
-                        $j++;
-                        $arry_conta_sintetica[$j]=$arry_conta_sintetica[$j] + $valor_pago;
-
-                        // valor vencido
-                        $j++;
-                        $arry_conta_sintetica[$j]=$arry_conta_sintetica[$j] + $total_vencidas;
-
-                        // valor avencer
-                        $j++;
-                        $arry_conta_sintetica[$j]=$arry_conta_sintetica[$j] + $total_avencer;
-                    }
+                if (count($fatias) == 0) {
+                    $total_sem_conta = $total_sem_conta + $total_pagar;
+                    $total_pago_sem_conta = $total_pago_sem_conta + $valor_pago;
+                    $total_vencido_sem_conta = $total_vencido_sem_conta + $total_vencidas;
+                    $total_avencer_sem_conta = $total_avencer_sem_conta + $total_avencer;
                 }
 
-                for ($i = 0; $i < $qtd_contas; $i++) {
-                    if ($arry_conta[$i]==$cod_conta) {
-                        $j=$i;
-                        $j++;
+                foreach ($fatias as $fatia) {
+                    $cod_conta = $fatia['cod_conta'];
+                    $total_pagar = $fatia['total_pagar'];
+                    $valor_pago = $fatia['valor_pago'];
+                    $total_vencidas = $fatia['total_vencidas'];
+                    $total_avencer = $fatia['total_avencer'];
+                    $codigo_sub_conta = substr($cod_conta, 0, 3);
+                    $codigo_conta_sintetica = substr($cod_conta, 0, 1);
 
-                        // valor da parcela
-                        $j++;
-                        $arry_conta[$j]=$arry_conta[$j] + $total_pagar;
+                    $total_conta_sintetica = $total_conta_sintetica + $total_pagar;
+                    $total_pago_conta_sintetica = $total_pago_conta_sintetica + $valor_pago;
 
-                        // valor pago
-                        $j++;
-                        $arry_conta[$j]=$arry_conta[$j] + $valor_pago;
+                    for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
+                        if ($arry_conta_sintetica[$i]==$codigo_conta_sintetica) {
+                            $j=$i;
+                            $j++;
 
-                        // valor vencido
-                        $j++;
-                        $arry_conta[$j]=$arry_conta[$j] + $total_vencidas;
+                            // valor da parcela
+                            $j++;
+                            $arry_conta_sintetica[$j]=$arry_conta_sintetica[$j] + $total_pagar;
 
-                        // valor avencer
-                        $j++;
-                        $arry_conta[$j]=$arry_conta[$j] + $total_avencer;
+                            // valor pago
+                            $j++;
+                            $arry_conta_sintetica[$j]=$arry_conta_sintetica[$j] + $valor_pago;
+
+                            // valor vencido
+                            $j++;
+                            $arry_conta_sintetica[$j]=$arry_conta_sintetica[$j] + $total_vencidas;
+
+                            // valor avencer
+                            $j++;
+                            $arry_conta_sintetica[$j]=$arry_conta_sintetica[$j] + $total_avencer;
+                        }
                     }
-                }
 
-                for ($i = 0; $i < $qtd_sub_contas; $i++) {
-                    if ($arry_sub_conta[$i]==$codigo_sub_conta) {
-                        $j=$i;
-                        $j++;
+                    for ($i = 0; $i < $qtd_contas; $i++) {
+                        if ($arry_conta[$i]==$cod_conta) {
+                            $j=$i;
+                            $j++;
 
-                        // valor da parcela
-                        $j++;
-                        $arry_sub_conta[$j]=$arry_sub_conta[$j] + $total_pagar;
+                            // valor da parcela
+                            $j++;
+                            $arry_conta[$j]=$arry_conta[$j] + $total_pagar;
 
-                        // valor pago
-                        $j++;
-                        $arry_sub_conta[$j]=$arry_sub_conta[$j] + $valor_pago;
+                            // valor pago
+                            $j++;
+                            $arry_conta[$j]=$arry_conta[$j] + $valor_pago;
 
-                        // valor vencido
-                        $j++;
-                        $arry_sub_conta[$j]=$arry_sub_conta[$j] + $total_vencidas;
+                            // valor vencido
+                            $j++;
+                            $arry_conta[$j]=$arry_conta[$j] + $total_vencidas;
 
-                        // valor avencer
-                        $j++;
-                        $arry_sub_conta[$j]=$arry_sub_conta[$j] + $total_avencer;
+                            // valor avencer
+                            $j++;
+                            $arry_conta[$j]=$arry_conta[$j] + $total_avencer;
+                        }
+                    }
+
+                    for ($i = 0; $i < $qtd_sub_contas; $i++) {
+                        if ($arry_sub_conta[$i]==$codigo_sub_conta) {
+                            $j=$i;
+                            $j++;
+
+                            // valor da parcela
+                            $j++;
+                            $arry_sub_conta[$j]=$arry_sub_conta[$j] + $total_pagar;
+
+                            // valor pago
+                            $j++;
+                            $arry_sub_conta[$j]=$arry_sub_conta[$j] + $valor_pago;
+
+                            // valor vencido
+                            $j++;
+                            $arry_sub_conta[$j]=$arry_sub_conta[$j] + $total_vencidas;
+
+                            // valor avencer
+                            $j++;
+                            $arry_sub_conta[$j]=$arry_sub_conta[$j] + $total_avencer;
+                        }
                     }
                 }
             }
