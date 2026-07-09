@@ -79,9 +79,7 @@
     $wfazendas = '';
 
     if ($codigo_fazenda!='') {
-        $wfazendas = " AND ctp_codigo_fazenda IN(";
-        $wfazendas.= $fazendas;
-        $wfazendas.= ")";
+        $wfazendas = " AND (ctp_codigo_fazenda IN($fazendas) OR (ctp_codigo_fazenda IS NULL AND ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE rc_codigo_local IN ($fazendas))))";
     }
 
     $centro_custo= array();
