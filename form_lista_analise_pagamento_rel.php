@@ -269,6 +269,11 @@
     $total_aberto_conta_sintetica=0;
     $total_avencer_conta_sintetica=0;
 
+    $total_sem_conta=0;
+    $total_pago_sem_conta=0;
+    $total_vencido_sem_conta=0;
+    $total_avencer_sem_conta=0;
+
     $arry_conta_sintetica = array();
     $arry_conta = array();
     $arry_sub_conta = array();
