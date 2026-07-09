@@ -817,7 +817,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
 
 												$spreadsheet->setActiveSheetIndex(0)
 											    	->setCellValue("A".$linha,"Documento")
-											    	->setCellValue("B".$linha,"Fazenda")
+											    	->setCellValue("B".$linha,"Local")
 											    	->setCellValue("C".$linha,"Fonte Pagadora")
 											    	->setCellValue("D".$linha,"Emissão")
 											    	->setCellValue("E".$linha,"Vencimento")
@@ -1064,7 +1064,7 @@ $data_vencimento_edi = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($array_
 
 												$spreadsheet->setActiveSheetIndex(0)
 											    	->setCellValue("A".$linha,"Documento")
-											    	->setCellValue("B".$linha,"Fazenda")
+											    	->setCellValue("B".$linha,"Local")
 											    	->setCellValue("C".$linha,"Fonte Pagadora")
 											    	->setCellValue("D".$linha,"Emissão")
 											    	->setCellValue("E".$linha,"Vencimento")
@@ -1255,7 +1255,7 @@ $data_vencimento_edi = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($array_
 
 								$spreadsheet->setActiveSheetIndex(0)
 							    	->setCellValue("A".$linha,"Documento")
-							    	->setCellValue("B".$linha,"Fazenda")
+							    	->setCellValue("B".$linha,"Local")
 							    	->setCellValue("C".$linha,"Fonte Pagadora")
 							    	->setCellValue("D".$linha,"Emissão")
 							    	->setCellValue("E".$linha,"Vencimento")
