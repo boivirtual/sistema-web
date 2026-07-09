@@ -860,7 +860,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                                             if ($k==0){
                                                 echo '<tr>';
                                                 echo '<td width="8%" style="color: #bfbdbd; font-size: 11px;">Documento/Local</td>';
-                                                echo '<td width="38%" style="color: #bfbdbd; font-size: 11px;">Fonte Pagadora</td>';
+                                                echo '<td width="38%" style="color: #bfbdbd; font-size: 11px;">Fornecedor</td>';
                                                 echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Emissão</td>';
                                                 echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Vencimento</td>';
                                                 echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Valor</td>';
@@ -1005,7 +1005,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
 
                                         echo '<tr>';
                                         echo '<td width="8%" style="color: #bfbdbd; font-size: 11px;">Documento/Local</td>';
-                                        echo '<td width="38%" style="color: #bfbdbd; font-size: 11px;">Fonte Pagadora</td>';
+                                        echo '<td width="38%" style="color: #bfbdbd; font-size: 11px;">Fornecedor</td>';
                                         echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Emissão</td>';
                                         echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Vencimento</td>';
                                         echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Valor</td>';
@@ -1098,7 +1098,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                         if ($k==0){
                             echo '<tr>';
                             echo '<td width="8%" style="color: #bfbdbd; font-size: 11px;">Documento/Local</td>';
-                            echo '<td width="38%" style="color: #bfbdbd; font-size: 11px;">Fonte Pagadora</td>';
+                            echo '<td width="38%" style="color: #bfbdbd; font-size: 11px;">Fornecedor</td>';
                             echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Emissão</td>';
                             echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Vencimento</td>';
                             echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; text-align: center;">Valor</td>';
