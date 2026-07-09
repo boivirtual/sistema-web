@@ -1405,38 +1405,79 @@ $writer->save('php://output');
 mysqli_close($conector);
 exit;
 
-function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$wfazendas,$wfornecedor,$wcc){
+function montar_fatias_conta_rateio($conector, $ctp_id, $cod_conta_header, $total_pagar, $valor_pago, $total_vencidas, $total_avencer) {
+    if ($cod_conta_header !== null && $cod_conta_header !== '') {
+        return [[
+            'cod_conta' => $cod_conta_header,
+            'total_pagar' => $total_pagar,
+            'valor_pago' => $valor_pago,
+            'total_vencidas' => $total_vencidas,
+            'total_avencer' => $total_avencer,
+        ]];
+    }
+
+    $linhas_rateio = array();
+    $soma_rateio = 0;
+
+    $rs = mysqli_query($conector, "SELECT rc_codigo_conta, rc_valor_conta FROM tbl_ctp_rateio
+        WHERE rc_ctp_id='$ctp_id' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''");
+
+    while ($r = mysqli_fetch_object($rs)) {
+        $linhas_rateio[] = $r;
+        $soma_rateio += $r->rc_valor_conta;
+    }
+
+    if (count($linhas_rateio) == 0 || $soma_rateio == 0) {
+        return array();
+    }
+
+    $fatias = array();
+
+    foreach ($linhas_rateio as $r) {
+        $prop = $r->rc_valor_conta / $soma_rateio;
+        $fatias[] = [
+            'cod_conta' => $r->rc_codigo_conta,
+            'total_pagar' => $total_pagar * $prop,
+            'valor_pago' => $valor_pago * $prop,
+            'total_vencidas' => $total_vencidas * $prop,
+            'total_avencer' => $total_avencer * $prop,
+        ];
+    }
+
+    return $fatias;
+}
+
+function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$wfazendas,$wfornecedor,$wcc,$fazendas_ids='',$cc_ids=''){
+
+    $wconta_notas = " AND (ctp_codigo_conta='$conta_inicio' OR (ctp_codigo_conta IS NULL AND ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE rc_codigo_conta='$conta_inicio')))";
 
     if ($tipo_data=="E"){
         $contas_pag = mysqli_query($conector, "SELECT * FROM contas_pagar
             WHERE ctp_data_emissao >='$data_inicial' AND
-                  ctp_data_emissao <='$data_final' AND
-                  ctp_codigo_conta='$conta_inicio'" . $wfazendas . $wcc . $wfornecedor . 
+                  ctp_data_emissao <='$data_final'" . $wconta_notas . $wfazendas . $wcc . $wfornecedor .
         " ORDER BY ctp_codigo_conta, ctp_data_emissao, ctp_numero_doc ASC");
     }
     else if ($tipo_data=="V"){
         $contas_pag = mysqli_query($conector, "SELECT * FROM contas_pagar
             WHERE ctp_data_vencimento >='$data_inicial' AND
-                  ctp_data_vencimento <='$data_final' AND
-                  ctp_codigo_conta='$conta_inicio'" . $wfazendas . $wcc . $wfornecedor . 
+                  ctp_data_vencimento <='$data_final'" . $wconta_notas . $wfazendas . $wcc . $wfornecedor .
         " ORDER BY ctp_codigo_conta, ctp_data_vencimento, ctp_numero_doc ASC");
     }
     else {
         $contas_pag = mysqli_query($conector, "SELECT * FROM baixa_contas_pagar
     	    INNER JOIN contas_pagar
-                    ON bcp_id=ctp_id AND 
-                       bcp_parcela=ctp_parcela AND 
+                    ON bcp_id=ctp_id AND
+                       bcp_parcela=ctp_parcela AND
                        bcp_codigo_fornecedor=ctp_codigo_fornecedor
             WHERE bcp_data_pagamento >='$data_inicial' AND
-                  bcp_data_pagamento <='$data_final' AND
-                  ctp_codigo_conta='$conta_inicio'" . $wfazendas . $wcc . $wfornecedor . 
-        " ORDER BY ctp_codigo_conta, bcp_data_pagamento, bcp_numero_id  ASC"); 
+                  bcp_data_pagamento <='$data_final'" . $wconta_notas . $wfazendas . $wcc . $wfornecedor .
+        " ORDER BY ctp_codigo_conta, bcp_data_pagamento, bcp_numero_id  ASC");
     }
 
-    $num_rows_conta = mysqli_num_rows($contas_pag);
     $ind_array = 0;
+    $array_contas = array();
 
-    while ($registro_contas_pag = mysqli_fetch_object($contas_pag)){  
+    while ($registro_contas_pag = mysqli_fetch_object($contas_pag)){
         $valor_parcela = $registro_contas_pag->ctp_valor_parcela;
         $valor_desconto = $registro_contas_pag->ctp_valor_desconto;
         $valor_juros = $registro_contas_pag->ctp_valor_juros;
