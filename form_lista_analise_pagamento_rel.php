@@ -759,6 +759,19 @@
     echo '<td width="8%" align="right" style="background-color: #C2D0D0; color: #1C1C1C; font-weight:bold;">'.number_format($total_conta_sintetica,2,",",".").'</td>';
     echo '</tr>';
 
+    if ($total_sem_conta != 0) {
+        echo '<tr>';
+        echo '<td style="background-color: #F0E68C; color: #1C1C1C; font-weight:bold; width: 15%; border-right: 0;">RATEIO SEM CONTA DEFINIDA</td>';
+        echo '<td style="background-color: #F0E68C; border-right: 0;"></td>';
+        echo '<td style="background-color: #F0E68C; border-right: 0;"></td>';
+        echo '<td style="background-color: #F0E68C;"></td>';
+        echo '<td width="8%" align="right" style="background-color: #F0E68C; color: #1C1C1C; font-weight:bold;">'.number_format($total_avencer_sem_conta,2,",",".").'</td>';
+        echo '<td width="8%" align="right" style="background-color: #F0E68C; color: #1C1C1C; font-weight:bold;">'.number_format($total_vencido_sem_conta,2,",",".").'</td>';
+        echo '<td width="8%" align="right" style="background-color: #F0E68C; color: #1C1C1C; font-weight:bold;">'.number_format($total_pago_sem_conta,2,",",".").'</td>';
+        echo '<td width="8%" align="right" style="background-color: #F0E68C; color: #1C1C1C; font-weight:bold;">'.number_format($total_sem_conta,2,",",".").'</td>';
+        echo '</tr>';
+    }
+
 $index_conta_sintetica=0;
 
 for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
