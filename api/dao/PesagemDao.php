@@ -252,6 +252,10 @@ class PesagemDao {
 
                 $idPesagem = mysqli_insert_id($this->con);
             } else {
+                if (!$this->pesagemPermiteAcessoApp($idPesagem)) {
+                    throw new Exception("Pesagem não encontrada ou não pertence ao aplicativo.");
+                }
+
                 $sqlUpP = "UPDATE tbl_pesagem SET
                            tbl_pesagem_criterios_apartacao = '{$pesagem->getCriteriosApartacao()}'
                            WHERE tbl_pesagem_id = $idPesagem";
