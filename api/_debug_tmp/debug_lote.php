@@ -13,7 +13,3 @@ var_dump($animal ? $animal->getId() : null);
 
 $info = $dao->getLoteAbertoPorAnimal($animal->getId());
 var_dump($info);
-
-// also raw query test using getId() value directly
-$con = $dao->getConexao();
-var_dump(get_class($dao));
