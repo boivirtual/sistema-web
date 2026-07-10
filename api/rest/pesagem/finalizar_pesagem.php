@@ -23,16 +23,20 @@ if (isset($dados['bd']) && isset($dados['id_pesagem'])) {
     $motivo = intval($dados['motivo']); // Converte "001" para 1
     $lote = $dados['lote'];
 
-    // 1. Marcar a pesagem principal como finalizada ('S') - somente se for uma pesagem do aplicativo
-    $sql_fin = "UPDATE tbl_pesagem SET tbl_pesagem_finalizada='S'
-                WHERE tbl_pesagem_id='$id_pesagem' AND tbl_pesagem_origem='APP'";
-    mysqli_query($con, $sql_fin);
+    // Só é permitido finalizar pela pesagem se ela pertencer ao aplicativo ('APP')
+    $sql_check = "SELECT tbl_pesagem_origem FROM tbl_pesagem WHERE tbl_pesagem_id='$id_pesagem' LIMIT 1";
+    $res_check = mysqli_query($con, $sql_check);
+    $reg_check = $res_check ? mysqli_fetch_assoc($res_check) : null;
 
-    if (mysqli_affected_rows($con) === 0) {
+    if (!$reg_check || $reg_check['tbl_pesagem_origem'] !== 'APP') {
         echo json_encode(array('success' => false, 'message' => 'Pesagem não encontrada ou não pertence ao aplicativo.'));
         mysqli_close($con);
         exit;
     }
+
+    // 1. Marcar a pesagem principal como finalizada ('S')
+    $sql_fin = "UPDATE tbl_pesagem SET tbl_pesagem_finalizada='S' WHERE tbl_pesagem_id='$id_pesagem'";
+    mysqli_query($con, $sql_fin);
 
     // 2. Buscar todos os animais desta pesagem para atualizar a ficha individual deles
     $query_itens = "SELECT * FROM tbl_item_pesagem WHERE tbl_ite_pesagem_numero_id='$id_pesagem'";
