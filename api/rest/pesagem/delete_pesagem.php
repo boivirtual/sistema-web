@@ -11,6 +11,21 @@ if (isset($dados['bd']) && isset($dados['id_pesagem'])) {
 
     $id = intval($dados['id_pesagem']);
 
+    // Só é permitido excluir se a pesagem já estiver finalizada (regra atual, sem checar origem)
+    // ou se ainda estiver aberta e pertencer ao aplicativo ('APP')
+    $sqlCheck = "SELECT tbl_pesagem_finalizada, tbl_pesagem_origem FROM tbl_pesagem WHERE tbl_pesagem_id = $id LIMIT 1";
+    $resCheck = mysqli_query($con, $sqlCheck);
+    $regCheck = $resCheck ? mysqli_fetch_assoc($resCheck) : null;
+
+    $permitido = $regCheck && ($regCheck['tbl_pesagem_finalizada'] === 'S' || $regCheck['tbl_pesagem_origem'] === 'APP');
+
+    if (!$permitido) {
+        header('Content-type: application/json');
+        echo json_encode(["success" => false, "message" => "Pesagem não encontrada ou não pertence ao aplicativo."]);
+        mysqli_close($con);
+        exit;
+    }
+
     // Iniciamos uma transação para garantir a segurança dos dados
     mysqli_begin_transaction($con);
 
