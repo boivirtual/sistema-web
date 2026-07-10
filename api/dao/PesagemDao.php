@@ -129,6 +129,13 @@ class PesagemDao {
                 ];
             }
 
+            if (!$this->pesagemPermiteAcessoApp($pesagemId)) {
+                return [
+                    "success" => false,
+                    "message" => "Pesagem não encontrada ou não pertence ao aplicativo."
+                ];
+            }
+
             if ($bloquearFazenda) {
                 $sql = "UPDATE tbl_pesagem
                            SET tbl_pesagem_codigo_epoca = ?,
