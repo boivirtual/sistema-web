@@ -361,7 +361,6 @@ class AnimalDao{
 
         mysqli_set_charset($this->con, "utf8");
         $r = mysqli_query($this->con, $sql);
-        error_log("DEBUG getLoteAbertoPorAnimal idAnimal=" . var_export($idAnimal, true) . " sql=$sql erro=" . mysqli_error($this->con) . " numrows=" . ($r ? mysqli_num_rows($r) : 'FALSE'));
 
         if ($r && mysqli_num_rows($r) > 0) {
             $dados = mysqli_fetch_assoc($r);
