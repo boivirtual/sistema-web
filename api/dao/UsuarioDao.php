@@ -6,7 +6,7 @@ class UsuarioDao{
     private $data;
 
     public function __construct(){
-        include_once __DIR__ . "/../../conecta_mysql_credenciais.inc";
+        require __DIR__ . "/../../conecta_mysql_credenciais.inc";
         $this->con = mysqli_connect($servidor, $usuario_bd, $senha_bd, 'acesso_boi_virtual');
         $this->data = date("Y-m-d H:i:s");
     }
