@@ -4,7 +4,7 @@ class MunicipioDao{
     private $con;
 
     public function __construct($banco){
-        include_once __DIR__ . "/../../conecta_mysql_credenciais.inc";
+        require __DIR__ . "/../../conecta_mysql_credenciais.inc";
         $this->con = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
     }
 
