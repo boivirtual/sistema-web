@@ -483,6 +483,7 @@ class PesagemDao {
                 WHERE i.tbl_ite_pesagem_codigo_id_animal = '{$idAnimalSql}'
                   AND IFNULL(p.tbl_pesagem_lixeira, 0) = 0
                   AND IFNULL(p.tbl_pesagem_finalizada, 'N') = 'N'
+                  AND p.tbl_pesagem_origem = 'APP'
                 ORDER BY i.tbl_ite_pesagem_numero_id
             ";
             
