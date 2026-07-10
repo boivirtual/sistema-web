@@ -997,7 +997,7 @@ function listar_contas_pagar_tela(opcao) {
 
     if (tem_conta=='') {
         var array_conta= new Array();
-        conta_filtro = "Conta: Todas";
+        conta_filtro = "Todas";
     }
     else {
         var array_conta = new Array();
