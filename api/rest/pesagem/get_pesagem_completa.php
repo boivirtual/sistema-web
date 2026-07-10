@@ -10,10 +10,21 @@ if (isset($dados['bd']) && isset($dados['id_pesagem'])) {
 
     $id = intval($dados['id_pesagem']);
 
-    // 1. Busca dados da Pesagem
-    $sqlP = "SELECT * FROM tbl_pesagem WHERE tbl_pesagem_id = $id";
+    // 1. Busca dados da Pesagem (finalizada = acesso livre; em aberto = somente origem 'APP')
+    $sqlP = "SELECT * FROM tbl_pesagem
+             WHERE tbl_pesagem_id = $id
+               AND (tbl_pesagem_finalizada = 'S' OR tbl_pesagem_origem = 'APP')";
     $resP = mysqli_query($con, $sqlP);
     $pesagem = mysqli_fetch_assoc($resP);
+
+    if (!$pesagem) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Pesagem não encontrada ou não pertence ao aplicativo."
+        ]);
+        mysqli_close($con);
+        exit;
+    }
 
     // 2. Busca Itens já pesados
     $sqlI = "SELECT * FROM tbl_item_pesagem 
