@@ -1085,7 +1085,7 @@ function listar_contas_pagar_tela(opcao) {
     } else if (tipo_data == "E") {
         opc_data_filtro = "Dt Emissão->";
     } else {
-        opc_data_filtro = "Dt Recemimento->";
+        opc_data_filtro = "Dt Pagamento->";
     }
 
     var options = $("#codigo_fornecedor option:selected");
