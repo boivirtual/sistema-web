@@ -359,6 +359,10 @@ class PesagemDao {
             $pesagemId = (int)$pesagemId;
             $numeroItem = (int)$numeroItem;
 
+            if (!$this->pesagemPermiteAcessoApp($pesagemId)) {
+                throw new Exception("Pesagem não encontrada ou não pertence ao aplicativo.");
+            }
+
             $sqlBuscaAnimal = "
                 SELECT tbl_ite_pesagem_codigo_id_animal
                 FROM tbl_item_pesagem
