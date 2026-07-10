@@ -459,6 +459,33 @@ class PesagemDao {
         return mysqli_real_escape_string($this->con, (string)$valor);
     }
 
+    // Retorna true se a pesagem pode ser acessada/alterada: já finalizada (regra atual,
+    // sem checagem de origem) ou ainda aberta e de origem 'APP'.
+    private function pesagemPermiteAcessoApp($idPesagem) {
+        $idPesagem = (int)$idPesagem;
+
+        $sql = "SELECT tbl_pesagem_finalizada, tbl_pesagem_origem
+                FROM tbl_pesagem
+                WHERE tbl_pesagem_id = $idPesagem
+                LIMIT 1";
+
+        $res = mysqli_query($this->con, $sql);
+        if (!$res) {
+            return false;
+        }
+
+        $row = mysqli_fetch_assoc($res);
+        if (!$row) {
+            return false;
+        }
+
+        if ($row['tbl_pesagem_finalizada'] === 'S') {
+            return true;
+        }
+
+        return $row['tbl_pesagem_origem'] === 'APP';
+    }
+
     public function recalcularItensRepetidosPorAnimal($idAnimal) {
         mysqli_begin_transaction($this->con);
 
