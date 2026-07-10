@@ -408,9 +408,13 @@ class PesagemDao {
     public function alterarItem($pesagemId, $numeroItem, $novoPeso, $novaObs, $novoCriterio) {
         mysqli_begin_transaction($this->con);
         try {
+            if (!$this->pesagemPermiteAcessoApp($pesagemId)) {
+                throw new Exception("Pesagem não encontrada ou não pertence ao aplicativo.");
+            }
+
             $arroba = $novoPeso / 30;
 
-            $sql = "UPDATE tbl_item_pesagem SET 
+            $sql = "UPDATE tbl_item_pesagem SET
                     tbl_ite_pesagem_peso = '$novoPeso',
                     tbl_ite_pesagem_arroba = '$arroba',
                     tbl_ite_pesagem_peso_medio = '$novoPeso',
