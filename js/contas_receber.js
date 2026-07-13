@@ -229,6 +229,7 @@ function digita_valor() {
     $("#vlr_acrescimo").bind("keypress", mask.money);
     $("#valor_pagamento").bind("keypress", mask.money);
     $("#vlr_pagamento").bind("keypress", mask.money);
+    $("#vlr_primeira_parcela").bind("keypress", mask.money); // tela Contas a Receber - Incluir (novo layout)
 }
 
 function exibe_valor_parcela() {
