@@ -1981,6 +1981,12 @@ function validarParcelamentoCtr() {
             $('#mensagem_erro .modal-body').html('Informe o Banco/Conta Pagamento da parcela ' + (i + 1) + '.');
             return false;
         }
+        var formaPag = $('#parc_formapag_' + i).val();
+        if (!formaPag || formaPag === '00') {
+            $('#mensagem_erro').modal();
+            $('#mensagem_erro .modal-body').html('Informe a Forma Pagamento da parcela ' + (i + 1) + '.');
+            return false;
+        }
         somaVlr  += ctrParseMoney($('#parc_valor_' + i).val());
         somaPerc += ctrParseMoney($('#parc_perc_'  + i).val());
     }
