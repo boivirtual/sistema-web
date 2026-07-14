@@ -63,6 +63,12 @@ while ($r = mysqli_fetch_object($rs_t)) {
     $arr_tipodoc_js[] = ['id' => $r->tbl_tipo_doc_id, 'desc' => $r->tbl_tipo_doc_descricao];
 }
 
+$arr_formapag_js = [];
+$rs_fp = mysqli_query($conector, "select tbl_forma_pagamento_id, tbl_forma_pagamento_descricao from tbl_forma_pagamento where tbl_forma_pagamento_lixeira=0 order by tbl_forma_pagamento_id ASC");
+while ($r = mysqli_fetch_object($rs_fp)) {
+    $arr_formapag_js[] = ['id' => $r->tbl_forma_pagamento_id, 'desc' => $r->tbl_forma_pagamento_descricao];
+}
+
 // Arrays para o editor inline de rateio
 $arr_local_rat_js = [];
 $rs_loc_rat = mysqli_query($conector, "select tbl_pessoa_id, tbl_pessoa_nome from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0 order by tbl_pessoa_nome");
