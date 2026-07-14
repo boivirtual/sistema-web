@@ -1735,6 +1735,7 @@ function gerarTabelaParcelasCtr(n) {
         tr += '<td><input type="text"  class="form-control parc-valor" name="parcela[' + i + '][valor]" id="parc_valor_' + i + '" value="' + ctrFormatMoney(vlrEsta) + '" onblur="recalcularPorValorCtr(' + i + ')" onkeypress="mask.money.call(this, event)"></td>';
         tr += '<td><input type="text"  class="form-control parc-perc"  name="parcela[' + i + '][percentual]" id="parc_perc_' + i + '"  value="' + ctrFormatMoney(percEsta) + '" readonly style="background:#f5f5f5;color:#777;"></td>';
         tr += '<td>' + buildSelectBancoCtr('parcela[' + i + '][banco_conta]', 'parc_banco_' + i, '', i) + '</td>';
+        tr += '<td>' + buildSelectFormaPagCtr('parcela[' + i + '][forma_pagamento]', 'parc_formapag_' + i, '', i) + '</td>';
         tr += '<td>' + buildSelectTipoDocCtr('parcela[' + i + '][tipo_doc]', 'parc_tipodoc_' + i, '', i) + '</td>';
         tr += '<td class="pago-parc" style="text-align:center;"><input type="checkbox" name="parcela[' + i + '][pago]" id="parc_pago_' + i + '" value="S" onchange="togglePagoParcCtr(' + i + ')"></td>';
         tr += '</tr>';
@@ -1749,6 +1750,7 @@ function gerarTabelaParcelasCtr(n) {
         tr += '<div style="flex:1;"><small style="color:#888;">Juros</small><br>';
         tr += '<input type="text" class="form-control" name="parcela[' + i + '][juros]" id="parc_juros_' + i + '" placeholder="0,00" style="height:28px;font-size:12px;padding:2px 6px;" onkeypress="mask.money.call(this, event)" onblur="recalcularValorPagoCtr(' + i + ')"></div>';
         tr += '</div></td>';
+        tr += '<td style="padding:0; background:#fffde7;"></td>';
         tr += '<td style="padding:4px 8px;"><small style="color:#888;">Valor Recebido</small><br>';
         tr += '<input type="text" class="form-control" name="parcela[' + i + '][valor_pago]" id="parc_vlr_pago_' + i + '" placeholder="0,00" style="height:28px;font-size:12px;padding:2px 6px;background:#f0f8e8;font-weight:600;" readonly></td>';
         tr += '<td style="padding:0; background:#fffde7;"></td>';
