@@ -19,6 +19,8 @@ $cli_for = mysqli_query($conector, "select tbl_pessoa_id, tbl_pessoa_nome from t
 
 $conta_pag_pri = mysqli_query($conector, "select tbl_conta_pagamento_id, tbl_conta_pagamento_descricao, tbl_conta_pagamento_agencia, tbl_conta_pagamento_conta from tbl_conta_pagamento where tbl_conta_pagamento_lixeira=0 order by tbl_conta_pagamento_descricao ASC");
 
+$forma_pagamento = mysqli_query($conector, "select tbl_forma_pagamento_id, tbl_forma_pagamento_descricao from tbl_forma_pagamento where tbl_forma_pagamento_lixeira=0 order by tbl_forma_pagamento_id ASC");
+
 $c_custo = mysqli_query($conector, "select tbl_cc_codigo_id, tbl_cc_descricao from tbl_centro_custo where tbl_cc_lixeira=0 order by tbl_cc_codigo_id ASC");
 
 $tipos_documentos = mysqli_query($conector, "select tbl_tipo_doc_id, tbl_tipo_doc_descricao from tbl_tipo_documento where tbl_tipo_doc_lixeira=0");
