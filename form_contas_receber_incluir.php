@@ -728,6 +728,7 @@ $data_sistema = date("Y-m-d");
         <script>
         var CTR_BANCOS     = <?php echo json_encode($arr_banco_js,     JSON_UNESCAPED_UNICODE); ?>;
         var CTR_TIPODOCS   = <?php echo json_encode($arr_tipodoc_js,   JSON_UNESCAPED_UNICODE); ?>;
+        var CTR_FORMASPAG  = <?php echo json_encode($arr_formapag_js,  JSON_UNESCAPED_UNICODE); ?>;
         var CTR_LOCAIS     = <?php echo json_encode($arr_local_rat_js, JSON_UNESCAPED_UNICODE); ?>;
         var CTR_CCS        = <?php echo json_encode($arr_cc_rat_js,    JSON_UNESCAPED_UNICODE); ?>;
         var CTR_CONTAS_RAT = <?php echo json_encode($arr_conta_rat_js, JSON_UNESCAPED_UNICODE); ?>;
