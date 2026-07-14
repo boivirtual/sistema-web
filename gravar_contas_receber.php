@@ -1,13 +1,171 @@
 <?php
+// Captura todo output: warnings/notices do PHP ficam no buffer e são descartados
+// antes do JSON, garantindo resposta limpa para o AJAX.
+ob_start(function($buffer) {
+	$pos = strpos($buffer, '{');
+	return $pos !== false ? substr($buffer, $pos) : $buffer;
+});
 
 function sonumero($str)
 {
 	return preg_replace("/[^0-9]/", "", $str);
 }
 
+/**
+ * Salva rateio da conta (rateio_json) na tbl_ctr_rateio.
+ * $ctr_id = ID do registro principal em contas_receber (1ª parcela ou único)
+ */
+function salvar_rateio_ctr($ctr_id, $conector, $nomeusuario, $data_sistema) {
+	$json = isset($_POST['rateio_json']) ? trim($_POST['rateio_json']) : '';
+	if (empty($json) || $json === 'null' || $json === '[]') return;
+
+	$locais = json_decode($json, true);
+	if (!is_array($locais) || count($locais) === 0) return;
+
+	$usuario_esc = mysqli_real_escape_string($conector, $nomeusuario);
+
+	foreach ($locais as $loc) {
+		$rc_cod_local  = (int)($loc['id'] ?? 0);
+		$rc_nom_local  = mysqli_real_escape_string($conector, $loc['nome'] ?? '');
+		$rc_perc_local = (float)($loc['perc'] ?? 0);
+		$rc_val_local  = (float)($loc['valor'] ?? 0);
+
+		$ccs = $loc['ccs'] ?? [];
+		if (count($ccs) === 0) {
+			$sql = "INSERT INTO tbl_ctr_rateio
+			            (rc_ctr_id, rc_codigo_local, rc_nome_local, rc_perc_local, rc_valor_local,
+			             rc_incluido_em, rc_incluido_por)
+			        VALUES
+			            ('$ctr_id','$rc_cod_local','$rc_nom_local','$rc_perc_local','$rc_val_local',
+			             '$data_sistema','$usuario_esc')";
+			mysqli_query($conector, $sql);
+			continue;
+		}
+
+		foreach ($ccs as $cc) {
+			$rc_cod_cc  = mysqli_real_escape_string($conector, $cc['id'] ?? '');
+			$rc_nom_cc  = mysqli_real_escape_string($conector, $cc['nome'] ?? '');
+			$rc_perc_cc = (float)($cc['perc'] ?? 0);
+			$rc_val_cc  = (float)($cc['valor'] ?? 0);
+
+			$contas = $cc['contas'] ?? [];
+			if (count($contas) === 0) {
+				$sql = "INSERT INTO tbl_ctr_rateio
+				            (rc_ctr_id, rc_codigo_local, rc_nome_local, rc_perc_local, rc_valor_local,
+				             rc_codigo_cc, rc_nome_cc, rc_perc_cc, rc_valor_cc,
+				             rc_incluido_em, rc_incluido_por)
+				        VALUES
+				            ('$ctr_id','$rc_cod_local','$rc_nom_local','$rc_perc_local','$rc_val_local',
+				             '$rc_cod_cc','$rc_nom_cc','$rc_perc_cc','$rc_val_cc',
+				             '$data_sistema','$usuario_esc')";
+				mysqli_query($conector, $sql);
+				continue;
+			}
+
+			foreach ($contas as $ct) {
+				$rc_cod_conta  = mysqli_real_escape_string($conector, $ct['id'] ?? '');
+				$rc_nom_conta  = mysqli_real_escape_string($conector, $ct['nome'] ?? '');
+				$rc_perc_conta = (float)($ct['perc'] ?? 0);
+				$rc_val_conta  = (float)($ct['valor'] ?? 0);
+
+				$sql = "INSERT INTO tbl_ctr_rateio
+				            (rc_ctr_id, rc_codigo_local, rc_nome_local, rc_perc_local, rc_valor_local,
+				             rc_codigo_cc, rc_nome_cc, rc_perc_cc, rc_valor_cc,
+				             rc_codigo_conta, rc_nome_conta, rc_perc_conta, rc_valor_conta,
+				             rc_incluido_em, rc_incluido_por)
+				        VALUES
+				            ('$ctr_id','$rc_cod_local','$rc_nom_local','$rc_perc_local','$rc_val_local',
+				             '$rc_cod_cc','$rc_nom_cc','$rc_perc_cc','$rc_val_cc',
+				             '$rc_cod_conta','$rc_nom_conta','$rc_perc_conta','$rc_val_conta',
+				             '$data_sistema','$usuario_esc')";
+				mysqli_query($conector, $sql);
+			}
+		}
+	}
+}
+
+/**
+ * Processa arquivos e links de anexo, gravando em tbl_ctr_anexos.
+ * Links usam anexo_arquivo = URL e anexo_tamanho = 0.
+ * Retorna array com erros (vazio = sucesso).
+ */
+function salvar_anexos_ctr($ctr_id, $conector, $nomeusuario, $data_sistema) {
+	$erros       = [];
+	$usuario_esc = mysqli_real_escape_string($conector, $nomeusuario);
+
+	if (!empty($_FILES['anexo']['name'][0])) {
+		$pasta = __DIR__ . '/uploads/ctr/';
+		if (!is_dir($pasta)) { mkdir($pasta, 0755, true); }
+
+		$total = count($_FILES['anexo']['name']);
+		for ($i = 0; $i < $total; $i++) {
+			if ($_FILES['anexo']['error'][$i] !== UPLOAD_ERR_OK) continue;
+			if (empty($_FILES['anexo']['name'][$i])) continue;
+
+			$nome_original = basename($_FILES['anexo']['name'][$i]);
+			$ext           = strtolower(pathinfo($nome_original, PATHINFO_EXTENSION));
+			$nome_arquivo  = uniqid('ctr_', true) . '.' . $ext;
+			$destino       = $pasta . $nome_arquivo;
+			$tamanho       = $_FILES['anexo']['size'][$i];
+
+			if (!move_uploaded_file($_FILES['anexo']['tmp_name'][$i], $destino)) {
+				$erros[] = 'Erro ao mover arquivo: ' . $nome_original;
+				continue;
+			}
+
+			$nome_esc = mysqli_real_escape_string($conector, $nome_original);
+			$arq_esc  = mysqli_real_escape_string($conector, $nome_arquivo);
+
+			$sql = "INSERT INTO tbl_ctr_anexos
+			            (anexo_ctr_id, anexo_nome, anexo_arquivo, anexo_tamanho, anexo_incluido_em, anexo_incluido_por)
+			        VALUES
+			            ('$ctr_id', '$nome_esc', '$arq_esc', '$tamanho', '$data_sistema', '$usuario_esc')";
+			if (!mysqli_query($conector, $sql)) {
+				$erros[] = 'Erro BD anexo: ' . mysqli_error($conector);
+			}
+		}
+	}
+
+	$links_url  = isset($_POST['anexo_link_url'])  ? $_POST['anexo_link_url']  : [];
+	$links_desc = isset($_POST['anexo_link_desc']) ? $_POST['anexo_link_desc'] : [];
+	foreach ($links_url as $i => $url) {
+		$url = trim($url);
+		if (empty($url)) continue;
+		$desc = trim($links_desc[$i] ?? '');
+		if (empty($desc)) $desc = $url;
+
+		if (!filter_var($url, FILTER_VALIDATE_URL)) {
+			$erros[] = 'URL inválida: ' . htmlspecialchars($url);
+			continue;
+		}
+
+		$url_esc  = mysqli_real_escape_string($conector, $url);
+		$desc_esc = mysqli_real_escape_string($conector, $desc);
+
+		$sql = "INSERT INTO tbl_ctr_anexos
+		            (anexo_ctr_id, anexo_nome, anexo_arquivo, anexo_tamanho, anexo_incluido_em, anexo_incluido_por)
+		        VALUES
+		            ('$ctr_id', '$desc_esc', '$url_esc', 0, '$data_sistema', '$usuario_esc')";
+		if (!mysqli_query($conector, $sql)) {
+			$erros[] = 'Erro BD link: ' . mysqli_error($conector);
+		}
+	}
+
+	return $erros;
+}
+
 $tipo_operacao = $_POST['tipo_operacao'];
 $id_ctr = $_POST['id_ctr'];
-$observacao = $_POST['observacao'];
+if ($tipo_operacao == 1) {
+	// Tela nova (Incluir): Descrição + Observações separadas viram um único
+	// campo ctr_observacao (a tabela contas_receber não tem coluna própria
+	// para "descrição da conta" como a tbl_ctp de Contas a Pagar tem).
+	$descricao_compra  = trim($_POST['descricao_compra'] ?? '');
+	$observacoes_extra = trim($_POST['observacoes'] ?? '');
+	$observacao = $descricao_compra . ($observacoes_extra !== '' ? '  |  Obs: ' . $observacoes_extra : '');
+} else {
+	$observacao = $_POST['observacao'];
+}
 $codigo_cli_for = $_POST['codigo_cli_for'];
 $nome_cli = $_POST['nome_cli'];
 $numero_doc = $_POST['number_doc'];
@@ -16,7 +174,10 @@ $data_emissao = $_POST['data_emissao'];
 $codigo_c_custo = $_POST['codigo_cc'];
 
 if ($tipo_operacao==1) {
-	$local = $_POST['codigo_local'];
+	// codigo_local vem como array (name="codigo_local[]"); sem rateio é
+	// sempre um único valor selecionado.
+	$local_raw = isset($_POST['codigo_local']) ? $_POST['codigo_local'] : '';
+	$local = is_array($local_raw) ? (string)($local_raw[0] ?? '') : $local_raw;
 }
 else {
 	$local = $_POST['codigo_local_editar'];
