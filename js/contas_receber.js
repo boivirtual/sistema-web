@@ -2093,7 +2093,41 @@ function validarCamposObrigatoriosCtr() {
 function confirmar_incluir_ctr() {
     if (!validarCamposObrigatoriosCtr()) return;
     if (!validarParcelamentoCtr()) return;
-    alert('Layout da Fase 1 concluído. A gravação será implementada na próxima fase.');
+    gravar_conta_ctr();
+}
+
+// ----------------------------------------------------------------
+// Gravação — envia o formulário (com anexos) para gravar_contas_receber.php
+// ----------------------------------------------------------------
+function gravar_conta_ctr() {
+    var form = document.getElementById('form_gravar_contas_receber');
+    var formData = new FormData(form);
+
+    $('.confirmar_gravar_ctr').attr('disabled', true);
+
+    $.ajax({
+        type: 'POST',
+        url: 'gravar_contas_receber.php',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        success: function (data) {
+            $('.confirmar_gravar_ctr').attr('disabled', false);
+            if (data && data.error) {
+                $('#mensagem_erro').modal();
+                $('#mensagem_erro .modal-body').html(data.message);
+            } else {
+                $('#mensagem_retorno').modal();
+                $('#mensagem_retorno .modal-body').html((data && data.message) || 'Conta incluída com sucesso.');
+            }
+        },
+        error: function () {
+            $('.confirmar_gravar_ctr').attr('disabled', false);
+            $('#mensagem_erro').modal();
+            $('#mensagem_erro .modal-body').html('Erro de comunicação com o servidor.');
+        }
+    });
 }
 
 // ----------------------------------------------------------------
