@@ -1692,6 +1692,20 @@ function buildSelectTipoDocCtr(name, id, val, idx) {
 }
 
 // ----------------------------------------------------------------
+// Monta o HTML de um <select> de forma de pagamento
+// ----------------------------------------------------------------
+function buildSelectFormaPagCtr(name, id, val, idx) {
+    var html = '<select class="form-control" name="' + name + '" id="' + id + '" style="height:30px;font-size:13px;padding:2px 6px;" onchange="replicarSeDesejadoCtr(\'formapag\', this, ' + idx + ')">';
+    html += '<option value="00">...</option>';
+    CTR_FORMASPAG.forEach(function(f) {
+        var sel = (val && String(val) === String(f.id)) ? ' selected' : '';
+        html += '<option value="' + f.id + '"' + sel + '>' + f.desc + '</option>';
+    });
+    html += '</select>';
+    return html;
+}
+
+// ----------------------------------------------------------------
 // Gera / Regera a tabela de parcelas
 // ----------------------------------------------------------------
 function gerarTabelaParcelasCtr(n) {
