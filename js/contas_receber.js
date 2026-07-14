@@ -1653,6 +1653,8 @@ function replicarSeDesejadoCtr(tipo, el, idx) {
     for (var i = idx + 1; i < n; i++) {
         if (tipo === 'banco') {
             $('#parc_banco_' + i).val($(el).val());
+        } else if (tipo === 'formapag') {
+            $('#parc_formapag_' + i).val($(el).val());
         } else if (tipo === 'tipodoc') {
             $('#parc_tipodoc_' + i).val($(el).val());
         } else if (tipo === 'pago') {
