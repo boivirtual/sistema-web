@@ -515,18 +515,29 @@ $data_sistema = date("Y-m-d");
                                             <!-- Bloco À Vista: Vencimento | Banco | Tipo Doc | Pago -->
                                             <div id="bloco_avista" class="col-md-9" style="padding: 0;">
                                                 <div class="row" style="margin: 0;">
-                                                    <div class="form-group col-md-3">
+                                                    <div class="form-group col-md-2">
                                                         <label for="data_vencimento" class="control-label"><span class="required">*</span> Vencimento</label>
                                                         <input name="data_vencimento" type="date" class="form-control" id="data_vencimento">
                                                     </div>
-                                                    <div class="form-group col-md-4">
-                                                        <label for="codigo_forma_rec" class="control-label"><span class="required">*</span> Banco/Conta Pagamento</label>
-                                                        <select class="form-control selectpicker" id="codigo_forma_rec" name="codigo_forma_rec" data-live-search="true" data-size="8">
+                                                    <div class="form-group col-md-3">
+                                                        <label for="codigo_conta_rec" class="control-label"><span class="required">*</span> Banco/Conta Pagamento</label>
+                                                        <select class="form-control selectpicker" id="codigo_conta_rec" name="codigo_conta_rec" data-live-search="true" data-size="8">
                                                             <option value="0" selected="selected">...</option>
                                                             <?php while ($ln = mysqli_fetch_object($conta_pag_pri)) {
                                                                 $dc = $ln->tbl_conta_pagamento_descricao . ' (Age: ' . $ln->tbl_conta_pagamento_agencia . ' Cta: ' . $ln->tbl_conta_pagamento_conta . ')';
                                                                 echo '<option value="' . $ln->tbl_conta_pagamento_id . '">' . $dc . '</option>';
                                                             } ?>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group col-md-3">
+                                                        <label for="codigo_forma_rec" class="control-label"><span class="required">*</span> Forma Pagamento</label>
+                                                        <select class="form-control selectpicker" id="codigo_forma_rec" name="codigo_forma_rec" data-live-search="true" data-size="8">
+                                                            <option value="00" selected="selected">...</option>
+                                                            <?php while ($reg_forma_pag = mysqli_fetch_object($forma_pagamento)) { ?>
+                                                                <option value="<?php echo $reg_forma_pag->tbl_forma_pagamento_id; ?>">
+                                                                    <?php echo $reg_forma_pag->tbl_forma_pagamento_descricao; ?>
+                                                                </option>
+                                                            <?php } ?>
                                                         </select>
                                                     </div>
                                                     <div class="form-group col-md-3">
