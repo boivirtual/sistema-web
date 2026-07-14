@@ -540,7 +540,7 @@ $data_sistema = date("Y-m-d");
                                                             <?php } ?>
                                                         </select>
                                                     </div>
-                                                    <div class="form-group col-md-3">
+                                                    <div class="form-group col-md-2">
                                                         <label for="tipo_doc" class="control-label">Tipo Documento</label>
                                                         <select class="form-control selectpicker" id="tipo_doc" name="tipo_doc" data-live-search="true" data-size="8">
                                                             <option value="00" selected="selected">...</option>
