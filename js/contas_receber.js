@@ -2059,9 +2059,13 @@ function validarCamposObrigatoriosCtr() {
         if (!$('#data_vencimento').val()) {
             return erro('Informe o Vencimento.', $('#data_vencimento'));
         }
-        var banco = $('#codigo_forma_rec').val();
+        var banco = $('#codigo_conta_rec').val();
         if (!banco || banco === '0') {
-            return erro('Informe o Banco/Conta Pagamento.', $('#codigo_forma_rec'));
+            return erro('Informe o Banco/Conta Pagamento.', $('#codigo_conta_rec'));
+        }
+        var formaPag = $('#codigo_forma_rec').val();
+        if (!formaPag || formaPag === '00') {
+            return erro('Informe a Forma Pagamento.', $('#codigo_forma_rec'));
         }
     } else if (n >= 1) {
         if (!$('#primeiro_vencimento').val()) {
