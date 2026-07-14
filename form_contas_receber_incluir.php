@@ -498,7 +498,7 @@ $data_sistema = date("Y-m-d");
 
                                             <!-- Parcelamento — sempre visível -->
                                             <input type="hidden" id="parcelamento" name="parcelamento" value="0">
-                                            <div class="form-group col-md-3">
+                                            <div class="form-group col-md-2">
                                                 <label class="control-label"><span class="required">*</span> Parcelamento</label>
                                                 <select class="form-control" id="sel_modo_parc" onchange="onParcelamentoChangeCtr()">
                                                     <option value="avista">A Vista</option>
@@ -512,10 +512,10 @@ $data_sistema = date("Y-m-d");
                                                 <input type="number" class="form-control" id="qtd_parcelas_input" min="1" max="360" placeholder="Nº" style="text-align:center;" oninput="onQtdParcelasChangeCtr(this.value)">
                                             </div>
 
-                                            <!-- Bloco À Vista: Vencimento | Banco | Tipo Doc | Pago -->
-                                            <div id="bloco_avista" class="col-md-9" style="padding: 0;">
+                                            <!-- Bloco À Vista: Vencimento | Banco | Forma Pagamento | Tipo Doc | Pago -->
+                                            <div id="bloco_avista" class="col-md-10" style="padding: 0;">
                                                 <div class="row" style="margin: 0;">
-                                                    <div class="form-group col-md-2">
+                                                    <div class="form-group col-md-3">
                                                         <label for="data_vencimento" class="control-label"><span class="required">*</span> Vencimento</label>
                                                         <input name="data_vencimento" type="date" class="form-control" id="data_vencimento">
                                                     </div>
