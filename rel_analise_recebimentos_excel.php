@@ -671,7 +671,7 @@ $linha=4;
 
 											$spreadsheet->setActiveSheetIndex(0)
 										    	->setCellValue("A".$linha,"Documento")
-                                                ->setCellValue("B".$linha,"Fazenda")
+                                                ->setCellValue("B".$linha,"Local")
 										    	->setCellValue("C".$linha,"Fonte Pagadora")
 										    	->setCellValue("D".$linha,"Emissão")
 										    	->setCellValue("E".$linha,"Vencimento")
@@ -901,7 +901,7 @@ $spreadsheet->getActiveSheet()->getStyle($celulas)->getNumberFormat()->setFormat
 
                                             $spreadsheet->setActiveSheetIndex(0)
                                                 ->setCellValue("A".$linha,"Documento")
-                                                ->setCellValue("B".$linha,"Fazenda")
+                                                ->setCellValue("B".$linha,"Local")
                                                 ->setCellValue("C".$linha,"Fonte Pagadora")
                                                 ->setCellValue("D".$linha,"Emissão")
                                                 ->setCellValue("E".$linha,"Vencimento")
@@ -1086,7 +1086,7 @@ $spreadsheet->getActiveSheet()->getStyle($celulas)->getNumberFormat()->setFormat
 
                                             $spreadsheet->setActiveSheetIndex(0)
                                                 ->setCellValue("A".$linha,"Documento")
-                                                ->setCellValue("B".$linha,"Fazenda")
+                                                ->setCellValue("B".$linha,"Local")
                                                 ->setCellValue("C".$linha,"Fonte Pagadora")
                                                 ->setCellValue("D".$linha,"Emissão")
                                                 ->setCellValue("E".$linha,"Vencimento")
