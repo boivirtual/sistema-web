@@ -146,6 +146,80 @@ $data_sistema = date("Y-m-d");
         $array_locais_usuario='';
     }
 
+    $nd_esc_an  = mysqli_real_escape_string($conector, $numero_doc);
+    $cli_esc_an = intval($codigo_cli_for);
+    if ($nd_esc_an !== '' && $nd_esc_an !== '0') {
+        $rs_qtd_an = mysqli_query($conector, "SELECT COUNT(*) as qtd FROM tbl_ctr_anexos a INNER JOIN contas_receber c ON c.ctr_id = a.anexo_ctr_id WHERE c.ctr_numero_doc = '$nd_esc_an' AND c.ctr_codigo_cliente_fornecedor = '$cli_esc_an'");
+    } else {
+        $rs_qtd_an = mysqli_query($conector, "SELECT COUNT(*) as qtd FROM tbl_ctr_anexos WHERE anexo_ctr_id = '$id_ctr'");
+    }
+    $row_qtd_an = $rs_qtd_an ? mysqli_fetch_object($rs_qtd_an) : null;
+    $qtd_anexos = $row_qtd_an ? (int)$row_qtd_an->qtd : 0;
+
+    // Detecção de rateio: ctr_codigo_fazenda IS NULL indica conta com rateio
+    $tem_rateio = is_null($registro_ctr->ctr_codigo_fazenda)
+               || $registro_ctr->ctr_codigo_fazenda === ''
+               || $registro_ctr->ctr_codigo_fazenda === '000000000';
+
+    $rateio_primeiro_local = 'Rateio';
+    $rateio_total_locais   = 0;
+    $rateio_primeiro_cc    = '';
+    $rateio_total_ccs      = 0;
+    $rateio_primeira_conta = 'Rateio';
+    $rateio_total_contas   = 0;
+    $rateio_tooltip_locais = '';
+    $rateio_tooltip_ccs    = '';
+    $rateio_tooltip_contas = '';
+
+    if ($tem_rateio) {
+        $rs_prim_rat = mysqli_query($conector,
+            "SELECT MIN(c2.ctr_id) AS primeiro_id
+             FROM contas_receber c1
+             JOIN contas_receber c2
+               ON c2.ctr_numero_doc               = c1.ctr_numero_doc
+              AND c2.ctr_codigo_cliente_fornecedor = c1.ctr_codigo_cliente_fornecedor
+              AND c2.ctr_codigo_fazenda IS NULL
+             WHERE c1.ctr_id = '$id_ctr'");
+        $row_prim_rat     = $rs_prim_rat ? mysqli_fetch_object($rs_prim_rat) : null;
+        $primeiro_ctr_rat = ($row_prim_rat && $row_prim_rat->primeiro_id)
+                          ? (int)$row_prim_rat->primeiro_id : (int)$id_ctr;
+
+        $rs_locais_rat = mysqli_query($conector,
+            "SELECT rc_nome_local FROM tbl_ctr_rateio
+             WHERE rc_ctr_id = '$primeiro_ctr_rat'
+             GROUP BY rc_codigo_local, rc_nome_local
+             ORDER BY MIN(rc_id) ASC");
+        $rateio_locais_todos = [];
+        while ($r = mysqli_fetch_object($rs_locais_rat)) { $rateio_locais_todos[] = $r->rc_nome_local; }
+        $rateio_total_locais   = count($rateio_locais_todos);
+        $rateio_primeiro_local = $rateio_locais_todos[0] ?? 'Rateio';
+        $rateio_tooltip_locais = implode('&#10;', array_map('htmlspecialchars', $rateio_locais_todos));
+
+        $rs_ccs_rat = mysqli_query($conector,
+            "SELECT rc_nome_cc FROM tbl_ctr_rateio
+             WHERE rc_ctr_id = '$primeiro_ctr_rat'
+               AND rc_nome_cc IS NOT NULL AND rc_nome_cc != ''
+             GROUP BY rc_codigo_cc, rc_nome_cc
+             ORDER BY MIN(rc_id) ASC");
+        $rateio_ccs_todos = [];
+        while ($r = mysqli_fetch_object($rs_ccs_rat)) { $rateio_ccs_todos[] = $r->rc_nome_cc; }
+        $rateio_total_ccs   = count($rateio_ccs_todos);
+        $rateio_primeiro_cc = $rateio_ccs_todos[0] ?? '';
+        $rateio_tooltip_ccs = implode('&#10;', array_map('htmlspecialchars', $rateio_ccs_todos));
+
+        $rs_contas_rat = mysqli_query($conector,
+            "SELECT rc_nome_conta FROM tbl_ctr_rateio
+             WHERE rc_ctr_id = '$primeiro_ctr_rat'
+               AND rc_nome_conta IS NOT NULL AND rc_nome_conta != ''
+             GROUP BY rc_codigo_conta, rc_nome_conta
+             ORDER BY MIN(rc_id) ASC");
+        $rateio_contas_todos = [];
+        while ($r = mysqli_fetch_object($rs_contas_rat)) { $rateio_contas_todos[] = $r->rc_nome_conta; }
+        $rateio_total_contas   = count($rateio_contas_todos);
+        $rateio_primeira_conta = $rateio_contas_todos[0] ?? 'Rateio';
+        $rateio_tooltip_contas = implode('&#10;', array_map('htmlspecialchars', $rateio_contas_todos));
+    }
+
     ?>
 
     <!-- container section start -->
