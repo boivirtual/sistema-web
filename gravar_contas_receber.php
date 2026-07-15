@@ -233,7 +233,7 @@ if ($tipo_operacao == 1) {
 	$desc_desconto = $_POST['desc_desconto'];
 	$desc_acrescimo = $_POST['desc_acrescimo'];
 
-	if (empty($codigo_conta)) {
+	if (!$tem_rateio_edit && empty($codigo_conta)) {
 		header('Content-type: application/json');
 		echo json_encode(array('error' => true, 'message' => 'Informe a Conta.'));
 		exit;
