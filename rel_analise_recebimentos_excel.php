@@ -608,7 +608,7 @@ $linha=4;
         WHERE tbl_plano_contas_codigo_id ='$conta_sintetica'"); 
         
     $registro_plano_contas = mysqli_fetch_object($plano_contas);
-    $descricao_conta = utf8_encode($registro_plano_contas->tbl_plano_contas_descricao);
+    $descricao_conta = $registro_plano_contas->tbl_plano_contas_descricao;
     
 	$linha++;
 	$celulas = 'A'.$linha.':H'.$linha;
