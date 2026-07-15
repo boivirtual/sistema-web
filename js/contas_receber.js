@@ -974,12 +974,6 @@ function consultar_ctr() {
         var array_cc=valor.join(",");
     }
 
-    if (data_inicial == "" && data_final == "") {
-        $("#mensagem_erro").modal();
-        $("#mensagem_erro .modal-body").html("Informe as Datas para Consulta.");
-        return;
-    }
-
     var options = $("#razao_nome option:selected");
     var fornecedor_filtro = [];
 
@@ -988,10 +982,10 @@ function consultar_ctr() {
         fornecedor_filtro.push(desc.trim());
     });
 
-    if (fornecedor_filtro != "") {
-        fornecedor_filtro = fornecedor_filtro + "->";
+    if (fornecedor_filtro.length > 0 && fornecedor_filtro[0] != "") {
+        fornecedor_filtro = "Cliente: " + fornecedor_filtro + "->";
     } else {
-        fornecedor_filtro = "";
+        fornecedor_filtro = "Cliente: Todos->";
     }
 
     var options = $("#codigo_fazenda option:selected");
