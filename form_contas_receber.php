@@ -684,7 +684,13 @@ if ($num_rows_usuario != 0) {
 
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/r-2.2.6/datatables.min.js"></script>
 
+<script src="js/rateio_editor_ctr.js?<?php echo Versao; ?>" charset="utf-8" type="text/javascript"></script>
 <script src="js/contas_receber.js?<?php echo filemtime(__DIR__.'/js/contas_receber.js'); ?>" charset="utf-8" type="text/javascript" ></script>
+<script>
+    _eratCallbackPosSalvarCtr = function(id) {
+        toggleRateioCtr(id);
+    };
+</script>
 
 <script src="https://igorescobar.github.io/jQuery-Mask-Plugin/js/jquery.mask.min.js?<?php echo Versao; ?>"></script>
 
