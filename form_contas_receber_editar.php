@@ -792,6 +792,7 @@ while ($reg_conta_pag = mysqli_fetch_object($conta_pagamento)) {
                 <div>
                     <?php
                     include "ajuda.php";
+                    include "modal_anexos_ctr.php";
                     ?>
                 </div>
 
