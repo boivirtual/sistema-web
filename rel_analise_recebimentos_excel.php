@@ -1425,7 +1425,7 @@ function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final
                 WHERE rc_ctr_id='$ctr_id' AND rc_codigo_conta='$conta_inicio'");
 
             while ($reg_rateio = mysqli_fetch_object($rateio_res)) {
-                $desc_pessoa = utf8_encode($reg_rateio->rc_nome_local);
+                $desc_pessoa = $reg_rateio->rc_nome_local;
                 $valor_fatia = $reg_rateio->rc_valor_conta;
                 $valor_pago_fatia = ($total_pagar != 0) ? $valor_pago * ($valor_fatia / $total_pagar) : 0;
 
