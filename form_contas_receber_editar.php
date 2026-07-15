@@ -290,43 +290,6 @@ $data_sistema = date("Y-m-d");
                                                 </div>
 
                                                 <div class="row">
-                                                    <div class="form-group col-md-6">
-                                                        <label for="observacao" class="control-label"><span class="required">*</span> Descrição</label>
-                                                        <textarea name="observacao" type="text" class="form-control" id="observacao" rows="1" onkeyup="maiuscula(this)"><?php echo $observacao ?></textarea>
-                                                    </div>
-
-                                                    <div class="form-group col-md-6">
-                                                        <label for="codigo_local_editar" class="control-label">
-                                                            <span class="required">*</span> Local
-                                                        </label>
-                                                        <select class="form-control" name="codigo_local_editar" id="codigo_local_editar">
-                                                            <option value="000000000">...</option>
-                                                        <?php while ($reg_pessoa = mysqli_fetch_object($tbl_local)) { ?>
-
-                                                        <?php
-                                                            foreach ($array_locais_usuario as $value) {
-                                                                $value = ltrim($value);
-                                                                $value = rtrim($value);
-
-                                                                if ($value==$reg_pessoa->tbl_pessoa_id && $value==$codigo_local) {
-                                                                    echo '<option value="'.$value.'" selected>';
-                                                                }
-                                                                else if ($value==$reg_pessoa->tbl_pessoa_id) {
-                                                                    echo '<option value="'.$value.'">';
-                                                                }
-                                                            } 
-                                                            ?>
-
-                                                            <?php
-                                                                echo $reg_pessoa->tbl_pessoa_nome;
-                                                            ?>
-                                                            </option>
-                                                            <?php } ?>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row">
                                                     <input name="tipo_operacao" type="hidden" class="form-control" id="tipo_operacao" value="2">
 
                                                     <input name="id_ctr" type="hidden" class="form-control" id="id_ctr" <?php echo "value='" . $id_ctr . "'"; ?>>
@@ -373,7 +336,7 @@ $data_sistema = date("Y-m-d");
 
                                                 <div class="row">
                                                     <div class="form-group col-md-6">
-                                                        <label for="codigo_cli_for" class="control-label"><span class="required">*</span> Cliente/Parceiro</label>
+                                                        <label for="codigo_cli_for" class="control-label"><span class="required">*</span> Cliente</label>
                                                         <select class="form-control" id="codigo_cli_for" name="codigo_cli_for" required="">
 
                                                         <option value="999999999" selected="selected">...</option>
@@ -399,8 +362,73 @@ $data_sistema = date("Y-m-d");
                                                     </div>
                                                 </div>
 
+                                                <?php if ($tem_rateio): ?>
+                                                <!-- Conta com rateio: exibe resumo em vez dos selects -->
+                                                <input type="hidden" name="rateio_existente" value="1">
                                                 <div class="row">
-                                                    <div class="form-group col-md-6">
+                                                    <div class="form-group col-md-4">
+                                                        <label class="control-label"><span class="required">*</span> Local</label>
+                                                        <div style="padding-top:6px;cursor:default;"
+                                                             title="<?= $rateio_tooltip_locais ?>">
+                                                            <span style="color:#555;font-size:14px;"><?= htmlspecialchars($rateio_primeiro_local) ?></span>
+                                                            <?php if ($rateio_total_locais > 1): ?><span style="color:#337ab7;font-weight:600;font-size:12px;margin-left:4px;">+<?= $rateio_total_locais - 1 ?></span><?php endif; ?>
+                                                        </div>
+                                                        <input type="hidden" name="codigo_local_editar" value="">
+                                                    </div>
+                                                    <div class="form-group col-md-4">
+                                                        <label class="control-label">Centro de Custo</label>
+                                                        <div style="padding-top:6px;cursor:default;"
+                                                             title="<?= $rateio_tooltip_ccs ?>">
+                                                            <?php if ($rateio_primeiro_cc !== ''): ?>
+                                                            <span style="color:#555;font-size:14px;"><?= htmlspecialchars($rateio_primeiro_cc) ?></span>
+                                                            <?php if ($rateio_total_ccs > 1): ?><span style="color:#337ab7;font-weight:600;font-size:12px;margin-left:4px;">+<?= $rateio_total_ccs - 1 ?></span><?php endif; ?>
+                                                            <?php else: ?><span style="color:#bbb;font-size:14px;">—</span><?php endif; ?>
+                                                        </div>
+                                                        <input type="hidden" name="codigo_cc" value="000">
+                                                    </div>
+                                                    <div class="form-group col-md-4">
+                                                        <label class="control-label"><span class="required">*</span> Conta Contábil</label>
+                                                        <div style="padding-top:6px;cursor:default;"
+                                                             title="<?= $rateio_tooltip_contas ?>">
+                                                            <span style="color:#555;font-size:14px;"><?= htmlspecialchars($rateio_primeira_conta) ?></span>
+                                                            <?php if ($rateio_total_contas > 1): ?><span style="color:#337ab7;font-weight:600;font-size:12px;margin-left:4px;">+<?= $rateio_total_contas - 1 ?></span><?php endif; ?>
+                                                        </div>
+                                                        <input type="hidden" name="codigo_conta" value="">
+                                                    </div>
+                                                </div>
+                                                <?php else: ?>
+                                                <div class="row">
+                                                    <div class="form-group col-md-4">
+                                                        <label for="codigo_local_editar" class="control-label">
+                                                            <span class="required">*</span> Local
+                                                        </label>
+                                                        <select class="form-control" name="codigo_local_editar" id="codigo_local_editar">
+                                                            <option value="000000000">...</option>
+                                                        <?php while ($reg_pessoa = mysqli_fetch_object($tbl_local)) { ?>
+
+                                                        <?php
+                                                            foreach ($array_locais_usuario as $value) {
+                                                                $value = ltrim($value);
+                                                                $value = rtrim($value);
+
+                                                                if ($value==$reg_pessoa->tbl_pessoa_id && $value==$codigo_local) {
+                                                                    echo '<option value="'.$value.'" selected>';
+                                                                }
+                                                                else if ($value==$reg_pessoa->tbl_pessoa_id) {
+                                                                    echo '<option value="'.$value.'">';
+                                                                }
+                                                            }
+                                                            ?>
+
+                                                            <?php
+                                                                echo $reg_pessoa->tbl_pessoa_nome;
+                                                            ?>
+                                                            </option>
+                                                            <?php } ?>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group col-md-4">
                                                         <label for="codigo_cc" class="control-label">Centro de Custo</label>
                                                         <select class="form-control" id="codigo_cc" name="codigo_cc" required="">
 
@@ -419,7 +447,7 @@ $data_sistema = date("Y-m-d");
                                                         </select>
                                                     </div>
 
-                                                    <div class="form-group col-md-6">
+                                                    <div class="form-group col-md-4">
                                                         <label for="codigo_conta" class="control-label"><span class="required">*</span> Conta Contábil</label>
                                                         <select class="form-control" id="codigo_conta" name="codigo_conta" required="">
 
@@ -439,6 +467,14 @@ $data_sistema = date("Y-m-d");
                                                         </option>
                                                         <?php } ?>
                                                         </select>
+                                                    </div>
+                                                </div>
+                                                <?php endif; ?>
+
+                                                <div class="row m-bot15">
+                                                    <div class="col-md-12">
+                                                        <label for="observacao" class="control-label"><span class="required">*</span> Descrição da Venda</label>
+                                                        <textarea name="observacao" type="text" class="form-control" id="observacao" rows="1" onkeyup="maiuscula(this)"><?php echo $observacao ?></textarea>
                                                     </div>
                                                 </div>
 
