@@ -1450,7 +1450,7 @@ function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final
                 WHERE tbl_pessoa_id='$codigo_fazenda'");
 
             $registro_pessoa = mysqli_fetch_object($tbl_pessoa);
-            $desc_pessoa = utf8_encode($registro_pessoa->tbl_pessoa_nome);
+            $desc_pessoa = $registro_pessoa->tbl_pessoa_nome;
 
             $dados = [$doc_imp,
                 $razao,
