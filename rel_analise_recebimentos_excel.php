@@ -635,7 +635,7 @@ $linha=4;
 
         if ($index_sub_conta>6){
             if ($valor_sub_conta!=0){
-                $pla_descricao = str_repeat(" ", 6) . $cod_sub_conta . ' - ' . utf8_encode($descricao_sub_conta);
+                $pla_descricao = str_repeat(" ", 6) . $cod_sub_conta . ' - ' . $descricao_sub_conta;
 
 				$linha++;
 	            $celulas = 'A'.$linha.':H'.$linha;
@@ -866,7 +866,7 @@ $spreadsheet->getActiveSheet()->getStyle($celulas)->getNumberFormat()->setFormat
     } // fim do for
 
     if ($valor_sub_conta!=0){
-        $pla_descricao = str_repeat(" ", 6) . $cod_sub_conta . ' - ' . utf8_encode($descricao_sub_conta);
+        $pla_descricao = str_repeat(" ", 6) . $cod_sub_conta . ' - ' . $descricao_sub_conta;
 
 			$linha++;
 	        $celulas = 'A'.$linha.':H'.$linha;
