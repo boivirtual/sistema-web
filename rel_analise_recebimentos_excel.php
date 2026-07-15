@@ -1257,6 +1257,54 @@ $writer->save('php://output');
 mysqli_close($conector);
 exit;
 
+// Quando ctr_codigo_conta é NULL (documento com rateio), reparte os valores do
+// documento entre as contas contábeis gravadas em tbl_ctr_rateio, proporcionalmente
+// ao valor de cada conta no rateio. Se não houver rateio até o nível de conta
+// (só até local/CC), retorna array vazio — o documento fica de fora do analítico
+// por conta, igual ao comportamento equivalente em Contas a Pagar.
+function montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta_header, $total_pagar, $valor_pago, $total_vencidas, $total_avencer) {
+    if ($cod_conta_header !== null && $cod_conta_header !== '') {
+        return [[
+            'cod_conta' => $cod_conta_header,
+            'total_pagar' => $total_pagar,
+            'valor_pago' => $valor_pago,
+            'total_vencidas' => $total_vencidas,
+            'total_avencer' => $total_avencer,
+        ]];
+    }
+
+    $linhas_rateio = array();
+    $soma_rateio = 0;
+
+    $rs = mysqli_query($conector, "SELECT rc_codigo_conta, rc_valor_conta FROM tbl_ctr_rateio
+        WHERE rc_ctr_id='$ctr_id' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''");
+
+    while ($r = mysqli_fetch_object($rs)) {
+        $linhas_rateio[] = $r;
+        $soma_rateio += $r->rc_valor_conta;
+    }
+
+    if (count($linhas_rateio) == 0 || $soma_rateio == 0) {
+        // rateio feito só até local/CC, sem conta contábil definida
+        return array();
+    }
+
+    $fatias = array();
+
+    foreach ($linhas_rateio as $r) {
+        $prop = $r->rc_valor_conta / $soma_rateio;
+        $fatias[] = [
+            'cod_conta' => $r->rc_codigo_conta,
+            'total_pagar' => $total_pagar * $prop,
+            'valor_pago' => $valor_pago * $prop,
+            'total_vencidas' => $total_vencidas * $prop,
+            'total_avencer' => $total_avencer * $prop,
+        ];
+    }
+
+    return $fatias;
+}
+
 function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$wcc,$wcliente,$wfazendas){
 
     if ($tipo_data=="E"){
