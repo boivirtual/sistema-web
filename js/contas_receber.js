@@ -925,16 +925,14 @@ function exibe_contas_selecionadas() {
 }
 
 function limpa_contas_selecionadas() {
+    var aChk = document.getElementsByName("conta_option");
+    for (var i = 0; i < aChk.length; i++) {
+        aChk[i].checked = false;
+    }
+    $("#contas_selecionadas").val('Todas ou (Clique p/ selecionar contas)');
     $("#exibe_conta").val('');
-
-    $.ajax({
-        type: 'post',
-        url: 'gera_secao_limpa_conta.php',
-        data: {limpa: "S"},
-        success: function(data) {
-            location.href='form_contas_receber.php';
-        },
-    });
+    consultar_ctr();
+    atualizarLinkLimparFiltros();
 }
 
 function ctrRestaurarPosicao() {
