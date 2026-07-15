@@ -887,9 +887,14 @@ function limpa_contas_selecionadas() {
 }
 
 function consultar_ctr() {
+    // Reset do filtro de card ao fazer nova consulta
+    ctrFiltroAtivo = null;
+    $('#ctr-cards-container .ctr-card-total').removeClass('ativo');
+
+    $('#btn_consultar_filtro').hide();
     var data_inicial = $("#data_inicial").val();
     var data_final = $("#data_final").val();
-    var tipo_data = $("input[name='tipo_data']:checked").val();
+    var tipo_data = $("#tipo_data").val();
     var razao_nome = $("#razao_nome").val();
     var codigo_fazenda = $("#codigo_fazenda").val();
     var codigo_cc = $("#codigo_cc").val();
