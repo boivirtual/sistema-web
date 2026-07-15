@@ -1011,7 +1011,7 @@ function consultar_ctr() {
         var array_cliente = new Array();
         var valor = new Array();
 
-        for (i = 0; i <= razao_nome.length; i++) {
+        for (i = 0; i < razao_nome.length; i++) {
             valor[i]=razao_nome[i];
         }
 
@@ -1025,7 +1025,7 @@ function consultar_ctr() {
         var array_fazenda = new Array();
         var valor = new Array();
 
-        for (i = 0; i <= codigo_fazenda.length; i++) {
+        for (i = 0; i < codigo_fazenda.length; i++) {
             valor[i]=codigo_fazenda[i];
         }
 
@@ -1039,7 +1039,7 @@ function consultar_ctr() {
         var array_cc = new Array();
         var valor = new Array();
 
-        for (i = 0; i <= codigo_cc.length; i++) {
+        for (i = 0; i < codigo_cc.length; i++) {
             valor[i]=codigo_cc[i];
         }
 
