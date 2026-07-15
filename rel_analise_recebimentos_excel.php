@@ -104,9 +104,7 @@ $cc = substr($cc,0, -1);
 $wcc = '';
 
 if ($codigo_cc!='') {
-    $wcc = " AND ctr_codigo_c_custo IN(";
-    $wcc.= $cc;
-    $wcc.= ")";
+    $wcc = " AND (ctr_codigo_c_custo IN($cc) OR (ctr_codigo_c_custo IS NULL AND ctr_id IN (SELECT rc_ctr_id FROM tbl_ctr_rateio WHERE rc_codigo_cc IN ($cc))))";
 }
 
 $fazendas= array();
