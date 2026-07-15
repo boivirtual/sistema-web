@@ -1130,21 +1130,55 @@
 
             $doc_imp = $numero_id . '/' . $parcela;
 
-            $dados = [$doc_imp,
-                      $razao,
-                      $emissao_edi->format('d/m/Y'), 
-                      $vencimento_edi->format('d/m/Y'),
-                      number_format($total_pagar,2,',','.'), 
-                      $data_pag_edi, 
-                      number_format($valor_pago,2,',','.'), 
-                      $desc_situacao, 
-                      $desc_conta_pgto, 
-                      $numero_cheque, 
-                      $desc_pessoa];
+            if ($codigo_fazenda === null) {
+                // Documento rateado: uma linha por local que participa desta conta contábil
+                $rateio_res = mysqli_query($conector, "SELECT rc_nome_local, rc_valor_conta
+                    FROM tbl_ctr_rateio
+                    WHERE rc_ctr_id='$ctr_id' AND rc_codigo_conta='$conta_inicio'");
 
-            $array_contas[$ind_array] = $dados;
+                while ($reg_rateio = mysqli_fetch_object($rateio_res)) {
+                    $desc_pessoa = utf8_encode($reg_rateio->rc_nome_local);
+                    $valor_fatia = $reg_rateio->rc_valor_conta;
+                    $valor_pago_fatia = ($total_pagar != 0) ? $valor_pago * ($valor_fatia / $total_pagar) : 0;
 
-            $ind_array++;
+                    $dados = [$doc_imp,
+                              $razao,
+                              $emissao_edi->format('d/m/Y'),
+                              $vencimento_edi->format('d/m/Y'),
+                              number_format($valor_fatia,2,',','.'),
+                              $data_pag_edi,
+                              number_format($valor_pago_fatia,2,',','.'),
+                              $desc_situacao,
+                              $desc_conta_pgto,
+                              $numero_cheque,
+                              $desc_pessoa];
+
+                    $array_contas[$ind_array] = $dados;
+                    $ind_array++;
+                }
+            } else {
+                $tbl_pessoa = mysqli_query($conector, "SELECT tbl_pessoa_nome
+                FROM tbl_pessoa
+                WHERE tbl_pessoa_id='$codigo_fazenda'");
+
+                $registro_pessoa = mysqli_fetch_object($tbl_pessoa);
+                $desc_pessoa = utf8_encode($registro_pessoa->tbl_pessoa_nome);
+
+                $dados = [$doc_imp,
+                          $razao,
+                          $emissao_edi->format('d/m/Y'),
+                          $vencimento_edi->format('d/m/Y'),
+                          number_format($total_pagar,2,',','.'),
+                          $data_pag_edi,
+                          number_format($valor_pago,2,',','.'),
+                          $desc_situacao,
+                          $desc_conta_pgto,
+                          $numero_cheque,
+                          $desc_pessoa];
+
+                $array_contas[$ind_array] = $dados;
+                $ind_array++;
+            }
         }
         return $array_contas;
     }
