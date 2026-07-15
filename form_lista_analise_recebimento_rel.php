@@ -1024,20 +1024,20 @@
 
     function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$conta_fim,$wcc,$wcliente, $wfazendas){
 
+        $wconta_notas = " AND (ctr_codigo_conta='$conta_inicio' OR (ctr_codigo_conta IS NULL AND ctr_id IN (SELECT rc_ctr_id FROM tbl_ctr_rateio WHERE rc_codigo_conta='$conta_inicio')))";
+
         if ($tipo_data=="E"){
             $contas_rec = mysqli_query($conector, "SELECT * FROM contas_receber
                 WHERE ctr_data_emissao >='$data_inicial' and
-                      ctr_data_emissao <='$data_final' AND
-                      ctr_codigo_conta='$conta_inicio' AND 
-                      ctr_lixeira=0" . $wcc . $wcliente . $wfazendas . 
+                      ctr_data_emissao <='$data_final'" . $wconta_notas . " AND
+                      ctr_lixeira=0" . $wcc . $wcliente . $wfazendas .
                 " ORDER BY ctr_codigo_conta, ctr_data_emissao, ctr_numero_doc ASC");
         }
         else if ($tipo_data=="V"){
             $contas_rec = mysqli_query($conector, "SELECT * FROM contas_receber
                 WHERE ctr_data_vencimento >='$data_inicial' AND
-                      ctr_data_vencimento <='$data_final' AND
-                      ctr_codigo_conta='$conta_inicio' AND 
-                      ctr_lixeira=0" . $wcc . $wcliente . $wfazendas . 
+                      ctr_data_vencimento <='$data_final'" . $wconta_notas . " AND
+                      ctr_lixeira=0" . $wcc . $wcliente . $wfazendas .
                 " ORDER BY ctr_codigo_conta, ctr_data_vencimento, ctr_numero_doc ASC");
         }
         else {
@@ -1045,10 +1045,9 @@
                 INNER JOIN contas_receber
                         ON bcr_id=ctr_id
                 WHERE bcr_data_pagamento >='$data_inicial' AND
-                      bcr_data_pagamento <='$data_final' AND
-                      ctr_codigo_conta='$conta_inicio' AND
-                      ctr_lixeira=0" . $wcc . $wcliente . $wfazendas . 
-                " ORDER BY ctr_codigo_conta, bcr_data_pagamento, bcr_numero_doc  ASC"); 
+                      bcr_data_pagamento <='$data_final'" . $wconta_notas . " AND
+                      ctr_lixeira=0" . $wcc . $wcliente . $wfazendas .
+                " ORDER BY ctr_codigo_conta, bcr_data_pagamento, bcr_numero_doc  ASC");
         }
 
         $num_rows_conta = mysqli_num_rows($contas_rec);
