@@ -1075,13 +1075,6 @@
             $desc_situacao="";
             $valor_pago=0;
 
-            $tbl_pessoa = mysqli_query($conector, "SELECT tbl_pessoa_nome
-            FROM tbl_pessoa 
-            WHERE tbl_pessoa_id='$codigo_fazenda'");
-                                                                                         
-            $registro_pessoa = mysqli_fetch_object($tbl_pessoa);
-            $desc_pessoa = utf8_encode($registro_pessoa->tbl_pessoa_nome);
-            
             if ($conta_pgto!=0){
                 $conta_pagamento = mysqli_query($conector, "SELECT tbl_conta_pagamento_descricao
                 FROM tbl_conta_pagamento 
