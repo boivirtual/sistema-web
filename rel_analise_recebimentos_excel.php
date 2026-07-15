@@ -1370,7 +1370,7 @@ function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final
             WHERE tbl_conta_pagamento_id='$conta_pgto'");
                                                                                          
             $registro_conta_pagamento = mysqli_fetch_object($conta_pagamento);
-            $desc_conta_pgto = utf8_encode($registro_conta_pagamento->tbl_conta_pagamento_descricao);
+            $desc_conta_pgto = $registro_conta_pagamento->tbl_conta_pagamento_descricao;
         }
         else {
             $desc_conta_pgto = '';  
