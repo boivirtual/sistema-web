@@ -651,6 +651,7 @@ if ($num_rows_usuario != 0) {
                     <?php
                     include "ajuda.php";
                     include "modal_anexos_ctr.php";
+                    include "modal_editar_rateio_ctr.php";
                     ?>
                 </div>
                 <!-- page end-->
