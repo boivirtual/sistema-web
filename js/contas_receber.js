@@ -161,22 +161,15 @@ $(window).load(function () {
 
                 $("#contas_selecionadas").val(conta_filtro);
 
-                var lista_ctr_automatico = $("#lista_ctr_automatico").val();
-
-                if (lista_ctr_automatico=="S") {
-                    consultar_ctr();
-                }
+                consultar_ctr();
+                atualizarLinkLimparFiltros();
             },
         });
     }
     else {
-        var lista_ctr_automatico = $("#lista_ctr_automatico").val();
-
-        if (lista_ctr_automatico=="S") {
-            consultar_ctr();
-        }
+        // auto-load feito pelo document.ready em form_contas_receber.php
     }
-    // Fim exibe filtros 
+    // Fim exibe filtros
 
     $.post("lista_local.php", { tipo: 1 }, function (valor) {
         $("select[name=codigo_local]").html(valor);
