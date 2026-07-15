@@ -478,6 +478,8 @@ $data_sistema = date("Y-m-d");
                                                     </div>
                                                 </div>
 
+                                                <hr>
+
                                                 <div class="row">
                                                     <div class="form-group col-md-6">
                                                         <label for="data_emissao" class="control-label"><span class="required">*</span>
@@ -490,8 +492,6 @@ $data_sistema = date("Y-m-d");
                                                         <input name="data_vencimento" type="date" class="form-control" id="data_vencimento" <?php echo "value='" . $data_vencimento . "'"; ?>>
                                                     </div>
                                                 </div>
-
-                                                <hr>
 
                                                 <div class="row">
                                                     <div class="form-group col-md-4">
