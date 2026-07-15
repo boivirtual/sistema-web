@@ -121,9 +121,7 @@ $fazendas = substr($fazendas,0, -1);
 $wfazendas = '';
 
 if ($codigo_fazenda!='') {
-    $wfazendas = " AND ctr_codigo_fazenda IN(";
-    $wfazendas.= $fazendas;
-    $wfazendas.= ")";
+    $wfazendas = " AND (ctr_codigo_fazenda IN($fazendas) OR (ctr_codigo_fazenda IS NULL AND ctr_id IN (SELECT rc_ctr_id FROM tbl_ctr_rateio WHERE rc_codigo_local IN ($fazendas))))";
 }
 
 //$conta_inicio=$codigo_conta;    
