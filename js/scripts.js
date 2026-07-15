@@ -471,5 +471,63 @@ function maskCPFA(CPF){
 
 //  função que mascara o CNPJ
 function maskCNPJ(CNPJ){
-    return CNPJ.substring(0,2)+"."+CNPJ.substring(2,5)+"."+CNPJ.substring(5,8)+"/"+CNPJ.substring(8,12)+"-"+CNPJ.substring(12,14);  
+    return CNPJ.substring(0,2)+"."+CNPJ.substring(2,5)+"."+CNPJ.substring(5,8)+"/"+CNPJ.substring(8,12)+"-"+CNPJ.substring(12,14);
 }
+
+//  Sessão expirada ou banco de dados indisponível (WAMP fechou a conexão por inatividade):
+//  intercepta qualquer chamada AJAX do sistema que receba HTTP 401 do backend
+//  (ver conecta_mysql.inc) e avisa o usuário antes de mandá-lo para o login,
+//  em vez de deixar a tela travada com um erro cru de PHP/MySQL.
+var _sessaoExpiradaExibida = false;
+
+function exibirModalSessaoExpirada(mensagem) {
+    if (_sessaoExpiradaExibida) {
+        return;
+    }
+    _sessaoExpiradaExibida = true;
+
+    if (jQuery('#modal_sessao_expirada').length === 0) {
+        jQuery('body').append(
+            '<div class="modal fade" id="modal_sessao_expirada" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">' +
+                '<div class="modal-dialog" role="document">' +
+                    '<div class="modal-content">' +
+                        '<div class="modal-header">' +
+                            '<h4 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Sessão Expirada</h4>' +
+                        '</div>' +
+                        '<div class="modal-body">' +
+                            '<p id="modal_sessao_expirada_mensagem"></p>' +
+                        '</div>' +
+                        '<div class="modal-footer">' +
+                            '<button type="button" class="btn btn-primary" id="btn_modal_sessao_expirada_ok">Ir para o Login</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>'
+        );
+
+        jQuery('#btn_modal_sessao_expirada_ok').on('click', function () {
+            window.location.href = '../index.php?expirou=1';
+        });
+    }
+
+    jQuery('#modal_sessao_expirada_mensagem').text(mensagem || 'Sua sessão expirou. Faça login novamente.');
+    jQuery('#modal_sessao_expirada').modal('show');
+
+    // redireciona sozinho depois de um tempo, mesmo que o usuário não clique no botão
+    setTimeout(function () {
+        window.location.href = '../index.php?expirou=1';
+    }, 6000);
+}
+
+jQuery(document).ajaxError(function (event, jqxhr) {
+    if (jqxhr.status === 401) {
+        var mensagem = 'Sua sessão expirou. Faça login novamente.';
+        try {
+            var resposta = JSON.parse(jqxhr.responseText);
+            if (resposta && resposta.mensagem) {
+                mensagem = resposta.mensagem;
+            }
+        } catch (e) {}
+        exibirModalSessaoExpirada(mensagem);
+    }
+});
