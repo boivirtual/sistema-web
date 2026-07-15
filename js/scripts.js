@@ -487,7 +487,13 @@ function exibirModalSessaoExpirada(mensagem) {
     _sessaoExpiradaExibida = true;
 
     if (jQuery('#modal_sessao_expirada').length === 0) {
+        // z-index bem acima de qualquer overlay customizado do sistema (o maior encontrado usa 10000),
+        // pra garantir que o aviso não fique escondido atrás de alguma tela de "aguarde"/overlay travada.
         jQuery('body').append(
+            '<style>' +
+                '#modal_sessao_expirada{z-index:20050;}' +
+                '#modal_sessao_expirada + .modal-backdrop{z-index:20040;}' +
+            '</style>' +
             '<div class="modal fade" id="modal_sessao_expirada" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">' +
                 '<div class="modal-dialog" role="document">' +
                     '<div class="modal-content">' +
@@ -509,6 +515,15 @@ function exibirModalSessaoExpirada(mensagem) {
             window.location.href = '../index.php?expirou=1';
         });
     }
+
+    // remove qualquer overlay/modal customizado que porventura esteja travando a tela
+    // (ex.: overlays de tela cheia criados via JS puro, sem passar pelo Bootstrap)
+    jQuery('body > div').not('#modal_sessao_expirada, .modal, .modal-backdrop').each(function () {
+        var $el = jQuery(this);
+        if ($el.css('position') === 'fixed' && parseInt($el.css('zIndex'), 10) > 1000) {
+            $el.remove();
+        }
+    });
 
     jQuery('#modal_sessao_expirada_mensagem').text(mensagem || 'Sua sessão expirou. Faça login novamente.');
     jQuery('#modal_sessao_expirada').modal('show');
