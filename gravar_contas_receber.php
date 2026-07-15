@@ -559,14 +559,20 @@ if ($tipo_operacao == 1) {
 	mysqli_close($conector);
 	exit;
 } else {
+	// Conta com rateio já existente: mantém Local/Conta/Centro de Custo como NULL
+	// (não sobrescreve com os hidden vazios que a tela manda nesse caso).
+	$upd_fazenda = $tem_rateio_edit ? 'NULL' : "'$local'";
+	$upd_conta   = $tem_rateio_edit ? 'NULL' : "'$codigo_conta'";
+	$upd_ccusto  = $tem_rateio_edit ? 'NULL' : "'$codigo_c_custo'";
+
 	$sql = "UPDATE contas_receber SET
 				ctr_codigo_cliente_fornecedor='$codigo_cli_for',
 				ctr_nome_cliente='$nome_cliente',
-				ctr_codigo_fazenda='$local',
+				ctr_codigo_fazenda=$upd_fazenda,
 				ctr_codigo_forma_recebimento='$codigo_forma_rec',
 				ctr_codigo_conta_recebimento='$codigo_conta_rec',
-				ctr_codigo_conta='$codigo_conta',
-				ctr_codigo_c_custo='$codigo_c_custo',
+				ctr_codigo_conta=$upd_conta,
+				ctr_codigo_c_custo=$upd_ccusto,
 				ctr_data_emissao='$data_emissao',
 				ctr_data_vencimento='$data_vencimento',
 				ctr_valor_parcela='$vlr_parcela',
