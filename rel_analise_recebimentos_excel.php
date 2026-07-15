@@ -677,7 +677,7 @@ $linha=4;
 										    	->setCellValue("E".$linha,"Vencimento")
 										    	->setCellValue("F".$linha,"Valor")
 										    	->setCellValue("G".$linha,"Pagamento")
-										    	->setCellValue("H".$linha,"Vlr Pagto")
+										    	->setCellValue("H".$linha,"Valor Pago")
 										    	->setCellValue("I".$linha,"Situação")
                                                 ->setCellValue("J".$linha,"Banco Pgto")
                                                 ->setCellValue("K".$linha,"Cheque");
@@ -907,7 +907,7 @@ $spreadsheet->getActiveSheet()->getStyle($celulas)->getNumberFormat()->setFormat
                                                 ->setCellValue("E".$linha,"Vencimento")
                                                 ->setCellValue("F".$linha,"Valor")
                                                 ->setCellValue("G".$linha,"Pagamento")
-                                                ->setCellValue("H".$linha,"Vlr Pagto")
+                                                ->setCellValue("H".$linha,"Valor Pago")
                                                 ->setCellValue("I".$linha,"Situação")
                                                 ->setCellValue("J".$linha,"Banco Pgto")
                                                 ->setCellValue("K".$linha,"Cheque");
@@ -1092,7 +1092,7 @@ $spreadsheet->getActiveSheet()->getStyle($celulas)->getNumberFormat()->setFormat
                                                 ->setCellValue("E".$linha,"Vencimento")
                                                 ->setCellValue("F".$linha,"Valor")
                                                 ->setCellValue("G".$linha,"Pagamento")
-                                                ->setCellValue("H".$linha,"Vlr Pagto")
+                                                ->setCellValue("H".$linha,"Valor Pago")
                                                 ->setCellValue("I".$linha,"Situação")
                                                 ->setCellValue("J".$linha,"Banco Pgto")
                                                 ->setCellValue("K".$linha,"Cheque");
