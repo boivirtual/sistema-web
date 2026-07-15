@@ -442,10 +442,46 @@ $(document).ready(function() {
     });
 });
 
-$(document).ready(function () {
+$(document).ready(function(){
+    // Salva ctr_id no sessionStorage ao clicar em "Editar" para restaurar scroll ao voltar
+    $(document).off('click.ctrEdit').on('click.ctrEdit', 'a[href*="form_contas_receber_editar.php"]', function() {
+        var m = ($(this).attr('href') || '').match(/[?&]id_ctr=([^&]+)/);
+        if (m) sessionStorage.setItem('ctr_retorno_id', m[1]);
+    });
+
+    // Salva scroll ANTES do modal abrir (após abrir, Bootstrap põe overflow:hidden no body e scrollTop vira 0)
+    // Se o modal fechar sem reload (botão X), limpa para não restaurar posição antiga na próxima vez
+    $('#mensagem_retorno')
+        .off('show.bs.modal.ctrScroll hidden.bs.modal.ctrScroll')
+        .on('show.bs.modal.ctrScroll', function() {
+            sessionStorage.setItem('ctr_scroll_pos', window.scrollY !== undefined ? window.scrollY : $(window).scrollTop());
+        })
+        .on('hidden.bs.modal.ctrScroll', function() {
+            sessionStorage.removeItem('ctr_scroll_pos');
+        });
+
+    // Filtro por card — .off().on() garante apenas UM handler mesmo com múltiplos reloads do script
+    $(document).off('click.ctrCard').on('click.ctrCard', '#ctr-cards-container .ctr-card-total', function () {
+        var filtro = $(this).data('filtro');
+
+        if (ctrFiltroAtivo === filtro || filtro === 'total_periodo') {
+            // Deseleciona ou clica no Total → mostra tudo, destaca Total
+            ctrFiltroAtivo = null;
+            $('#ctr-cards-container .ctr-card-total').removeClass('ativo');
+            $('#ctr-cards-container [data-filtro="total_periodo"]').addClass('ativo');
+        } else {
+            ctrFiltroAtivo = filtro;
+            $('#ctr-cards-container .ctr-card-total').removeClass('ativo');
+            $(this).addClass('ativo');
+        }
+
+        $('#tabela_contas_receber').DataTable().draw();
+    });
+
     $("#tabela_contas_receber").DataTable({
         "paging":   false,
         "ordering": true,
+        "order":    [],
         "info":     true,
         "language": {
           "sSearch": "Buscar na lista:",
@@ -459,16 +495,31 @@ $(document).ready(function () {
        "aoColumns": [
             null,
             null,
+            { "orderable": false },
             null,
             null,
-            { sType: "date-br" },
-            { sType: "date-br" },
             null,
+            { "sType": "date-br" },
+            { "sType": "date-br" },
             null,
-            { sType: "date-br" },
+            { "sType": "date-br" },
             null,
-            null,
+            null
         ],
+
+        "dom": "<'row'<'col-lg-6 col-md-6 col-sm-6'i><'col-lg-6 col-md-6 col-sm-6'f>><'#ctr-cards-container'>t",
+        initComplete: function () {
+            $("table.dataTable").css("width", "100%");
+            var cardsHtml = $('#ctr-cards-source').html();
+            if (cardsHtml) {
+                $('#ctr-cards-container').html(cardsHtml);
+            }
+            // Destaca o card Total do Período como padrão (mostra tudo)
+            $('#ctr-cards-container [data-filtro="total_periodo"]').addClass('ativo');
+            // Remove borda do topo do thead (entre cards e cabeçalho das colunas)
+            $('#tabela_contas_receber thead tr:first-child th').css('border-top', '0');
+            $('#tabela_contas_receber').css('margin-top', '0');
+        },
     });
 
     $(".fecha_editar_dados").click(function () {
