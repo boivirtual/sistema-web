@@ -541,49 +541,62 @@ $linha=4;
             $total_conta_sintetica = $total_conta_sintetica + $total_pagar;
             $total_pago_conta_sintetica = $total_pago_conta_sintetica + $valor_pago;
 
-            for ($i = 0; $i < $qtd_contas; $i++) {
-                if ($arry_conta[$i]==$cod_conta) {
-                    $j=$i;
-                    $j++;
+            // Documento com rateio (cod_conta null): reparte pelas contas do rateio.
+            // Sem rateio: retorna a própria conta/valores, sem alterar nada.
+            $fatias_ctr = montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer);
 
-                    // valor da parcela
-                    $j++;
-                    $arry_conta[$j]=$arry_conta[$j] + $total_pagar;
+            foreach ($fatias_ctr as $fatia_ctr) {
+                $cod_conta_fatia = $fatia_ctr['cod_conta'];
+                $codigo_sub_conta_fatia = substr($cod_conta_fatia, 0, 3);
+                $total_pagar_fatia = $fatia_ctr['total_pagar'];
+                $valor_pago_fatia = $fatia_ctr['valor_pago'];
+                $total_vencidas_fatia = $fatia_ctr['total_vencidas'];
+                $total_avencer_fatia = $fatia_ctr['total_avencer'];
 
-                    // valor pago
-                    $j++;
-                    $arry_conta[$j]=$arry_conta[$j] + $valor_pago;
+                for ($i = 0; $i < $qtd_contas; $i++) {
+                    if ($arry_conta[$i]==$cod_conta_fatia) {
+                        $j=$i;
+                        $j++;
 
-                    // valor vencido
-                    $j++;
-                    $arry_conta[$j]=$arry_conta[$j] + $total_vencidas;
+                        // valor da parcela
+                        $j++;
+                        $arry_conta[$j]=$arry_conta[$j] + $total_pagar_fatia;
 
-                    // valor avencer
-                    $j++;
-                    $arry_conta[$j]=$arry_conta[$j] + $total_avencer;
+                        // valor pago
+                        $j++;
+                        $arry_conta[$j]=$arry_conta[$j] + $valor_pago_fatia;
+
+                        // valor vencido
+                        $j++;
+                        $arry_conta[$j]=$arry_conta[$j] + $total_vencidas_fatia;
+
+                        // valor avencer
+                        $j++;
+                        $arry_conta[$j]=$arry_conta[$j] + $total_avencer_fatia;
+                    }
                 }
-            }
 
-            for ($i = 0; $i < $qtd_sub_contas; $i++) {
-                if ($arry_sub_conta[$i]==$codigo_sub_conta) {
-                    $j=$i;
-                    $j++;
+                for ($i = 0; $i < $qtd_sub_contas; $i++) {
+                    if ($arry_sub_conta[$i]==$codigo_sub_conta_fatia) {
+                        $j=$i;
+                        $j++;
 
-                    // valor da parcela
-                    $j++;
-                    $arry_sub_conta[$j]=$arry_sub_conta[$j] + $total_pagar;
+                        // valor da parcela
+                        $j++;
+                        $arry_sub_conta[$j]=$arry_sub_conta[$j] + $total_pagar_fatia;
 
-                    // valor pago
-                    $j++;
-                    $arry_sub_conta[$j]=$arry_sub_conta[$j] + $valor_pago;
+                        // valor pago
+                        $j++;
+                        $arry_sub_conta[$j]=$arry_sub_conta[$j] + $valor_pago_fatia;
 
-                    // valor vencido
-                    $j++;
-                    $arry_sub_conta[$j]=$arry_sub_conta[$j] + $total_vencidas;
+                        // valor vencido
+                        $j++;
+                        $arry_sub_conta[$j]=$arry_sub_conta[$j] + $total_vencidas_fatia;
 
-                    // valor avencer
-                    $j++;
-                    $arry_sub_conta[$j]=$arry_sub_conta[$j] + $total_avencer;
+                        // valor avencer
+                        $j++;
+                        $arry_sub_conta[$j]=$arry_sub_conta[$j] + $total_avencer_fatia;
+                    }
                 }
             }
         }
