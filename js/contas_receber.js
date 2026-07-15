@@ -1025,20 +1025,10 @@ function consultar_ctr() {
     var dia_fim = data_fim[2];
     var mes_fim = data_fim[1];
     var ano_fim = data_fim[0];
-    periodo =
-        "Período: de " +
-        dia_ini +
-        "/" +
-        mes_ini +
-        "/" +
-        ano_ini +
-        " ate " +
-        dia_fim +
-        "/" +
-        mes_fim +
-        "/" +
-        ano_fim +
-        "->";
+
+    var periodo_label = $("#periodo_label").val();
+    var datas_str = dia_ini + "/" + mes_ini + "/" + ano_ini + " ate " + dia_fim + "/" + mes_fim + "/" + ano_fim + "->";
+    periodo = (periodo_label ? periodo_label + "-> " : "") + datas_str;
 
     if (tipo_data == "V") {
         opc_data_filtro = "Dt Vencimento->";
@@ -1049,11 +1039,11 @@ function consultar_ctr() {
     }
 
     var descricao_filtro =
-        codigo_local_filtro +
-        codigo_cc_filtro +
         periodo +
         opc_data_filtro +
+        codigo_local_filtro +
         fornecedor_filtro +
+        codigo_cc_filtro +
         conta_filtro;
 
     $(".digitar_filtros").hide();
@@ -1068,14 +1058,18 @@ function consultar_ctr() {
 
     $("#aguardar").modal("show");
 
-    $('#lista_contas_receber').load('form_lista_contas_receber.php?data_inicial=' + data_inicial + 
-     '&data_final=' + data_final + 
-     '&tipo_data=' + tipo_data + 
-     '&array_cliente=' + array_cliente + 
-     '&array_fazenda=' + array_fazenda + 
-     '&array_cc=' + array_cc + 
-     '&array_conta=' + array_conta);
-    return;
+    $('#lista_contas_receber').load('form_lista_contas_receber.php?data_inicial=' + data_inicial +
+     '&data_final=' + data_final +
+     '&tipo_data=' + tipo_data +
+     '&array_cliente=' + array_cliente +
+     '&array_conta=' + array_conta +
+     '&array_fazenda=' + array_fazenda +
+     '&array_cc=' + array_cc +
+     '&periodo_label=' + encodeURIComponent(periodo_label), function() {
+        $('#lista_contas_receber').show();
+        ctrRestaurarPosicao();
+        $('[data-toggle="tooltip"]').tooltip();
+    });
 }
 
 function exibe_mais_filtros() {
