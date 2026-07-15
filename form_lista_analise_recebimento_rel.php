@@ -716,7 +716,7 @@
                                     for ($k=0; $k < count($array_contas); $k++) { 
                                         if ($k==0){
                                             echo '<tr>';
-                                            echo '<td width="8%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Documento</td>';
+                                            echo '<td width="8%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Documento/Local</td>';
                                             echo '<td width="38%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Fonte Pagadora</td>';
                                             echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Emissão</td>';
                                             echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Vencimento</td>';
@@ -845,7 +845,7 @@
                                 if ($k==0){
 
                                     echo '<tr>';
-                                    echo '<td width="8%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Documento</td>';
+                                    echo '<td width="8%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Documento/Local</td>';
                                     echo '<td width="38%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Fonte Pagadora</td>';
                                     echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Emissão</td>';
                                     echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Vencimento</td>';
@@ -927,7 +927,7 @@
                 for ($k=0; $k < count($array_contas); $k++) { 
                     if ($k==0){
                         echo '<tr>';
-                        echo '<td width="8%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Documento</td>';
+                        echo '<td width="8%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Documento/Local</td>';
                         echo '<td width="38%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Fonte Pagadora</td>';
                         echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Emissão</td>';
                         echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Vencimento</td>';
