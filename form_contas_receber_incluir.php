@@ -336,7 +336,7 @@ $data_sistema = date("Y-m-d");
                                                         <i class="far fa-plus-square" style="font-size: 16px; color: #337ab7;"></i>
                                                     </a>
                                                 </label>
-                                                <select class="form-control selectpicker" id="codigo_cli_for" name="codigo_cli_for" data-live-search="true" data-size="8">
+                                                <select class="form-control selectpicker" id="codigo_cli_for" name="codigo_cli_for" data-live-search="true" data-size="8" data-dropup-auto="false">
                                                     <option value="999999999" selected="selected">...</option>
                                                     <?php while ($registo_cli_for = mysqli_fetch_object($cli_for)) { ?>
                                                         <option value="<?php echo $registo_cli_for->tbl_pessoa_id; ?>"
