@@ -1357,7 +1357,7 @@ function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final
         $codigo_cliente = $registro_contas_rec->ctr_codigo_cliente_fornecedor;
         $codigo_fazenda = $registro_contas_rec->ctr_codigo_fazenda;
         $parcela = $registro_contas_rec->ctr_parcela;
-        $razao = utf8_encode(substr($registro_contas_rec->ctr_nome_cliente, 0,38));
+        $razao = substr($registro_contas_rec->ctr_nome_cliente, 0,38);
         $numero_cheque = $registro_contas_rec->ctr_numero_cheque;
         $conta_pgto = $registro_contas_rec->ctr_codigo_conta_recebimento;
         $data_pagamento=0;
