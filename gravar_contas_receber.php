@@ -183,13 +183,18 @@ else {
 	$local = $_POST['codigo_local_editar'];
 }
 
+// Na Edição, quando a conta já tem rateio (tela manda rateio_existente=1),
+// Local/Centro de Custos/Conta Contábil viram texto somente-leitura — não
+// há select para validar.
+$tem_rateio_edit = ($tipo_operacao != 1) && !empty($_POST['rateio_existente']);
+
 if (empty($observacao)) {
 	header('Content-type: application/json');
 	echo json_encode(array('error' => true, 'message' => 'Informe Descrição.'));
 	exit;
 }
 
-if ($local == '000000000') {
+if (!$tem_rateio_edit && $local == '000000000') {
 	header('Content-type: application/json');
 	echo json_encode(array('error' => true, 'message' => 'Informe o Local.'));
 	exit;
