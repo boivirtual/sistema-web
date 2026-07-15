@@ -721,7 +721,7 @@
                                             echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Emissão</td>';
                                             echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Vencimento</td>';
                                             echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Valor</td>';
-                                            echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Recebimento</td>';
+                                            echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Pagamento</td>';
                                             echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Vlr Recebido</td>';
                                             echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Situação</td>';
                                             echo '</tr>';
@@ -850,7 +850,7 @@
                                     echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Emissão</td>';
                                     echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Vencimento</td>';
                                     echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Valor</td>';
-                                    echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Recebimento</td>';
+                                    echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Pagamento</td>';
                                     echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Vlr Recebido</td>';
                                     echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Situação</td>';
                                     echo '</tr>';
@@ -932,7 +932,7 @@
                         echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Emissão</td>';
                         echo '<td width="7%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Vencimento</td>';
                         echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Valor</td>';
-                        echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Recebimento</td>';
+                        echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Pagamento</td>';
                         echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Vlr Recebido</td>';
                         echo '<td width="10%" style="color: #bfbdbd; font-size: 11px; font-size: 11px;">Situação</td>';
                         echo '</tr>';
