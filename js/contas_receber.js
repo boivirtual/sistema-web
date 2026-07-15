@@ -1,6 +1,58 @@
 /**CONTAS A RECEBER*/
 const idConta = [];
 
+// Filtro ativo pelos cards de resumo (null = sem filtro = Total do Período)
+var ctrFiltroAtivo = null;
+
+// Registra filtro customizado do DataTables para os cards
+$.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+    // Aplica somente na tabela de contas a receber
+    if (settings.nTable.id !== 'tabela_contas_receber') return true;
+    if (!ctrFiltroAtivo) return true;
+
+    // Lê a categoria calculada pelo PHP no atributo data-categoria da linha
+    var row = settings.aoData[dataIndex].nTr;
+    var categoria = row ? $(row).attr('data-categoria') : null;
+
+    if (ctrFiltroAtivo === 'vencidos')    return categoria === 'vencido';
+    if (ctrFiltroAtivo === 'vencem_hoje') return categoria === 'vencem_hoje';
+    if (ctrFiltroAtivo === 'a_vencer')    return categoria === 'a_vencer';
+    if (ctrFiltroAtivo === 'pagos')       return categoria === 'pago';
+    return true;
+});
+
+function toggleRateioCtr(id) {
+    $.ajax({
+        type: 'POST',
+        url: 'get_rateio_ctr.php',
+        data: { ctr_id: id },
+        timeout: 10000,
+        success: function (data) {
+            $('#modal_rateio_ctr_dyn').remove();
+            var corpo = data || '<p style="color:#888;">Sem dados de rateio.</p>';
+            var modalHtml =
+                '<div class="modal fade" id="modal_rateio_ctr_dyn" tabindex="-1" role="dialog" data-backdrop="static">' +
+                '<div class="modal-dialog" style="width:92%;max-width:940px;" role="document">' +
+                '<div class="modal-content">' +
+                '<div class="modal-header">' +
+                '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
+                '<h4 class="modal-title"><i class="fas fa-sitemap" style="color:#337ab7;margin-right:6px;"></i>Distribuição do Rateio</h4>' +
+                '</div>' +
+                '<div class="modal-body" style="overflow-x:auto;padding:12px 16px;">' + corpo + '</div>' +
+                '<div class="modal-footer">' +
+                '<button class="btn btn-default" type="button" data-dismiss="modal">Fechar</button>' +
+                '</div>' +
+                '</div></div></div>';
+            $('body').append(modalHtml);
+            $('#modal_rateio_ctr_dyn').modal('show');
+            $('#modal_rateio_ctr_dyn').on('hidden.bs.modal', function () { $(this).remove(); });
+        },
+        error: function (xhr, status, err) {
+            alert('Erro ao carregar rateio: ' + status + (err ? ' — ' + err : ''));
+        }
+    });
+}
+
 $(window).load(function () {
     // Exibe filtros quando faz reload
     var filtro_local = $("#exibe_local").val();
