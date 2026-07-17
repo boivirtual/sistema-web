@@ -57,10 +57,8 @@
 
     $wconta = '';
 
-    if ($array_conta!='') {
-        $wconta = " AND ctp_codigo_conta IN(";
-        $wconta.= $conta;
-        $wconta.= ")";
+    if ($array_conta!='' && $conta!='') {
+        $wconta = " AND (ctp_codigo_conta IN($conta) OR (ctp_codigo_conta IS NULL AND ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE rc_codigo_conta IN ($conta))))";
     }
 
     $wfornecedor = '';
