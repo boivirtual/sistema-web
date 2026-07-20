@@ -155,7 +155,8 @@ function _carregarAnexos() {
         data: {
             numero_doc:        _ctpAnexosParams.numero_doc,
             codigo_fornecedor: _ctpAnexosParams.codigo_fornecedor,
-            ctp_id:            _ctpAnexosParams.ctp_id
+            ctp_id:            _ctpAnexosParams.ctp_id,
+            grupo_repeticao:   _ctpAnexosParams.grupo_repeticao
         },
         success: function (html) {
             $('#modal_anexos_body').html(html);
