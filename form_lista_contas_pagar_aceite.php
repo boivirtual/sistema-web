@@ -288,17 +288,22 @@
 
                     $vlr_display = number_format($total_parcela, 2, ",", ".");
 
-                    $tem_anexo = !empty($fila->ctp_numero_doc)
-                        ? isset($docs_com_anexo_aceite[$fila->ctp_numero_doc . '|' . $codigo_for])
-                        : isset($ctpids_com_anexo_aceite[intval($ctp_id)]);
+                    if ($eh_repeticao) {
+                        $tem_anexo = isset($grupos_com_anexo_aceite[$fila->ctp_grupo_repeticao]);
+                    } else {
+                        $tem_anexo = !empty($fila->ctp_numero_doc)
+                            ? isset($docs_com_anexo_aceite[$fila->ctp_numero_doc . '|' . $codigo_for])
+                            : isset($ctpids_com_anexo_aceite[intval($ctp_id)]);
+                    }
                     $icon_anexo = '';
                     if ($tem_anexo) {
                         $nd_js  = addslashes($fila->ctp_numero_doc);
                         $dd_js  = addslashes(!empty($fila->ctp_numero_doc) ? (ltrim($fila->ctp_numero_doc, '0') ?: '0') : $ctp_id);
                         $for_js = intval($codigo_for);
                         $id_js  = intval($ctp_id);
+                        $gr_js  = addslashes($eh_repeticao ? $fila->ctp_grupo_repeticao : '');
                         $icon_anexo = '<a class="btn" style="font-size:11px;" href="#"'
-                            . ' onclick="abrirModalAnexos(\'' . $nd_js . '\',' . $for_js . ',' . $id_js . ',\'' . $dd_js . '\');return false;"'
+                            . ' onclick="abrirModalAnexos(\'' . $nd_js . '\',' . $for_js . ',' . $id_js . ',\'' . $dd_js . '\',false,\'' . $gr_js . '\');return false;"'
                             . ' data-toggle="tooltip" data-placement="left" title="Ver Anexos/Links">'
                             . '<i class="fas fa-paperclip" style="color:#337ab7;"></i></a>';
                     }
