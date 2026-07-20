@@ -5,31 +5,54 @@ include "conecta_mysql.inc";
 $ctp_id = isset($_POST['ctp_id']) ? intval($_POST['ctp_id']) : 0;
 if ($ctp_id <= 0) { echo ''; exit; }
 
-// Localiza o primeiro ctp_id do documento (onde o rateio foi salvo), o número e o fornecedor
-$rs_prim = mysqli_query($conector,
-    "SELECT MIN(c2.ctp_id) AS primeiro_id, c1.ctp_numero_doc, c1.ctp_codigo_fornecedor
-     FROM contas_pagar c1
-     JOIN contas_pagar c2
-       ON c2.ctp_numero_doc         = c1.ctp_numero_doc
-      AND c2.ctp_codigo_fornecedor  = c1.ctp_codigo_fornecedor
-      AND c2.ctp_codigo_fazenda IS NULL
-     WHERE c1.ctp_id = '$ctp_id'");
-$row_prim       = mysqli_fetch_object($rs_prim);
-$primeiro_ctp   = ($row_prim && $row_prim->primeiro_id) ? (int)$row_prim->primeiro_id : $ctp_id;
-$numero_doc_raw = ($row_prim && $row_prim->ctp_numero_doc) ? $row_prim->ctp_numero_doc : '';
-$codigo_for     = ($row_prim && $row_prim->ctp_codigo_fornecedor) ? (int)$row_prim->ctp_codigo_fornecedor : 0;
-$numero_doc     = $numero_doc_raw !== '' ? htmlspecialchars($numero_doc_raw) : '';
+// Registro base, para saber se é uma ocorrência de repetição (ctp_grupo_repeticao preenchido)
+$rs_base  = mysqli_query($conector,
+    "SELECT ctp_numero_doc, ctp_codigo_fornecedor, ctp_grupo_repeticao,
+            ctp_valor_parcela, ctp_valor_juros, ctp_outro_valor, ctp_valor_desconto
+     FROM contas_pagar WHERE ctp_id = '$ctp_id'");
+$row_base = $rs_base ? mysqli_fetch_object($rs_base) : null;
+$grupo_repeticao = $row_base ? ($row_base->ctp_grupo_repeticao ?? '') : '';
 
-// Total do documento — COALESCE evita NULL em campos opcionais (juros, desconto, outros)
-$num_doc_esc = mysqli_real_escape_string($conector, $numero_doc_raw);
-$rs_total = mysqli_query($conector,
-    "SELECT SUM(COALESCE(ctp_valor_parcela, 0) + COALESCE(ctp_valor_juros, 0) + COALESCE(ctp_outro_valor, 0) - COALESCE(ctp_valor_desconto, 0)) AS total_doc
-     FROM contas_pagar
-     WHERE ctp_numero_doc = '$num_doc_esc'
-       AND ctp_codigo_fornecedor = '$codigo_for'
-       AND ctp_codigo_fazenda IS NULL");
-$row_total = mysqli_fetch_object($rs_total);
-$total_doc = $row_total ? (float)$row_total->total_doc : 0;
+if (!empty($grupo_repeticao)) {
+    // Repetição: ctp_numero_doc fica vazio em todas as ocorrências — usar apenas o
+    // número faria o primeiro-ctp-id e o total conflitarem com outras séries do
+    // mesmo fornecedor. O rateio é salvo uma única vez na 1ª ocorrência do grupo,
+    // e o total exibido é apenas o valor desta parcela.
+    $gr_esc = mysqli_real_escape_string($conector, $grupo_repeticao);
+    $rs_prim = mysqli_query($conector,
+        "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar WHERE ctp_grupo_repeticao = '$gr_esc'");
+    $row_prim     = mysqli_fetch_object($rs_prim);
+    $primeiro_ctp = ($row_prim && $row_prim->primeiro_id) ? (int)$row_prim->primeiro_id : $ctp_id;
+    $numero_doc   = '';
+    $total_doc    = (float)$row_base->ctp_valor_parcela + (float)$row_base->ctp_valor_juros
+                   + (float)$row_base->ctp_outro_valor  - (float)$row_base->ctp_valor_desconto;
+} else {
+    // Localiza o primeiro ctp_id do documento (onde o rateio foi salvo), o número e o fornecedor
+    $rs_prim = mysqli_query($conector,
+        "SELECT MIN(c2.ctp_id) AS primeiro_id, c1.ctp_numero_doc, c1.ctp_codigo_fornecedor
+         FROM contas_pagar c1
+         JOIN contas_pagar c2
+           ON c2.ctp_numero_doc         = c1.ctp_numero_doc
+          AND c2.ctp_codigo_fornecedor  = c1.ctp_codigo_fornecedor
+          AND c2.ctp_codigo_fazenda IS NULL
+         WHERE c1.ctp_id = '$ctp_id'");
+    $row_prim       = mysqli_fetch_object($rs_prim);
+    $primeiro_ctp   = ($row_prim && $row_prim->primeiro_id) ? (int)$row_prim->primeiro_id : $ctp_id;
+    $numero_doc_raw = ($row_prim && $row_prim->ctp_numero_doc) ? $row_prim->ctp_numero_doc : '';
+    $codigo_for     = ($row_prim && $row_prim->ctp_codigo_fornecedor) ? (int)$row_prim->ctp_codigo_fornecedor : 0;
+    $numero_doc     = $numero_doc_raw !== '' ? htmlspecialchars($numero_doc_raw) : '';
+
+    // Total do documento — COALESCE evita NULL em campos opcionais (juros, desconto, outros)
+    $num_doc_esc = mysqli_real_escape_string($conector, $numero_doc_raw);
+    $rs_total = mysqli_query($conector,
+        "SELECT SUM(COALESCE(ctp_valor_parcela, 0) + COALESCE(ctp_valor_juros, 0) + COALESCE(ctp_outro_valor, 0) - COALESCE(ctp_valor_desconto, 0)) AS total_doc
+         FROM contas_pagar
+         WHERE ctp_numero_doc = '$num_doc_esc'
+           AND ctp_codigo_fornecedor = '$codigo_for'
+           AND ctp_codigo_fazenda IS NULL");
+    $row_total = mysqli_fetch_object($rs_total);
+    $total_doc = $row_total ? (float)$row_total->total_doc : 0;
+}
 
 $rs_det = mysqli_query($conector,
     "SELECT rc_nome_local, rc_perc_local, rc_valor_local,
