@@ -7,7 +7,9 @@
  * GET params:
  *   numero_doc        — número do documento (busca todos os ctp_id do documento)
  *   codigo_fornecedor — código do fornecedor (obrigatório quando numero_doc informado)
- *   ctp_id            — id da parcela (usado quando numero_doc está vazio)
+ *   grupo_repeticao   — UUID do grupo de repetição (busca todas as parcelas do grupo,
+ *                        usado quando numero_doc está vazio)
+ *   ctp_id            — id da parcela (fallback quando numero_doc e grupo_repeticao vazios)
  */
 
 include "../valida_sessao.inc";
@@ -17,6 +19,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 $numero_doc        = isset($_GET['numero_doc'])        ? trim($_GET['numero_doc'])               : '';
 $codigo_fornecedor = isset($_GET['codigo_fornecedor']) ? intval($_GET['codigo_fornecedor'])       : 0;
+$grupo_repeticao   = isset($_GET['grupo_repeticao'])   ? trim($_GET['grupo_repeticao'])           : '';
 $ctp_id_param      = isset($_GET['ctp_id'])            ? intval($_GET['ctp_id'])                  : 0;
 
 if ($numero_doc !== '' && $numero_doc !== '0') {
@@ -29,6 +32,16 @@ if ($numero_doc !== '' && $numero_doc !== '0') {
              INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
              WHERE c.ctp_numero_doc = '$nd_esc'
                AND c.ctp_codigo_fornecedor = '$for_esc'
+             ORDER BY a.anexo_id ASC";
+
+} elseif ($grupo_repeticao !== '') {
+    $gr_esc = mysqli_real_escape_string($conector, $grupo_repeticao);
+
+    $ssql = "SELECT a.anexo_id, a.anexo_nome, a.anexo_arquivo, a.anexo_tamanho,
+                    a.anexo_incluido_em, a.anexo_incluido_por
+             FROM tbl_ctp_anexos a
+             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
+             WHERE c.ctp_grupo_repeticao = '$gr_esc'
              ORDER BY a.anexo_id ASC";
 
 } elseif ($ctp_id_param > 0) {
