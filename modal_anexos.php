@@ -10,8 +10,11 @@
  * Parâmetros de abrirModalAnexos():
  *   numero_doc        — número do documento (string)
  *   codigo_fornecedor — código do fornecedor (int)
- *   ctp_id            — id da parcela (int, fallback quando numero_doc vazio)
+ *   ctp_id            — id da parcela (int, fallback quando numero_doc e grupo_repeticao vazios)
  *   doc_display       — texto exibido no cabeçalho do modal (ex: "000003916")
+ *   abrirInputs       — (opcional) abre a seção de anexar direto ao carregar
+ *   grupo_repeticao   — (opcional) UUID do grupo de repetição; usado quando numero_doc é vazio,
+ *                        para que o anexo apareça em todas as parcelas do grupo
  */
 ?>
 
