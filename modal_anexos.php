@@ -102,8 +102,8 @@ var _ctpAnexosParams     = {};
 var _ctpAnexosHandler    = false;
 var _ctpAnexosAutoInputs = false;
 
-function abrirModalAnexos(numero_doc, codigo_fornecedor, ctp_id, doc_display, abrirInputs) {
-    _ctpAnexosParams = { numero_doc: numero_doc, codigo_fornecedor: codigo_fornecedor, ctp_id: ctp_id, doc_display: doc_display };
+function abrirModalAnexos(numero_doc, codigo_fornecedor, ctp_id, doc_display, abrirInputs, grupo_repeticao) {
+    _ctpAnexosParams = { numero_doc: numero_doc, codigo_fornecedor: codigo_fornecedor, ctp_id: ctp_id, doc_display: doc_display, grupo_repeticao: grupo_repeticao || '' };
 
     if (!_ctpAnexosHandler) {
 
