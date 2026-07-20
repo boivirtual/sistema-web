@@ -337,6 +337,21 @@
                             }
                         }
 
+                        // Grupos de repetição com anexo — o ctp_numero_doc é vazio nesses
+                        // lançamentos, então o anexo precisa ser vinculado ao grupo inteiro
+                        // (ctp_grupo_repeticao), não só à parcela onde foi anexado.
+                        $grupos_com_anexo = [];
+                        $rs_anx_grupos = mysqli_query($conector,
+                            "SELECT DISTINCT c.ctp_grupo_repeticao
+                             FROM tbl_ctp_anexos a
+                             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
+                             WHERE c.ctp_grupo_repeticao IS NOT NULL AND c.ctp_grupo_repeticao != ''");
+                        if ($rs_anx_grupos) {
+                            while ($ra = mysqli_fetch_object($rs_anx_grupos)) {
+                                $grupos_com_anexo[$ra->ctp_grupo_repeticao] = true;
+                            }
+                        }
+
                         $total_geral = 0;
                         $total_pagos = 0;
                         $total_pagos_parcial=0;
