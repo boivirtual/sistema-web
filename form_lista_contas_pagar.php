@@ -552,18 +552,24 @@
                             $eh_repeticao = !empty($registro_ctp->ctp_grupo_repeticao);
                             $parcela_display = $eh_repeticao ? $vencimento_edi->format('m/Y') : $numero_parcela;
 
-                            // Ícone de anexo — aparece se o documento tem arquivos/links em tbl_ctp_anexos
-                            $tem_anexo = !empty($numero_doc)
-                                ? isset($docs_com_anexo[$numero_doc . '|' . $codigo_fornecedor])
-                                : isset($ctpids_com_anexo[intval($ctp_id)]);
+                            // Ícone de anexo — aparece se o documento (ou o grupo de repetição) tem arquivos/links em tbl_ctp_anexos
+                            $grupo_repeticao = $registro_ctp->ctp_grupo_repeticao;
+                            if ($eh_repeticao) {
+                                $tem_anexo = isset($grupos_com_anexo[$grupo_repeticao]);
+                            } else {
+                                $tem_anexo = !empty($numero_doc)
+                                    ? isset($docs_com_anexo[$numero_doc . '|' . $codigo_fornecedor])
+                                    : isset($ctpids_com_anexo[intval($ctp_id)]);
+                            }
                             $icon_anexo = '';
                             if ($tem_anexo) {
                                 $nd_js  = addslashes($numero_doc);
                                 $dd_js  = addslashes(!empty($numero_doc) ? (ltrim($numero_doc, '0') ?: '0') : $doc_parcela);
                                 $for_js = intval($codigo_fornecedor);
                                 $id_js  = intval($ctp_id);
+                                $gr_js  = addslashes($eh_repeticao ? $grupo_repeticao : '');
                                 $icon_anexo = '<a class="btn" style="font-size:11px;" href="#"'
-                                    . ' onclick="abrirModalAnexos(\'' . $nd_js . '\',' . $for_js . ',' . $id_js . ',\'' . $dd_js . '\');return false;"'
+                                    . ' onclick="abrirModalAnexos(\'' . $nd_js . '\',' . $for_js . ',' . $id_js . ',\'' . $dd_js . '\',false,\'' . $gr_js . '\');return false;"'
                                     . ' data-toggle="tooltip" data-placement="left" title="Ver Anexos/Links">'
                                     . '<i class="fas fa-paperclip" style="color:#337ab7;"></i></a>';
                             }
