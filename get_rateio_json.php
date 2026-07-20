@@ -10,31 +10,54 @@ if ($ctp_id <= 0) {
     exit;
 }
 
-// Localiza o primeiro ctp_id do documento (onde o rateio foi salvo)
-$rs_prim = mysqli_query($conector,
-    "SELECT MIN(c2.ctp_id) AS primeiro_id, c1.ctp_numero_doc, c1.ctp_codigo_fornecedor
-     FROM contas_pagar c1
-     JOIN contas_pagar c2
-       ON c2.ctp_numero_doc        = c1.ctp_numero_doc
-      AND c2.ctp_codigo_fornecedor = c1.ctp_codigo_fornecedor
-      AND c2.ctp_codigo_fazenda IS NULL
-     WHERE c1.ctp_id = '$ctp_id'");
-$row_prim     = mysqli_fetch_object($rs_prim);
-$primeiro_ctp = ($row_prim && $row_prim->primeiro_id)            ? (int)$row_prim->primeiro_id            : $ctp_id;
-$numero_doc   = ($row_prim && $row_prim->ctp_numero_doc)         ? $row_prim->ctp_numero_doc              : '';
-$codigo_for   = ($row_prim && $row_prim->ctp_codigo_fornecedor)  ? (int)$row_prim->ctp_codigo_fornecedor  : 0;
+// Registro base, para saber se é uma ocorrência de repetição (ctp_grupo_repeticao preenchido)
+$rs_base  = mysqli_query($conector,
+    "SELECT ctp_numero_doc, ctp_codigo_fornecedor, ctp_grupo_repeticao,
+            ctp_valor_parcela, ctp_valor_juros, ctp_outro_valor, ctp_valor_desconto
+     FROM contas_pagar WHERE ctp_id = '$ctp_id'");
+$row_base = $rs_base ? mysqli_fetch_object($rs_base) : null;
+$grupo_repeticao = $row_base ? ($row_base->ctp_grupo_repeticao ?? '') : '';
 
-// Total do documento
-$num_doc_esc = mysqli_real_escape_string($conector, $numero_doc);
-$rs_total = mysqli_query($conector,
-    "SELECT SUM(COALESCE(ctp_valor_parcela,0) + COALESCE(ctp_valor_juros,0) + COALESCE(ctp_outro_valor,0)
-               - COALESCE(ctp_valor_desconto,0)) AS total_doc
-     FROM contas_pagar
-     WHERE ctp_numero_doc        = '$num_doc_esc'
-       AND ctp_codigo_fornecedor = '$codigo_for'
-       AND ctp_codigo_fazenda IS NULL");
-$row_total  = mysqli_fetch_object($rs_total);
-$valor_total = $row_total ? (float)$row_total->total_doc : 0;
+if (!empty($grupo_repeticao)) {
+    // Repetição: ctp_numero_doc fica vazio em todas as ocorrências — usar o número
+    // (mesmo doc) faria o rateio/total conflitarem com outras séries do mesmo fornecedor.
+    // O rateio é salvo uma única vez, na 1ª ocorrência do grupo, e o "total" é apenas
+    // o valor desta parcela (o rateio não se repete multiplicado pelas ocorrências).
+    $gr_esc = mysqli_real_escape_string($conector, $grupo_repeticao);
+    $rs_prim = mysqli_query($conector,
+        "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar WHERE ctp_grupo_repeticao = '$gr_esc'");
+    $row_prim     = mysqli_fetch_object($rs_prim);
+    $primeiro_ctp = ($row_prim && $row_prim->primeiro_id) ? (int)$row_prim->primeiro_id : $ctp_id;
+    $numero_doc   = '';
+    $valor_total  = (float)$row_base->ctp_valor_parcela + (float)$row_base->ctp_valor_juros
+                  + (float)$row_base->ctp_outro_valor   - (float)$row_base->ctp_valor_desconto;
+} else {
+    // Localiza o primeiro ctp_id do documento (onde o rateio foi salvo)
+    $rs_prim = mysqli_query($conector,
+        "SELECT MIN(c2.ctp_id) AS primeiro_id, c1.ctp_numero_doc, c1.ctp_codigo_fornecedor
+         FROM contas_pagar c1
+         JOIN contas_pagar c2
+           ON c2.ctp_numero_doc        = c1.ctp_numero_doc
+          AND c2.ctp_codigo_fornecedor = c1.ctp_codigo_fornecedor
+          AND c2.ctp_codigo_fazenda IS NULL
+         WHERE c1.ctp_id = '$ctp_id'");
+    $row_prim     = mysqli_fetch_object($rs_prim);
+    $primeiro_ctp = ($row_prim && $row_prim->primeiro_id)            ? (int)$row_prim->primeiro_id            : $ctp_id;
+    $numero_doc   = ($row_prim && $row_prim->ctp_numero_doc)         ? $row_prim->ctp_numero_doc              : '';
+    $codigo_for   = ($row_prim && $row_prim->ctp_codigo_fornecedor)  ? (int)$row_prim->ctp_codigo_fornecedor  : 0;
+
+    // Total do documento
+    $num_doc_esc = mysqli_real_escape_string($conector, $numero_doc);
+    $rs_total = mysqli_query($conector,
+        "SELECT SUM(COALESCE(ctp_valor_parcela,0) + COALESCE(ctp_valor_juros,0) + COALESCE(ctp_outro_valor,0)
+                   - COALESCE(ctp_valor_desconto,0)) AS total_doc
+         FROM contas_pagar
+         WHERE ctp_numero_doc        = '$num_doc_esc'
+           AND ctp_codigo_fornecedor = '$codigo_for'
+           AND ctp_codigo_fazenda IS NULL");
+    $row_total  = mysqli_fetch_object($rs_total);
+    $valor_total = $row_total ? (float)$row_total->total_doc : 0;
+}
 
 // Linhas do rateio
 $rs_det = mysqli_query($conector,
