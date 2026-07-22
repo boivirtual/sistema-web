@@ -1007,7 +1007,7 @@
     // ao valor de cada conta no rateio. Se não houver rateio até o nível de conta
     // (só até local/CC), retorna array vazio — o documento fica de fora do analítico
     // por conta, igual ao comportamento equivalente em Contas a Pagar.
-    function montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta_header, $total_pagar, $valor_pago, $total_vencidas, $total_avencer) {
+    function montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta_header, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $ctr_numero_doc = null, $ctr_codigo_cliente = null) {
         if ($cod_conta_header !== null && $cod_conta_header !== '') {
             return [[
                 'cod_conta' => $cod_conta_header,
@@ -1018,11 +1018,13 @@
             ]];
         }
 
+        $ctr_id_rateio = resolver_primeiro_ctr_rateio($conector, $ctr_id, $ctr_numero_doc, $ctr_codigo_cliente);
+
         $linhas_rateio = array();
         $soma_rateio = 0;
 
         $rs = mysqli_query($conector, "SELECT rc_codigo_conta, rc_valor_conta FROM tbl_ctr_rateio
-            WHERE rc_ctr_id='$ctr_id' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''");
+            WHERE rc_ctr_id='$ctr_id_rateio' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''");
 
         while ($r = mysqli_fetch_object($rs)) {
             $linhas_rateio[] = $r;
