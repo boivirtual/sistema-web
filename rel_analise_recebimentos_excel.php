@@ -132,7 +132,7 @@ $cc = substr($cc,0, -1);
 $wcc = '';
 
 if ($codigo_cc!='') {
-    $wcc = " AND (ctr_codigo_c_custo IN($cc) OR (ctr_codigo_c_custo IS NULL AND ctr_id IN (SELECT rc_ctr_id FROM tbl_ctr_rateio WHERE rc_codigo_cc IN ($cc))))";
+    $wcc = " AND (ctr_codigo_c_custo IN($cc) OR " . condicao_rateio_ou_grupo_ctr('ctr_codigo_c_custo', 'rc_codigo_cc', $cc) . ")";
 }
 
 $fazendas= array();
