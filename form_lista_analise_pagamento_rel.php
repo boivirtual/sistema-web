@@ -1213,7 +1213,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
 
     function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$conta_fim,$wfazendas,$wfornecedor,$wcc,$fazendas_ids='',$cc_ids=''){
 
-        $wconta_notas = " AND (ctp_codigo_conta='$conta_inicio' OR (ctp_codigo_conta IS NULL AND ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE rc_codigo_conta='$conta_inicio')))";
+        $wconta_notas = " AND (ctp_codigo_conta='$conta_inicio' OR " . condicao_rateio_ou_grupo('ctp_codigo_conta', 'rc_codigo_conta', "'$conta_inicio'") . ")";
 
         if ($tipo_data=="E"){
             $contas_pag = mysqli_query($conector, "SELECT * FROM contas_pagar
