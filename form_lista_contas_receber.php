@@ -48,10 +48,8 @@
 
     $wconta = '';
 
-    if ($array_conta!='') {
-        $wconta = " AND ctr_codigo_conta IN(";
-        $wconta.= $conta;
-        $wconta.= ")";
+    if ($array_conta!='' && $conta!='') {
+        $wconta = " AND (ctr_codigo_conta IN($conta) OR " . condicao_rateio_ou_grupo_ctr('ctr_codigo_conta', 'rc_codigo_conta', $conta) . ")";
     }
 
     $wcliente = '';
