@@ -1420,7 +1420,7 @@ $writer->save('php://output');
 mysqli_close($conector);
 exit;
 
-function montar_fatias_conta_rateio($conector, $ctp_id, $cod_conta_header, $total_pagar, $valor_pago, $total_vencidas, $total_avencer) {
+function montar_fatias_conta_rateio($conector, $ctp_id, $cod_conta_header, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $ctp_grupo_repeticao = null) {
     if ($cod_conta_header !== null && $cod_conta_header !== '') {
         return [[
             'cod_conta' => $cod_conta_header,
@@ -1431,11 +1431,13 @@ function montar_fatias_conta_rateio($conector, $ctp_id, $cod_conta_header, $tota
         ]];
     }
 
+    $ctp_id_rateio = resolver_primeiro_ctp_rateio($conector, $ctp_id, $ctp_grupo_repeticao);
+
     $linhas_rateio = array();
     $soma_rateio = 0;
 
     $rs = mysqli_query($conector, "SELECT rc_codigo_conta, rc_valor_conta FROM tbl_ctp_rateio
-        WHERE rc_ctp_id='$ctp_id' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''");
+        WHERE rc_ctp_id='$ctp_id_rateio' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''");
 
     while ($r = mysqli_fetch_object($rs)) {
         $linhas_rateio[] = $r;
