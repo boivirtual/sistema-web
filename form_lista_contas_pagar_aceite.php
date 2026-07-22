@@ -223,14 +223,24 @@
                     $tem_rateio = is_null($codigo_fazenda);
 
                     if ($tem_rateio) {
-                        // Localiza o primeiro ctp_id do documento para acessar tbl_ctp_rateio
-                        $num_doc_esc = mysqli_real_escape_string($conector, $numero_id);
-                        $for_esc     = mysqli_real_escape_string($conector, $codigo_for);
-                        $rs_prim = mysqli_query($conector,
-                            "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar
-                             WHERE ctp_numero_doc = '$num_doc_esc'
-                               AND ctp_codigo_fornecedor = '$for_esc'
-                               AND ctp_codigo_fazenda IS NULL");
+                        // Localiza o primeiro ctp_id do documento para acessar tbl_ctp_rateio.
+                        // Em repetição, ctp_numero_doc fica vazio em TODAS as ocorrências do
+                        // fornecedor — se houver mais de uma série, buscar só por numero_doc+
+                        // fornecedor pode achar a série errada. Prioriza ctp_grupo_repeticao.
+                        if (!empty($fila->ctp_grupo_repeticao)) {
+                            $gr_esc = mysqli_real_escape_string($conector, $fila->ctp_grupo_repeticao);
+                            $rs_prim = mysqli_query($conector,
+                                "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar
+                                 WHERE ctp_grupo_repeticao = '$gr_esc'");
+                        } else {
+                            $num_doc_esc = mysqli_real_escape_string($conector, $numero_id);
+                            $for_esc     = mysqli_real_escape_string($conector, $codigo_for);
+                            $rs_prim = mysqli_query($conector,
+                                "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar
+                                 WHERE ctp_numero_doc = '$num_doc_esc'
+                                   AND ctp_codigo_fornecedor = '$for_esc'
+                                   AND ctp_codigo_fazenda IS NULL");
+                        }
                         $row_prim     = mysqli_fetch_object($rs_prim);
                         $primeiro_ctp = $row_prim ? (int)$row_prim->primeiro_id : $ctp_id;
 
