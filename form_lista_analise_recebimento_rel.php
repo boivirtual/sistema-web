@@ -486,7 +486,7 @@
 
                 // Documento com rateio (cod_conta null): reparte pelas contas do rateio.
                 // Sem rateio: retorna a própria conta/valores, sem alterar nada.
-                $fatias_ctr = montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer);
+                $fatias_ctr = montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $registro_contas_rec->ctr_numero_doc, $registro_contas_rec->ctr_codigo_cliente_fornecedor);
 
                 foreach ($fatias_ctr as $fatia_ctr) {
                     $cod_conta_fatia = $fatia_ctr['cod_conta'];
@@ -616,7 +616,7 @@
 
             // Documento com rateio (cod_conta null): reparte pelas contas do rateio.
             // Sem rateio: retorna a própria conta/valores, sem alterar nada.
-            $fatias_ctr = montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer);
+            $fatias_ctr = montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $registro_contas_rec->ctr_numero_doc, $registro_contas_rec->ctr_codigo_cliente_fornecedor);
 
             foreach ($fatias_ctr as $fatia_ctr) {
                 $cod_conta_fatia = $fatia_ctr['cod_conta'];
