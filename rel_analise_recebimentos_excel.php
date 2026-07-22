@@ -1449,10 +1449,13 @@ function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final
         $doc_imp = $numero_id . '/' . $parcela;
 
         if ($codigo_fazenda === null) {
-            // Documento rateado: uma linha por local que participa desta conta contábil
+            // Documento rateado: uma linha por local que participa desta conta contábil.
+            // Em parcelamento, o rateio foi salvo só na 1ª parcela — resolve o ctr_id
+            // correto antes de consultar tbl_ctr_rateio.
+            $ctr_id_rateio_nota = resolver_primeiro_ctr_rateio($conector, $ctr_id, $numero_id, $codigo_cliente);
             $rateio_res = mysqli_query($conector, "SELECT rc_nome_local, rc_valor_conta
                 FROM tbl_ctr_rateio
-                WHERE rc_ctr_id='$ctr_id' AND rc_codigo_conta='$conta_inicio'");
+                WHERE rc_ctr_id='$ctr_id_rateio_nota' AND rc_codigo_conta='$conta_inicio'");
 
             while ($reg_rateio = mysqli_fetch_object($rateio_res)) {
                 $desc_pessoa = $reg_rateio->rc_nome_local;
