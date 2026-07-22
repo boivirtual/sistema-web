@@ -1054,7 +1054,7 @@
 
     function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final,$conta_inicio,$conta_fim,$wcc,$wcliente, $wfazendas){
 
-        $wconta_notas = " AND (ctr_codigo_conta='$conta_inicio' OR (ctr_codigo_conta IS NULL AND ctr_id IN (SELECT rc_ctr_id FROM tbl_ctr_rateio WHERE rc_codigo_conta='$conta_inicio')))";
+        $wconta_notas = " AND (ctr_codigo_conta='$conta_inicio' OR " . condicao_rateio_ou_grupo_ctr('ctr_codigo_conta', 'rc_codigo_conta', "'$conta_inicio'") . ")";
 
         if ($tipo_data=="E"){
             $contas_rec = mysqli_query($conector, "SELECT * FROM contas_receber
