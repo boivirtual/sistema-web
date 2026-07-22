@@ -1,9 +1,24 @@
 <?php
+    // Filtro (conta/local/CC) que também alcança as demais parcelas de um grupo de
+    // repetição. O rateio de uma repetição é salvo uma única vez, vinculado ao ctp_id
+    // da 1ª ocorrência — sem isso, o filtro só encontrava essa 1ª parcela e ignorava
+    // as demais (que compartilham o mesmo ctp_grupo_repeticao).
+    function condicao_rateio_ou_grupo($coluna_ctp, $coluna_rateio, $ids_str) {
+        return "($coluna_ctp IS NULL AND (
+            ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE $coluna_rateio IN ($ids_str))
+            OR (ctp_grupo_repeticao IS NOT NULL AND ctp_grupo_repeticao IN (
+                SELECT c2.ctp_grupo_repeticao FROM contas_pagar c2
+                WHERE c2.ctp_grupo_repeticao IS NOT NULL
+                  AND c2.ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE $coluna_rateio IN ($ids_str))
+            ))
+        ))";
+    }
+
     include "valida_sessao.inc";
     include "conecta_mysql.inc";
 
     $data_sistema = date("Y-m-d");
-    @ session_start(); 
+    @ session_start();
 
     $tipo_relatorio = $_REQUEST["tipo"];
     $codigo_fornecedor = $_REQUEST["fornecedor"];
