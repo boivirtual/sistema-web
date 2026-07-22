@@ -532,7 +532,7 @@
                     }
                 }
 
-                $fatias = montar_fatias_conta_rateio($conector, $ctp_id, $registro_contas_pagar->ctp_codigo_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $registro_contas_pagar->ctp_grupo_repeticao);
+                $fatias = montar_fatias_conta_rateio($conector, $ctp_id, $registro_contas_pagar->ctp_codigo_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $registro_contas_pagar->ctp_grupo_repeticao, $registro_contas_pagar->ctp_numero_doc, $registro_contas_pagar->ctp_codigo_fornecedor);
 
                 if (count($fatias) == 0) {
                     $total_sem_conta = $total_sem_conta + $total_pagar;
@@ -694,7 +694,7 @@
                 }
             }
 
-            $fatias = montar_fatias_conta_rateio($conector, $ctp_id, $registro_contas_pagar->ctp_codigo_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $registro_contas_pagar->ctp_grupo_repeticao);
+            $fatias = montar_fatias_conta_rateio($conector, $ctp_id, $registro_contas_pagar->ctp_codigo_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $registro_contas_pagar->ctp_grupo_repeticao, $registro_contas_pagar->ctp_numero_doc, $registro_contas_pagar->ctp_codigo_fornecedor);
 
             if (count($fatias) == 0) {
                 $total_sem_conta = $total_sem_conta + $total_pagar;
