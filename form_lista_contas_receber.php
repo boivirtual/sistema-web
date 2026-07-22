@@ -1,4 +1,22 @@
 <?php
+    // Filtro (conta/CC) que também alcança as demais parcelas de um mesmo documento
+    // rateado (mesmo ctr_numero_doc + cliente/fornecedor). O rateio é salvo uma única
+    // vez, na 1ª parcela — sem isso, o filtro só encontrava essa 1ª parcela e ignorava
+    // as demais.
+    function condicao_rateio_ou_grupo_ctr($coluna_ctr, $coluna_rateio, $ids_str) {
+        return "($coluna_ctr IS NULL AND ctr_id IN (
+            SELECT DISTINCT ctr2.ctr_id
+            FROM contas_receber ctr1
+            INNER JOIN contas_receber ctr2 ON (
+                ctr2.ctr_codigo_fazenda IS NULL
+                AND ctr2.ctr_numero_doc = ctr1.ctr_numero_doc
+                AND ctr2.ctr_codigo_cliente_fornecedor = ctr1.ctr_codigo_cliente_fornecedor
+                AND ctr1.ctr_numero_doc IS NOT NULL AND ctr1.ctr_numero_doc != ''
+            )
+            WHERE ctr1.ctr_id IN (SELECT rc_ctr_id FROM tbl_ctr_rateio WHERE $coluna_rateio IN ($ids_str))
+        ))";
+    }
+
     include "valida_sessao.inc";
     include "conecta_mysql.inc";
 
