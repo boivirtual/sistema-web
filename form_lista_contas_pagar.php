@@ -500,14 +500,25 @@
                             $icon_rateio = '';
 
                             if ($tem_rateio) {
-                                // Localiza o primeiro ctp_id do documento (onde salvar_rateio gravou)
-                                $num_doc_esc = mysqli_real_escape_string($conector, $numero_doc);
-                                $for_esc     = intval($codigo_fornecedor);
-                                $rs_prim = mysqli_query($conector,
-                                    "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar
-                                     WHERE ctp_numero_doc = '$num_doc_esc'
-                                       AND ctp_codigo_fornecedor = '$for_esc'
-                                       AND ctp_codigo_fazenda IS NULL");
+                                // Localiza o primeiro ctp_id do documento (onde salvar_rateio gravou).
+                                // Em repetição, ctp_numero_doc fica vazio em TODAS as ocorrências do
+                                // fornecedor — se houver mais de uma série, buscar só por numero_doc+
+                                // fornecedor pode achar a série errada. Prioriza ctp_grupo_repeticao.
+                                $grupo_repeticao_linha = $registro_ctp->ctp_grupo_repeticao;
+                                if (!empty($grupo_repeticao_linha)) {
+                                    $gr_esc = mysqli_real_escape_string($conector, $grupo_repeticao_linha);
+                                    $rs_prim = mysqli_query($conector,
+                                        "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar
+                                         WHERE ctp_grupo_repeticao = '$gr_esc'");
+                                } else {
+                                    $num_doc_esc = mysqli_real_escape_string($conector, $numero_doc);
+                                    $for_esc     = intval($codigo_fornecedor);
+                                    $rs_prim = mysqli_query($conector,
+                                        "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar
+                                         WHERE ctp_numero_doc = '$num_doc_esc'
+                                           AND ctp_codigo_fornecedor = '$for_esc'
+                                           AND ctp_codigo_fazenda IS NULL");
+                                }
                                 $row_prim     = mysqli_fetch_object($rs_prim);
                                 $primeiro_ctp = $row_prim ? (int)$row_prim->primeiro_id : intval($ctp_id);
 
