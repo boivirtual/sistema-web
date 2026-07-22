@@ -43,7 +43,7 @@
     $wconta = '';
     if ($array_conta !== '' && !empty($conta_ids)) {
         $ids_str = implode(',', $conta_ids);
-        $wconta = " AND (ctp_codigo_conta IN($ids_str) OR (ctp_codigo_conta IS NULL AND ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE rc_codigo_conta IN ($ids_str))))";
+        $wconta = " AND (ctp_codigo_conta IN($ids_str) OR " . condicao_rateio_ou_grupo('ctp_codigo_conta', 'rc_codigo_conta', $ids_str) . ")";
     }
 
     // Monta filtro de fornecedor
