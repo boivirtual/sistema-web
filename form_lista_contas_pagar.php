@@ -94,7 +94,8 @@
             if ($id > 0) $cc_ids[] = $id;
         }
         if (!empty($cc_ids)) {
-            $wcc = " AND ctp_codigo_centro_custos IN(" . implode(',', $cc_ids) . ")";
+            $ids_str = implode(',', $cc_ids);
+            $wcc = " AND (ctp_codigo_centro_custos IN($ids_str) OR (ctp_codigo_centro_custos IS NULL AND ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE rc_codigo_cc IN ($ids_str))))";
         }
     }
 
