@@ -14,6 +14,17 @@ function condicao_rateio_ou_grupo($coluna_ctp, $coluna_rateio, $ids_str) {
     ))";
 }
 
+// Resolve o ctp_id onde o rateio de fato foi salvo: para uma ocorrência de
+// repetição (ctp_grupo_repeticao preenchido), o rateio está gravado apenas na
+// 1ª ocorrência do grupo, não no ctp_id da própria parcela.
+function resolver_primeiro_ctp_rateio($conector, $ctp_id, $ctp_grupo_repeticao) {
+    if (empty($ctp_grupo_repeticao)) return $ctp_id;
+    $gr_esc = mysqli_real_escape_string($conector, $ctp_grupo_repeticao);
+    $rs = mysqli_query($conector, "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar WHERE ctp_grupo_repeticao = '$gr_esc'");
+    $row = $rs ? mysqli_fetch_object($rs) : null;
+    return ($row && $row->primeiro_id) ? (int)$row->primeiro_id : $ctp_id;
+}
+
 // 		Começa Excel
 require 'vendor/autoload.php';
 
