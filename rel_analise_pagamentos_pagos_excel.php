@@ -1570,16 +1570,22 @@ function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final
                 $numero_id='000';
             }
 
-            $doc_imp = $numero_id . '/' . $parcela;
+            // Repetição: mostra Mês/Ano da parcela no lugar do número sequencial
+            $eh_repeticao_nota = !empty($registro_contas_pag->ctp_grupo_repeticao);
+            $parcela_display = $eh_repeticao_nota ? $vencimento_edi->format('m/Y') : $parcela;
+            $doc_imp = $numero_id . '/' . $parcela_display;
 
             if ($codigo_fazenda === null) {
-                // Documento rateado: uma linha por local que participa desta conta contábil
+                // Documento rateado: uma linha por local que participa desta conta contábil.
+                // Em repetição, o rateio foi salvo só na 1ª ocorrência do grupo — resolve o
+                // ctp_id correto antes de consultar tbl_ctp_rateio.
+                $ctp_id_rateio_nota = resolver_primeiro_ctp_rateio($conector, $ctp_id, $registro_contas_pag->ctp_grupo_repeticao);
                 $wlocal_rateio = ($fazendas_ids!='') ? " AND rc_codigo_local IN($fazendas_ids)" : '';
                 $wcc_rateio = ($cc_ids!='') ? " AND (rc_codigo_cc IS NULL OR rc_codigo_cc IN($cc_ids))" : '';
 
                 $rateio_res = mysqli_query($conector, "SELECT rc_nome_local, rc_valor_conta
                     FROM tbl_ctp_rateio
-                    WHERE rc_ctp_id='$ctp_id' AND rc_codigo_conta='$conta_inicio'" . $wlocal_rateio . $wcc_rateio);
+                    WHERE rc_ctp_id='$ctp_id_rateio_nota' AND rc_codigo_conta='$conta_inicio'" . $wlocal_rateio . $wcc_rateio);
 
                 while ($reg_rateio = mysqli_fetch_object($rateio_res)) {
                     $desc_pessoa_fatia = utf8_encode($reg_rateio->rc_nome_local);
