@@ -30,18 +30,22 @@
         return $wconta;
     }
 
-    // Filtro (conta/local/CC) que também alcança as demais parcelas de um grupo de
-    // repetição. O rateio de uma repetição é salvo uma única vez, vinculado ao ctp_id
-    // da 1ª ocorrência — sem isso, o filtro só encontrava essa 1ª parcela e ignorava
-    // as demais (que compartilham o mesmo ctp_grupo_repeticao).
+    // Filtro (conta/local/CC) que também alcança as demais parcelas de um mesmo
+    // documento — seja um grupo de repetição (ctp_grupo_repeticao) ou um parcelamento
+    // comum (mesmo ctp_numero_doc + fornecedor). O rateio é salvo uma única vez, na
+    // 1ª parcela/ocorrência — sem isso, o filtro só encontrava essa 1ª linha.
     function condicao_rateio_ou_grupo($coluna_ctp, $coluna_rateio, $ids_str) {
-        return "($coluna_ctp IS NULL AND (
-            ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE $coluna_rateio IN ($ids_str))
-            OR (ctp_grupo_repeticao IS NOT NULL AND ctp_grupo_repeticao IN (
-                SELECT c2.ctp_grupo_repeticao FROM contas_pagar c2
-                WHERE c2.ctp_grupo_repeticao IS NOT NULL
-                  AND c2.ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE $coluna_rateio IN ($ids_str))
-            ))
+        return "($coluna_ctp IS NULL AND ctp_id IN (
+            SELECT DISTINCT cp2.ctp_id
+            FROM contas_pagar cp1
+            INNER JOIN contas_pagar cp2 ON (
+                (cp1.ctp_grupo_repeticao IS NOT NULL AND cp2.ctp_grupo_repeticao = cp1.ctp_grupo_repeticao)
+                OR (cp1.ctp_grupo_repeticao IS NULL AND cp2.ctp_codigo_fazenda IS NULL
+                    AND cp2.ctp_numero_doc = cp1.ctp_numero_doc
+                    AND cp2.ctp_codigo_fornecedor = cp1.ctp_codigo_fornecedor
+                    AND cp1.ctp_numero_doc IS NOT NULL AND cp1.ctp_numero_doc != '')
+            )
+            WHERE cp1.ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE $coluna_rateio IN ($ids_str))
         ))";
     }
 
