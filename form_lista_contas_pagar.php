@@ -110,7 +110,7 @@
         }
         if (!empty($cc_ids)) {
             $ids_str = implode(',', $cc_ids);
-            $wcc = " AND (ctp_codigo_centro_custos IN($ids_str) OR (ctp_codigo_centro_custos IS NULL AND ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE rc_codigo_cc IN ($ids_str))))";
+            $wcc = " AND (ctp_codigo_centro_custos IN($ids_str) OR " . condicao_rateio_ou_grupo('ctp_codigo_centro_custos', 'rc_codigo_cc', $ids_str) . ")";
         }
     }
 
