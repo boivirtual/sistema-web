@@ -1,9 +1,37 @@
 <?php
+    // Filtro (conta/local/CC) que também alcança as demais parcelas de um mesmo
+    // documento rateado (mesmo ctr_numero_doc + cliente/fornecedor). O rateio é salvo
+    // uma única vez, na 1ª parcela — sem isso, o filtro só encontrava essa 1ª parcela.
+    function condicao_rateio_ou_grupo_ctr($coluna_ctr, $coluna_rateio, $ids_str) {
+        return "($coluna_ctr IS NULL AND ctr_id IN (
+            SELECT DISTINCT ctr2.ctr_id
+            FROM contas_receber ctr1
+            INNER JOIN contas_receber ctr2 ON (
+                ctr2.ctr_codigo_fazenda IS NULL
+                AND ctr2.ctr_numero_doc = ctr1.ctr_numero_doc
+                AND ctr2.ctr_codigo_cliente_fornecedor = ctr1.ctr_codigo_cliente_fornecedor
+                AND ctr1.ctr_numero_doc IS NOT NULL AND ctr1.ctr_numero_doc != ''
+            )
+            WHERE ctr1.ctr_id IN (SELECT rc_ctr_id FROM tbl_ctr_rateio WHERE $coluna_rateio IN ($ids_str))
+        ))";
+    }
+
+    // Resolve o ctr_id onde o rateio de fato foi salvo: em parcelamento (mesmo
+    // ctr_numero_doc + cliente/fornecedor), o rateio fica gravado só na 1ª parcela.
+    function resolver_primeiro_ctr_rateio($conector, $ctr_id, $ctr_numero_doc = null, $ctr_codigo_cliente = null) {
+        if ($ctr_numero_doc === null || $ctr_numero_doc === '' || $ctr_codigo_cliente === null) return $ctr_id;
+        $nd_esc  = mysqli_real_escape_string($conector, $ctr_numero_doc);
+        $cli_esc = intval($ctr_codigo_cliente);
+        $rs = mysqli_query($conector, "SELECT MIN(ctr_id) AS primeiro_id FROM contas_receber WHERE ctr_numero_doc = '$nd_esc' AND ctr_codigo_cliente_fornecedor = '$cli_esc' AND ctr_codigo_fazenda IS NULL");
+        $row = $rs ? mysqli_fetch_object($rs) : null;
+        return ($row && $row->primeiro_id) ? (int)$row->primeiro_id : $ctr_id;
+    }
+
     include "valida_sessao.inc";
     include "conecta_mysql.inc";
 
     $data_sistema = date("Y-m-d");
-    @ session_start(); 
+    @ session_start();
 
     $tipo_relatorio = $_REQUEST["tipo"];
     $codigo_cliente = $_REQUEST["cliente"];
