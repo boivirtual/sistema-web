@@ -1437,7 +1437,7 @@ $writer->save('php://output');
 mysqli_close($conector);
 exit;
 
-function montar_fatias_conta_rateio($conector, $ctp_id, $cod_conta_header, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $ctp_grupo_repeticao = null) {
+function montar_fatias_conta_rateio($conector, $ctp_id, $cod_conta_header, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $ctp_grupo_repeticao = null, $ctp_numero_doc = null, $ctp_codigo_fornecedor = null) {
     if ($cod_conta_header !== null && $cod_conta_header !== '') {
         return [[
             'cod_conta' => $cod_conta_header,
