@@ -73,7 +73,7 @@
         }
         if (!empty($fazenda_ids)) {
             $ids_str = implode(',', $fazenda_ids);
-            $wfazenda = " AND (ctr_codigo_fazenda IN($ids_str) OR (ctr_codigo_fazenda IS NULL AND ctr_id IN (SELECT rc_ctr_id FROM tbl_ctr_rateio WHERE rc_codigo_local IN ($ids_str))))";
+            $wfazenda = " AND (ctr_codigo_fazenda IN($ids_str) OR " . condicao_rateio_ou_grupo_ctr('ctr_codigo_fazenda', 'rc_codigo_local', $ids_str) . ")";
         }
     }
 
@@ -85,7 +85,8 @@
             if ($id > 0) $cc_ids[] = $id;
         }
         if (!empty($cc_ids)) {
-            $wcc = " AND ctr_codigo_c_custo IN(" . implode(',', $cc_ids) . ")";
+            $ids_str = implode(',', $cc_ids);
+            $wcc = " AND (ctr_codigo_c_custo IN($ids_str) OR " . condicao_rateio_ou_grupo_ctr('ctr_codigo_c_custo', 'rc_codigo_cc', $ids_str) . ")";
         }
     }
 
