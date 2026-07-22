@@ -96,7 +96,7 @@ $conta = implode(',', $conta);
 $wconta = '';
 
 if ($array_conta!='') {
-    $wconta = " AND (ctr_codigo_conta IN($conta) OR (ctr_codigo_conta IS NULL AND ctr_id IN (SELECT rc_ctr_id FROM tbl_ctr_rateio WHERE rc_codigo_conta IN ($conta))))";
+    $wconta = " AND (ctr_codigo_conta IN($conta) OR " . condicao_rateio_ou_grupo_ctr('ctr_codigo_conta', 'rc_codigo_conta', $conta) . ")";
 }
 
 $cliente= array();
