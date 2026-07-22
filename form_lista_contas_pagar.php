@@ -97,7 +97,7 @@
         }
         if (!empty($fazenda_ids)) {
             $ids_str = implode(',', $fazenda_ids);
-            $wfazenda = " AND (ctp_codigo_fazenda IN($ids_str) OR (ctp_codigo_fazenda IS NULL AND ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE rc_codigo_local IN ($ids_str))))";
+            $wfazenda = " AND (ctp_codigo_fazenda IN($ids_str) OR " . condicao_rateio_ou_grupo('ctp_codigo_fazenda', 'rc_codigo_local', $ids_str) . ")";
         }
     }
 
