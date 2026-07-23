@@ -1209,7 +1209,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
             ]];
         }
 
-        $ctp_id_rateio = resolver_primeiro_ctp_rateio($conector, $ctp_id, $ctp_grupo_repeticao, $ctp_numero_doc, $ctp_codigo_fornecedor);
+        $ctp_id_rateio = resolver_primeiro_ctp_rateio($conector, $ctp_id, $ctp_grupo_repeticao, $ctp_numero_doc, $ctp_codigo_fornecedor, $ctp_incluido_em);
 
         $linhas_rateio = array();
         $soma_rateio = 0;
