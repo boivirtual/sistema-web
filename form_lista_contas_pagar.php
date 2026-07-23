@@ -614,14 +614,18 @@
                             $eh_repeticao = !empty($registro_ctp->ctp_grupo_repeticao);
                             $parcela_display = $eh_repeticao ? $vencimento_edi->format('m/Y') : $numero_parcela;
 
-                            // Ícone de anexo — aparece se o documento (ou o grupo de repetição) tem arquivos/links em tbl_ctp_anexos
+                            // Ícone de anexo — aparece se o documento (ou o grupo de repetição/parcelamento) tem arquivos/links em tbl_ctp_anexos
                             $grupo_repeticao = $registro_ctp->ctp_grupo_repeticao;
                             if ($eh_repeticao) {
                                 $tem_anexo = isset($grupos_com_anexo[$grupo_repeticao]);
+                            } elseif (!empty($numero_doc)) {
+                                $tem_anexo = isset($docs_com_anexo[$numero_doc . '|' . $codigo_fornecedor]);
                             } else {
-                                $tem_anexo = !empty($numero_doc)
-                                    ? isset($docs_com_anexo[$numero_doc . '|' . $codigo_fornecedor])
-                                    : isset($ctpids_com_anexo[intval($ctp_id)]);
+                                // Parcelamento sem número de documento: tenta pelo fornecedor +
+                                // instante de inclusão (todas as parcelas do lançamento); senão,
+                                // cai no ctp_id exato (documento avulso, sem parcelamento).
+                                $tem_anexo = isset($fornec_instante_com_anexo[$codigo_fornecedor . '|' . $registro_ctp->ctp_incluido_em])
+                                    || isset($ctpids_com_anexo[intval($ctp_id)]);
                             }
                             $icon_anexo = '';
                             if ($tem_anexo) {
