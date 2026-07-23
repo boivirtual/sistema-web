@@ -696,6 +696,13 @@
                 $total_pago_sem_conta = $total_pago_sem_conta + $valor_pago;
                 $total_vencido_sem_conta = $total_vencido_sem_conta + $total_vencidas;
                 $total_avencer_sem_conta = $total_avencer_sem_conta + $total_avencer;
+
+                // "A Vencer"/"Vencidos" do TOTAL GERAL já contam este documento (acumulados
+                // antes do rateio ser resolvido). "Pago"/"Total" só somavam dentro do foreach
+                // de fatias — sem isso, valores em "Rateio sem conta definida" ficavam de fora
+                // do Total geral.
+                $total_conta_sintetica = $total_conta_sintetica + $total_pagar;
+                $total_pago_conta_sintetica = $total_pago_conta_sintetica + $valor_pago;
             }
 
             foreach ($fatias as $fatia) {
