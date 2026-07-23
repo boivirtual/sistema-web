@@ -13,19 +13,25 @@ function condicao_rateio_ou_grupo($coluna_ctp, $coluna_rateio, $ids_str) {
         FROM contas_pagar cp1
         INNER JOIN contas_pagar cp2 ON (
             (cp1.ctp_grupo_repeticao IS NOT NULL AND cp2.ctp_grupo_repeticao = cp1.ctp_grupo_repeticao)
-            OR (cp1.ctp_grupo_repeticao IS NULL AND cp2.ctp_codigo_fazenda IS NULL
+            OR (cp1.ctp_grupo_repeticao IS NULL AND cp1.ctp_numero_doc IS NOT NULL AND cp1.ctp_numero_doc != ''
+                AND cp2.ctp_codigo_fazenda IS NULL
                 AND cp2.ctp_numero_doc = cp1.ctp_numero_doc
+                AND cp2.ctp_codigo_fornecedor = cp1.ctp_codigo_fornecedor)
+            OR (cp1.ctp_grupo_repeticao IS NULL AND (cp1.ctp_numero_doc IS NULL OR cp1.ctp_numero_doc = '')
+                AND cp2.ctp_codigo_fazenda IS NULL
                 AND cp2.ctp_codigo_fornecedor = cp1.ctp_codigo_fornecedor
-                AND cp1.ctp_numero_doc IS NOT NULL AND cp1.ctp_numero_doc != '')
+                AND cp2.ctp_incluido_em = cp1.ctp_incluido_em)
         )
         WHERE cp1.ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE $coluna_rateio IN ($ids_str))
     ))";
 }
 
 // Resolve o ctp_id onde o rateio de fato foi salvo: em repetição (ctp_grupo_repeticao
-// preenchido) ou em parcelamento comum (mesmo ctp_numero_doc + fornecedor), o rateio
-// fica gravado só na 1ª ocorrência/parcela — nunca no ctp_id das demais.
-function resolver_primeiro_ctp_rateio($conector, $ctp_id, $ctp_grupo_repeticao, $ctp_numero_doc = null, $ctp_codigo_fornecedor = null) {
+// preenchido), em parcelamento com documento (mesmo ctp_numero_doc + fornecedor), ou em
+// parcelamento SEM número de documento (mesmo fornecedor + ctp_incluido_em idêntico — todas
+// as parcelas de um lançamento são gravadas no mesmo instante). O rateio fica gravado só na
+// 1ª ocorrência/parcela — nunca no ctp_id das demais.
+function resolver_primeiro_ctp_rateio($conector, $ctp_id, $ctp_grupo_repeticao, $ctp_numero_doc = null, $ctp_codigo_fornecedor = null, $ctp_incluido_em = null) {
     if (!empty($ctp_grupo_repeticao)) {
         $gr_esc = mysqli_real_escape_string($conector, $ctp_grupo_repeticao);
         $rs = mysqli_query($conector, "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar WHERE ctp_grupo_repeticao = '$gr_esc'");
@@ -36,6 +42,13 @@ function resolver_primeiro_ctp_rateio($conector, $ctp_id, $ctp_grupo_repeticao, 
         $nd_esc  = mysqli_real_escape_string($conector, $ctp_numero_doc);
         $for_esc = intval($ctp_codigo_fornecedor);
         $rs = mysqli_query($conector, "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar WHERE ctp_numero_doc = '$nd_esc' AND ctp_codigo_fornecedor = '$for_esc' AND ctp_codigo_fazenda IS NULL");
+        $row = $rs ? mysqli_fetch_object($rs) : null;
+        return ($row && $row->primeiro_id) ? (int)$row->primeiro_id : $ctp_id;
+    }
+    if ($ctp_codigo_fornecedor !== null && $ctp_incluido_em !== null && $ctp_incluido_em !== '') {
+        $for_esc  = intval($ctp_codigo_fornecedor);
+        $inc_esc  = mysqli_real_escape_string($conector, $ctp_incluido_em);
+        $rs = mysqli_query($conector, "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar WHERE ctp_codigo_fornecedor = '$for_esc' AND ctp_incluido_em = '$inc_esc' AND ctp_codigo_fazenda IS NULL");
         $row = $rs ? mysqli_fetch_object($rs) : null;
         return ($row && $row->primeiro_id) ? (int)$row->primeiro_id : $ctp_id;
     }
