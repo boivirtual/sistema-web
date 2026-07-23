@@ -40,10 +40,14 @@
             FROM contas_pagar cp1
             INNER JOIN contas_pagar cp2 ON (
                 (cp1.ctp_grupo_repeticao IS NOT NULL AND cp2.ctp_grupo_repeticao = cp1.ctp_grupo_repeticao)
-                OR (cp1.ctp_grupo_repeticao IS NULL AND cp2.ctp_codigo_fazenda IS NULL
+                OR (cp1.ctp_grupo_repeticao IS NULL AND cp1.ctp_numero_doc IS NOT NULL AND cp1.ctp_numero_doc != ''
+                    AND cp2.ctp_codigo_fazenda IS NULL
                     AND cp2.ctp_numero_doc = cp1.ctp_numero_doc
+                    AND cp2.ctp_codigo_fornecedor = cp1.ctp_codigo_fornecedor)
+                OR (cp1.ctp_grupo_repeticao IS NULL AND (cp1.ctp_numero_doc IS NULL OR cp1.ctp_numero_doc = '')
+                    AND cp2.ctp_codigo_fazenda IS NULL
                     AND cp2.ctp_codigo_fornecedor = cp1.ctp_codigo_fornecedor
-                    AND cp1.ctp_numero_doc IS NOT NULL AND cp1.ctp_numero_doc != '')
+                    AND cp2.ctp_incluido_em = cp1.ctp_incluido_em)
             )
             WHERE cp1.ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE $coluna_rateio IN ($ids_str))
         ))";
