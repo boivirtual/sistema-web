@@ -1165,14 +1165,24 @@
                 // Em parcelamento, o rateio foi salvo só na 1ª parcela — resolve o ctr_id
                 // correto antes de consultar tbl_ctr_rateio.
                 $ctr_id_rateio_nota = resolver_primeiro_ctr_rateio($conector, $ctr_id, $numero_id, $codigo_cliente);
+
+                // rc_valor_conta representa o valor do documento inteiro (soma de todas as
+                // parcelas), não desta parcela. Calcula a proporção de cada local sobre o
+                // total do rateio dessa conta e aplica essa proporção ao valor desta parcela.
+                $rs_soma_rateio = mysqli_query($conector, "SELECT SUM(rc_valor_conta) AS soma
+                    FROM tbl_ctr_rateio WHERE rc_ctr_id='$ctr_id_rateio_nota' AND rc_codigo_conta='$conta_inicio'");
+                $row_soma_rateio = mysqli_fetch_object($rs_soma_rateio);
+                $soma_rateio_conta = $row_soma_rateio ? (float)$row_soma_rateio->soma : 0;
+
                 $rateio_res = mysqli_query($conector, "SELECT rc_nome_local, rc_valor_conta
                     FROM tbl_ctr_rateio
                     WHERE rc_ctr_id='$ctr_id_rateio_nota' AND rc_codigo_conta='$conta_inicio'");
 
                 while ($reg_rateio = mysqli_fetch_object($rateio_res)) {
                     $desc_pessoa = utf8_encode($reg_rateio->rc_nome_local);
-                    $valor_fatia = $reg_rateio->rc_valor_conta;
-                    $valor_pago_fatia = ($total_pagar != 0) ? $valor_pago * ($valor_fatia / $total_pagar) : 0;
+                    $prop_local  = ($soma_rateio_conta != 0) ? ($reg_rateio->rc_valor_conta / $soma_rateio_conta) : 0;
+                    $valor_fatia = $total_pagar * $prop_local;
+                    $valor_pago_fatia = $valor_pago * $prop_local;
 
                     $dados = [$doc_imp,
                               $razao,
