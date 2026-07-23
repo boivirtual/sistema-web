@@ -1371,7 +1371,7 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                 // Documento rateado: uma linha por local que participa desta conta contábil.
                 // Em repetição, o rateio foi salvo só na 1ª ocorrência do grupo — resolve o
                 // ctp_id correto antes de consultar tbl_ctp_rateio.
-                $ctp_id_rateio_nota = resolver_primeiro_ctp_rateio($conector, $ctp_id, $registro_contas_pag->ctp_grupo_repeticao, $registro_contas_pag->ctp_numero_doc, $registro_contas_pag->ctp_codigo_fornecedor);
+                $ctp_id_rateio_nota = resolver_primeiro_ctp_rateio($conector, $ctp_id, $registro_contas_pag->ctp_grupo_repeticao, $registro_contas_pag->ctp_numero_doc, $registro_contas_pag->ctp_codigo_fornecedor, $registro_contas_pag->ctp_incluido_em);
                 $wlocal_rateio = ($fazendas_ids!='') ? " AND rc_codigo_local IN($fazendas_ids)" : '';
                 $wcc_rateio = ($cc_ids!='') ? " AND (rc_codigo_cc IS NULL OR rc_codigo_cc IN($cc_ids))" : '';
 
