@@ -349,10 +349,14 @@
 
                     if ($eh_repeticao) {
                         $tem_anexo = isset($grupos_com_anexo_aceite[$fila->ctp_grupo_repeticao]);
+                    } elseif (!empty($fila->ctp_numero_doc)) {
+                        $tem_anexo = isset($docs_com_anexo_aceite[$fila->ctp_numero_doc . '|' . $codigo_for]);
                     } else {
-                        $tem_anexo = !empty($fila->ctp_numero_doc)
-                            ? isset($docs_com_anexo_aceite[$fila->ctp_numero_doc . '|' . $codigo_for])
-                            : isset($ctpids_com_anexo_aceite[intval($ctp_id)]);
+                        // Parcelamento sem número de documento: tenta pelo fornecedor +
+                        // instante de inclusão (todas as parcelas do lançamento); senão,
+                        // cai no ctp_id exato (documento avulso, sem parcelamento).
+                        $tem_anexo = isset($fornec_instante_com_anexo_aceite[$codigo_for . '|' . $fila->ctp_incluido_em])
+                            || isset($ctpids_com_anexo_aceite[intval($ctp_id)]);
                     }
                     $icon_anexo = '';
                     if ($tem_anexo) {
