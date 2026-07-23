@@ -507,20 +507,30 @@
                                 // Localiza o primeiro ctp_id do documento (onde salvar_rateio gravou).
                                 // Em repetição, ctp_numero_doc fica vazio em TODAS as ocorrências do
                                 // fornecedor — se houver mais de uma série, buscar só por numero_doc+
-                                // fornecedor pode achar a série errada. Prioriza ctp_grupo_repeticao.
+                                // fornecedor pode achar a série errada. Prioriza ctp_grupo_repeticao;
+                                // sem número de documento, usa fornecedor + ctp_incluido_em (todas as
+                                // parcelas de um lançamento são gravadas no mesmo instante).
                                 $grupo_repeticao_linha = $registro_ctp->ctp_grupo_repeticao;
                                 if (!empty($grupo_repeticao_linha)) {
                                     $gr_esc = mysqli_real_escape_string($conector, $grupo_repeticao_linha);
                                     $rs_prim = mysqli_query($conector,
                                         "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar
                                          WHERE ctp_grupo_repeticao = '$gr_esc'");
-                                } else {
+                                } elseif (!empty($numero_doc)) {
                                     $num_doc_esc = mysqli_real_escape_string($conector, $numero_doc);
                                     $for_esc     = intval($codigo_fornecedor);
                                     $rs_prim = mysqli_query($conector,
                                         "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar
                                          WHERE ctp_numero_doc = '$num_doc_esc'
                                            AND ctp_codigo_fornecedor = '$for_esc'
+                                           AND ctp_codigo_fazenda IS NULL");
+                                } else {
+                                    $for_esc  = intval($codigo_fornecedor);
+                                    $inc_esc  = mysqli_real_escape_string($conector, $registro_ctp->ctp_incluido_em);
+                                    $rs_prim = mysqli_query($conector,
+                                        "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar
+                                         WHERE ctp_codigo_fornecedor = '$for_esc'
+                                           AND ctp_incluido_em = '$inc_esc'
                                            AND ctp_codigo_fazenda IS NULL");
                                 }
                                 $row_prim     = mysqli_fetch_object($rs_prim);
