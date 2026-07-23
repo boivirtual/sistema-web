@@ -488,6 +488,14 @@
                 // Sem rateio: retorna a própria conta/valores, sem alterar nada.
                 $fatias_ctr = montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $registro_contas_rec->ctr_numero_doc, $registro_contas_rec->ctr_codigo_cliente_fornecedor);
 
+                if (count($fatias_ctr) == 0) {
+                    // Rateio sem conta contábil definida: "A Vencer"/"Vencidos" do TOTAL GERAL já
+                    // contam este documento (acumulados antes do rateio ser resolvido). Sem isso,
+                    // "Pago"/"Total" ficavam de fora do Total geral.
+                    $total_conta_sintetica = $total_conta_sintetica + $total_pagar;
+                    $total_pago_conta_sintetica = $total_pago_conta_sintetica + $valor_pago;
+                }
+
                 foreach ($fatias_ctr as $fatia_ctr) {
                     $cod_conta_fatia = $fatia_ctr['cod_conta'];
                     $codigo_sub_conta_fatia = substr($cod_conta_fatia, 0, 3);
