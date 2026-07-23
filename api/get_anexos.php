@@ -66,6 +66,20 @@ if ($numero_doc !== '' && $numero_doc !== '0') {
              WHERE c.ctp_grupo_repeticao = '$gr_esc'
              ORDER BY a.anexo_id ASC";
 
+} elseif (!empty($fornecedor_resolvido) && !empty($incluido_em_resolvido)) {
+    $for_esc2 = intval($fornecedor_resolvido);
+    $inc_esc2 = mysqli_real_escape_string($conector, $incluido_em_resolvido);
+
+    $ssql = "SELECT a.anexo_id, a.anexo_nome, a.anexo_arquivo, a.anexo_tamanho,
+                    a.anexo_incluido_em, a.anexo_incluido_por
+             FROM tbl_ctp_anexos a
+             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
+             WHERE c.ctp_codigo_fornecedor = '$for_esc2'
+               AND c.ctp_incluido_em = '$inc_esc2'
+               AND (c.ctp_numero_doc IS NULL OR c.ctp_numero_doc = '')
+               AND (c.ctp_grupo_repeticao IS NULL OR c.ctp_grupo_repeticao = '')
+             ORDER BY a.anexo_id ASC";
+
 } elseif ($ctp_id_param > 0) {
     $ssql = "SELECT anexo_id, anexo_nome, anexo_arquivo, anexo_tamanho,
                     anexo_incluido_em, anexo_incluido_por
