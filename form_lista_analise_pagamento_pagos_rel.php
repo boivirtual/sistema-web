@@ -1361,14 +1361,24 @@ for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                 $wlocal_rateio = ($fazendas_ids!='') ? " AND rc_codigo_local IN($fazendas_ids)" : '';
                 $wcc_rateio = ($cc_ids!='') ? " AND (rc_codigo_cc IS NULL OR rc_codigo_cc IN($cc_ids))" : '';
 
+                // rc_valor_conta representa o valor do documento inteiro (soma de todas as
+                // parcelas), não desta parcela. Calcula a proporção de cada local sobre o
+                // total do rateio dessa conta (sem filtro de local/CC) e aplica essa
+                // proporção ao valor desta parcela específica.
+                $rs_soma_rateio = mysqli_query($conector, "SELECT SUM(rc_valor_conta) AS soma
+                    FROM tbl_ctp_rateio WHERE rc_ctp_id='$ctp_id_rateio_nota' AND rc_codigo_conta='$conta_inicio'");
+                $row_soma_rateio = mysqli_fetch_object($rs_soma_rateio);
+                $soma_rateio_conta = $row_soma_rateio ? (float)$row_soma_rateio->soma : 0;
+
                 $rateio_res = mysqli_query($conector, "SELECT rc_nome_local, rc_valor_conta
                     FROM tbl_ctp_rateio
                     WHERE rc_ctp_id='$ctp_id_rateio_nota' AND rc_codigo_conta='$conta_inicio'" . $wlocal_rateio . $wcc_rateio);
 
                 while ($reg_rateio = mysqli_fetch_object($rateio_res)) {
                     $desc_pessoa = utf8_encode($reg_rateio->rc_nome_local);
-                    $valor_fatia = $reg_rateio->rc_valor_conta;
-                    $valor_pago_fatia = ($total_pagar != 0) ? $valor_pago * ($valor_fatia / $total_pagar) : 0;
+                    $prop_local  = ($soma_rateio_conta != 0) ? ($reg_rateio->rc_valor_conta / $soma_rateio_conta) : 0;
+                    $valor_fatia = $total_pagar * $prop_local;
+                    $valor_pago_fatia = $valor_pago * $prop_local;
 
                     $dados = [$doc_imp,$razao,$emissao_edi->format('d/m/Y'), $vencimento_edi->format('d/m/Y'),number_format($valor_fatia,2,',','.'), $data_pag_edi, number_format($valor_pago_fatia,2,',','.'), $desc_situacao, $desc_conta_pgto, $numero_cheque, $desc_pessoa];
 
