@@ -22,14 +22,25 @@ $codigo_fornecedor = isset($_GET['codigo_fornecedor']) ? intval($_GET['codigo_fo
 $grupo_repeticao   = isset($_GET['grupo_repeticao'])   ? trim($_GET['grupo_repeticao'])           : '';
 $ctp_id_param      = isset($_GET['ctp_id'])            ? intval($_GET['ctp_id'])                  : 0;
 
+// Fornecedor + instante de inclusão do ctp_id_param, usados como agrupamento de
+// parcelamento sem número de documento (resolvido abaixo, se necessário).
+$fornecedor_resolvido = null;
+$incluido_em_resolvido = null;
+
 // Repetição: ctp_numero_doc fica vazio em todas as ocorrências. Se o grupo não veio
 // explícito, descobre pelo próprio ctp_id (fonte de dados) — assim o anexo aparece em
 // todas as parcelas da série mesmo que o parâmetro não tenha sido enviado.
 if ($grupo_repeticao === '' && ($numero_doc === '' || $numero_doc === '0') && $ctp_id_param > 0) {
-    $rs_gr  = mysqli_query($conector, "SELECT ctp_grupo_repeticao FROM contas_pagar WHERE ctp_id = '$ctp_id_param'");
+    $rs_gr  = mysqli_query($conector, "SELECT ctp_grupo_repeticao, ctp_codigo_fornecedor, ctp_incluido_em FROM contas_pagar WHERE ctp_id = '$ctp_id_param'");
     $row_gr = $rs_gr ? mysqli_fetch_object($rs_gr) : null;
     if ($row_gr && !empty($row_gr->ctp_grupo_repeticao)) {
         $grupo_repeticao = $row_gr->ctp_grupo_repeticao;
+    } elseif ($row_gr) {
+        // Parcelamento sem número de documento (nem repetição): agrupa por fornecedor +
+        // instante de inclusão idêntico (todas as parcelas de um lançamento são gravadas
+        // no mesmo instante) — senão o anexo só apareceria na parcela onde foi anexado.
+        $fornecedor_resolvido  = $row_gr->ctp_codigo_fornecedor;
+        $incluido_em_resolvido = $row_gr->ctp_incluido_em;
     }
 }
 
