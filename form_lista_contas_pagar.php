@@ -376,6 +376,23 @@
                             }
                         }
 
+                        // Parcelamento sem número de documento (nem repetição): o anexo precisa
+                        // ser vinculado a todas as parcelas do mesmo fornecedor + instante de
+                        // inclusão idêntico (todas as parcelas de um lançamento são gravadas no
+                        // mesmo instante) — senão só aparecia na parcela onde foi anexado.
+                        $fornec_instante_com_anexo = [];
+                        $rs_anx_instante = mysqli_query($conector,
+                            "SELECT DISTINCT c.ctp_codigo_fornecedor, c.ctp_incluido_em
+                             FROM tbl_ctp_anexos a
+                             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
+                             WHERE (c.ctp_numero_doc IS NULL OR c.ctp_numero_doc = '')
+                               AND (c.ctp_grupo_repeticao IS NULL OR c.ctp_grupo_repeticao = '')");
+                        if ($rs_anx_instante) {
+                            while ($ra = mysqli_fetch_object($rs_anx_instante)) {
+                                $fornec_instante_com_anexo[$ra->ctp_codigo_fornecedor . '|' . $ra->ctp_incluido_em] = true;
+                            }
+                        }
+
                         $total_geral = 0;
                         $total_pagos = 0;
                         $total_pagos_parcial=0;
