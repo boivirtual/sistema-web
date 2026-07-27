@@ -7,6 +7,9 @@
  * Roda manualmente via CLI: php 2026_07_pesagem_offline_uuid.php
  * Idempotente: pode ser executada quantas vezes for preciso, em qualquer ambiente.
  * Descobre os bancos de tenant dinamicamente (não tem lista de CNPJ hardcoded).
+ *
+ * Para testar restrito a um único schema (dry-run seguro antes de rodar geral):
+ *   php 2026_07_pesagem_offline_uuid.php --schema=teste_offline_pesagem
  */
 
 include_once __DIR__ . "/../../../conecta_mysql_credenciais.inc";
