@@ -36,9 +36,26 @@ class PesagemDao {
         return 0;
     }
 
-    public function salvarSomentePesagem($pesagem) {
+    // $uuidApp: identificador gerado no app (client_uuid), usado para tornar a
+    // criação idempotente em reenvios (ex: sincronização offline que perdeu a
+    // resposta de sucesso e reenviou a mesma criação).
+    public function salvarSomentePesagem($pesagem, $uuidApp = null) {
+        $uuidApp = $uuidApp !== null ? trim((string)$uuidApp) : '';
+
+        if ($uuidApp !== '') {
+            $uuidEscapado = $this->escapar($uuidApp);
+            $sqlExistente = "SELECT tbl_pesagem_id FROM tbl_pesagem
+                              WHERE tbl_pesagem_uuid_app = '{$uuidEscapado}' LIMIT 1";
+            $resExistente = mysqli_query($this->con, $sqlExistente);
+            if ($resExistente && ($rowExistente = mysqli_fetch_assoc($resExistente))) {
+                return (int)$rowExistente['tbl_pesagem_id'];
+            }
+        }
+
         mysqli_begin_transaction($this->con);
         try {
+            $uuidSql = $uuidApp !== '' ? "'" . $this->escapar($uuidApp) . "'" : "NULL";
+
             $sqlP = "INSERT INTO tbl_pesagem (
                 tbl_pesagem_controle,
                 tbl_pesagem_data,
@@ -58,7 +75,8 @@ class PesagemDao {
                 tbl_pesagem_peso_arroba,
                 tbl_pesagem_peso_medio_kg,
                 tbl_pesagem_peso_medio_arroba,
-                tbl_pesagem_criterios_apartacao
+                tbl_pesagem_criterios_apartacao,
+                tbl_pesagem_uuid_app
             ) VALUES (
                 'I',
                 '{$pesagem->getData()}',
@@ -78,7 +96,8 @@ class PesagemDao {
                 0,
                 0,
                 0,
-                '{$pesagem->getCriteriosApartacao()}'
+                '{$pesagem->getCriteriosApartacao()}',
+                {$uuidSql}
             )";
 
             if (!mysqli_query($this->con, $sqlP)) {
