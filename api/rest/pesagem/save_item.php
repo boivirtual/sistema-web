@@ -27,12 +27,13 @@ if (!$dados) {
 }
 
 $service = new PesagemService();
-$idGerado = $service->salvarItem($dados, $dados['bd']);
+$resultado = $service->salvarItem($dados, $dados['bd']);
 
-if ($idGerado) {
+if ($resultado) {
     echo json_encode([
         "success" => true,
-        "pesagem_id" => $idGerado
+        "pesagem_id" => $resultado['pesagem_id'],
+        "numero_item" => $resultado['numero_item']
     ]);
 } else {
     echo json_encode([
