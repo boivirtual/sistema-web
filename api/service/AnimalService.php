@@ -53,6 +53,12 @@ class AnimalService{
         return $animalDao->updateAnimalMorte($animal, $motivoMorte, $data, $obs, $user);
     }
 
+    // Exportação em massa para o cache local do app (offline-first).
+    public function getAnimaisFazendaCompleto($local, $db){
+        $animalDao = new AnimalDao($db);
+        return $animalDao->getAnimaisAtivosPorFazendaExport($local);
+    }
+
     public function getAnimalByIdLike($id, $local, $db){
         $a = [];
         $animalDao = new AnimalDao($db);
