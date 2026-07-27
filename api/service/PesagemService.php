@@ -24,7 +24,9 @@ class PesagemService {
             $p->setCriteriosApartacao('');
         }
 
-        return $dao->salvarSomentePesagem($p);
+        $uuidApp = $json['uuid_app'] ?? null;
+
+        return $dao->salvarSomentePesagem($p, $uuidApp);
     }
 
     public function updatePesagemCabecalho($dados)
