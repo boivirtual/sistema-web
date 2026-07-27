@@ -38,13 +38,25 @@ function indiceExiste($con, $schema, $tabela, $indice) {
     return ((int)$row['qtd']) > 0;
 }
 
-echo "Descobrindo bancos de tenant...\n";
-$resDb = mysqli_query($con, "SHOW DATABASES");
-$schemas = [];
-while ($row = mysqli_fetch_row($resDb)) {
-    $nome = $row[0];
-    if (in_array($nome, $SCHEMAS_IGNORADOS, true)) continue;
-    $schemas[] = $nome;
+$schemaFiltro = null;
+foreach ($argv as $arg) {
+    if (strpos($arg, '--schema=') === 0) {
+        $schemaFiltro = substr($arg, strlen('--schema='));
+    }
+}
+
+if ($schemaFiltro !== null) {
+    echo "Modo restrito: só o schema '$schemaFiltro'\n";
+    $schemas = [$schemaFiltro];
+} else {
+    echo "Descobrindo bancos de tenant...\n";
+    $resDb = mysqli_query($con, "SHOW DATABASES");
+    $schemas = [];
+    while ($row = mysqli_fetch_row($resDb)) {
+        $nome = $row[0];
+        if (in_array($nome, $SCHEMAS_IGNORADOS, true)) continue;
+        $schemas[] = $nome;
+    }
 }
 
 $aplicados = 0;
