@@ -340,6 +340,7 @@ class AnimalDao{
                     'brincoMae' => $brincoMae,
                     'ultimoPeso' => $dados['ultimo_peso'],
                     'DataUltimo' => $dados['data_ultimo'],
+                    'pesoDesmama' => $dados['peso_desmama'],
                 ];
             }
         }
