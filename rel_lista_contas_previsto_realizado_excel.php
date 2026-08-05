@@ -335,8 +335,6 @@ include_once "conecta_mysql_credenciais.inc";
 
     if ($codigo_fazendas!='') {
         $wlocal_rec = " AND (ctr_codigo_fazenda IN($fazendas) OR " . condicao_rateio_ou_grupo_ctr('ctr_codigo_fazenda', 'rc_codigo_local', $fazendas) . ")";
-        $wlocal_rec_unused = $fazendas;
-        $wlocal_rec.= ")";
     }
 
     $wlocal_previsao = '';
