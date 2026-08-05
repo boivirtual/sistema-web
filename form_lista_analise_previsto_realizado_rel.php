@@ -203,6 +203,7 @@
     $_SESSION['codigo_conta_previsao'] = $codigo_conta;
     $_SESSION['codigo_local_previsao'] = $codigo_fazendas;
     $_SESSION['codigo_c_custo_previsao'] = $codigo_cc;
+    $_SESSION['tipo_rel_previsao'] = $tipo_rel;
 
     $scrollY = ($tipo_rel == 1 || $tipo_rel == 2) ? "200px" : "300px";
 
