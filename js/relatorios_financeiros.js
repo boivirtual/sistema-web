@@ -1432,6 +1432,7 @@ function listar_previsto_realizado_tela(opcao) {
         ano +
         "->" +
         codigo_cc_filtro +
+        conta_filtro +
         tipo_rel_filtro;
 
     $("#aguardar").modal();
@@ -1446,6 +1447,8 @@ function listar_previsto_realizado_tela(opcao) {
             array_codigo_cc +
             "&fazendas=" +
             array_fazenda +
+            "&conta=" +
+            array_conta +
             "&ano=" +
             ano;
     }
@@ -1459,6 +1462,8 @@ function listar_previsto_realizado_tela(opcao) {
             array_codigo_cc +
             "&fazendas=" +
             array_fazenda +
+            "&conta=" +
+            array_conta +
             "&ano=" +
             ano;
         tout = setTimeout("limpar_tela()", 5000);
