@@ -1139,29 +1139,6 @@ $data_sistema = date("Y-m-d");
             return d.getFullYear() + '-' + mm + '-' + dd;
         }
 
-        // ----------------------------------------------------------------
-        // Calcula 1º vencimento padrão: emissão + 30 dias
-        // ----------------------------------------------------------------
-        function calcPrimeiroVencimento() {
-            var emissao = $('#data_emissao').val();
-            if (!emissao) return '';
-            return addDias(emissao, 30);
-        }
-
-        // Chamado ao alterar data de emissão
-        function onEmissaoChange() {
-            var modo = $('#sel_modo_parc').val();
-            if (modo === 'avista') {
-                $('#data_vencimento').val($('#data_emissao').val());
-            } else if (modo === 'uma_parcela') {
-                var emissao = $('#data_emissao').val();
-                if (emissao) $('#data_vencimento').val(addDias(emissao, 30));
-            } else {
-                $('#primeiro_vencimento').val(calcPrimeiroVencimento());
-                recalcularDatas();
-            }
-        }
-
         // Chamado ao sair do campo Valor total
         function onValorTotalBlur() {
             exibe_valor_primeira_parcela(); // formata exibição (função do contas_pagar.js)
