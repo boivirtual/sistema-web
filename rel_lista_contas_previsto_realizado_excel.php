@@ -328,16 +328,14 @@ include_once "conecta_mysql_credenciais.inc";
     $wlocal_pag = '';
 
     if ($codigo_fazendas!='') {
-        $wlocal_pag = " AND ctp_codigo_fazenda IN(";
-        $wlocal_pag.= $fazendas;
-        $wlocal_pag.= ")";
+        $wlocal_pag = " AND (ctp_codigo_fazenda IN($fazendas) OR " . condicao_rateio_ou_grupo('ctp_codigo_fazenda', 'rc_codigo_local', $fazendas) . ")";
     }
 
     $wlocal_rec = '';
 
     if ($codigo_fazendas!='') {
-        $wlocal_rec = " AND ctr_codigo_fazenda IN(";
-        $wlocal_rec.= $fazendas;
+        $wlocal_rec = " AND (ctr_codigo_fazenda IN($fazendas) OR " . condicao_rateio_ou_grupo_ctr('ctr_codigo_fazenda', 'rc_codigo_local', $fazendas) . ")";
+        $wlocal_rec_unused = $fazendas;
         $wlocal_rec.= ")";
     }
 
