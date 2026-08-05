@@ -107,8 +107,8 @@
         exit;
     }
 
-    $array_cc = $_SESSION['forma_pag_rel'];
-    $array_local = $_SESSION['local_precisao_contas_rel'];
+    $codigo_c_custo = $_SESSION['codigo_c_custo_previsao'];
+    $local = $_SESSION['codigo_local_previsao'];
     $contas = $_SESSION['codigo_conta_previsao'];
 
 ?>
@@ -146,6 +146,8 @@
                                 <input type="hidden" name="tipo_conta" id="tipo_conta" value="T">
                                 <input id="limpar_filtro_contas" type="hidden" <?php echo "value='" . $_SESSION['limpa_conta_previsao'] . "'"; ?>>
                                 <input id="exibe_conta" type="hidden" <?php echo "value='".$contas."'"; ?>>
+                                <input id="exibe_local" type="hidden" <?php echo "value='".$local."'"; ?>>
+                                <input id="exibe_cc" type="hidden" <?php echo "value='".$codigo_c_custo."'"; ?>>
 
                                 <div class="tab-panel ">
                                     <div class="tab-pane active">
@@ -240,23 +242,7 @@ while ($reg_cc = mysqli_fetch_object($tbl_centro_custos)) {
     $codigo_cc = $reg_cc->tbl_cc_codigo_id;
     $descricao_cc = $reg_cc->tbl_cc_descricao;
 
-    if ($array_cc!="") {
-        foreach ($array_cc as $value) {
-            if ($value==$codigo_cc) {
-                echo '<option value="' . $codigo_cc . '" selected="selected">' . $descricao_cc .
-                 '</option>';
-            }
-            else {
-                echo '<option value="'.$codigo_cc.'">' . $descricao_cc .
-                 '</option>';
-            }
-        }
-    }
-    else {
-        echo '<option value="'.$codigo_cc.'">' . $descricao_cc .
-         '</option>';
-    }
-
+    echo '<option value="'.$codigo_cc.'">' . $descricao_cc . '</option>';
 }?>
                                                         </select>
                                                     </div>

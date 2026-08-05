@@ -256,6 +256,8 @@ include_once "conecta_mysql_credenciais.inc";
     $descricao_filtro= $_REQUEST["descricao_filtro"];
 
     $_SESSION['codigo_conta_previsao'] = $codigo_conta;
+    $_SESSION['codigo_local_previsao'] = $codigo_fazendas;
+    $_SESSION['codigo_c_custo_previsao'] = $codigo_cc;
 
     // monta array das contas (mantém só as contas analíticas/folha, nível 3 -
     // últimos 4 dígitos != 0, mesma regra usada em Análise de Pagamentos/Recebimentos)
