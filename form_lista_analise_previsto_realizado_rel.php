@@ -2048,8 +2048,28 @@
 
         table = $('#tabela_analise_previsto_realizado').DataTable(dtOptions);
 
+        // No modo combinado (27 colunas), o DataTables clona o <colgroup> da tabela
+        // original só na tabela de scroll do CORPO — a tabela de scroll do CABEÇALHO
+        // fica sem colgroup e volta a calcular a largura das colunas sozinha (o mesmo
+        // desalinhamento que o colgroup foi criado para evitar). Por isso o colgroup
+        // do corpo é copiado manualmente para o cabeçalho sempre que a tabela é
+        // redesenhada/redimensionada.
+        function sincronizarColgroupCabecalho() {
+            if (tipoRelInicial != '1') return;
+            var $wrapper = $('#tabela_analise_previsto_realizado_wrapper');
+            var bodyColgroup = $wrapper.find('.dataTables_scrollBody table colgroup')[0];
+            var headTable = $wrapper.find('.dataTables_scrollHead table')[0];
+            if (!bodyColgroup || !headTable) return;
+            var headColgroup = headTable.querySelector('colgroup');
+            if (headColgroup) headTable.removeChild(headColgroup);
+            headTable.insertBefore(bodyColgroup.cloneNode(true), headTable.firstChild);
+        }
+
+        sincronizarColgroupCabecalho();
+
         setTimeout(function () {
             table.columns.adjust().draw();
+            sincronizarColgroupCabecalho();
         }, 100);
 
         $(window).on('resize', function () {
@@ -2058,6 +2078,7 @@
                 $('.dataTables_scrollBody').css('max-height', calcularScrollTabela());
                 $('.dataTables_scrollBody').css('height', calcularScrollTabela());
                 table.columns.adjust().draw();
+                sincronizarColgroupCabecalho();
             }, 100);
         });
     });
