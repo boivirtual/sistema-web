@@ -1483,8 +1483,8 @@
             $debito_credito = $registro_tbl_conta->tbl_plano_contas_debito_credito;
 
             $previsao_conta = mysqli_query($conector, "SELECT *  FROM tbl_previsao_conta
-                WHERE tbl_previsao_conta_codigo='$codigo_conta' AND 
-                      tbl_previsao_conta_ano = '$ano'" . $wlocal_previsao);
+                WHERE tbl_previsao_conta_codigo='$codigo_conta' AND
+                      tbl_previsao_conta_ano = '$ano'" . $wlocal_previsao . $wconta_previsao);
             $num_rows_previsao_conta = mysqli_num_rows($previsao_conta);
 
             if ($num_rows_previsao_conta!=0){
