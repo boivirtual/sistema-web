@@ -550,6 +550,9 @@
                                     <input type="hidden" id="codigo_cc"
                                     <?php echo "value='".$codigo_cc."'";?>>
 
+                                    <input type="hidden" id="codigo_conta"
+                                    <?php echo "value='".$codigo_conta."'";?>>
+
                                     <div class="row">
                                         <div class="col-md-8">
                                             <label class="label_consulta_rel">Filtros:</label>
