@@ -1920,7 +1920,7 @@
         <div class="col-md-12" style="padding-right:0; padding-left:10;">
             <div style="width:100%;">
                 <table id="tabela_analise_previsto_realizado"
-                       class="table table-advance table-hover table-borderless<?php echo ($tipo_rel==1) ? ' modo-combinado' : ''; ?>"
+                       class="table table-advance table-hover table-borderless tabela-scroll-sincronizada"
                        style="font-size:11px;">
                     <?php echo $thead; ?>
                     <?php echo $tbody; ?>
