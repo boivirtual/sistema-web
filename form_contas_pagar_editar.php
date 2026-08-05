@@ -319,7 +319,7 @@
                                                     <label for="tipo_doc" class="control-label">Tipo do Documento</label>
                                                     <select class="form-control" id="tipo_doc" name="tipo_doc" required="">
 
-                                                      <option value="00" selected="selected">Sem Tipo Cadastrado</option>
+                                                      <option value="00" selected="selected">...</option>
 
                                                       <?php while($registro_tipo_doc = mysqli_fetch_object($tipos_documentos)) { ?>
 
