@@ -22,7 +22,7 @@ $conta_pagamento = mysqli_query($conector, "select * from tbl_conta_pagamento wh
 
 $conta_pagamento_individual = mysqli_query($conector, "select * from tbl_conta_pagamento where tbl_conta_pagamento_lixeira=0");
 
-$tipos_documentos_baixar = mysqli_query($conector, "select tbl_tipo_doc_id, tbl_tipo_doc_descricao from tbl_tipo_documento where tbl_tipo_doc_lixeira=0 order by tbl_tipo_doc_descricao ASC");
+$tipos_documentos_baixar = mysqli_query($conector, "select tbl_tipo_doc_id, tbl_tipo_doc_descricao from tbl_tipo_documento where tbl_tipo_doc_lixeira=0");
 
 $c_custo = mysqli_query($conector, "select * from tbl_centro_custo where tbl_cc_lixeira=0 order by tbl_cc_codigo_id ASC");
 

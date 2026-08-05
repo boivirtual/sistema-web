@@ -353,8 +353,7 @@ $data_sistema = date("Y-m-d");
                                         <div class="form-group col-md-2">
                                             <label for="data_emissao" class="control-label"><span class="required">*</span> Emissão</label>
                                             <input name="data_emissao" type="date" class="form-control" id="data_emissao"
-                                                   value="<?php echo $data_sistema; ?>"
-                                                   onchange="onEmissaoChange()">
+                                                   value="<?php echo $data_sistema; ?>">
                                         </div>
 
                                         <div class="form-group col-md-3">
@@ -532,6 +531,7 @@ $data_sistema = date("Y-m-d");
                                         <div class="form-group col-md-3">
                                             <label class="control-label"><span class="required">*</span> Parcelamento</label>
                                             <select class="form-control" id="sel_modo_parc" onchange="onParcelamentoChange()">
+                                                <option value="" selected>...</option>
                                                 <option value="avista">A Vista</option>
                                                 <option value="uma_parcela">1 Parcela</option>
                                                 <option value="parc">Parcelado em 2x ou mais</option>
@@ -544,7 +544,7 @@ $data_sistema = date("Y-m-d");
                                         </div>
 
                                         <!-- Bloco À Vista: Vencimento | Banco | Tipo Doc | Pago -->
-                                        <div id="bloco_avista" class="col-md-9" style="padding: 0;">
+                                        <div id="bloco_avista" class="col-md-9" style="padding: 0; display: none;">
                                             <div class="row" style="margin: 0;">
                                                 <div class="form-group col-md-3">
                                                     <label for="data_vencimento" class="control-label"><span class="required">*</span> Vencimento</label>
@@ -1139,29 +1139,6 @@ $data_sistema = date("Y-m-d");
             return d.getFullYear() + '-' + mm + '-' + dd;
         }
 
-        // ----------------------------------------------------------------
-        // Calcula 1º vencimento padrão: emissão + 30 dias
-        // ----------------------------------------------------------------
-        function calcPrimeiroVencimento() {
-            var emissao = $('#data_emissao').val();
-            if (!emissao) return '';
-            return addDias(emissao, 30);
-        }
-
-        // Chamado ao alterar data de emissão
-        function onEmissaoChange() {
-            var modo = $('#sel_modo_parc').val();
-            if (modo === 'avista') {
-                $('#data_vencimento').val($('#data_emissao').val());
-            } else if (modo === 'uma_parcela') {
-                var emissao = $('#data_emissao').val();
-                if (emissao) $('#data_vencimento').val(addDias(emissao, 30));
-            } else {
-                $('#primeiro_vencimento').val(calcPrimeiroVencimento());
-                recalcularDatas();
-            }
-        }
-
         // Chamado ao sair do campo Valor total
         function onValorTotalBlur() {
             exibe_valor_primeira_parcela(); // formata exibição (função do contas_pagar.js)
@@ -1266,15 +1243,21 @@ $data_sistema = date("Y-m-d");
                     dataParc = (i === 0) ? primVenc : addDias(primVenc, intervalo * i);
                 }
 
-                // Arredonda — última parcela absorve centavos
-                var vlrEsta  = (i < n - 1) ? Math.round(vlrParc * 100) / 100 : Math.round((total - vlrParc * (n - 1)) * 100) / 100;
-                var percEsta = (i < n - 1) ? Math.round(percParc * 100) / 100 : Math.round((100 - percParc * (n - 1)) * 100) / 100;
+                // Arredonda — última parcela absorve centavos. Sem 1º Vencimento ainda, valor/percentual ficam em branco.
+                var vlrEstaTxt  = '';
+                var percEstaTxt = '';
+                if (primVenc) {
+                    var vlrEsta  = (i < n - 1) ? Math.round(vlrParc * 100) / 100 : Math.round((total - vlrParc * (n - 1)) * 100) / 100;
+                    var percEsta = (i < n - 1) ? Math.round(percParc * 100) / 100 : Math.round((100 - percParc * (n - 1)) * 100) / 100;
+                    vlrEstaTxt  = ctpFormatMoney(vlrEsta);
+                    percEstaTxt = ctpFormatMoney(percEsta);
+                }
 
                 var tr = '<tr id="parc_row_' + i + '">';
                 tr += '<td><span class="lbl-parcela">' + ordinal(i + 1) + ' Vencimento</span></td>';
                 tr += '<td><input type="date" class="form-control parc-data" name="parcela[' + i + '][data_vencimento]" id="parc_data_' + i + '" value="' + dataParc + '" style="height:30px;font-size:13px;padding:2px 6px;"></td>';
-                tr += '<td><input type="text"  class="form-control parc-valor" name="parcela[' + i + '][valor]" id="parc_valor_' + i + '" value="' + ctpFormatMoney(vlrEsta) + '" onblur="recalcularPorValor(' + i + ')" onkeypress="mask.money.call(this, event)"></td>';
-                tr += '<td><input type="text"  class="form-control parc-perc"  name="parcela[' + i + '][percentual]" id="parc_perc_' + i + '"  value="' + ctpFormatMoney(percEsta) + '" readonly style="background:#f5f5f5;color:#777;"></td>';
+                tr += '<td><input type="text"  class="form-control parc-valor" name="parcela[' + i + '][valor]" id="parc_valor_' + i + '" value="' + vlrEstaTxt + '" onblur="recalcularPorValor(' + i + ')" onkeypress="mask.money.call(this, event)"></td>';
+                tr += '<td><input type="text"  class="form-control parc-perc"  name="parcela[' + i + '][percentual]" id="parc_perc_' + i + '"  value="' + percEstaTxt + '" readonly style="background:#f5f5f5;color:#777;"></td>';
                 tr += '<td>' + buildSelectBanco('parcela[' + i + '][banco_conta]', 'parc_banco_' + i, '', i) + '</td>';
                 tr += '<td>' + buildSelectTipoDoc('parcela[' + i + '][tipo_doc]', 'parc_tipodoc_' + i, '', i) + '</td>';
                 tr += '<td class="pago-parc" style="text-align:center;"><input type="checkbox" name="parcela[' + i + '][pago]" id="parc_pago_' + i + '" value="S" onchange="togglePagoParc(' + i + ')"></td>';
@@ -1302,30 +1285,38 @@ $data_sistema = date("Y-m-d");
         }
 
         // ----------------------------------------------------------------
-        // Recalcular todas as datas (ao alterar 1º vencimento ou intervalo)
+        // Recalcula todas as datas, valores e percentuais das parcelas
+        // (ao informar/alterar o 1º vencimento ou o intervalo)
         // ----------------------------------------------------------------
         function recalcularDatas() {
             var n         = parseInt($('#parcelamento').val());
             var primVenc  = $('#primeiro_vencimento').val();
             var intervalo = parseInt($('#intervalo').val()) || 30;
+            var total     = ctpGetValorTotal();
 
             if (!primVenc || n < 1) return;
+
+            var vlrParc  = (total > 0) ? total / n : 0;
+            var percParc = 100 / n;
 
             for (var i = 0; i < n; i++) {
                 var dataParc = (i === 0) ? primVenc : addDias(primVenc, intervalo * i);
                 $('#parc_data_' + i).val(dataParc);
+
+                var vlrEsta  = (i < n - 1) ? Math.round(vlrParc * 100) / 100 : Math.round((total - vlrParc * (n - 1)) * 100) / 100;
+                var percEsta = (i < n - 1) ? Math.round(percParc * 100) / 100 : Math.round((100 - percParc * (n - 1)) * 100) / 100;
+                $('#parc_valor_' + i).val(ctpFormatMoney(vlrEsta));
+                $('#parc_perc_' + i).val(ctpFormatMoney(percEsta));
             }
+
+            atualizarTotais(n);
         }
 
         // ----------------------------------------------------------------
-        // Ao alterar o intervalo: atualiza 1º Vencimento = emissão + intervalo
+        // Ao alterar o intervalo: recalcula as datas/valores se o 1º
+        // vencimento já tiver sido informado
         // ----------------------------------------------------------------
         function onIntervaloChange() {
-            var emissao   = $('#data_emissao').val();
-            var intervalo = parseInt($('#intervalo').val()) || 30;
-            if (emissao) {
-                $('#primeiro_vencimento').val(addDias(emissao, intervalo));
-            }
             recalcularDatas();
         }
 
@@ -1436,28 +1427,27 @@ $data_sistema = date("Y-m-d");
             $('#pago_valor_pago').val('');
             $('#bloco_pago_avista').hide();
 
-            if (modo === 'avista') {
+            if (modo === '') {
+                $('#parcelamento').val(0);
+                $('#bloco_qtd_parcelas').hide();
+                $('#qtd_parcelas_input').val('');
+                $('#bloco_avista').hide();
+                $('#data_vencimento').val('');
+                $('#bloco_parc_header').hide();
+                $('#primeiro_vencimento').val('');
+                $('#bloco_parcelas').hide();
+                $('#tbody_parcelas').empty();
+                $('#parc_totais').empty();
+            } else if (modo === 'avista' || modo === 'uma_parcela') {
                 $('#parcelamento').val(0);
                 $('#bloco_qtd_parcelas').hide();
                 $('#qtd_parcelas_input').val('');
                 $('#bloco_avista').show();
+                $('#data_vencimento').val('');
                 $('#bloco_parc_header').hide();
                 $('#bloco_parcelas').hide();
                 $('#tbody_parcelas').empty();
                 $('#parc_totais').empty();
-                var emissao = $('#data_emissao').val();
-                if (emissao) $('#data_vencimento').val(emissao);
-            } else if (modo === 'uma_parcela') {
-                $('#parcelamento').val(0);
-                $('#bloco_qtd_parcelas').hide();
-                $('#qtd_parcelas_input').val('');
-                $('#bloco_avista').show();
-                $('#bloco_parc_header').hide();
-                $('#bloco_parcelas').hide();
-                $('#tbody_parcelas').empty();
-                $('#parc_totais').empty();
-                var emissao = $('#data_emissao').val();
-                if (emissao) $('#data_vencimento').val(addDias(emissao, 30));
             } else {
                 // Parcelado em 2x ou mais
                 $('#parcelamento').val(0);
@@ -1465,6 +1455,7 @@ $data_sistema = date("Y-m-d");
                 $('#qtd_parcelas_input').attr('min', 2).val('');
                 $('#bloco_avista').hide();
                 $('#bloco_parc_header').hide();
+                $('#primeiro_vencimento').val('');
                 $('#bloco_parcelas').hide();
                 $('#tbody_parcelas').empty();
                 $('#parc_totais').empty();
@@ -1496,9 +1487,6 @@ $data_sistema = date("Y-m-d");
 
             $('#bloco_parc_header').show();
             $('#bloco_parcelas').show();
-            if (!$('#primeiro_vencimento').val()) {
-                $('#primeiro_vencimento').val(calcPrimeiroVencimento());
-            }
             gerarTabelaParcelas(n);
         }
 
@@ -1602,6 +1590,10 @@ $data_sistema = date("Y-m-d");
                     return erro('Informe o Banco/Conta Pagamento.', $('#rep_banco'));
                 }
             } else {
+                if (!$('#sel_modo_parc').val()) {
+                    return erro('Selecione o Parcelamento.', $('#sel_modo_parc'));
+                }
+
                 var n = parseInt($('#parcelamento').val());
                 if (n === 0) {
                     if (!$('#data_vencimento').val()) {
@@ -1611,11 +1603,31 @@ $data_sistema = date("Y-m-d");
                     if (!banco || banco === '0') {
                         return erro('Informe o Banco/Conta Pagamento.', $('#codigo_forma_rec'));
                     }
+                    if ($('#pago').is(':checked')) {
+                        if (!$('#number_doc').val().trim()) {
+                            return erro('Marcando a parcela como Paga, informe o Número Documento.', $('#number_doc'));
+                        }
+                        var tipoDoc = $('#tipo_doc').val();
+                        if (!tipoDoc || tipoDoc === '00') {
+                            return erro('Marcando a parcela como Paga, informe o Tipo Documento.', $('#tipo_doc'));
+                        }
+                    }
                 } else if (n >= 1) {
                     if (!$('#primeiro_vencimento').val()) {
                         return erro('Informe o Vencimento.', $('#primeiro_vencimento'));
                     }
                     // Banco/Conta Pagamento de cada parcela é validado em validarParcelamento()
+                    for (var pi = 0; pi < n; pi++) {
+                        if ($('#parc_pago_' + pi).is(':checked')) {
+                            if (!$('#number_doc').val().trim()) {
+                                return erro('Marcando a ' + ordinal(pi + 1) + ' parcela como Paga, informe o Número Documento.', $('#number_doc'));
+                            }
+                            var tipoDocParc = $('#parc_tipodoc_' + pi).val();
+                            if (!tipoDocParc || tipoDocParc === '00') {
+                                return erro('Marcando a ' + ordinal(pi + 1) + ' parcela como Paga, informe o Tipo Documento dessa parcela.', $('#parc_tipodoc_' + pi));
+                            }
+                        }
+                    }
                 }
             }
 
@@ -2255,17 +2267,6 @@ $data_sistema = date("Y-m-d");
             $(this).val(n > 0 ? n.toFixed(2).replace('.', ',') + '%' : '');
             recalcularRateio();
         });
-
-        // Ao carregar: pré-preenche vencimento conforme modo selecionado
-        (function() {
-            var modo = $('#sel_modo_parc').val();
-            var emissao = $('#data_emissao').val();
-            if (modo === 'avista' && emissao) {
-                $('#data_vencimento').val(emissao);
-            } else if (modo === 'uma_parcela' && emissao) {
-                $('#data_vencimento').val(addDias(emissao, 30));
-            }
-        })();
 
         $('#habilitar_rateio').on('change', function () {
             var on = $(this).is(':checked');
