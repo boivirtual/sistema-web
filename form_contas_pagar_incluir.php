@@ -532,6 +532,7 @@ $data_sistema = date("Y-m-d");
                                         <div class="form-group col-md-3">
                                             <label class="control-label"><span class="required">*</span> Parcelamento</label>
                                             <select class="form-control" id="sel_modo_parc" onchange="onParcelamentoChange()">
+                                                <option value="" selected>...</option>
                                                 <option value="avista">A Vista</option>
                                                 <option value="uma_parcela">1 Parcela</option>
                                                 <option value="parc">Parcelado em 2x ou mais</option>
