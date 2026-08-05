@@ -538,22 +538,22 @@
 
     #tabela_analise_previsto_realizado_wrapper table.modo-combinado th:first-child,
     #tabela_analise_previsto_realizado_wrapper table.modo-combinado td:first-child {
-        width: 220px;
-        min-width: 220px;
-        max-width: 220px;
+        width: 220px !important;
+        min-width: 220px !important;
+        max-width: 220px !important;
     }
 
     #tabela_analise_previsto_realizado_wrapper table.modo-combinado thead th[colspan] {
-        width: 200px;
-        min-width: 200px;
-        max-width: 200px;
+        width: 200px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
     }
 
     #tabela_analise_previsto_realizado_wrapper table.modo-combinado thead th:not([colspan]):not(:first-child),
     #tabela_analise_previsto_realizado_wrapper table.modo-combinado tbody td:not(:first-child) {
-        width: 100px;
-        min-width: 100px;
-        max-width: 100px;
+        width: 100px !important;
+        min-width: 100px !important;
+        max-width: 100px !important;
     }
   </style>
 
