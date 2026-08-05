@@ -195,11 +195,43 @@
 
     $codigo_cc = $_REQUEST["codigo_cc"];
     $codigo_fazendas = $_REQUEST["fazendas"];
+    $codigo_conta = $_REQUEST["conta"];
     $ano = $_REQUEST["ano"];
     $tipo_rel = $_REQUEST["tipo_rel"];
     $descricao_filtro= $_REQUEST["descricao_filtro"];
 
+    $_SESSION['codigo_conta_previsao'] = $codigo_conta;
+
     $scrollY = ($tipo_rel == 1 || $tipo_rel == 2) ? "200px" : "300px";
+
+    // monta array das contas (mantém só as contas analíticas/folha, nível 3 -
+    // últimos 4 dígitos != 0, mesma regra usada em Análise de Pagamentos/Recebimentos)
+    $array_conta = $_REQUEST["conta"];
+    $conta = array();
+    $matriz_itens = explode(",", $array_conta);
+    $quantidade_itens = count($matriz_itens);
+
+    for ($i=0; $i < $quantidade_itens; $i++) {
+        if (substr($matriz_itens[$i], 3, 4) != 0) {
+            $conta[$i] = $matriz_itens[$i];
+        }
+    }
+
+    $conta = implode(',', $conta);
+
+    $wconta_lista = '';
+
+    if ($array_conta != '') {
+        $wconta_lista = " AND tbl_plano_contas_codigo_id IN($conta)";
+    }
+
+    $wconta_pag = '';
+    $wconta_rec = '';
+
+    if ($array_conta != '') {
+        $wconta_pag = " AND (ctp_codigo_conta IN($conta) OR " . condicao_rateio_ou_grupo('ctp_codigo_conta', 'rc_codigo_conta', $conta) . ")";
+        $wconta_rec = " AND (ctr_codigo_conta IN($conta) OR " . condicao_rateio_ou_grupo_ctr('ctr_codigo_conta', 'rc_codigo_conta', $conta) . ")";
+    }
 
     $centro_custos= array();
     $matriz_itens = explode(",", $codigo_cc);
