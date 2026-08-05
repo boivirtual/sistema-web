@@ -2042,36 +2042,42 @@
 
         table = $('#tabela_analise_previsto_realizado').DataTable(dtOptions);
 
-        // No modo combinado (27 colunas, com linhas extras SALDO ANTERIOR/DO MÊS/FINAL
-        // fixadas dentro do <thead>), o DataTables mantém 2 tabelas internas
-        // (cabeçalho e corpo) que calculam a largura de cada coluna de forma
-        // independente — cada uma só enxerga o próprio conteúdo, então a diferença
-        // acumula e desalinha cabeçalho x dados ao rolar. table-layout:fixed e
-        // <colgroup> foram testados e não resolveram de forma confiável (o navegador
-        // ainda respeitava o conteúdo em vez da largura pedida). A solução: medir a
-        // largura que cada coluna precisa olhando cabeçalho E corpo juntos, e aplicar
-        // esse valor, em pixel, como largura explícita em toda célula daquela coluna
-        // nas duas tabelas — assim as duas ficam exatamente iguais, coluna por coluna.
-        var TOTAL_COLUNAS_MODO_COMBINADO = 27; // Descrição + 12 meses x2 + Total x2
+        // Em todos os modos, o DataTables mantém 2 tabelas internas (cabeçalho e
+        // corpo) que calculam a largura de cada coluna de forma independente — cada
+        // uma só enxerga o próprio conteúdo, então a diferença acumula e desalinha
+        // cabeçalho x dados ao rolar (mais visível no modo combinado, com 26 colunas
+        // de dados). table-layout:fixed e <colgroup> foram testados e não resolveram
+        // de forma confiável (o navegador ainda respeitava o conteúdo em vez da
+        // largura pedida). A solução: medir a largura que cada coluna precisa olhando
+        // cabeçalho E corpo juntos, e aplicar esse valor, em pixel, como largura
+        // explícita em toda célula daquela coluna nas duas tabelas — assim as duas
+        // ficam exatamente iguais, coluna por coluna.
         function sincronizarLargurasColunas() {
-            if (tipoRelInicial != '1') return;
             var $wrapper = $('#tabela_analise_previsto_realizado_wrapper');
             var headTable = $wrapper.find('.dataTables_scrollHead table')[0];
             var bodyTable = $wrapper.find('.dataTables_scrollBody table')[0];
             if (!headTable || !bodyTable) return;
+
+            // o nº de colunas reais é sempre igual ao nº de <td> de uma linha do
+            // corpo (o corpo nunca tem colspan/rowspan, diferente de algumas linhas
+            // do cabeçalho)
+            var primeiraLinhaCorpo = bodyTable.querySelector('tbody tr');
+            if (!primeiraLinhaCorpo) return;
+            var totalColunas = primeiraLinhaCorpo.children.length;
 
             // limpa larguras aplicadas numa passada anterior antes de medir de novo
             $(headTable).find('th').css({ width: '', minWidth: '', maxWidth: '' });
             $(bodyTable).find('td').css({ width: '', minWidth: '', maxWidth: '' });
             void headTable.offsetWidth; void bodyTable.offsetWidth; // força reflow antes de medir
 
-            // a 2ª linha do cabeçalho ("Realizado"/"Previsto") não tem célula para a
-            // coluna Descrição - ela já está coberta pelo rowspan="2" da 1ª linha. Sem
-            // levar isso em conta, o índice de cada célula fica deslocado em 1 coluna
-            // nessa linha específica. Por isso o índice inicial de cada linha é
-            // calculado a partir do total de colunas que ela realmente cobre (soma dos
-            // colspans), assumindo que uma linha "curta" está sempre faltando células
-            // no início (nunca no meio/fim) - o que é verdade nesta tabela.
+            // no modo combinado, a 2ª linha do cabeçalho ("Realizado"/"Previsto") não
+            // tem célula para a coluna Descrição - ela já está coberta pelo
+            // rowspan="2" da 1ª linha. Sem levar isso em conta, o índice de cada
+            // célula fica deslocado em 1 coluna nessa linha específica. Por isso o
+            // índice inicial de cada linha é calculado a partir do total de colunas
+            // que ela realmente cobre (soma dos colspans), assumindo que uma linha
+            // "curta" está sempre faltando células no início (nunca no meio/fim) - o
+            // que é verdade nesta tabela.
             function somaColspans($tr) {
                 var soma = 0;
                 $tr.children().each(function () {
@@ -2083,7 +2089,7 @@
             var larguras = [];
             function medir(tabela, seletorLinhas) {
                 $(tabela).find(seletorLinhas).each(function () {
-                    var idx = TOTAL_COLUNAS_MODO_COMBINADO - somaColspans($(this));
+                    var idx = totalColunas - somaColspans($(this));
                     $(this).children().each(function () {
                         var colspan = parseInt($(this).attr('colspan') || '1', 10);
                         if (colspan === 1) {
