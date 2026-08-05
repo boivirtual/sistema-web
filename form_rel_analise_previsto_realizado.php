@@ -212,37 +212,37 @@
 
                                                 <div class="row">
 
-                                                    <div class="form-group col-md-5">
+                                                    <div class="form-group col-md-3">
                                                         <label for="codigo_fazenda" class="control-label">Local</label>
                                                         <select class="form-control selectpicker" id="codigo_fazenda" multiple name="codigo_fazenda">
-                                                        <?php 
-                                                            while($reg_local = mysqli_fetch_object($tbl_local)) { 
-                                                            
+                                                        <?php
+                                                            while($reg_local = mysqli_fetch_object($tbl_local)) {
+
                                                                 foreach ($array_locais_usuario as $value) {
                                                                     $value = ltrim($value);
                                                                     $value = rtrim($value);
                                                                     if ($value==$reg_local->tbl_pessoa_id) {
-                                                                        echo '<option value="'.$value.'">' .$reg_local->tbl_pessoa_nome. '</option>'; 
+                                                                        echo '<option value="'.$value.'">' .$reg_local->tbl_pessoa_nome. '</option>';
                                                                     }
                                                                 }
-                                                            } 
+                                                            }
                                                          ?>
                                                         </select>
                                                     </div>
 
-                                                    <div class="form-group col-md-5">
+                                                    <div class="form-group col-md-3">
                                                         <label for="codigo_cc" class="control-label">Centro de Custos</label>
                                                         <select class="form-control  selectpicker" id="codigo_cc" multiple data-live-search="true" name="codigo_cc" >
 
-                                                        <?php 
+                                                        <?php
 
-while ($reg_cc = mysqli_fetch_object($tbl_centro_custos)) { 
+while ($reg_cc = mysqli_fetch_object($tbl_centro_custos)) {
     $codigo_cc = $reg_cc->tbl_cc_codigo_id;
     $descricao_cc = $reg_cc->tbl_cc_descricao;
 
     if ($array_cc!="") {
         foreach ($array_cc as $value) {
-            if ($value==$codigo_cc) { 
+            if ($value==$codigo_cc) {
                 echo '<option value="' . $codigo_cc . '" selected="selected">' . $descricao_cc .
                  '</option>';
             }
@@ -250,7 +250,7 @@ while ($reg_cc = mysqli_fetch_object($tbl_centro_custos)) {
                 echo '<option value="'.$codigo_cc.'">' . $descricao_cc .
                  '</option>';
             }
-        }                           
+        }
     }
     else {
         echo '<option value="'.$codigo_cc.'">' . $descricao_cc .
@@ -259,6 +259,11 @@ while ($reg_cc = mysqli_fetch_object($tbl_centro_custos)) {
 
 }?>
                                                         </select>
+                                                    </div>
+
+                                                    <div class="form-group col-md-4">
+                                                        <label for="codigo_conta" class="control-label">Conta Contábil</label>
+                                                        <input type="text" name="contas_selecionadas" id="contas_selecionadas" class="form-control" value="Todas ou (Clique p/ selecionar contas)">
                                                     </div>
 
                                                     <div class="form-group col-md-1">
