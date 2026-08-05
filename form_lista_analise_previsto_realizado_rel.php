@@ -1980,10 +1980,14 @@
     var table;
 
     $(document).ready(function() {
-        table = $('#tabela_analise_previsto_realizado').DataTable({
-            fixedColumns: {
-                heightMatch: 'none'
-            },
+        // No modo Realizado/Previsto combinado a tabela tem 26 colunas de dados (2 por
+        // mês); o fixedColumns clona o cabeçalho num elemento à parte para "congelar" a
+        // 1ª coluna, e com tantas colunas estreitas essa cópia perde a sincronia de
+        // largura com o corpo da tabela ao rolar, desalinhando cabeçalho x dados. Os
+        // outros modos (13 colunas) não têm esse problema, então o fixedColumns fica
+        // desativado só quando tipo_rel==1.
+        var tipoRelInicial = $('#tipo_rel').val();
+        var dtOptions = {
             scrollY: calcularScrollTabela(),
             scrollX: true,
             scrollCollapse: true,
