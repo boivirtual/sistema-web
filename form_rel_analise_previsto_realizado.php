@@ -107,8 +107,8 @@
         exit;
     }
 
-    $array_cc = $_SESSION['forma_pag_rel'];
-    $array_local = $_SESSION['local_precisao_contas_rel'];
+    $codigo_c_custo = $_SESSION['codigo_c_custo_previsao'];
+    $local = $_SESSION['codigo_local_previsao'];
     $contas = $_SESSION['codigo_conta_previsao'];
 
 ?>
