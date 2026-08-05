@@ -1,5 +1,178 @@
 <?php
-@ session_start(); 
+// Filtro (conta/local/CC) que também alcança as demais parcelas de um mesmo
+// documento — seja um grupo de repetição (ctp_grupo_repeticao) ou um parcelamento
+// comum (mesmo ctp_numero_doc + fornecedor). O rateio é salvo uma única vez, na
+// 1ª parcela/ocorrência — sem isso, o filtro só encontrava essa 1ª linha.
+function condicao_rateio_ou_grupo($coluna_ctp, $coluna_rateio, $ids_str) {
+    return "($coluna_ctp IS NULL AND ctp_id IN (
+        SELECT DISTINCT cp2.ctp_id
+        FROM contas_pagar cp1
+        INNER JOIN contas_pagar cp2 ON (
+            (cp1.ctp_grupo_repeticao IS NOT NULL AND cp2.ctp_grupo_repeticao = cp1.ctp_grupo_repeticao)
+            OR (cp1.ctp_grupo_repeticao IS NULL AND cp1.ctp_numero_doc IS NOT NULL AND cp1.ctp_numero_doc != ''
+                AND cp2.ctp_codigo_fazenda IS NULL
+                AND cp2.ctp_numero_doc = cp1.ctp_numero_doc
+                AND cp2.ctp_codigo_fornecedor = cp1.ctp_codigo_fornecedor)
+            OR (cp1.ctp_grupo_repeticao IS NULL AND (cp1.ctp_numero_doc IS NULL OR cp1.ctp_numero_doc = '')
+                AND cp2.ctp_codigo_fazenda IS NULL
+                AND cp2.ctp_codigo_fornecedor = cp1.ctp_codigo_fornecedor
+                AND cp2.ctp_incluido_em = cp1.ctp_incluido_em)
+        )
+        WHERE cp1.ctp_id IN (SELECT rc_ctp_id FROM tbl_ctp_rateio WHERE $coluna_rateio IN ($ids_str))
+    ))";
+}
+
+// Resolve o ctp_id onde o rateio de fato foi salvo: em repetição (ctp_grupo_repeticao
+// preenchido), em parcelamento com documento (mesmo ctp_numero_doc + fornecedor), ou em
+// parcelamento SEM número de documento (mesmo fornecedor + ctp_incluido_em idêntico — todas
+// as parcelas de um lançamento são gravadas no mesmo instante). O rateio fica gravado só na
+// 1ª ocorrência/parcela — nunca no ctp_id das demais.
+function resolver_primeiro_ctp_rateio($conector, $ctp_id, $ctp_grupo_repeticao, $ctp_numero_doc = null, $ctp_codigo_fornecedor = null, $ctp_incluido_em = null) {
+    if (!empty($ctp_grupo_repeticao)) {
+        $gr_esc = mysqli_real_escape_string($conector, $ctp_grupo_repeticao);
+        $rs = mysqli_query($conector, "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar WHERE ctp_grupo_repeticao = '$gr_esc'");
+        $row = $rs ? mysqli_fetch_object($rs) : null;
+        return ($row && $row->primeiro_id) ? (int)$row->primeiro_id : $ctp_id;
+    }
+    if ($ctp_numero_doc !== null && $ctp_numero_doc !== '' && $ctp_codigo_fornecedor !== null) {
+        $nd_esc  = mysqli_real_escape_string($conector, $ctp_numero_doc);
+        $for_esc = intval($ctp_codigo_fornecedor);
+        $rs = mysqli_query($conector, "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar WHERE ctp_numero_doc = '$nd_esc' AND ctp_codigo_fornecedor = '$for_esc' AND ctp_codigo_fazenda IS NULL");
+        $row = $rs ? mysqli_fetch_object($rs) : null;
+        return ($row && $row->primeiro_id) ? (int)$row->primeiro_id : $ctp_id;
+    }
+    if ($ctp_codigo_fornecedor !== null && $ctp_incluido_em !== null && $ctp_incluido_em !== '') {
+        $for_esc  = intval($ctp_codigo_fornecedor);
+        $inc_esc  = mysqli_real_escape_string($conector, $ctp_incluido_em);
+        $rs = mysqli_query($conector, "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar WHERE ctp_codigo_fornecedor = '$for_esc' AND ctp_incluido_em = '$inc_esc' AND ctp_codigo_fazenda IS NULL");
+        $row = $rs ? mysqli_fetch_object($rs) : null;
+        return ($row && $row->primeiro_id) ? (int)$row->primeiro_id : $ctp_id;
+    }
+    return $ctp_id;
+}
+
+// Reparte o valor de um lançamento de contas a pagar entre as contas contábeis do
+// rateio (tbl_ctp_rateio), proporcionalmente ao valor de cada conta. Quando a conta
+// já vem preenchida no próprio registro (sem rateio), retorna uma única fatia.
+function montar_fatias_conta_rateio_ctp($conector, $ctp_id, $cod_conta_header, $valor, $ctp_grupo_repeticao = null, $ctp_numero_doc = null, $ctp_codigo_fornecedor = null, $ctp_incluido_em = null) {
+    if ($cod_conta_header !== null && $cod_conta_header !== '') {
+        return [['cod_conta' => $cod_conta_header, 'valor' => $valor]];
+    }
+
+    $ctp_id_rateio = resolver_primeiro_ctp_rateio($conector, $ctp_id, $ctp_grupo_repeticao, $ctp_numero_doc, $ctp_codigo_fornecedor, $ctp_incluido_em);
+
+    $linhas_rateio = array();
+    $soma_rateio = 0;
+
+    $rs = mysqli_query($conector, "SELECT rc_codigo_conta, rc_valor_conta FROM tbl_ctp_rateio
+        WHERE rc_ctp_id='$ctp_id_rateio' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''");
+
+    while ($r = mysqli_fetch_object($rs)) {
+        $linhas_rateio[] = $r;
+        $soma_rateio += $r->rc_valor_conta;
+    }
+
+    if (count($linhas_rateio) == 0 || $soma_rateio == 0) {
+        return array();
+    }
+
+    $fatias = array();
+
+    foreach ($linhas_rateio as $r) {
+        $prop = $r->rc_valor_conta / $soma_rateio;
+        $fatias[] = ['cod_conta' => $r->rc_codigo_conta, 'valor' => $valor * $prop];
+    }
+
+    return $fatias;
+}
+
+// Filtro (conta/local/CC) que também alcança as demais parcelas de um mesmo
+// documento rateado (mesmo ctr_numero_doc + cliente/fornecedor). O rateio é salvo
+// uma única vez, na 1ª parcela — sem isso, o filtro só encontrava essa 1ª parcela.
+function condicao_rateio_ou_grupo_ctr($coluna_ctr, $coluna_rateio, $ids_str) {
+    return "($coluna_ctr IS NULL AND ctr_id IN (
+        SELECT DISTINCT ctr2.ctr_id
+        FROM contas_receber ctr1
+        INNER JOIN contas_receber ctr2 ON (
+            ctr2.ctr_codigo_fazenda IS NULL
+            AND ctr2.ctr_numero_doc = ctr1.ctr_numero_doc
+            AND ctr2.ctr_codigo_cliente_fornecedor = ctr1.ctr_codigo_cliente_fornecedor
+            AND ctr1.ctr_numero_doc IS NOT NULL AND ctr1.ctr_numero_doc != ''
+        )
+        WHERE ctr1.ctr_id IN (SELECT rc_ctr_id FROM tbl_ctr_rateio WHERE $coluna_rateio IN ($ids_str))
+    ))";
+}
+
+// Resolve o ctr_id onde o rateio de fato foi salvo: em parcelamento (mesmo
+// ctr_numero_doc + cliente/fornecedor), o rateio fica gravado só na 1ª parcela.
+function resolver_primeiro_ctr_rateio($conector, $ctr_id, $ctr_numero_doc = null, $ctr_codigo_cliente = null) {
+    if ($ctr_numero_doc === null || $ctr_numero_doc === '' || $ctr_codigo_cliente === null) return $ctr_id;
+    $nd_esc  = mysqli_real_escape_string($conector, $ctr_numero_doc);
+    $cli_esc = intval($ctr_codigo_cliente);
+    $rs = mysqli_query($conector, "SELECT MIN(ctr_id) AS primeiro_id FROM contas_receber WHERE ctr_numero_doc = '$nd_esc' AND ctr_codigo_cliente_fornecedor = '$cli_esc' AND ctr_codigo_fazenda IS NULL");
+    $row = $rs ? mysqli_fetch_object($rs) : null;
+    return ($row && $row->primeiro_id) ? (int)$row->primeiro_id : $ctr_id;
+}
+
+// Reparte o valor de um lançamento de contas a receber entre as contas contábeis do
+// rateio (tbl_ctr_rateio), proporcionalmente ao valor de cada conta. Quando a conta
+// já vem preenchida no próprio registro (sem rateio), retorna uma única fatia.
+function montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta_header, $valor, $ctr_numero_doc = null, $ctr_codigo_cliente = null) {
+    if ($cod_conta_header !== null && $cod_conta_header !== '') {
+        return [['cod_conta' => $cod_conta_header, 'valor' => $valor]];
+    }
+
+    $ctr_id_rateio = resolver_primeiro_ctr_rateio($conector, $ctr_id, $ctr_numero_doc, $ctr_codigo_cliente);
+
+    $linhas_rateio = array();
+    $soma_rateio = 0;
+
+    $rs = mysqli_query($conector, "SELECT rc_codigo_conta, rc_valor_conta FROM tbl_ctr_rateio
+        WHERE rc_ctr_id='$ctr_id_rateio' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''");
+
+    while ($r = mysqli_fetch_object($rs)) {
+        $linhas_rateio[] = $r;
+        $soma_rateio += $r->rc_valor_conta;
+    }
+
+    if (count($linhas_rateio) == 0 || $soma_rateio == 0) {
+        return array();
+    }
+
+    $fatias = array();
+
+    foreach ($linhas_rateio as $r) {
+        $prop = $r->rc_valor_conta / $soma_rateio;
+        $fatias[] = ['cod_conta' => $r->rc_codigo_conta, 'valor' => $valor * $prop];
+    }
+
+    return $fatias;
+}
+
+// Acumula o valor de uma fatia (já resolvida por conta) nos totais por conta
+// sintética (nível 1), sub-conta (nível 2) e conta analítica (nível 3/folha),
+// marcando quais contas têm valor para exibição no relatório.
+function acumular_total_realizado(&$total_realizado, &$tem_valor, $cod_conta, $mes, $valor) {
+    if ($valor == 0) {
+        return;
+    }
+
+    $conta_nivel_1 = (int)str_pad(substr($cod_conta, 0, 1), 7, "0", STR_PAD_RIGHT);
+    $conta_nivel_2 = (int)str_pad(substr($cod_conta, 0, 3), 7, "0", STR_PAD_RIGHT);
+
+    $total_realizado[$conta_nivel_1][$mes] += $valor;
+    $total_realizado[$conta_nivel_1][13] += $valor;
+    $total_realizado[$conta_nivel_2][$mes] += $valor;
+    $total_realizado[$conta_nivel_2][13] += $valor;
+    $total_realizado[$cod_conta][$mes] += $valor;
+    $total_realizado[$cod_conta][13] += $valor;
+
+    $tem_valor[$conta_nivel_1] = "S";
+    $tem_valor[$conta_nivel_2] = "S";
+    $tem_valor[$cod_conta] = "S";
+}
+
+@ session_start();
 $cnpj_cliente = $_SESSION['id_cliente'];
 
 // abre banco de dados
