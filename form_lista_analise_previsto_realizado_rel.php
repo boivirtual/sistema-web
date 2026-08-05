@@ -2051,6 +2051,7 @@
         // largura que cada coluna precisa olhando cabeçalho E corpo juntos, e aplicar
         // esse valor, em pixel, como largura explícita em toda célula daquela coluna
         // nas duas tabelas — assim as duas ficam exatamente iguais, coluna por coluna.
+        var TOTAL_COLUNAS_MODO_COMBINADO = 27; // Descrição + 12 meses x2 + Total x2
         function sincronizarLargurasColunas() {
             if (tipoRelInicial != '1') return;
             var $wrapper = $('#tabela_analise_previsto_realizado_wrapper');
@@ -2061,11 +2062,27 @@
             // limpa larguras aplicadas numa passada anterior antes de medir de novo
             $(headTable).find('th').css({ width: '', minWidth: '', maxWidth: '' });
             $(bodyTable).find('td').css({ width: '', minWidth: '', maxWidth: '' });
+            void headTable.offsetWidth; void bodyTable.offsetWidth; // força reflow antes de medir
+
+            // a 2ª linha do cabeçalho ("Realizado"/"Previsto") não tem célula para a
+            // coluna Descrição - ela já está coberta pelo rowspan="2" da 1ª linha. Sem
+            // levar isso em conta, o índice de cada célula fica deslocado em 1 coluna
+            // nessa linha específica. Por isso o índice inicial de cada linha é
+            // calculado a partir do total de colunas que ela realmente cobre (soma dos
+            // colspans), assumindo que uma linha "curta" está sempre faltando células
+            // no início (nunca no meio/fim) - o que é verdade nesta tabela.
+            function somaColspans($tr) {
+                var soma = 0;
+                $tr.children().each(function () {
+                    soma += parseInt($(this).attr('colspan') || '1', 10);
+                });
+                return soma;
+            }
 
             var larguras = [];
             function medir(tabela, seletorLinhas) {
                 $(tabela).find(seletorLinhas).each(function () {
-                    var idx = 0;
+                    var idx = TOTAL_COLUNAS_MODO_COMBINADO - somaColspans($(this));
                     $(this).children().each(function () {
                         var colspan = parseInt($(this).attr('colspan') || '1', 10);
                         if (colspan === 1) {
@@ -2083,7 +2100,7 @@
 
             function aplicar(tabela, seletorLinhas) {
                 $(tabela).find(seletorLinhas).each(function () {
-                    var idx = 0;
+                    var idx = TOTAL_COLUNAS_MODO_COMBINADO - somaColspans($(this));
                     $(this).children().each(function () {
                         var colspan = parseInt($(this).attr('colspan') || '1', 10);
                         if (colspan === 1 && larguras[idx] != null) {
