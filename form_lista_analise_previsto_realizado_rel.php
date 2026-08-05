@@ -2003,7 +2003,13 @@
                 infoEmpty: "Nenhum registro disponível",
                 infoFiltered: "(filtrado de _MAX_ registros no total)"
             }
-        });
+        };
+
+        if (tipoRelInicial != '1') {
+            dtOptions.fixedColumns = { heightMatch: 'none' };
+        }
+
+        table = $('#tabela_analise_previsto_realizado').DataTable(dtOptions);
 
         setTimeout(function () {
             table.columns.adjust().draw();
