@@ -1285,30 +1285,38 @@ $data_sistema = date("Y-m-d");
         }
 
         // ----------------------------------------------------------------
-        // Recalcular todas as datas (ao alterar 1º vencimento ou intervalo)
+        // Recalcula todas as datas, valores e percentuais das parcelas
+        // (ao informar/alterar o 1º vencimento ou o intervalo)
         // ----------------------------------------------------------------
         function recalcularDatas() {
             var n         = parseInt($('#parcelamento').val());
             var primVenc  = $('#primeiro_vencimento').val();
             var intervalo = parseInt($('#intervalo').val()) || 30;
+            var total     = ctpGetValorTotal();
 
             if (!primVenc || n < 1) return;
+
+            var vlrParc  = (total > 0) ? total / n : 0;
+            var percParc = 100 / n;
 
             for (var i = 0; i < n; i++) {
                 var dataParc = (i === 0) ? primVenc : addDias(primVenc, intervalo * i);
                 $('#parc_data_' + i).val(dataParc);
+
+                var vlrEsta  = (i < n - 1) ? Math.round(vlrParc * 100) / 100 : Math.round((total - vlrParc * (n - 1)) * 100) / 100;
+                var percEsta = (i < n - 1) ? Math.round(percParc * 100) / 100 : Math.round((100 - percParc * (n - 1)) * 100) / 100;
+                $('#parc_valor_' + i).val(ctpFormatMoney(vlrEsta));
+                $('#parc_perc_' + i).val(ctpFormatMoney(percEsta));
             }
+
+            atualizarTotais(n);
         }
 
         // ----------------------------------------------------------------
-        // Ao alterar o intervalo: atualiza 1º Vencimento = emissão + intervalo
+        // Ao alterar o intervalo: recalcula as datas/valores se o 1º
+        // vencimento já tiver sido informado
         // ----------------------------------------------------------------
         function onIntervaloChange() {
-            var emissao   = $('#data_emissao').val();
-            var intervalo = parseInt($('#intervalo').val()) || 30;
-            if (emissao) {
-                $('#primeiro_vencimento').val(addDias(emissao, intervalo));
-            }
             recalcularDatas();
         }
 
