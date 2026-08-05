@@ -200,9 +200,10 @@
     $tipo_rel = $_REQUEST["tipo_rel"];
     $descricao_filtro= $_REQUEST["descricao_filtro"];
 
-    $_SESSION['codigo_conta_previsao'] = $codigo_conta;
-    $_SESSION['codigo_local_previsao'] = $codigo_fazendas;
-    $_SESSION['codigo_c_custo_previsao'] = $codigo_cc;
+    $_SESSION['codigo_conta_apr'] = $codigo_conta;
+    $_SESSION['codigo_local_apr'] = $codigo_fazendas;
+    $_SESSION['codigo_c_custo_apr'] = $codigo_cc;
+    $_SESSION['tipo_rel_apr'] = $tipo_rel;
 
     $scrollY = ($tipo_rel == 1 || $tipo_rel == 2) ? "200px" : "300px";
 

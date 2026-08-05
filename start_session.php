@@ -32,10 +32,16 @@
     $_SESSION['codigo_conta_aceite']=''; 
     $_SESSION['limpa_conta_aceite']='';
     
-    $_SESSION['codigo_local_previsao']=''; 
-    $_SESSION['codigo_conta_previsao']=''; 
+    $_SESSION['codigo_local_previsao']='';
+    $_SESSION['codigo_conta_previsao']='';
     $_SESSION['limpa_conta_previsao']='';
     $_SESSION['lista_previsao']='';
+
+    $_SESSION['codigo_local_apr']='';
+    $_SESSION['codigo_conta_apr']='';
+    $_SESSION['codigo_c_custo_apr']='';
+    $_SESSION['tipo_rel_apr']='';
+    $_SESSION['limpa_conta_apr']='';
 
     $_SESSION['data_inicial_ped_compra']=0; 
 	$_SESSION['data_final_ped_compra']=0; 

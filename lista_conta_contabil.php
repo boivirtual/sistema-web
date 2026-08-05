@@ -10,7 +10,7 @@ if ($tipo_conta=='D') {
 else if ($tipo_conta=='T') {
     $_SESSION['limpa_conta_ctp']='';
     $_SESSION['limpa_conta_aceite']='';
-    $_SESSION['limpa_conta_previsao']='';
+    $_SESSION['limpa_conta_apr']='';
 }
 else {
     $_SESSION['limpa_conta_ctr']='';
