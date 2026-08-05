@@ -395,11 +395,13 @@ include_once "conecta_mysql_credenciais.inc";
     $total_recebido=0;
     $total_pago=0;
 
+    $wconta_previsao = ($array_conta != '') ? " AND tbl_previsao_conta_codigo IN($conta)" : '';
+
     $previsao_conta = mysqli_query($conector, "SELECT * FROM tbl_previsao_conta
-        INNER JOIN tbl_plano_contas 
+        INNER JOIN tbl_plano_contas
                 ON tbl_previsao_conta_codigo=tbl_plano_contas_codigo_id
-             WHERE tbl_previsao_conta_ano < '$ano'"  . $wlocal_previsao);
-    
+             WHERE tbl_previsao_conta_ano < '$ano'"  . $wlocal_previsao . $wconta_previsao);
+
     $num_rows_previsao_conta = mysqli_num_rows($previsao_conta);
 
     if ($num_rows_previsao_conta!=0){
