@@ -210,9 +210,9 @@
 
                                                     <div class="form-group col-md-3">
                                                         <select class="form-control" id="tipo_rel" name="tipo_rel">
-                                                        <option value="2">Realizado</option>
-                                                        <option value="1">Realizado/Previsto</option>
-                                                        <option value="3">Previsto</option>
+                                                        <option value="2" <?php if ($tipo_rel == '2') {echo"selected";}?>>Realizado</option>
+                                                        <option value="1" <?php if ($tipo_rel == '1') {echo"selected";}?>>Realizado/Previsto</option>
+                                                        <option value="3" <?php if ($tipo_rel == '3') {echo"selected";}?>>Previsto</option>
                                                         </select>
                                                     </div>  
 
