@@ -1474,6 +1474,7 @@ function listar_previsao_excel() {
     var ano = $("#ano_mensal").val();
     var tipo_rel = $("#tipo_rel").val();
     var codigo_cc = $("#codigo_cc").val();
+    var codigo_conta = $("#codigo_conta").val();
     var codigo_local = $("#codigo_fazenda").val();
     var descricao_filtro = $("#descricao_filtro").val();
 
@@ -1488,6 +1489,8 @@ function listar_previsao_excel() {
         codigo_local +
         "&codigo_cc=" +
         codigo_cc +
+        "&conta=" +
+        codigo_conta +
         "&ano=" +
         ano;
 
