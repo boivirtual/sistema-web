@@ -219,12 +219,10 @@
 
     $conta = implode(',', $conta);
 
-    $wconta_lista = '';
-
-    if ($array_conta != '') {
-        $wconta_lista = " AND tbl_plano_contas_codigo_id IN($conta)";
-    }
-
+    // O filtro de conta restringe quais lançamentos entram na apuração (igual à Análise
+    // de Pagamentos/Recebimentos); quando um lançamento filtrado tem rateio entre várias
+    // contas, o detalhamento por conta abaixo continua mostrando todas as contas do rateio
+    // (não só a selecionada) — é assim que o relatório de Análise de Pagamentos já funciona.
     $wconta_pag = '';
     $wconta_rec = '';
 
