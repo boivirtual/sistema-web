@@ -353,8 +353,7 @@ $data_sistema = date("Y-m-d");
                                         <div class="form-group col-md-2">
                                             <label for="data_emissao" class="control-label"><span class="required">*</span> Emissão</label>
                                             <input name="data_emissao" type="date" class="form-control" id="data_emissao"
-                                                   value="<?php echo $data_sistema; ?>"
-                                                   onchange="onEmissaoChange()">
+                                                   value="<?php echo $data_sistema; ?>">
                                         </div>
 
                                         <div class="form-group col-md-3">
