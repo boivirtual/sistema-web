@@ -1005,20 +1005,6 @@
                     } 
 
         $thead = '';
-
-        // <colgroup> explícito: com table-layout:fixed, a largura de cada coluna só é
-        // determinada pela 1ª linha da tabela (e aqui a 1ª linha usa colspan="2" por
-        // mês, que a especificação de fixed layout ignora para cálculo de largura por
-        // coluna) ou por <col> — sem <colgroup>, o navegador cai no "distribuir o
-        // espaço restante igualmente", esmagando os valores. O <colgroup> é o único
-        // jeito confiável de fixar a largura de cada uma das 27 colunas (Descrição +
-        // 12 meses x 2 + Total x 2) igual no cabeçalho e no corpo.
-        $thead .= '<colgroup><col style="width:220px;">';
-        for ($i = 1; $i <= 13; $i++) {
-            $thead .= '<col style="width:100px;"><col style="width:100px;">';
-        }
-        $thead .= '</colgroup>';
-
         $thead .= '<thead>';
 
         // Linha 1
