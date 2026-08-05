@@ -516,12 +516,57 @@ if ($tipo_rel==1){
                         $valor_debito_nao[$i]=0;
                     }
 
-                    $plano_contas = mysqli_query($conector, "SELECT * FROM tbl_plano_contas
-                            WHERE tbl_plano_contas_nivel=3 AND 
-                                  tbl_plano_contas_lixeira=0 
-                            ORDER BY tbl_plano_contas_codigo_id ASC"); 
+                    // Pré-processamento do Realizado: uma única passada nas contas_receber/contas_pagar
+                    // do período, repartindo (fatias) os lançamentos com rateio/parcelamento entre as
+                    // contas contábeis correspondentes (tbl_ctr_rateio/tbl_ctp_rateio) — em vez de uma
+                    // consulta "WHERE conta='X'" por conta, que não encontrava os lançamentos cuja conta
+                    // ficou gravada só no rateio (rateio entre contas e/ou parcelas seguintes de um
+                    // parcelamento, onde só a 1ª parcela/ocorrência grava a conta diretamente).
+                    $contas_rec = mysqli_query($conector, "SELECT * FROM baixa_contas_receber
+                        inner join contas_receber
+                                on ctr_id=bcr_id
+                        WHERE bcr_data_pagamento >='$data_inicial' AND
+                              bcr_data_pagamento <='$data_final'" . $wcentro_custo_rec . $wlocal_rec . $wconta_rec);
 
-                    while ($registro_tbl_conta = mysqli_fetch_object($plano_contas)){ 
+                    while ($registro_contas_rec = mysqli_fetch_object($contas_rec)) {
+                        $mes = (int)substr($registro_contas_rec->bcr_data_pagamento, 5, 2);
+                        $valor_pago = $registro_contas_rec->bcr_valor_pagamento;
+
+                        $valor_credito[$mes] += $valor_pago;
+
+                        $fatias = montar_fatias_conta_rateio_ctr($conector, $registro_contas_rec->ctr_id, $registro_contas_rec->ctr_codigo_conta, $valor_pago, $registro_contas_rec->ctr_numero_doc, $registro_contas_rec->ctr_codigo_cliente_fornecedor);
+
+                        foreach ($fatias as $fatia) {
+                            acumular_total_realizado($total_realizado, $tem_valor, $fatia['cod_conta'], $mes, $fatia['valor']);
+                        }
+                    } // fim while contas a receber
+
+                    $contas_pag = mysqli_query($conector, "SELECT * FROM baixa_contas_pagar
+                        inner join contas_pagar
+                                on ctp_id=bcp_id
+                        WHERE bcp_data_pagamento >='$data_inicial' AND
+                              bcp_data_pagamento <='$data_final'" . $wcentro_custo_pag . $wlocal_pag . $wconta_pag);
+
+                    while ($registro_contas_pag = mysqli_fetch_object($contas_pag)) {
+                        $mes = (int)substr($registro_contas_pag->bcp_data_pagamento, 5, 2);
+                        $valor_pago = $registro_contas_pag->bcp_valor_pagamento;
+
+                        $valor_debito[$mes] += $valor_pago;
+
+                        $fatias = montar_fatias_conta_rateio_ctp($conector, $registro_contas_pag->ctp_id, $registro_contas_pag->ctp_codigo_conta, $valor_pago, $registro_contas_pag->ctp_grupo_repeticao, $registro_contas_pag->ctp_numero_doc, $registro_contas_pag->ctp_codigo_fornecedor, $registro_contas_pag->ctp_incluido_em);
+
+                        foreach ($fatias as $fatia) {
+                            acumular_total_realizado($total_realizado, $tem_valor, $fatia['cod_conta'], $mes, $fatia['valor']);
+                        }
+                    } // fim while contas a pagar
+                    // Fim do pré-processamento do Realizado
+
+                    $plano_contas = mysqli_query($conector, "SELECT * FROM tbl_plano_contas
+                            WHERE tbl_plano_contas_nivel=3 AND
+                                  tbl_plano_contas_lixeira=0
+                            ORDER BY tbl_plano_contas_codigo_id ASC");
+
+                    while ($registro_tbl_conta = mysqli_fetch_object($plano_contas)){
 
                         $codigo_conta = $registro_tbl_conta->tbl_plano_contas_codigo_id;
                         $conta_nivel_1 = (int)str_pad(substr($codigo_conta, 0,1), 7, "0", STR_PAD_RIGHT);
@@ -529,74 +574,9 @@ if ($tipo_rel==1){
 
                         $debito_credito = $registro_tbl_conta->tbl_plano_contas_debito_credito;
 
-                        $valor_pago = 0;
-                        $contas_rec = mysqli_query($conector, "SELECT * FROM baixa_contas_receber
-                            inner join contas_receber
-                                    on ctr_id=bcr_id
-                                                                  
-                            WHERE ctr_codigo_conta='$codigo_conta' AND
-                                  bcr_data_pagamento >='$data_inicial' AND
-                                  bcr_data_pagamento <='$data_final'" . $wcentro_custo_rec  . $wlocal_rec . 
-                                  "ORDER BY bcr_data_pagamento"); 
-                        $num_rows_contas_rec = mysqli_num_rows($contas_rec);
-
-                        if ($num_rows_contas_rec!=0){
-                            while ($registro_contas_rec = mysqli_fetch_object($contas_rec)){ 
-                                $data_pagamento = $registro_contas_rec->bcr_data_pagamento;
-                                $mes = (int)substr($data_pagamento, 5, 2);
-
-                                $valor_pago = $registro_contas_rec->bcr_valor_pagamento;
-
-                                $total_realizado[$conta_nivel_1][$mes]+=$valor_pago;
-                                $total_realizado[$conta_nivel_1][13]+=$valor_pago;
-                                $total_realizado[$conta_nivel_2][$mes]+=$valor_pago;
-                                $total_realizado[$conta_nivel_2][13]+=$valor_pago;
-                                $total_realizado[$codigo_conta][$mes]+=$valor_pago;
-                                $total_realizado[$codigo_conta][13]+=$valor_pago;
-                                $valor_credito[$mes]+=$valor_pago;
-                                $tem_valor[$conta_nivel_1]="S";
-                                $tem_valor[$conta_nivel_2]="S";
-                                $tem_valor[$codigo_conta]="S";
-
-                            } // fim while contas a receber
-                        } // fim if rows contas receber
-
-                        $contas_pag = mysqli_query($conector, "SELECT * FROM baixa_contas_pagar
-                            inner join contas_pagar
-                                    on ctp_id=bcp_id
-                            WHERE ctp_codigo_conta='$codigo_conta' AND
-                                  bcp_data_pagamento >='$data_inicial' AND
-                                  bcp_data_pagamento <='$data_final'" . $wcentro_custo_pag  . $wlocal_pag . 
-                                  " ORDER BY bcp_data_pagamento"); 
-
-                        $num_rows_contas_pag = mysqli_num_rows($contas_pag);
-
-                        if ($num_rows_contas_pag!=0){
-                            while ($registro_contas_pag = mysqli_fetch_object($contas_pag)){ 
-
-                                $data_pagamento = $registro_contas_pag->bcp_data_pagamento;
-                                $mes = (int)substr($data_pagamento, 5, 2);
-                                $valor_pago = $registro_contas_pag->bcp_valor_pagamento;
-
-                                $total_realizado[$conta_nivel_1][$mes]+=$valor_pago;
-                                $total_realizado[$conta_nivel_1][13]+=$valor_pago;
-                                $total_realizado[$conta_nivel_2][$mes]+=$valor_pago;
-                                $total_realizado[$conta_nivel_2][13]+=$valor_pago;
-                                $total_realizado[$codigo_conta][$mes]+=$valor_pago;
-                                $total_realizado[$codigo_conta][13]+=$valor_pago;
-                                $valor_debito[$mes]+=$valor_pago;
-
-                                if ($valor_pago!=0) {
-                                    $tem_valor[$conta_nivel_1]="S";
-                                    $tem_valor[$conta_nivel_2]="S";
-                                    $tem_valor[$codigo_conta]="S";
-                                }
-                            } // fim while contas a pagar
-                        } // fim if rows contas pagar
-
                         $previsao_conta = mysqli_query($conector, "SELECT *  FROM tbl_previsao_conta
-                                WHERE tbl_previsao_conta_codigo='$codigo_conta' AND 
-                                      tbl_previsao_conta_ano = '$ano'"  . $wlocal_previsao);
+                                WHERE tbl_previsao_conta_codigo='$codigo_conta' AND
+                                      tbl_previsao_conta_ano = '$ano'"  . $wlocal_previsao . $wconta_previsao);
                         $num_rows_previsao_conta = mysqli_num_rows($previsao_conta);
 
                         if ($num_rows_previsao_conta!=0){
