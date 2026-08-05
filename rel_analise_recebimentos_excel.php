@@ -409,35 +409,24 @@ $linha=4;
                         if ($vencimento < $data_sistema) {
                             $total_vencidas= $total_pagar - $valor_pago;
                             $total_abertas=  $total_pagar - $valor_pago;
-                            $total_vencida_conta_sintetica= $total_vencida_conta_sintetica + $total_pagar - $valor_pago;
-                            $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar - $valor_pago;
                         } else {
                             $total_avencer= $total_pagar - $valor_pago;
                             $total_abertas= $total_pagar - $valor_pago;
-                            $total_avencer_conta_sintetica= $total_avencer_conta_sintetica + $total_pagar - $valor_pago;
-                            $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar - $valor_pago;
                         }
                     }
                 }
-                                                             
+
                 if ( $tipo_data!="P"){
                     if ($situacao != "P" && $situacao != "C") {
                         if ($vencimento < $data_sistema) {
                             $total_vencidas= $total_pagar;
                             $total_abertas=  $total_pagar;
-                            $total_vencida_conta_sintetica= $total_vencida_conta_sintetica + $total_pagar;
-                            $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar;
                         } else {
                             $total_avencer= $total_pagar;
                             $total_abertas= $total_pagar;
-                            $total_avencer_conta_sintetica= $total_avencer_conta_sintetica + $total_pagar;
-                            $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar;
                         }
                     }
                 }
-
-                $total_conta_sintetica = $total_conta_sintetica + $total_pagar;
-                $total_pago_conta_sintetica = $total_pago_conta_sintetica + $valor_pago;
 
                 // Documento com rateio (cod_conta null): reparte pelas contas do rateio.
                 // Sem rateio: retorna a própria conta/valores, sem alterar nada.
@@ -450,6 +439,16 @@ $linha=4;
                     $valor_pago_fatia = $fatia_ctr['valor_pago'];
                     $total_vencidas_fatia = $fatia_ctr['total_vencidas'];
                     $total_avencer_fatia = $fatia_ctr['total_avencer'];
+
+                    // TOTAL GERAL usa os valores já fatiados pelo rateio (proporcionais a
+                    // conta/local/CC), igual ao detalhamento por conta abaixo — antes, os 4
+                    // totais do TOTAL GERAL somavam o valor bruto do documento (pré-rateio),
+                    // ignorando completamente o rateio e o filtro de local/CC.
+                    $total_conta_sintetica = $total_conta_sintetica + $total_pagar_fatia;
+                    $total_pago_conta_sintetica = $total_pago_conta_sintetica + $valor_pago_fatia;
+                    $total_vencida_conta_sintetica = $total_vencida_conta_sintetica + $total_vencidas_fatia;
+                    $total_avencer_conta_sintetica = $total_avencer_conta_sintetica + $total_avencer_fatia;
+                    $total_aberto_conta_sintetica = $total_aberto_conta_sintetica + $total_vencidas_fatia + $total_avencer_fatia;
 
                     for ($i = 0; $i < $qtd_contas; $i++) {
                         if ($arry_conta[$i]==$cod_conta_fatia) {
