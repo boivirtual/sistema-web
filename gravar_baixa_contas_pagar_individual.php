@@ -41,19 +41,19 @@ if ($numero==0 || $numero==''){
 		$num_rows_ctp = mysqli_num_rows($rs);
 
 	} while ($num_rows_ctp==1);
-
-  	$sql = ("UPDATE contas_pagar SET ctp_numero_doc='$numero_doc'
-	    	                   WHERE ctp_numero_doc='$numero' and 
-	    	                         ctp_parcela='$parcela' and 
-	    	                         ctp_codigo_fornecedor='$codigo_fornecedor'");
-   	$resultado = mysqli_query($conector, $sql);
-	
-	if (!$resultado) {
-		$mensagem = "Erro na atualizacao do número da conta" . "\n" . mysqli_error($conector);
-	}
 }
 else {
 	$numero_doc = $numero;
+}
+
+$sql = "UPDATE contas_pagar SET ctp_numero_doc='$numero_doc',
+                                ctp_numero_documento='$numero_doc',
+                                ctp_tipo_documento='$tipo_doc'
+                          WHERE ctp_id='$ctp_id'";
+$resultado = mysqli_query($conector, $sql);
+
+if (!$resultado) {
+	$mensagem = "Erro na atualizacao do número/tipo do documento da conta" . "\n" . mysqli_error($conector);
 }
 
 // pega o ultimo registro da baixa para saber qual a sequencia
