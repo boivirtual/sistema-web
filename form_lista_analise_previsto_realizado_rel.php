@@ -2107,7 +2107,7 @@
 
             function aplicar(tabela, seletorLinhas) {
                 $(tabela).find(seletorLinhas).each(function () {
-                    var idx = TOTAL_COLUNAS_MODO_COMBINADO - somaColspans($(this));
+                    var idx = totalColunas - somaColspans($(this));
                     $(this).children().each(function () {
                         var colspan = parseInt($(this).attr('colspan') || '1', 10);
                         if (colspan === 1 && larguras[idx] != null) {
