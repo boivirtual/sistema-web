@@ -518,13 +518,14 @@
         padding-right: 14px !important;
     }
 
-    /* No modo Realizado/Previsto combinado (classe modo-combinado) a tabela tem 26
-       colunas de dados (2 por mês) e o cabeçalho tem linhas extras (SALDO ANTERIOR/DO
-       MÊS/FINAL) fixadas dentro do próprio <thead>. O DataTables mantém 2 tabelas
-       internas (cabeçalho e corpo) que, com table-layout:auto, calculam a largura de
-       cada coluna de forma independente, cada uma com base só no próprio conteúdo —
-       em tabela tão larga essa diferença se acumula e desalinha cabeçalho x dados ao
-       rolar. table-layout:fixed e <colgroup> foram testados e não resolveram sozinhos
+    /* Em todos os modos (Realizado, Previsto, Realizado/Previsto combinado) o
+       cabeçalho tem linhas extras (SALDO ANTERIOR/DO MÊS/FINAL) fixadas dentro do
+       próprio <thead>. O DataTables mantém 2 tabelas internas (cabeçalho e corpo)
+       que, com table-layout:auto, calculam a largura de cada coluna de forma
+       independente, cada uma com base só no próprio conteúdo — essa diferença se
+       acumula e desalinha cabeçalho x dados ao rolar (mais visível no modo
+       combinado, com 26 colunas de dados, mas presente também nos outros modos).
+       table-layout:fixed e <colgroup> foram testados e não resolveram sozinhos
        (a especificação só considera a 1ª linha da tabela para largura de coluna, e o
        navegador ainda respeitava o conteúdo/nowrap em vez da largura pedida). A solução
        que funcionou de forma confiável (ver sincronizarLargurasColunas() no script
@@ -538,13 +539,13 @@
        eliminando essa diferença independente do padding de cada elemento. Por fim,
        liberamos a tabela do width:100% (regra genérica de table.dataTable mais abaixo)
        para que ela possa ficar mais larga que a área visível e rolar horizontalmente. */
-    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollHead table.modo-combinado,
-    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollBody table.modo-combinado {
+    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollHead table.tabela-scroll-sincronizada,
+    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollBody table.tabela-scroll-sincronizada {
         width: auto !important;
     }
 
-    #tabela_analise_previsto_realizado_wrapper table.modo-combinado th,
-    #tabela_analise_previsto_realizado_wrapper table.modo-combinado td {
+    #tabela_analise_previsto_realizado_wrapper table.tabela-scroll-sincronizada th,
+    #tabela_analise_previsto_realizado_wrapper table.tabela-scroll-sincronizada td {
         box-sizing: border-box;
     }
   </style>
