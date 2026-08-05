@@ -3,9 +3,14 @@ include "conecta_mysql.inc";
 
 $tipo_conta = $_POST['tipo_conta'];
 
-if ($tipo_conta=='D' || $tipo_conta=='T') {
+if ($tipo_conta=='D') {
     $_SESSION['limpa_conta_ctp']='';
     $_SESSION['limpa_conta_aceite']='';
+}
+else if ($tipo_conta=='T') {
+    $_SESSION['limpa_conta_ctp']='';
+    $_SESSION['limpa_conta_aceite']='';
+    $_SESSION['limpa_conta_previsao']='';
 }
 else {
     $_SESSION['limpa_conta_ctr']='';
