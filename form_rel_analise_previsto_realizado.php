@@ -107,14 +107,14 @@
         exit;
     }
 
-    $codigo_c_custo = $_SESSION['codigo_c_custo_previsao'];
-    $local = $_SESSION['codigo_local_previsao'];
-    $contas = $_SESSION['codigo_conta_previsao'];
+    $codigo_c_custo = $_SESSION['codigo_c_custo_apr'];
+    $local = $_SESSION['codigo_local_apr'];
+    $contas = $_SESSION['codigo_conta_apr'];
 
-    if ($_SESSION['tipo_rel_previsao'] == '') {
+    if ($_SESSION['tipo_rel_apr'] == '') {
         $tipo_rel = "2";
     } else {
-        $tipo_rel = $_SESSION['tipo_rel_previsao'];
+        $tipo_rel = $_SESSION['tipo_rel_apr'];
     }
 
 ?>
@@ -150,7 +150,7 @@
                             <form method="GET" action="#" enctype="multipart/form-data" >
 
                                 <input type="hidden" name="tipo_conta" id="tipo_conta" value="T">
-                                <input id="limpar_filtro_contas" type="hidden" <?php echo "value='" . $_SESSION['limpa_conta_previsao'] . "'"; ?>>
+                                <input id="limpar_filtro_contas" type="hidden" <?php echo "value='" . $_SESSION['limpa_conta_apr'] . "'"; ?>>
                                 <input id="exibe_conta" type="hidden" <?php echo "value='".$contas."'"; ?>>
                                 <input id="exibe_local" type="hidden" <?php echo "value='".$local."'"; ?>>
                                 <input id="exibe_cc" type="hidden" <?php echo "value='".$codigo_c_custo."'"; ?>>
