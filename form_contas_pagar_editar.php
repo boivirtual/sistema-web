@@ -308,7 +308,7 @@
 
                                                 <div class="form-group col-md-3">
                                                     <label for="doc_editar" class="control-label">Documento Nº</label>
-                                                    <input name="doc_editar" type="number" class="form-control" id="doc_editar" data-toggle='tooltip' data-placement='top'  title="Caso não tenha o Nº, o sistema irá criar um automaticamente"
+                                                    <input name="doc_editar" type="number" class="form-control" id="doc_editar" data-toggle='tooltip' data-placement='top'  title="Obrigatório, exceto para Recibo (gerado automaticamente)"
                                                     <?php echo "value='".$numero_ctp."'";?>>
                                                     <input name="ctp_id" type="hidden" class="form-control" id="ctp_id"  
                                                     <?php echo "value='".$chave_ctp."'";?>>
