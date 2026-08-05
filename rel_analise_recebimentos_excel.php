@@ -569,6 +569,16 @@ $linha=4;
                 $total_vencidas_fatia = $fatia_ctr['total_vencidas'];
                 $total_avencer_fatia = $fatia_ctr['total_avencer'];
 
+                // TOTAL GERAL usa os valores já fatiados pelo rateio (proporcionais a
+                // conta/local/CC), igual ao detalhamento por conta abaixo — antes, os 4
+                // totais do TOTAL GERAL somavam o valor bruto do documento (pré-rateio),
+                // ignorando completamente o rateio e o filtro de local/CC.
+                $total_conta_sintetica = $total_conta_sintetica + $total_pagar_fatia;
+                $total_pago_conta_sintetica = $total_pago_conta_sintetica + $valor_pago_fatia;
+                $total_vencida_conta_sintetica = $total_vencida_conta_sintetica + $total_vencidas_fatia;
+                $total_avencer_conta_sintetica = $total_avencer_conta_sintetica + $total_avencer_fatia;
+                $total_aberto_conta_sintetica = $total_aberto_conta_sintetica + $total_vencidas_fatia + $total_avencer_fatia;
+
                 for ($i = 0; $i < $qtd_contas; $i++) {
                     if ($arry_conta[$i]==$cod_conta_fatia) {
                         $j=$i;
