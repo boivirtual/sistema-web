@@ -111,6 +111,12 @@
     $local = $_SESSION['codigo_local_previsao'];
     $contas = $_SESSION['codigo_conta_previsao'];
 
+    if ($_SESSION['tipo_rel_previsao'] == '') {
+        $tipo_rel = "2";
+    } else {
+        $tipo_rel = $_SESSION['tipo_rel_previsao'];
+    }
+
 ?>
 
 <!-- container section start -->
