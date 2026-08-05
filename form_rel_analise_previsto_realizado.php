@@ -146,6 +146,8 @@
                                 <input type="hidden" name="tipo_conta" id="tipo_conta" value="T">
                                 <input id="limpar_filtro_contas" type="hidden" <?php echo "value='" . $_SESSION['limpa_conta_previsao'] . "'"; ?>>
                                 <input id="exibe_conta" type="hidden" <?php echo "value='".$contas."'"; ?>>
+                                <input id="exibe_local" type="hidden" <?php echo "value='".$local."'"; ?>>
+                                <input id="exibe_cc" type="hidden" <?php echo "value='".$codigo_c_custo."'"; ?>>
 
                                 <div class="tab-panel ">
                                     <div class="tab-pane active">
