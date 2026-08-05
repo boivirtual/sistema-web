@@ -770,7 +770,7 @@ if ($tipo_rel==1){
 
                         $valor_debito[$mes] += $valor_pago;
 
-                        $fatias = montar_fatias_conta_rateio_ctp($conector, $registro_contas_pag->ctp_id, $registro_contas_pag->ctp_codigo_conta, $valor_pago, $registro_contas_pag->ctp_grupo_repeticao, $registro_contas_pag->ctp_numero_doc, $registro_contas_pag->ctp_codigo_fornecedor, $registro_contas_pag->ctp_incluido_em);
+                        $fatias = montar_fatias_conta_rateio_ctp($conector, $registro_contas_pag->ctp_id, $registro_contas_pag->ctp_codigo_conta, $valor_pago, $registro_contas_pag->ctp_grupo_repeticao, $registro_contas_pag->ctp_numero_doc, $registro_contas_pag->ctp_codigo_fornecedor, $registro_contas_pag->ctp_incluido_em, $fazendas, $centro_custos);
 
                         foreach ($fatias as $fatia) {
                             acumular_total_realizado($total_realizado, $tem_valor, $fatia['cod_conta'], $mes, $fatia['valor']);
@@ -1409,7 +1409,7 @@ else if($tipo_rel==2) {
 
                         $valor_debito[$mes] += $valor_pago;
 
-                        $fatias = montar_fatias_conta_rateio_ctp($conector, $registro_contas_pag->ctp_id, $registro_contas_pag->ctp_codigo_conta, $valor_pago, $registro_contas_pag->ctp_grupo_repeticao, $registro_contas_pag->ctp_numero_doc, $registro_contas_pag->ctp_codigo_fornecedor, $registro_contas_pag->ctp_incluido_em);
+                        $fatias = montar_fatias_conta_rateio_ctp($conector, $registro_contas_pag->ctp_id, $registro_contas_pag->ctp_codigo_conta, $valor_pago, $registro_contas_pag->ctp_grupo_repeticao, $registro_contas_pag->ctp_numero_doc, $registro_contas_pag->ctp_codigo_fornecedor, $registro_contas_pag->ctp_incluido_em, $fazendas, $centro_custos);
 
                         foreach ($fatias as $fatia) {
                             acumular_total_realizado($total_realizado, $tem_valor, $fatia['cod_conta'], $mes, $fatia['valor']);
