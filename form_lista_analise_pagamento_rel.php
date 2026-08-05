@@ -514,33 +514,21 @@
                         if ($vencimento < $data_sistema) {
                             $total_vencidas= $total_pagar - $valor_pago;
                             $total_abertas=  $total_pagar - $valor_pago;
-
-                            $total_vencida_conta_sintetica= $total_vencida_conta_sintetica + $total_pagar - $valor_pago;
-                            $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar - $valor_pago;
                         } else {
                             $total_avencer= $total_pagar - $valor_pago;
                             $total_abertas= $total_pagar - $valor_pago;
-            
-                            $total_avencer_conta_sintetica= $total_avencer_conta_sintetica + $total_pagar - $valor_pago;
-                            $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar - $valor_pago;
                         }
                     }
                 }
-                                                 
+
                 if ( $tipo_data!="P"){
                     if ($situacao != "P" && $situacao != "C") {
                         if ($vencimento < $data_sistema) {
                             $total_vencidas= $total_pagar;
                             $total_abertas=  $total_pagar;
-                
-                            $total_vencida_conta_sintetica= $total_vencida_conta_sintetica + $total_pagar;
-                            $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar;
                         } else {
                             $total_avencer= $total_pagar;
                             $total_abertas= $total_pagar;
-            
-                            $total_avencer_conta_sintetica= $total_avencer_conta_sintetica + $total_pagar;
-                            $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar;
                         }
                     }
                 }
@@ -553,12 +541,14 @@
                     $total_vencido_sem_conta = $total_vencido_sem_conta + $total_vencidas;
                     $total_avencer_sem_conta = $total_avencer_sem_conta + $total_avencer;
 
-                    // "A Vencer"/"Vencidos" do TOTAL GERAL já contam este documento (acumulados
-                    // antes do rateio ser resolvido). "Pago"/"Total" só somavam dentro do foreach
-                    // de fatias — sem isso, valores em "Rateio sem conta definida" ficavam de fora
-                    // do Total geral.
+                    // TOTAL GERAL soma tanto as fatias quanto o "rateio sem conta definida" -
+                    // sem isso, esses valores ficavam de fora do Total geral quando o rateio
+                    // não tinha conta contábil definida.
                     $total_conta_sintetica = $total_conta_sintetica + $total_pagar;
                     $total_pago_conta_sintetica = $total_pago_conta_sintetica + $valor_pago;
+                    $total_vencida_conta_sintetica = $total_vencida_conta_sintetica + $total_vencidas;
+                    $total_avencer_conta_sintetica = $total_avencer_conta_sintetica + $total_avencer;
+                    $total_aberto_conta_sintetica = $total_aberto_conta_sintetica + $total_vencidas + $total_avencer;
                 }
 
                 foreach ($fatias as $fatia) {
@@ -570,8 +560,15 @@
                     $codigo_sub_conta = substr($cod_conta, 0, 3);
                     $codigo_conta_sintetica = substr($cod_conta, 0, 1);
 
+                    // TOTAL GERAL usa os valores já fatiados pelo rateio (proporcionais a
+                    // conta/local/CC), igual ao detalhamento por conta abaixo — antes, "A
+                    // Vencer"/"Vencidos" do TOTAL GERAL somavam o valor bruto do documento
+                    // (pré-rateio), inconsistente com "Pago"/"Total", que já eram fatiados.
                     $total_conta_sintetica = $total_conta_sintetica + $total_pagar;
                     $total_pago_conta_sintetica = $total_pago_conta_sintetica + $valor_pago;
+                    $total_vencida_conta_sintetica = $total_vencida_conta_sintetica + $total_vencidas;
+                    $total_avencer_conta_sintetica = $total_avencer_conta_sintetica + $total_avencer;
+                    $total_aberto_conta_sintetica = $total_aberto_conta_sintetica + $total_vencidas + $total_avencer;
 
                     for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                         if ($arry_conta_sintetica[$i]==$codigo_conta_sintetica) {
@@ -683,15 +680,9 @@
                     if ($vencimento < $data_sistema) {
                         $total_vencidas= $total_pagar - $valor_pago;
                         $total_abertas=  $total_pagar - $valor_pago;
-
-                        $total_vencida_conta_sintetica= $total_vencida_conta_sintetica + $total_pagar - $valor_pago;
-                        $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar - $valor_pago;
                     } else {
                         $total_avencer= $total_pagar - $valor_pago;
                         $total_abertas= $total_pagar - $valor_pago;
-            
-                        $total_avencer_conta_sintetica= $total_avencer_conta_sintetica + $total_pagar - $valor_pago;
-                        $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar - $valor_pago;
                     }
                 }
             }
@@ -701,15 +692,9 @@
                     if ($vencimento < $data_sistema) {
                         $total_vencidas= $total_pagar;
                         $total_abertas=  $total_pagar;
-                
-                        $total_vencida_conta_sintetica= $total_vencida_conta_sintetica + $total_pagar;
-                        $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar;
                     } else {
                         $total_avencer= $total_pagar;
                         $total_abertas= $total_pagar;
-            
-                        $total_avencer_conta_sintetica= $total_avencer_conta_sintetica + $total_pagar;
-                        $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar;
                     }
                 }
             }
@@ -722,12 +707,14 @@
                 $total_vencido_sem_conta = $total_vencido_sem_conta + $total_vencidas;
                 $total_avencer_sem_conta = $total_avencer_sem_conta + $total_avencer;
 
-                // "A Vencer"/"Vencidos" do TOTAL GERAL já contam este documento (acumulados
-                // antes do rateio ser resolvido). "Pago"/"Total" só somavam dentro do foreach
-                // de fatias — sem isso, valores em "Rateio sem conta definida" ficavam de fora
-                // do Total geral.
+                // TOTAL GERAL soma tanto as fatias quanto o "rateio sem conta definida" -
+                // sem isso, esses valores ficavam de fora do Total geral quando o rateio
+                // não tinha conta contábil definida.
                 $total_conta_sintetica = $total_conta_sintetica + $total_pagar;
                 $total_pago_conta_sintetica = $total_pago_conta_sintetica + $valor_pago;
+                $total_vencida_conta_sintetica = $total_vencida_conta_sintetica + $total_vencidas;
+                $total_avencer_conta_sintetica = $total_avencer_conta_sintetica + $total_avencer;
+                $total_aberto_conta_sintetica = $total_aberto_conta_sintetica + $total_vencidas + $total_avencer;
             }
 
             foreach ($fatias as $fatia) {
@@ -739,8 +726,15 @@
                 $codigo_sub_conta = substr($cod_conta, 0, 3);
                 $codigo_conta_sintetica = substr($cod_conta, 0, 1);
 
+                // TOTAL GERAL usa os valores já fatiados pelo rateio (proporcionais a
+                // conta/local/CC), igual ao detalhamento por conta abaixo — antes, "A
+                // Vencer"/"Vencidos" do TOTAL GERAL somavam o valor bruto do documento
+                // (pré-rateio), inconsistente com "Pago"/"Total", que já eram fatiados.
                 $total_conta_sintetica = $total_conta_sintetica + $total_pagar;
                 $total_pago_conta_sintetica = $total_pago_conta_sintetica + $valor_pago;
+                $total_vencida_conta_sintetica = $total_vencida_conta_sintetica + $total_vencidas;
+                $total_avencer_conta_sintetica = $total_avencer_conta_sintetica + $total_avencer;
+                $total_aberto_conta_sintetica = $total_aberto_conta_sintetica + $total_vencidas + $total_avencer;
 
                 for ($i = 0; $i < $qtd_contas_sintetica; $i++) {
                     if ($arry_conta_sintetica[$i]==$codigo_conta_sintetica) {
