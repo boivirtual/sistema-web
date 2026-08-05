@@ -109,6 +109,7 @@
 
     $array_cc = $_SESSION['forma_pag_rel'];
     $array_local = $_SESSION['local_precisao_contas_rel'];
+    $contas = $_SESSION['codigo_conta_previsao'];
 
 ?>
 
