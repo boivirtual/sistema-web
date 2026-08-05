@@ -1427,28 +1427,27 @@ $data_sistema = date("Y-m-d");
             $('#pago_valor_pago').val('');
             $('#bloco_pago_avista').hide();
 
-            if (modo === 'avista') {
+            if (modo === '') {
+                $('#parcelamento').val(0);
+                $('#bloco_qtd_parcelas').hide();
+                $('#qtd_parcelas_input').val('');
+                $('#bloco_avista').hide();
+                $('#data_vencimento').val('');
+                $('#bloco_parc_header').hide();
+                $('#primeiro_vencimento').val('');
+                $('#bloco_parcelas').hide();
+                $('#tbody_parcelas').empty();
+                $('#parc_totais').empty();
+            } else if (modo === 'avista' || modo === 'uma_parcela') {
                 $('#parcelamento').val(0);
                 $('#bloco_qtd_parcelas').hide();
                 $('#qtd_parcelas_input').val('');
                 $('#bloco_avista').show();
+                $('#data_vencimento').val('');
                 $('#bloco_parc_header').hide();
                 $('#bloco_parcelas').hide();
                 $('#tbody_parcelas').empty();
                 $('#parc_totais').empty();
-                var emissao = $('#data_emissao').val();
-                if (emissao) $('#data_vencimento').val(emissao);
-            } else if (modo === 'uma_parcela') {
-                $('#parcelamento').val(0);
-                $('#bloco_qtd_parcelas').hide();
-                $('#qtd_parcelas_input').val('');
-                $('#bloco_avista').show();
-                $('#bloco_parc_header').hide();
-                $('#bloco_parcelas').hide();
-                $('#tbody_parcelas').empty();
-                $('#parc_totais').empty();
-                var emissao = $('#data_emissao').val();
-                if (emissao) $('#data_vencimento').val(addDias(emissao, 30));
             } else {
                 // Parcelado em 2x ou mais
                 $('#parcelamento').val(0);
@@ -1456,6 +1455,7 @@ $data_sistema = date("Y-m-d");
                 $('#qtd_parcelas_input').attr('min', 2).val('');
                 $('#bloco_avista').hide();
                 $('#bloco_parc_header').hide();
+                $('#primeiro_vencimento').val('');
                 $('#bloco_parcelas').hide();
                 $('#tbody_parcelas').empty();
                 $('#parc_totais').empty();
