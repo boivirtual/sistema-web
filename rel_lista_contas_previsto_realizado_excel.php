@@ -363,20 +363,20 @@ include_once "conecta_mysql_credenciais.inc";
     $contas_rec = mysqli_query($conector, "SELECT * FROM baixa_contas_receber
         INNER JOIN contas_receber
                 ON bcr_id=ctr_id
-             WHERE bcr_data_pagamento<'$data_inicial'" . $wcentro_custo_rec . $wlocal_rec); 
+             WHERE bcr_data_pagamento<'$data_inicial'" . $wcentro_custo_rec . $wlocal_rec . $wconta_rec);
     $num_rows_contas_rec = mysqli_num_rows($contas_rec);
 
     if ($num_rows_contas_rec!=0){
         while ($registro_contas_rec = mysqli_fetch_object($contas_rec)){
                $valor_pago = $registro_contas_rec->bcr_valor_pagamento;
                $total_recebido+=$valor_pago;
-        } 
+        }
     }
 
     $contas_pag = mysqli_query($conector, "SELECT * FROM baixa_contas_pagar
         INNER JOIN contas_pagar
                 ON bcp_id=ctp_id
-        WHERE bcp_data_pagamento<'$data_inicial'" . $wcentro_custo_pag  . $wlocal_pag); 
+        WHERE bcp_data_pagamento<'$data_inicial'" . $wcentro_custo_pag  . $wlocal_pag . $wconta_pag);
 
     $num_rows_contas_pag = mysqli_num_rows($contas_pag);
 
