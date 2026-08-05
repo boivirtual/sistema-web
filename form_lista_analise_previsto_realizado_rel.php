@@ -518,16 +518,35 @@
         padding-right: 14px !important;
     }
 
-    /* No modo Realizado/Previsto combinado a tabela tem 26 colunas de dados (2 por
-       mês). Com table-layout:auto (padrão), o DataTables mantém 2 tabelas internas
-       (cabeçalho e corpo) que calculam a largura de cada coluna de forma
-       independente, com base só no próprio conteúdo (texto do cabeçalho de um lado,
-       valores numéricos do outro) — em tabelas largas essa diferença se acumula e
-       desalinha cabeçalho x dados ao rolar. table-layout:fixed faz as duas tabelas
-       usarem a mesma referência de largura por coluna, eliminando esse desvio. */
-    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollHead table,
-    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollBody table {
-        table-layout: fixed;
+    /* Em todos os modos (Realizado, Previsto, Realizado/Previsto combinado) o
+       cabeçalho tem linhas extras (SALDO ANTERIOR/DO MÊS/FINAL) fixadas dentro do
+       próprio <thead>. O DataTables mantém 2 tabelas internas (cabeçalho e corpo)
+       que, com table-layout:auto, calculam a largura de cada coluna de forma
+       independente, cada uma com base só no próprio conteúdo — essa diferença se
+       acumula e desalinha cabeçalho x dados ao rolar (mais visível no modo
+       combinado, com 26 colunas de dados, mas presente também nos outros modos).
+       table-layout:fixed e <colgroup> foram testados e não resolveram sozinhos
+       (a especificação só considera a 1ª linha da tabela para largura de coluna, e o
+       navegador ainda respeitava o conteúdo/nowrap em vez da largura pedida). A solução
+       que funcionou de forma confiável (ver sincronizarLargurasColunas() no script
+       abaixo) é medir, via JS, a largura natural que cada coluna precisa (olhando
+       cabeçalho e corpo juntos) e aplicar esse valor como largura explícita, em pixel,
+       direto em cada célula — em table-layout:auto (padrão). Só isso ainda deixava uma
+       diferença fixa de 16px entre th e td: o <th> tem 18px de padding horizontal (do
+       tema) contra 10px do <td>, e com box-sizing:content-box a mesma largura de
+       conteúdo produz uma largura final ocupada diferente. box-sizing:border-box aqui
+       faz a largura aplicada em JS já ser a largura final ocupada (padding incluso),
+       eliminando essa diferença independente do padding de cada elemento. Por fim,
+       liberamos a tabela do width:100% (regra genérica de table.dataTable mais abaixo)
+       para que ela possa ficar mais larga que a área visível e rolar horizontalmente. */
+    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollHead table.tabela-scroll-sincronizada,
+    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollBody table.tabela-scroll-sincronizada {
+        width: auto !important;
+    }
+
+    #tabela_analise_previsto_realizado_wrapper table.tabela-scroll-sincronizada th,
+    #tabela_analise_previsto_realizado_wrapper table.tabela-scroll-sincronizada td {
+        box-sizing: border-box;
     }
   </style>
 
@@ -1902,7 +1921,7 @@
         <div class="col-md-12" style="padding-right:0; padding-left:10;">
             <div style="width:100%;">
                 <table id="tabela_analise_previsto_realizado"
-                       class="table table-advance table-hover table-borderless"
+                       class="table table-advance table-hover table-borderless tabela-scroll-sincronizada"
                        style="font-size:11px;">
                     <?php echo $thead; ?>
                     <?php echo $tbody; ?>
@@ -2023,8 +2042,95 @@
 
         table = $('#tabela_analise_previsto_realizado').DataTable(dtOptions);
 
+        // Em todos os modos, o DataTables mantém 2 tabelas internas (cabeçalho e
+        // corpo) que calculam a largura de cada coluna de forma independente — cada
+        // uma só enxerga o próprio conteúdo, então a diferença acumula e desalinha
+        // cabeçalho x dados ao rolar (mais visível no modo combinado, com 26 colunas
+        // de dados). table-layout:fixed e <colgroup> foram testados e não resolveram
+        // de forma confiável (o navegador ainda respeitava o conteúdo em vez da
+        // largura pedida). A solução: medir a largura que cada coluna precisa olhando
+        // cabeçalho E corpo juntos, e aplicar esse valor, em pixel, como largura
+        // explícita em toda célula daquela coluna nas duas tabelas — assim as duas
+        // ficam exatamente iguais, coluna por coluna.
+        function sincronizarLargurasColunas() {
+            var $wrapper = $('#tabela_analise_previsto_realizado_wrapper');
+            var headTable = $wrapper.find('.dataTables_scrollHead table')[0];
+            var bodyTable = $wrapper.find('.dataTables_scrollBody table')[0];
+            if (!headTable || !bodyTable) return;
+
+            // o nº de colunas reais é sempre igual ao nº de <td> de uma linha do
+            // corpo (o corpo nunca tem colspan/rowspan, diferente de algumas linhas
+            // do cabeçalho)
+            var primeiraLinhaCorpo = bodyTable.querySelector('tbody tr');
+            if (!primeiraLinhaCorpo) return;
+            var totalColunas = primeiraLinhaCorpo.children.length;
+
+            // limpa larguras aplicadas numa passada anterior antes de medir de novo
+            $(headTable).find('th').css({ width: '', minWidth: '', maxWidth: '' });
+            $(bodyTable).find('td').css({ width: '', minWidth: '', maxWidth: '' });
+            void headTable.offsetWidth; void bodyTable.offsetWidth; // força reflow antes de medir
+
+            // no modo combinado, a 2ª linha do cabeçalho ("Realizado"/"Previsto") não
+            // tem célula para a coluna Descrição - ela já está coberta pelo
+            // rowspan="2" da 1ª linha. Sem levar isso em conta, o índice de cada
+            // célula fica deslocado em 1 coluna nessa linha específica. Por isso o
+            // índice inicial de cada linha é calculado a partir do total de colunas
+            // que ela realmente cobre (soma dos colspans), assumindo que uma linha
+            // "curta" está sempre faltando células no início (nunca no meio/fim) - o
+            // que é verdade nesta tabela.
+            function somaColspans($tr) {
+                var soma = 0;
+                $tr.children().each(function () {
+                    soma += parseInt($(this).attr('colspan') || '1', 10);
+                });
+                return soma;
+            }
+
+            var larguras = [];
+            function medir(tabela, seletorLinhas) {
+                $(tabela).find(seletorLinhas).each(function () {
+                    var idx = totalColunas - somaColspans($(this));
+                    $(this).children().each(function () {
+                        var colspan = parseInt($(this).attr('colspan') || '1', 10);
+                        if (colspan === 1) {
+                            var largura = this.getBoundingClientRect().width;
+                            larguras[idx] = Math.max(larguras[idx] || 0, largura);
+                        }
+                        idx += colspan;
+                    });
+                });
+            }
+            // pula a 1ª linha do cabeçalho (colspan=2 por mês) - só linhas com 1 célula
+            // por coluna real ajudam a medir a largura individual de cada coluna
+            medir(headTable, 'thead tr:not(:first-child)');
+            medir(bodyTable, 'tbody tr');
+
+            function aplicar(tabela, seletorLinhas) {
+                $(tabela).find(seletorLinhas).each(function () {
+                    var idx = totalColunas - somaColspans($(this));
+                    $(this).children().each(function () {
+                        var colspan = parseInt($(this).attr('colspan') || '1', 10);
+                        if (colspan === 1 && larguras[idx] != null) {
+                            $(this).css({
+                                width: larguras[idx] + 'px',
+                                minWidth: larguras[idx] + 'px',
+                                maxWidth: larguras[idx] + 'px'
+                            });
+                        }
+                        idx += colspan;
+                    });
+                });
+            }
+            aplicar(headTable, 'thead tr:not(:first-child)');
+            aplicar(bodyTable, 'tbody tr');
+        }
+
+        sincronizarLargurasColunas();
+        table.on('draw.dt', sincronizarLargurasColunas);
+
         setTimeout(function () {
             table.columns.adjust().draw();
+            sincronizarLargurasColunas();
         }, 100);
 
         $(window).on('resize', function () {
@@ -2033,6 +2139,7 @@
                 $('.dataTables_scrollBody').css('max-height', calcularScrollTabela());
                 $('.dataTables_scrollBody').css('height', calcularScrollTabela());
                 table.columns.adjust().draw();
+                sincronizarLargurasColunas();
             }, 100);
         });
     });
