@@ -644,7 +644,7 @@
 
                     $plano_contas = mysqli_query($conector, "SELECT * FROM tbl_plano_contas
                             WHERE tbl_plano_contas_nivel=3 AND
-                                  tbl_plano_contas_lixeira=0" . $wconta_lista . "
+                                  tbl_plano_contas_lixeira=0
                             ORDER BY tbl_plano_contas_codigo_id ASC");
 
                     WHILE ($registro_tbl_conta = mysqli_fetch_object($plano_contas)){
@@ -657,7 +657,7 @@
 
                         $previsao_conta = mysqli_query($conector, "SELECT *  FROM tbl_previsao_conta
                                 WHERE tbl_previsao_conta_codigo='$codigo_conta' AND
-                                      tbl_previsao_conta_ano = '$ano'"  . $wlocal_previsao);
+                                      tbl_previsao_conta_ano = '$ano'"  . $wlocal_previsao . $wconta_previsao);
                         $num_rows_previsao_conta = mysqli_num_rows($previsao_conta);
 
                         if ($num_rows_previsao_conta!=0){
