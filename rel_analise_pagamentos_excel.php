@@ -616,15 +616,9 @@ $linha=4;
                     if ($vencimento < $data_sistema) {
                         $total_vencidas= $total_pagar - $valor_pago;
                         $total_abertas=  $total_pagar - $valor_pago;
-
-                        $total_vencida_conta_sintetica= $total_vencida_conta_sintetica + $total_pagar - $valor_pago;
-                        $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar - $valor_pago;
                     } else {
                         $total_avencer= $total_pagar - $valor_pago;
                         $total_abertas= $total_pagar - $valor_pago;
-            
-                        $total_avencer_conta_sintetica= $total_avencer_conta_sintetica + $total_pagar - $valor_pago;
-                        $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar - $valor_pago;
                     }
                 }
             }
@@ -634,15 +628,9 @@ $linha=4;
                     if ($vencimento < $data_sistema) {
                         $total_vencidas= $total_pagar;
                         $total_abertas=  $total_pagar;
-                
-                        $total_vencida_conta_sintetica= $total_vencida_conta_sintetica + $total_pagar;
-                        $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar;
                     } else {
                         $total_avencer= $total_pagar;
                         $total_abertas= $total_pagar;
-            
-                        $total_avencer_conta_sintetica= $total_avencer_conta_sintetica + $total_pagar;
-                        $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar;
                     }
                 }
             }
