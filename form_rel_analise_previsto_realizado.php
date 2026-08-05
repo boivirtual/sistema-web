@@ -308,7 +308,43 @@ while ($reg_cc = mysqli_fetch_object($tbl_centro_custos)) {
                 </div>
             </div>
 
-            <div class="modal fade" id="aguardar" tabindex="-1" role="dialog" 
+            <div class="modal fade" id="modal_conta" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document" style="overflow-y: initial !important">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="exibe_contas_selecionadas()">&times;</button>
+                            <h4 class="modal-title">Selecione a conta</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group col-md-3 pull-right">
+                                        <a href="#" onclick="limpa_contas_selecionadas_previsao()">Limpar Seleção
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12" id="modal_conta_info" style="height: 50vh; overflow-y: auto;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button data-dismiss="modal" class="btn btn-primary pull-right" type="button" onclick="exibe_contas_selecionadas()">Fechar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="aguardar" tabindex="-1" role="dialog"
                 aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
