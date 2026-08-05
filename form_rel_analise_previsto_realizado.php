@@ -242,23 +242,7 @@ while ($reg_cc = mysqli_fetch_object($tbl_centro_custos)) {
     $codigo_cc = $reg_cc->tbl_cc_codigo_id;
     $descricao_cc = $reg_cc->tbl_cc_descricao;
 
-    if ($array_cc!="") {
-        foreach ($array_cc as $value) {
-            if ($value==$codigo_cc) {
-                echo '<option value="' . $codigo_cc . '" selected="selected">' . $descricao_cc .
-                 '</option>';
-            }
-            else {
-                echo '<option value="'.$codigo_cc.'">' . $descricao_cc .
-                 '</option>';
-            }
-        }
-    }
-    else {
-        echo '<option value="'.$codigo_cc.'">' . $descricao_cc .
-         '</option>';
-    }
-
+    echo '<option value="'.$codigo_cc.'">' . $descricao_cc . '</option>';
 }?>
                                                         </select>
                                                     </div>
