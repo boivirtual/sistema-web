@@ -520,24 +520,23 @@
 
     /* No modo Realizado/Previsto combinado (classe modo-combinado) a tabela tem 26
        colunas de dados (2 por mês) e o cabeçalho tem linhas extras (SALDO ANTERIOR/DO
-       MÊS/FINAL) fixadas dentro do próprio <thead>. Com table-layout:auto (padrão), o
-       DataTables mantém 2 tabelas internas (cabeçalho e corpo) que calculam a largura
-       de cada coluna de forma independente, cada uma com base só no próprio conteúdo —
+       MÊS/FINAL) fixadas dentro do próprio <thead>. O DataTables mantém 2 tabelas
+       internas (cabeçalho e corpo) que, com table-layout:auto, calculam a largura de
+       cada coluna de forma independente, cada uma com base só no próprio conteúdo —
        em tabela tão larga essa diferença se acumula e desalinha cabeçalho x dados ao
-       rolar. table-layout:fixed sozinho (sem <colgroup>) piora: a especificação só
-       considera a 1ª linha da tabela para definir a largura de cada coluna, e essa
-       1ª linha usa colspan="2" por mês — colunas com colspan são ignoradas para esse
-       cálculo, então o navegador cai no "distribuir o espaço restante igualmente",
-       esmagando os valores. Por isso a tabela é gerada com um <colgroup> explícito
-       (uma largura fixa por coluna real), que tem prioridade sobre qualquer linha e é
-       clonado pelo DataTables tanto no cabeçalho quanto no corpo — garantindo que as
-       27 colunas fiquem com a mesma largura nas duas tabelas internas. Também é
-       preciso liberar a tabela do width:100% (regra genérica de table.dataTable mais
-       abaixo) para que ela possa ficar mais larga que a área visível e rolar
-       horizontalmente, já que a soma das larguras do colgroup passa da tela. */
+       rolar. table-layout:fixed não resolve sozinho aqui: a especificação só considera
+       a 1ª linha da tabela (ou <colgroup>) para definir a largura de cada coluna, e
+       testes mostraram que mesmo com <colgroup> explícito o navegador ainda respeitava
+       o conteúdo (nowrap) em vez da largura pedida, produzindo resultados
+       inconsistentes entre cabeçalho e corpo. A solução que funcionou de forma
+       confiável (ver sincronizarLargurasColunas() no script abaixo) é medir, via JS,
+       a largura natural que cada coluna precisa (olhando cabeçalho e corpo juntos) e
+       aplicar esse valor como largura explícita, em pixel, direto nas células — em
+       table-layout:auto (padrão), que soma essas larguras normalmente. Aqui só
+       liberamos a tabela do width:100% (regra genérica de table.dataTable mais abaixo)
+       para que ela possa ficar mais larga que a área visível e rolar horizontalmente. */
     #tabela_analise_previsto_realizado_wrapper .dataTables_scrollHead table.modo-combinado,
     #tabela_analise_previsto_realizado_wrapper .dataTables_scrollBody table.modo-combinado {
-        table-layout: fixed;
         width: auto !important;
     }
   </style>
