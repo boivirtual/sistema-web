@@ -298,20 +298,19 @@ include_once "conecta_mysql_credenciais.inc";
     $centro_custos = implode(',', $centro_custos);
     $centro_custos = substr($centro_custos,0, -1);
 
+    // Rateio-aware (igual Análise de Pagamentos/Recebimentos): quando o lançamento tem
+    // rateio, ctp_codigo_centro_custos/ctr_codigo_c_custo ficam NULL no cabeçalho e o
+    // centro de custos só existe por linha em tbl_ctp_rateio/tbl_ctr_rateio.
     $wcentro_custo_pag = '';
 
     if ($codigo_cc!='') {
-        $wcentro_custo_pag = " AND ctp_codigo_centro_custos IN(";
-        $wcentro_custo_pag.= $centro_custos;
-        $wcentro_custo_pag.= ")";
+        $wcentro_custo_pag = " AND (ctp_codigo_centro_custos IN($centro_custos) OR " . condicao_rateio_ou_grupo('ctp_codigo_centro_custos', 'rc_codigo_cc', $centro_custos) . ")";
     }
 
     $wcentro_custo_rec = '';
 
     if ($codigo_cc!='') {
-        $wcentro_custo_rec = " AND ctr_codigo_c_custo IN(";
-        $wcentro_custo_rec.= $centro_custos;
-        $wcentro_custo_rec.= ")";
+        $wcentro_custo_rec = " AND (ctr_codigo_c_custo IN($centro_custos) OR " . condicao_rateio_ou_grupo_ctr('ctr_codigo_c_custo', 'rc_codigo_cc', $centro_custos) . ")";
     }
 
 
