@@ -518,16 +518,42 @@
         padding-right: 14px !important;
     }
 
-    /* No modo Realizado/Previsto combinado a tabela tem 26 colunas de dados (2 por
-       mês). Com table-layout:auto (padrão), o DataTables mantém 2 tabelas internas
-       (cabeçalho e corpo) que calculam a largura de cada coluna de forma
-       independente, com base só no próprio conteúdo (texto do cabeçalho de um lado,
-       valores numéricos do outro) — em tabelas largas essa diferença se acumula e
-       desalinha cabeçalho x dados ao rolar. table-layout:fixed faz as duas tabelas
-       usarem a mesma referência de largura por coluna, eliminando esse desvio. */
-    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollHead table,
-    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollBody table {
+    /* No modo Realizado/Previsto combinado (classe modo-combinado) a tabela tem 26
+       colunas de dados (2 por mês) e o cabeçalho tem linhas extras (SALDO ANTERIOR/DO
+       MÊS/FINAL) fixadas dentro do próprio <thead>. Com table-layout:auto (padrão), o
+       DataTables mantém 2 tabelas internas (cabeçalho e corpo) que calculam a largura
+       de cada coluna de forma independente, cada uma com base só no próprio conteúdo —
+       em tabela tão larga essa diferença se acumula e desalinha cabeçalho x dados ao
+       rolar. Só travar com table-layout:fixed (sem largura explícita) piora: o
+       algoritmo fixed do navegador ignora o conteúdo e divide a largura do container
+       igualmente entre as colunas, esmagando os valores. A solução é dar uma largura
+       explícita e igual para cabeçalho e corpo em cada coluna, e liberar a tabela do
+       width:100% (regra genérica de table.dataTable mais abaixo) para que ela possa
+       ficar mais larga que a área visível e rolar horizontalmente. */
+    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollHead table.modo-combinado,
+    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollBody table.modo-combinado {
         table-layout: fixed;
+        width: auto !important;
+    }
+
+    #tabela_analise_previsto_realizado_wrapper table.modo-combinado th:first-child,
+    #tabela_analise_previsto_realizado_wrapper table.modo-combinado td:first-child {
+        width: 220px;
+        min-width: 220px;
+        max-width: 220px;
+    }
+
+    #tabela_analise_previsto_realizado_wrapper table.modo-combinado thead th[colspan] {
+        width: 200px;
+        min-width: 200px;
+        max-width: 200px;
+    }
+
+    #tabela_analise_previsto_realizado_wrapper table.modo-combinado thead th:not([colspan]):not(:first-child),
+    #tabela_analise_previsto_realizado_wrapper table.modo-combinado tbody td:not(:first-child) {
+        width: 100px;
+        min-width: 100px;
+        max-width: 100px;
     }
   </style>
 
