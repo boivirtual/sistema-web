@@ -468,6 +468,19 @@ function limpa_contas_selecionadas_ctr() {
     });
 }
 
+function limpa_contas_selecionadas_previsao() {
+    $("#exibe_conta").val('');
+
+    $.ajax({
+        type: 'post',
+        url: 'gera_secao_limpa_conta.php',
+        data: {limpa: "S"},
+        success: function(data) {
+            location.href='form_rel_analise_previsto_realizado.php';
+        },
+    });
+}
+
 function imprimir_fluxo_caixa(opcao) {
     //var tipo_caixa = $("#tipo_caixa").val();
     $("#aguardar").show();
