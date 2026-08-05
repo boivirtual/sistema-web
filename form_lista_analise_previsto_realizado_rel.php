@@ -524,36 +524,21 @@
        DataTables mantém 2 tabelas internas (cabeçalho e corpo) que calculam a largura
        de cada coluna de forma independente, cada uma com base só no próprio conteúdo —
        em tabela tão larga essa diferença se acumula e desalinha cabeçalho x dados ao
-       rolar. Só travar com table-layout:fixed (sem largura explícita) piora: o
-       algoritmo fixed do navegador ignora o conteúdo e divide a largura do container
-       igualmente entre as colunas, esmagando os valores. A solução é dar uma largura
-       explícita e igual para cabeçalho e corpo em cada coluna, e liberar a tabela do
-       width:100% (regra genérica de table.dataTable mais abaixo) para que ela possa
-       ficar mais larga que a área visível e rolar horizontalmente. */
+       rolar. table-layout:fixed sozinho (sem <colgroup>) piora: a especificação só
+       considera a 1ª linha da tabela para definir a largura de cada coluna, e essa
+       1ª linha usa colspan="2" por mês — colunas com colspan são ignoradas para esse
+       cálculo, então o navegador cai no "distribuir o espaço restante igualmente",
+       esmagando os valores. Por isso a tabela é gerada com um <colgroup> explícito
+       (uma largura fixa por coluna real), que tem prioridade sobre qualquer linha e é
+       clonado pelo DataTables tanto no cabeçalho quanto no corpo — garantindo que as
+       27 colunas fiquem com a mesma largura nas duas tabelas internas. Também é
+       preciso liberar a tabela do width:100% (regra genérica de table.dataTable mais
+       abaixo) para que ela possa ficar mais larga que a área visível e rolar
+       horizontalmente, já que a soma das larguras do colgroup passa da tela. */
     #tabela_analise_previsto_realizado_wrapper .dataTables_scrollHead table.modo-combinado,
     #tabela_analise_previsto_realizado_wrapper .dataTables_scrollBody table.modo-combinado {
         table-layout: fixed;
         width: auto !important;
-    }
-
-    #tabela_analise_previsto_realizado_wrapper table.modo-combinado th:first-child,
-    #tabela_analise_previsto_realizado_wrapper table.modo-combinado td:first-child {
-        width: 220px !important;
-        min-width: 220px !important;
-        max-width: 220px !important;
-    }
-
-    #tabela_analise_previsto_realizado_wrapper table.modo-combinado thead th[colspan] {
-        width: 200px !important;
-        min-width: 200px !important;
-        max-width: 200px !important;
-    }
-
-    #tabela_analise_previsto_realizado_wrapper table.modo-combinado thead th:not([colspan]):not(:first-child),
-    #tabela_analise_previsto_realizado_wrapper table.modo-combinado tbody td:not(:first-child) {
-        width: 100px !important;
-        min-width: 100px !important;
-        max-width: 100px !important;
     }
   </style>
 
