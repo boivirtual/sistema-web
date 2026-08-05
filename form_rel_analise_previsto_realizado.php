@@ -141,12 +141,16 @@
 		        <div class="col-lg-12">
                         <div class="row col-md-12 filtro_exibido" id="consulta_contas">
                             <form method="GET" action="#" enctype="multipart/form-data" >
-                            
+
+                                <input type="hidden" name="tipo_conta" id="tipo_conta" value="T">
+                                <input id="limpar_filtro_contas" type="hidden" <?php echo "value='" . $_SESSION['limpa_conta_previsao'] . "'"; ?>>
+                                <input id="exibe_conta" type="hidden" <?php echo "value='".$contas."'"; ?>>
+
                                 <div class="tab-panel ">
                                     <div class="tab-pane active">
                                         <fieldset class="scheduler-border " >
                                             <legend class="scheduler-border fonte-legend">Filtros</legend>
-                                                
+
                                             <div class="row">
                                                 <div class="form-group col-md-11">
                                                 </div>
