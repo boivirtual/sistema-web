@@ -1487,9 +1487,6 @@ $data_sistema = date("Y-m-d");
 
             $('#bloco_parc_header').show();
             $('#bloco_parcelas').show();
-            if (!$('#primeiro_vencimento').val()) {
-                $('#primeiro_vencimento').val(calcPrimeiroVencimento());
-            }
             gerarTabelaParcelas(n);
         }
 
