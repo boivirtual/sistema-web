@@ -1243,15 +1243,21 @@ $data_sistema = date("Y-m-d");
                     dataParc = (i === 0) ? primVenc : addDias(primVenc, intervalo * i);
                 }
 
-                // Arredonda — última parcela absorve centavos
-                var vlrEsta  = (i < n - 1) ? Math.round(vlrParc * 100) / 100 : Math.round((total - vlrParc * (n - 1)) * 100) / 100;
-                var percEsta = (i < n - 1) ? Math.round(percParc * 100) / 100 : Math.round((100 - percParc * (n - 1)) * 100) / 100;
+                // Arredonda — última parcela absorve centavos. Sem 1º Vencimento ainda, valor/percentual ficam em branco.
+                var vlrEstaTxt  = '';
+                var percEstaTxt = '';
+                if (primVenc) {
+                    var vlrEsta  = (i < n - 1) ? Math.round(vlrParc * 100) / 100 : Math.round((total - vlrParc * (n - 1)) * 100) / 100;
+                    var percEsta = (i < n - 1) ? Math.round(percParc * 100) / 100 : Math.round((100 - percParc * (n - 1)) * 100) / 100;
+                    vlrEstaTxt  = ctpFormatMoney(vlrEsta);
+                    percEstaTxt = ctpFormatMoney(percEsta);
+                }
 
                 var tr = '<tr id="parc_row_' + i + '">';
                 tr += '<td><span class="lbl-parcela">' + ordinal(i + 1) + ' Vencimento</span></td>';
                 tr += '<td><input type="date" class="form-control parc-data" name="parcela[' + i + '][data_vencimento]" id="parc_data_' + i + '" value="' + dataParc + '" style="height:30px;font-size:13px;padding:2px 6px;"></td>';
-                tr += '<td><input type="text"  class="form-control parc-valor" name="parcela[' + i + '][valor]" id="parc_valor_' + i + '" value="' + ctpFormatMoney(vlrEsta) + '" onblur="recalcularPorValor(' + i + ')" onkeypress="mask.money.call(this, event)"></td>';
-                tr += '<td><input type="text"  class="form-control parc-perc"  name="parcela[' + i + '][percentual]" id="parc_perc_' + i + '"  value="' + ctpFormatMoney(percEsta) + '" readonly style="background:#f5f5f5;color:#777;"></td>';
+                tr += '<td><input type="text"  class="form-control parc-valor" name="parcela[' + i + '][valor]" id="parc_valor_' + i + '" value="' + vlrEstaTxt + '" onblur="recalcularPorValor(' + i + ')" onkeypress="mask.money.call(this, event)"></td>';
+                tr += '<td><input type="text"  class="form-control parc-perc"  name="parcela[' + i + '][percentual]" id="parc_perc_' + i + '"  value="' + percEstaTxt + '" readonly style="background:#f5f5f5;color:#777;"></td>';
                 tr += '<td>' + buildSelectBanco('parcela[' + i + '][banco_conta]', 'parc_banco_' + i, '', i) + '</td>';
                 tr += '<td>' + buildSelectTipoDoc('parcela[' + i + '][tipo_doc]', 'parc_tipodoc_' + i, '', i) + '</td>';
                 tr += '<td class="pago-parc" style="text-align:center;"><input type="checkbox" name="parcela[' + i + '][pago]" id="parc_pago_' + i + '" value="S" onchange="togglePagoParc(' + i + ')"></td>';
