@@ -2268,17 +2268,6 @@ $data_sistema = date("Y-m-d");
             recalcularRateio();
         });
 
-        // Ao carregar: pré-preenche vencimento conforme modo selecionado
-        (function() {
-            var modo = $('#sel_modo_parc').val();
-            var emissao = $('#data_emissao').val();
-            if (modo === 'avista' && emissao) {
-                $('#data_vencimento').val(emissao);
-            } else if (modo === 'uma_parcela' && emissao) {
-                $('#data_vencimento').val(addDias(emissao, 30));
-            }
-        })();
-
         $('#habilitar_rateio').on('change', function () {
             var on = $(this).is(':checked');
             var $local = $('#codigo_fazenda');
