@@ -984,25 +984,19 @@
         $thead = '';
         $thead .= '<thead>';
 
-        // Linha 1
+        // Cabeçalho em uma única linha (sem colspan/rowspan): o fixedColumns do
+        // DataTables desalinha as colunas ao rolar horizontalmente quando o cabeçalho
+        // tem 2 linhas com colspan (mês agrupando Realizado/Previsto) — o mesmo
+        // problema não ocorre no modo só-Realizado, que já usa uma linha só.
         $thead .= '<tr>';
-        $thead .= '<th rowspan="2">Descrição da Conta&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>';
+        $thead .= '<th>Descrição da Conta&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>';
 
         for ($i = 1; $i <= 12; $i++) {
-            $thead .= '<th colspan="2" class="text-center">' . $array_mes[$i] . '</th>';
+            $thead .= '<th class="text-right">' . $array_mes[$i] . ' Realizado</th>';
+            $thead .= '<th class="text-right" style="color:#a6a6a6;">' . $array_mes[$i] . ' Previsto</th>';
         }
-
-        $thead .= '<th colspan="2" class="text-center">Total</th>';
-        $thead .= '</tr>';
-
-        // Linha 2
-        $thead .= '<tr>';
-        for ($i = 1; $i <= 12; $i++) {
-            $thead .= '<th class="text-right">Realizado</th>';
-            $thead .= '<th class="text-right" style="color:#a6a6a6;">Previsto</th>';
-        }
-        $thead .= '<th class="text-right">Realizado</th>';
-        $thead .= '<th class="text-right" style="color:#a6a6a6;">Previsto</th>';
+        $thead .= '<th class="text-right">Total Realizado</th>';
+        $thead .= '<th class="text-right" style="color:#a6a6a6;">Total Previsto</th>';
         $thead .= '</tr>';
 
         // SALDO ANTERIOR
