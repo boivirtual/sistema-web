@@ -516,7 +516,19 @@
     #tabela_analise_previsto_realizado tbody td[style*="text-align:right"] {
         text-align: right !important;
         padding-right: 14px !important;
-    }    
+    }
+
+    /* No modo Realizado/Previsto combinado a tabela tem 26 colunas de dados (2 por
+       mês). Com table-layout:auto (padrão), o DataTables mantém 2 tabelas internas
+       (cabeçalho e corpo) que calculam a largura de cada coluna de forma
+       independente, com base só no próprio conteúdo (texto do cabeçalho de um lado,
+       valores numéricos do outro) — em tabelas largas essa diferença se acumula e
+       desalinha cabeçalho x dados ao rolar. table-layout:fixed faz as duas tabelas
+       usarem a mesma referência de largura por coluna, eliminando esse desvio. */
+    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollHead table,
+    #tabela_analise_previsto_realizado_wrapper .dataTables_scrollBody table {
+        table-layout: fixed;
+    }
   </style>
 
 </head>
