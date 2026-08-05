@@ -751,7 +751,7 @@ if ($tipo_rel==1){
 
                         $valor_credito[$mes] += $valor_pago;
 
-                        $fatias = montar_fatias_conta_rateio_ctr($conector, $registro_contas_rec->ctr_id, $registro_contas_rec->ctr_codigo_conta, $valor_pago, $registro_contas_rec->ctr_numero_doc, $registro_contas_rec->ctr_codigo_cliente_fornecedor);
+                        $fatias = montar_fatias_conta_rateio_ctr($conector, $registro_contas_rec->ctr_id, $registro_contas_rec->ctr_codigo_conta, $valor_pago, $registro_contas_rec->ctr_numero_doc, $registro_contas_rec->ctr_codigo_cliente_fornecedor, $fazendas, $centro_custos);
 
                         foreach ($fatias as $fatia) {
                             acumular_total_realizado($total_realizado, $tem_valor, $fatia['cod_conta'], $mes, $fatia['valor']);
@@ -1390,7 +1390,7 @@ else if($tipo_rel==2) {
 
                         $valor_credito[$mes] += $valor_pago;
 
-                        $fatias = montar_fatias_conta_rateio_ctr($conector, $registro_contas_rec->ctr_id, $registro_contas_rec->ctr_codigo_conta, $valor_pago, $registro_contas_rec->ctr_numero_doc, $registro_contas_rec->ctr_codigo_cliente_fornecedor);
+                        $fatias = montar_fatias_conta_rateio_ctr($conector, $registro_contas_rec->ctr_id, $registro_contas_rec->ctr_codigo_conta, $valor_pago, $registro_contas_rec->ctr_numero_doc, $registro_contas_rec->ctr_codigo_cliente_fornecedor, $fazendas, $centro_custos);
 
                         foreach ($fatias as $fatia) {
                             acumular_total_realizado($total_realizado, $tem_valor, $fatia['cod_conta'], $mes, $fatia['valor']);
