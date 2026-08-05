@@ -524,20 +524,28 @@
        internas (cabeçalho e corpo) que, com table-layout:auto, calculam a largura de
        cada coluna de forma independente, cada uma com base só no próprio conteúdo —
        em tabela tão larga essa diferença se acumula e desalinha cabeçalho x dados ao
-       rolar. table-layout:fixed não resolve sozinho aqui: a especificação só considera
-       a 1ª linha da tabela (ou <colgroup>) para definir a largura de cada coluna, e
-       testes mostraram que mesmo com <colgroup> explícito o navegador ainda respeitava
-       o conteúdo (nowrap) em vez da largura pedida, produzindo resultados
-       inconsistentes entre cabeçalho e corpo. A solução que funcionou de forma
-       confiável (ver sincronizarLargurasColunas() no script abaixo) é medir, via JS,
-       a largura natural que cada coluna precisa (olhando cabeçalho e corpo juntos) e
-       aplicar esse valor como largura explícita, em pixel, direto nas células — em
-       table-layout:auto (padrão), que soma essas larguras normalmente. Aqui só
+       rolar. table-layout:fixed e <colgroup> foram testados e não resolveram sozinhos
+       (a especificação só considera a 1ª linha da tabela para largura de coluna, e o
+       navegador ainda respeitava o conteúdo/nowrap em vez da largura pedida). A solução
+       que funcionou de forma confiável (ver sincronizarLargurasColunas() no script
+       abaixo) é medir, via JS, a largura natural que cada coluna precisa (olhando
+       cabeçalho e corpo juntos) e aplicar esse valor como largura explícita, em pixel,
+       direto em cada célula — em table-layout:auto (padrão). Só isso ainda deixava uma
+       diferença fixa de 16px entre th e td: o <th> tem 18px de padding horizontal (do
+       tema) contra 10px do <td>, e com box-sizing:content-box a mesma largura de
+       conteúdo produz uma largura final ocupada diferente. box-sizing:border-box aqui
+       faz a largura aplicada em JS já ser a largura final ocupada (padding incluso),
+       eliminando essa diferença independente do padding de cada elemento. Por fim,
        liberamos a tabela do width:100% (regra genérica de table.dataTable mais abaixo)
        para que ela possa ficar mais larga que a área visível e rolar horizontalmente. */
     #tabela_analise_previsto_realizado_wrapper .dataTables_scrollHead table.modo-combinado,
     #tabela_analise_previsto_realizado_wrapper .dataTables_scrollBody table.modo-combinado {
         width: auto !important;
+    }
+
+    #tabela_analise_previsto_realizado_wrapper table.modo-combinado th,
+    #tabela_analise_previsto_realizado_wrapper table.modo-combinado td {
+        box-sizing: border-box;
     }
   </style>
 
