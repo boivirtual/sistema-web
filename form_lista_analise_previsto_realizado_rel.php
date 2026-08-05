@@ -2066,6 +2066,7 @@
         }
 
         sincronizarColgroupCabecalho();
+        table.on('draw.dt', sincronizarColgroupCabecalho);
 
         setTimeout(function () {
             table.columns.adjust().draw();
