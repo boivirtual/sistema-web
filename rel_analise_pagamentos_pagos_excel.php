@@ -438,15 +438,9 @@ $linha=4;
         if ($vencimento < $data_sistema) {
             $total_vencidas= $total_pagar - $valor_pago;
             $total_abertas=  $total_pagar - $valor_pago;
-
-            $total_vencida_conta_sintetica= $total_vencida_conta_sintetica + $total_pagar - $valor_pago;
-            $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar - $valor_pago;
         } else {
             $total_avencer= $total_pagar - $valor_pago;
             $total_abertas= $total_pagar - $valor_pago;
-            
-            $total_avencer_conta_sintetica= $total_avencer_conta_sintetica + $total_pagar - $valor_pago;
-            $total_aberto_conta_sintetica= $total_aberto_conta_sintetica + $total_pagar - $valor_pago;
         }
                 //}
                                                  
