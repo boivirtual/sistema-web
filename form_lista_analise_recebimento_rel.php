@@ -486,7 +486,7 @@
 
                 // Documento com rateio (cod_conta null): reparte pelas contas do rateio.
                 // Sem rateio: retorna a própria conta/valores, sem alterar nada.
-                $fatias_ctr = montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $registro_contas_rec->ctr_numero_doc, $registro_contas_rec->ctr_codigo_cliente_fornecedor);
+                $fatias_ctr = montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $registro_contas_rec->ctr_numero_doc, $registro_contas_rec->ctr_codigo_cliente_fornecedor, $fazendas, $cc);
 
                 foreach ($fatias_ctr as $fatia_ctr) {
                     $cod_conta_fatia = $fatia_ctr['cod_conta'];
@@ -616,7 +616,7 @@
 
             // Documento com rateio (cod_conta null): reparte pelas contas do rateio.
             // Sem rateio: retorna a própria conta/valores, sem alterar nada.
-            $fatias_ctr = montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $registro_contas_rec->ctr_numero_doc, $registro_contas_rec->ctr_codigo_cliente_fornecedor);
+            $fatias_ctr = montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $registro_contas_rec->ctr_numero_doc, $registro_contas_rec->ctr_codigo_cliente_fornecedor, $fazendas, $cc);
 
             foreach ($fatias_ctr as $fatia_ctr) {
                 $cod_conta_fatia = $fatia_ctr['cod_conta'];
@@ -1007,7 +1007,7 @@
     // ao valor de cada conta no rateio. Se não houver rateio até o nível de conta
     // (só até local/CC), retorna array vazio — o documento fica de fora do analítico
     // por conta, igual ao comportamento equivalente em Contas a Pagar.
-    function montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta_header, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $ctr_numero_doc = null, $ctr_codigo_cliente = null) {
+    function montar_fatias_conta_rateio_ctr($conector, $ctr_id, $cod_conta_header, $total_pagar, $valor_pago, $total_vencidas, $total_avencer, $ctr_numero_doc = null, $ctr_codigo_cliente = null, $fazendas_ids = '', $cc_ids = '') {
         if ($cod_conta_header !== null && $cod_conta_header !== '') {
             return [[
                 'cod_conta' => $cod_conta_header,
@@ -1020,25 +1020,33 @@
 
         $ctr_id_rateio = resolver_primeiro_ctr_rateio($conector, $ctr_id, $ctr_numero_doc, $ctr_codigo_cliente);
 
-        $linhas_rateio = array();
-        $soma_rateio = 0;
-
-        $rs = mysqli_query($conector, "SELECT rc_codigo_conta, rc_valor_conta FROM tbl_ctr_rateio
+        // soma global do rateio (todas as linhas, sem filtro de local/CC) - denominador
+        // da proporção de cada linha, igual ao usado no detalhamento (ler_notas). Não
+        // filtrar aqui é o que garante a proporção certa quando o rateio também separa
+        // por conta (não só por local/CC).
+        $rs_soma = mysqli_query($conector, "SELECT SUM(rc_valor_conta) AS soma FROM tbl_ctr_rateio
             WHERE rc_ctr_id='$ctr_id_rateio' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''");
+        $row_soma = $rs_soma ? mysqli_fetch_object($rs_soma) : null;
+        $soma_rateio = $row_soma ? (float)$row_soma->soma : 0;
 
-        while ($r = mysqli_fetch_object($rs)) {
-            $linhas_rateio[] = $r;
-            $soma_rateio += $r->rc_valor_conta;
-        }
-
-        if (count($linhas_rateio) == 0 || $soma_rateio == 0) {
+        if ($soma_rateio == 0) {
             // rateio feito só até local/CC, sem conta contábil definida
             return array();
         }
 
+        // Quando há filtro de Local/Centro de Custos, considera nos totais só as linhas
+        // do rateio que casam com o filtro (mesma lógica já usada em Análise de
+        // Pagamentos) - sem isso, o total somava o documento inteiro mesmo filtrando
+        // por um local/CC específico.
+        $wlocal_rateio = ($fazendas_ids != '') ? " AND rc_codigo_local IN($fazendas_ids)" : '';
+        $wcc_rateio = ($cc_ids != '') ? " AND (rc_codigo_cc IS NULL OR rc_codigo_cc IN($cc_ids))" : '';
+
+        $rs = mysqli_query($conector, "SELECT rc_codigo_conta, rc_valor_conta FROM tbl_ctr_rateio
+            WHERE rc_ctr_id='$ctr_id_rateio' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''" . $wlocal_rateio . $wcc_rateio);
+
         $fatias = array();
 
-        foreach ($linhas_rateio as $r) {
+        while ($r = mysqli_fetch_object($rs)) {
             $prop = $r->rc_valor_conta / $soma_rateio;
             $fatias[] = [
                 'cod_conta' => $r->rc_codigo_conta,
