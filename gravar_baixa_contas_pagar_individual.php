@@ -20,6 +20,7 @@ $codigo_fornecedor = $dadosarray[5];
 $historico = $dadosarray[7];
 $nome_cli = $dadosarray[8];
 $ctp_id = $dadosarray[9];
+$tipo_doc = isset($dadosarray[10]) ? mysqli_real_escape_string($conector, $dadosarray[10]) : '00';
 
 $valor_juros=0.00;
 $valor_desconto=0.00;
