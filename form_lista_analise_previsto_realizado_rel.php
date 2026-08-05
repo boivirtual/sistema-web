@@ -2033,29 +2033,72 @@
 
         table = $('#tabela_analise_previsto_realizado').DataTable(dtOptions);
 
-        // No modo combinado (27 colunas), o DataTables clona o <colgroup> da tabela
-        // original só na tabela de scroll do CORPO — a tabela de scroll do CABEÇALHO
-        // fica sem colgroup e volta a calcular a largura das colunas sozinha (o mesmo
-        // desalinhamento que o colgroup foi criado para evitar). Por isso o colgroup
-        // do corpo é copiado manualmente para o cabeçalho sempre que a tabela é
-        // redesenhada/redimensionada.
-        function sincronizarColgroupCabecalho() {
+        // No modo combinado (27 colunas, com linhas extras SALDO ANTERIOR/DO MÊS/FINAL
+        // fixadas dentro do <thead>), o DataTables mantém 2 tabelas internas
+        // (cabeçalho e corpo) que calculam a largura de cada coluna de forma
+        // independente — cada uma só enxerga o próprio conteúdo, então a diferença
+        // acumula e desalinha cabeçalho x dados ao rolar. table-layout:fixed e
+        // <colgroup> foram testados e não resolveram de forma confiável (o navegador
+        // ainda respeitava o conteúdo em vez da largura pedida). A solução: medir a
+        // largura que cada coluna precisa olhando cabeçalho E corpo juntos, e aplicar
+        // esse valor, em pixel, como largura explícita em toda célula daquela coluna
+        // nas duas tabelas — assim as duas ficam exatamente iguais, coluna por coluna.
+        function sincronizarLargurasColunas() {
             if (tipoRelInicial != '1') return;
             var $wrapper = $('#tabela_analise_previsto_realizado_wrapper');
-            var bodyColgroup = $wrapper.find('.dataTables_scrollBody table colgroup')[0];
             var headTable = $wrapper.find('.dataTables_scrollHead table')[0];
-            if (!bodyColgroup || !headTable) return;
-            var headColgroup = headTable.querySelector('colgroup');
-            if (headColgroup) headTable.removeChild(headColgroup);
-            headTable.insertBefore(bodyColgroup.cloneNode(true), headTable.firstChild);
+            var bodyTable = $wrapper.find('.dataTables_scrollBody table')[0];
+            if (!headTable || !bodyTable) return;
+
+            // limpa larguras aplicadas numa passada anterior antes de medir de novo
+            $(headTable).find('th').css({ width: '', minWidth: '', maxWidth: '' });
+            $(bodyTable).find('td').css({ width: '', minWidth: '', maxWidth: '' });
+
+            var larguras = [];
+            function medir(tabela, seletorLinhas) {
+                $(tabela).find(seletorLinhas).each(function () {
+                    var idx = 0;
+                    $(this).children().each(function () {
+                        var colspan = parseInt($(this).attr('colspan') || '1', 10);
+                        if (colspan === 1) {
+                            var largura = this.getBoundingClientRect().width;
+                            larguras[idx] = Math.max(larguras[idx] || 0, largura);
+                        }
+                        idx += colspan;
+                    });
+                });
+            }
+            // pula a 1ª linha do cabeçalho (colspan=2 por mês) - só linhas com 1 célula
+            // por coluna real ajudam a medir a largura individual de cada coluna
+            medir(headTable, 'thead tr:not(:first-child)');
+            medir(bodyTable, 'tbody tr');
+
+            function aplicar(tabela, seletorLinhas) {
+                $(tabela).find(seletorLinhas).each(function () {
+                    var idx = 0;
+                    $(this).children().each(function () {
+                        var colspan = parseInt($(this).attr('colspan') || '1', 10);
+                        if (colspan === 1 && larguras[idx] != null) {
+                            $(this).css({
+                                width: larguras[idx] + 'px',
+                                minWidth: larguras[idx] + 'px',
+                                maxWidth: larguras[idx] + 'px'
+                            });
+                        }
+                        idx += colspan;
+                    });
+                });
+            }
+            aplicar(headTable, 'thead tr:not(:first-child)');
+            aplicar(bodyTable, 'tbody tr');
         }
 
-        sincronizarColgroupCabecalho();
-        table.on('draw.dt', sincronizarColgroupCabecalho);
+        sincronizarLargurasColunas();
+        table.on('draw.dt', sincronizarLargurasColunas);
 
         setTimeout(function () {
             table.columns.adjust().draw();
-            sincronizarColgroupCabecalho();
+            sincronizarLargurasColunas();
         }, 100);
 
         $(window).on('resize', function () {
@@ -2064,7 +2107,7 @@
                 $('.dataTables_scrollBody').css('max-height', calcularScrollTabela());
                 $('.dataTables_scrollBody').css('height', calcularScrollTabela());
                 table.columns.adjust().draw();
-                sincronizarColgroupCabecalho();
+                sincronizarLargurasColunas();
             }, 100);
         });
     });
