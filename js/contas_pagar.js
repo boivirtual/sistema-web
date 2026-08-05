@@ -2193,6 +2193,21 @@ function formataValor(valor) {
 }
 
 function executar_baixa_conta_pagar_individual() {
+    var tipoDoc = $("#tipo_doc").val();
+    var tipoDocTexto = $("#tipo_doc option:selected").text().trim();
+
+    if (!tipoDoc || tipoDoc === '00') {
+        $("#mensagem_erro").modal();
+        $("#mensagem_erro .modal-body").html('Informe o tipo de documento.');
+        return;
+    }
+
+    if (tipoDocTexto.toLowerCase() !== 'recibos' && !$("#doc_editar").val()) {
+        $("#mensagem_erro").modal();
+        $("#mensagem_erro .modal-body").html('Informe o número do documento.');
+        return;
+    }
+
     var dadosarray = new Array();
     dadosarray[0] = $("#doc_editar").val();
     dadosarray[1] = $("#parcela_editar").val();
