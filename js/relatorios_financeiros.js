@@ -468,6 +468,19 @@ function limpa_contas_selecionadas_ctr() {
     });
 }
 
+function limpa_contas_selecionadas_previsao() {
+    $("#exibe_conta").val('');
+
+    $.ajax({
+        type: 'post',
+        url: 'gera_secao_limpa_conta.php',
+        data: {limpa: "S"},
+        success: function(data) {
+            location.href='form_rel_analise_previsto_realizado.php';
+        },
+    });
+}
+
 function imprimir_fluxo_caixa(opcao) {
     //var tipo_caixa = $("#tipo_caixa").val();
     $("#aguardar").show();
@@ -1329,6 +1342,39 @@ function listar_previsto_realizado_tela(opcao) {
     var codigo_cc = $("#codigo_cc").val();
     var codigo_local = $("#codigo_fazenda").val();
 
+    var aChk = document.getElementsByName("conta_option");
+    var tem_conta = '';
+    var j = 0;
+    var conta_filtro = [];
+
+    for (var i = 0; i < aChk.length; i++) {
+        if (aChk[i].checked == true) {
+            tem_conta = 'S';
+        }
+    }
+
+    if (tem_conta=='') {
+        var array_conta= new Array();
+        conta_filtro = "Todas";
+    }
+    else {
+        var array_conta = new Array();
+        var valor = new Array();
+
+        for (var i = 0; i < aChk.length; i++) {
+            if (aChk[i].checked == true) {
+                valor[j] = aChk[i].value;
+                j++;
+
+                var desc = aChk[i].className;
+                conta_filtro.push(desc.trim());
+            }
+        }
+        var array_conta=valor.join(",");
+    }
+
+    conta_filtro = "Conta: " + conta_filtro + "->";
+
     if (codigo_local == null) {
         var array_fazenda = new Array();
     } else {
@@ -1399,6 +1445,7 @@ function listar_previsto_realizado_tela(opcao) {
         ano +
         "->" +
         codigo_cc_filtro +
+        conta_filtro +
         tipo_rel_filtro;
 
     $("#aguardar").modal();
@@ -1413,6 +1460,8 @@ function listar_previsto_realizado_tela(opcao) {
             array_codigo_cc +
             "&fazendas=" +
             array_fazenda +
+            "&conta=" +
+            array_conta +
             "&ano=" +
             ano;
     }
@@ -1426,6 +1475,8 @@ function listar_previsto_realizado_tela(opcao) {
             array_codigo_cc +
             "&fazendas=" +
             array_fazenda +
+            "&conta=" +
+            array_conta +
             "&ano=" +
             ano;
         tout = setTimeout("limpar_tela()", 5000);
@@ -1436,6 +1487,7 @@ function listar_previsao_excel() {
     var ano = $("#ano_mensal").val();
     var tipo_rel = $("#tipo_rel").val();
     var codigo_cc = $("#codigo_cc").val();
+    var codigo_conta = $("#codigo_conta").val();
     var codigo_local = $("#codigo_fazenda").val();
     var descricao_filtro = $("#descricao_filtro").val();
 
@@ -1450,6 +1502,8 @@ function listar_previsao_excel() {
         codigo_local +
         "&codigo_cc=" +
         codigo_cc +
+        "&conta=" +
+        codigo_conta +
         "&ano=" +
         ano;
 

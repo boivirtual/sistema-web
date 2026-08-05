@@ -109,6 +109,7 @@
 
     $array_cc = $_SESSION['forma_pag_rel'];
     $array_local = $_SESSION['local_precisao_contas_rel'];
+    $contas = $_SESSION['codigo_conta_previsao'];
 
 ?>
 
@@ -141,12 +142,16 @@
 		        <div class="col-lg-12">
                         <div class="row col-md-12 filtro_exibido" id="consulta_contas">
                             <form method="GET" action="#" enctype="multipart/form-data" >
-                            
+
+                                <input type="hidden" name="tipo_conta" id="tipo_conta" value="T">
+                                <input id="limpar_filtro_contas" type="hidden" <?php echo "value='" . $_SESSION['limpa_conta_previsao'] . "'"; ?>>
+                                <input id="exibe_conta" type="hidden" <?php echo "value='".$contas."'"; ?>>
+
                                 <div class="tab-panel ">
                                     <div class="tab-pane active">
                                         <fieldset class="scheduler-border " >
                                             <legend class="scheduler-border fonte-legend">Filtros</legend>
-                                                
+
                                             <div class="row">
                                                 <div class="form-group col-md-11">
                                                 </div>
@@ -207,37 +212,37 @@
 
                                                 <div class="row">
 
-                                                    <div class="form-group col-md-5">
+                                                    <div class="form-group col-md-3">
                                                         <label for="codigo_fazenda" class="control-label">Local</label>
                                                         <select class="form-control selectpicker" id="codigo_fazenda" multiple name="codigo_fazenda">
-                                                        <?php 
-                                                            while($reg_local = mysqli_fetch_object($tbl_local)) { 
-                                                            
+                                                        <?php
+                                                            while($reg_local = mysqli_fetch_object($tbl_local)) {
+
                                                                 foreach ($array_locais_usuario as $value) {
                                                                     $value = ltrim($value);
                                                                     $value = rtrim($value);
                                                                     if ($value==$reg_local->tbl_pessoa_id) {
-                                                                        echo '<option value="'.$value.'">' .$reg_local->tbl_pessoa_nome. '</option>'; 
+                                                                        echo '<option value="'.$value.'">' .$reg_local->tbl_pessoa_nome. '</option>';
                                                                     }
                                                                 }
-                                                            } 
+                                                            }
                                                          ?>
                                                         </select>
                                                     </div>
 
-                                                    <div class="form-group col-md-5">
+                                                    <div class="form-group col-md-3">
                                                         <label for="codigo_cc" class="control-label">Centro de Custos</label>
                                                         <select class="form-control  selectpicker" id="codigo_cc" multiple data-live-search="true" name="codigo_cc" >
 
-                                                        <?php 
+                                                        <?php
 
-while ($reg_cc = mysqli_fetch_object($tbl_centro_custos)) { 
+while ($reg_cc = mysqli_fetch_object($tbl_centro_custos)) {
     $codigo_cc = $reg_cc->tbl_cc_codigo_id;
     $descricao_cc = $reg_cc->tbl_cc_descricao;
 
     if ($array_cc!="") {
         foreach ($array_cc as $value) {
-            if ($value==$codigo_cc) { 
+            if ($value==$codigo_cc) {
                 echo '<option value="' . $codigo_cc . '" selected="selected">' . $descricao_cc .
                  '</option>';
             }
@@ -245,7 +250,7 @@ while ($reg_cc = mysqli_fetch_object($tbl_centro_custos)) {
                 echo '<option value="'.$codigo_cc.'">' . $descricao_cc .
                  '</option>';
             }
-        }                           
+        }
     }
     else {
         echo '<option value="'.$codigo_cc.'">' . $descricao_cc .
@@ -254,6 +259,11 @@ while ($reg_cc = mysqli_fetch_object($tbl_centro_custos)) {
 
 }?>
                                                         </select>
+                                                    </div>
+
+                                                    <div class="form-group col-md-4">
+                                                        <label for="codigo_conta" class="control-label">Conta Contábil</label>
+                                                        <input type="text" name="contas_selecionadas" id="contas_selecionadas" class="form-control" value="Todas ou (Clique p/ selecionar contas)">
                                                     </div>
 
                                                     <div class="form-group col-md-1">
@@ -298,7 +308,43 @@ while ($reg_cc = mysqli_fetch_object($tbl_centro_custos)) {
                 </div>
             </div>
 
-            <div class="modal fade" id="aguardar" tabindex="-1" role="dialog" 
+            <div class="modal fade" id="modal_conta" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document" style="overflow-y: initial !important">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="exibe_contas_selecionadas()">&times;</button>
+                            <h4 class="modal-title">Selecione a conta</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group col-md-3 pull-right">
+                                        <a href="#" onclick="limpa_contas_selecionadas_previsao()">Limpar Seleção
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12" id="modal_conta_info" style="height: 50vh; overflow-y: auto;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button data-dismiss="modal" class="btn btn-primary pull-right" type="button" onclick="exibe_contas_selecionadas()">Fechar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="aguardar" tabindex="-1" role="dialog"
                 aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
