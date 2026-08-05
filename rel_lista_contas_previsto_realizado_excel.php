@@ -54,31 +54,38 @@ function resolver_primeiro_ctp_rateio($conector, $ctp_id, $ctp_grupo_repeticao, 
 // Reparte o valor de um lançamento de contas a pagar entre as contas contábeis do
 // rateio (tbl_ctp_rateio), proporcionalmente ao valor de cada conta. Quando a conta
 // já vem preenchida no próprio registro (sem rateio), retorna uma única fatia.
-function montar_fatias_conta_rateio_ctp($conector, $ctp_id, $cod_conta_header, $valor, $ctp_grupo_repeticao = null, $ctp_numero_doc = null, $ctp_codigo_fornecedor = null, $ctp_incluido_em = null) {
+function montar_fatias_conta_rateio_ctp($conector, $ctp_id, $cod_conta_header, $valor, $ctp_grupo_repeticao = null, $ctp_numero_doc = null, $ctp_codigo_fornecedor = null, $ctp_incluido_em = null, $fazendas_ids = '', $cc_ids = '') {
     if ($cod_conta_header !== null && $cod_conta_header !== '') {
         return [['cod_conta' => $cod_conta_header, 'valor' => $valor]];
     }
 
     $ctp_id_rateio = resolver_primeiro_ctp_rateio($conector, $ctp_id, $ctp_grupo_repeticao, $ctp_numero_doc, $ctp_codigo_fornecedor, $ctp_incluido_em);
 
-    $linhas_rateio = array();
-    $soma_rateio = 0;
-
-    $rs = mysqli_query($conector, "SELECT rc_codigo_conta, rc_valor_conta FROM tbl_ctp_rateio
+    // soma global do rateio (todas as linhas, sem filtro de local/CC) - denominador
+    // da proporção de cada linha. Não filtrar aqui é o que garante a proporção
+    // certa quando o rateio também separa por conta (não só por local/CC).
+    $rs_soma = mysqli_query($conector, "SELECT SUM(rc_valor_conta) AS soma FROM tbl_ctp_rateio
         WHERE rc_ctp_id='$ctp_id_rateio' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''");
+    $row_soma = $rs_soma ? mysqli_fetch_object($rs_soma) : null;
+    $soma_rateio = $row_soma ? (float)$row_soma->soma : 0;
 
-    while ($r = mysqli_fetch_object($rs)) {
-        $linhas_rateio[] = $r;
-        $soma_rateio += $r->rc_valor_conta;
-    }
-
-    if (count($linhas_rateio) == 0 || $soma_rateio == 0) {
+    if ($soma_rateio == 0) {
         return array();
     }
 
+    // Quando há filtro de Local/Centro de Custos, considera nos totais só as linhas
+    // do rateio que casam com o filtro (mesma lógica já usada em Análise de
+    // Pagamentos/Recebimentos) - sem isso, o total somava o documento inteiro mesmo
+    // filtrando por um local/CC específico.
+    $wlocal_rateio = ($fazendas_ids != '') ? " AND rc_codigo_local IN($fazendas_ids)" : '';
+    $wcc_rateio = ($cc_ids != '') ? " AND (rc_codigo_cc IS NULL OR rc_codigo_cc IN($cc_ids))" : '';
+
+    $rs = mysqli_query($conector, "SELECT rc_codigo_conta, rc_valor_conta FROM tbl_ctp_rateio
+        WHERE rc_ctp_id='$ctp_id_rateio' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''" . $wlocal_rateio . $wcc_rateio);
+
     $fatias = array();
 
-    foreach ($linhas_rateio as $r) {
+    while ($r = mysqli_fetch_object($rs)) {
         $prop = $r->rc_valor_conta / $soma_rateio;
         $fatias[] = ['cod_conta' => $r->rc_codigo_conta, 'valor' => $valor * $prop];
     }
