@@ -1329,6 +1329,39 @@ function listar_previsto_realizado_tela(opcao) {
     var codigo_cc = $("#codigo_cc").val();
     var codigo_local = $("#codigo_fazenda").val();
 
+    var aChk = document.getElementsByName("conta_option");
+    var tem_conta = '';
+    var j = 0;
+    var conta_filtro = [];
+
+    for (var i = 0; i < aChk.length; i++) {
+        if (aChk[i].checked == true) {
+            tem_conta = 'S';
+        }
+    }
+
+    if (tem_conta=='') {
+        var array_conta= new Array();
+        conta_filtro = "Todas";
+    }
+    else {
+        var array_conta = new Array();
+        var valor = new Array();
+
+        for (var i = 0; i < aChk.length; i++) {
+            if (aChk[i].checked == true) {
+                valor[j] = aChk[i].value;
+                j++;
+
+                var desc = aChk[i].className;
+                conta_filtro.push(desc.trim());
+            }
+        }
+        var array_conta=valor.join(",");
+    }
+
+    conta_filtro = "Conta: " + conta_filtro + "->";
+
     if (codigo_local == null) {
         var array_fazenda = new Array();
     } else {
