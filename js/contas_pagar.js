@@ -2217,6 +2217,7 @@ function executar_baixa_conta_pagar_individual() {
     dadosarray[7] = $("#historico").val();
     dadosarray[8] = $("#nome_for").val();
     dadosarray[9] = $("#ctp_id").val();
+    dadosarray[10] = tipoDoc;
 
     $.post("gravar_baixa_contas_pagar_individual.php", {dadosarray: dadosarray}, function (get_retorno) {
         if (get_retorno == 0) {
