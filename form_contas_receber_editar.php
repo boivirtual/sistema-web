@@ -665,7 +665,7 @@ while ($reg_conta_pag = mysqli_fetch_object($conta_pagamento)) {
                                                             <label for="baixa_conta_receber" class="control-label">&nbsp;
                                                             </label>
 
-                                                            <button type="button" class=" form-control btn btn-primary" onClick="executar_baixa_conta_receber_individual()">Confirmar Baixa</button>
+                                                            <button type="button" id="btn_confirmar_baixa_individual" class=" form-control btn btn-primary" onClick="executar_baixa_conta_receber_individual()">Confirmar Baixa</button>
                                                         </div>
 
 
