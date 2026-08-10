@@ -27,86 +27,79 @@ $ctp_id_param      = isset($_GET['ctp_id'])            ? intval($_GET['ctp_id'])
 $fornecedor_resolvido = null;
 $incluido_em_resolvido = null;
 
-// Repetição: ctp_numero_doc fica vazio em todas as ocorrências até que uma delas seja
-// baixada (aí ganha número próprio) — então resolve o grupo pelo ctp_id sempre que ele
-// não tiver vindo explícito, independente do Número do Documento estar preenchido ou não.
+// Resolve grupo de repetição e dados de fallback (fornecedor+instante) a partir do
+// ctp_id, independente do Número do Documento desta linha em particular — ele pode já
+// ter sido preenchido por uma baixa individual, sem que as OUTRAS parcelas/ocorrências
+// do mesmo lançamento tenham recebido o mesmo número.
 if ($grupo_repeticao === '' && $ctp_id_param > 0) {
     $rs_gr  = mysqli_query($conector, "SELECT ctp_grupo_repeticao, ctp_codigo_fornecedor, ctp_incluido_em FROM contas_pagar WHERE ctp_id = '$ctp_id_param'");
     $row_gr = $rs_gr ? mysqli_fetch_object($rs_gr) : null;
-    if ($row_gr && !empty($row_gr->ctp_grupo_repeticao)) {
-        $grupo_repeticao = $row_gr->ctp_grupo_repeticao;
-    } elseif ($row_gr && ($numero_doc === '' || $numero_doc === '0')) {
-        // Parcelamento sem número de documento (nem repetição): agrupa por fornecedor +
-        // instante de inclusão idêntico (todas as parcelas de um lançamento são gravadas
-        // no mesmo instante) — senão o anexo só apareceria na parcela onde foi anexado.
+    if ($row_gr) {
+        if (!empty($row_gr->ctp_grupo_repeticao)) {
+            $grupo_repeticao = $row_gr->ctp_grupo_repeticao;
+        }
         $fornecedor_resolvido  = $row_gr->ctp_codigo_fornecedor;
         $incluido_em_resolvido = $row_gr->ctp_incluido_em;
     }
 }
 
-// Grupo de Repetição tem prioridade sobre o Número do Documento: uma ocorrência da série
-// pode já ter recebido número próprio (ex.: após uma baixa) sem deixar de pertencer ao
-// grupo onde o anexo/link foi originalmente salvo.
+// Busca em cascata: tenta cada estratégia na ordem e só passa para a próxima se a
+// anterior não encontrar nada. Necessário porque uma baixa pode preencher o Número do
+// Documento só desta linha, sem "quebrar" seu vínculo com o grupo/fornecedor+instante
+// onde o anexo foi realmente salvo.
+function _ctp_busca_anexos($conector, $where) {
+    $ssql = "SELECT a.anexo_id, a.anexo_nome, a.anexo_arquivo, a.anexo_tamanho,
+                    a.anexo_incluido_em, a.anexo_incluido_por
+             FROM tbl_ctp_anexos a
+             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
+             WHERE $where
+             ORDER BY a.anexo_id ASC";
+    $rs = mysqli_query($conector, $ssql);
+    $rows = [];
+    if ($rs) { while ($row = mysqli_fetch_object($rs)) { $rows[] = $row; } }
+    return $rows;
+}
+
+$rows = [];
+
 if ($grupo_repeticao !== '') {
     $gr_esc = mysqli_real_escape_string($conector, $grupo_repeticao);
+    $rows = _ctp_busca_anexos($conector, "c.ctp_grupo_repeticao = '$gr_esc'");
+}
 
-    $ssql = "SELECT a.anexo_id, a.anexo_nome, a.anexo_arquivo, a.anexo_tamanho,
-                    a.anexo_incluido_em, a.anexo_incluido_por
-             FROM tbl_ctp_anexos a
-             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
-             WHERE c.ctp_grupo_repeticao = '$gr_esc'
-             ORDER BY a.anexo_id ASC";
-
-} elseif ($numero_doc !== '' && $numero_doc !== '0') {
+if (!$rows && $numero_doc !== '' && $numero_doc !== '0') {
     $nd_esc  = mysqli_real_escape_string($conector, $numero_doc);
     $for_esc = intval($codigo_fornecedor);
+    $rows = _ctp_busca_anexos($conector, "c.ctp_numero_doc = '$nd_esc' AND c.ctp_codigo_fornecedor = '$for_esc'");
+}
 
-    $ssql = "SELECT a.anexo_id, a.anexo_nome, a.anexo_arquivo, a.anexo_tamanho,
-                    a.anexo_incluido_em, a.anexo_incluido_por
-             FROM tbl_ctp_anexos a
-             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
-             WHERE c.ctp_numero_doc = '$nd_esc'
-               AND c.ctp_codigo_fornecedor = '$for_esc'
-             ORDER BY a.anexo_id ASC";
-
-} elseif (!empty($fornecedor_resolvido) && !empty($incluido_em_resolvido)) {
+if (!$rows && !empty($fornecedor_resolvido) && !empty($incluido_em_resolvido)) {
     $for_esc2 = intval($fornecedor_resolvido);
     $inc_esc2 = mysqli_real_escape_string($conector, $incluido_em_resolvido);
+    $rows = _ctp_busca_anexos($conector, "c.ctp_codigo_fornecedor = '$for_esc2' AND c.ctp_incluido_em = '$inc_esc2'");
+}
 
-    $ssql = "SELECT a.anexo_id, a.anexo_nome, a.anexo_arquivo, a.anexo_tamanho,
-                    a.anexo_incluido_em, a.anexo_incluido_por
-             FROM tbl_ctp_anexos a
-             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
-             WHERE c.ctp_codigo_fornecedor = '$for_esc2'
-               AND c.ctp_incluido_em = '$inc_esc2'
-               AND (c.ctp_numero_doc IS NULL OR c.ctp_numero_doc = '')
-               AND (c.ctp_grupo_repeticao IS NULL OR c.ctp_grupo_repeticao = '')
-             ORDER BY a.anexo_id ASC";
-
-} elseif ($ctp_id_param > 0) {
-    $ssql = "SELECT anexo_id, anexo_nome, anexo_arquivo, anexo_tamanho,
+if (!$rows && $ctp_id_param > 0) {
+    $rs = mysqli_query($conector, "SELECT anexo_id, anexo_nome, anexo_arquivo, anexo_tamanho,
                     anexo_incluido_em, anexo_incluido_por
              FROM tbl_ctp_anexos
              WHERE anexo_ctp_id = '$ctp_id_param'
-             ORDER BY anexo_id ASC";
-} else {
+             ORDER BY anexo_id ASC");
+    if ($rs) { while ($row = mysqli_fetch_object($rs)) { $rows[] = $row; } }
+}
+
+if (!$rows && $numero_doc === '' && $grupo_repeticao === '' && $ctp_id_param === 0) {
     echo '<p class="text-muted" style="padding:10px;">Nenhum documento informado.</p>';
+    mysqli_close($conector);
     exit;
 }
 
-$rs    = mysqli_query($conector, $ssql);
-$total = $rs ? mysqli_num_rows($rs) : 0;
-
-if ($total === 0) {
+if (!$rows) {
     echo '<p class="text-muted" style="padding:10px 0;">Nenhum anexo encontrado para este documento.</p>';
     mysqli_close($conector);
     exit;
 }
 
-$rows = [];
-while ($row = mysqli_fetch_object($rs)) {
-    $rows[] = $row;
-}
 $qtd = count($rows);
 
 echo '<ul style="list-style:none;padding:0;margin:0;">';
