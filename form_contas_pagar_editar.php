@@ -599,8 +599,9 @@
                                                         $for_js_ed = intval($codigo_fornecedor);
                                                         $id_js_ed  = intval($chave_ctp);
                                                         $auto_inp  = 'true';
+                                                        $gr_js_ed  = addslashes($grupo_repeticao_ctp);
                                                     ?>
-                                                    <a href="#" onclick="abrirModalAnexos('<?= $nd_js_ed ?>',<?= $for_js_ed ?>,<?= $id_js_ed ?>,'<?= $nd_js_ed ?>',<?= $auto_inp ?>); return false;"
+                                                    <a href="#" onclick="abrirModalAnexos('<?= $nd_js_ed ?>',<?= $for_js_ed ?>,<?= $id_js_ed ?>,'<?= $nd_js_ed ?>',<?= $auto_inp ?>,'<?= $gr_js_ed ?>'); return false;"
                                                        style="font-size:0.9em;font-weight:500;color:#128cb8;">
                                                         <i class="fas fa-paperclip"></i> Anexos
                                                         <?php if ($qtd_anexos > 0): ?>
