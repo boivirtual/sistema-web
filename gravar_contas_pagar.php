@@ -281,7 +281,7 @@ ob_start(function($buffer) {
             if ($tem_pago_n) {
                 do {
                     $numero_doc_n = sonumero(date('y/m/d')) . substr(mt_rand(), 0, 4);
-                    $rs_chk_doc = mysqli_query($conector, "SELECT COUNT(*) c FROM contas_pagar WHERE ctp_numero_doc='$numero_doc_n' AND ctp_codigo_fornecedor='$codigo_for'");
+                    $rs_chk_doc = mysqli_query($conector, "SELECT COUNT(*) c FROM contas_pagar WHERE ctp_numero_doc='$numero_doc_n' AND ctp_codigo_fornecedor='$codigo_for_n'");
                 } while (mysqli_fetch_assoc($rs_chk_doc)['c'] > 0);
             }
         }
