@@ -581,7 +581,7 @@ if ($num_rows_usuario != 0) {
                                         <div class="form-group col-md-5">
                                             <label for="tipo_doc_baixar" class="control-label">* Tipo Documento</label>
                                             <select class="form-control" id="tipo_doc_baixar" name="tipo_doc_baixar">
-                                                <option value="">...</option>
+                                                <option value="00">...</option>
                                                 <?php while ($reg_tipo_doc = mysqli_fetch_object($tipos_documentos_baixar)) { ?>
                                                     <option value="<?php echo $reg_tipo_doc->tbl_tipo_doc_id; ?>">
                                                         <?php echo $reg_tipo_doc->tbl_tipo_doc_descricao; ?>
