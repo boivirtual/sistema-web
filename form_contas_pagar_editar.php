@@ -127,7 +127,12 @@
 
     $nd_esc_an  = mysqli_real_escape_string($conector, $numero_ctp);
     $for_esc_an = intval($codigo_fornecedor);
-    if ($nd_esc_an !== '' && $nd_esc_an !== '0') {
+    $gr_esc_an  = mysqli_real_escape_string($conector, $grupo_repeticao_ctp);
+    if ($gr_esc_an !== '') {
+        // Repetição: o anexo pode ter sido salvo em outra ocorrência do mesmo grupo —
+        // prioriza o grupo, pois o Número do Documento pode já ter mudado (ex.: após baixa).
+        $rs_qtd_an = mysqli_query($conector, "SELECT COUNT(*) as qtd FROM tbl_ctp_anexos a INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id WHERE c.ctp_grupo_repeticao = '$gr_esc_an'");
+    } elseif ($nd_esc_an !== '' && $nd_esc_an !== '0') {
         $rs_qtd_an = mysqli_query($conector, "SELECT COUNT(*) as qtd FROM tbl_ctp_anexos a INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id WHERE c.ctp_numero_doc = '$nd_esc_an' AND c.ctp_codigo_fornecedor = '$for_esc_an'");
     } else {
         $rs_qtd_an = mysqli_query($conector, "SELECT COUNT(*) as qtd FROM tbl_ctp_anexos WHERE anexo_ctp_id = '$chave_ctp'");
