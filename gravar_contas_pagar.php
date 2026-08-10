@@ -821,13 +821,20 @@ ob_start(function($buffer) {
                 mysqli_close($conector); exit;
             }
             $novo_id_r = mysqli_insert_id($conector);
-            if ($primeiro_id_r === null) {
-                $primeiro_id_r = $novo_id_r;
-            }
             // Cada ocorrência é um lançamento independente: precisa da própria cópia do
             // rateio e dos anexos/links (não só a 1ª), senão a edição/baixa de ocorrências
             // seguintes não encontra Local/CC/Conta nem os anexos.
-            salvar_anexos($novo_id_r, $conector, $nomeusuario, $data_sistema);
+            if ($primeiro_id_r === null) {
+                $primeiro_id_r = $novo_id_r;
+                salvar_anexos($primeiro_id_r, $conector, $nomeusuario, $data_sistema);
+            } else {
+                // Replica os anexos/links já salvos na 1ª ocorrência (sem reprocessar
+                // $_FILES — o arquivo físico já foi movido e só pode ser lido uma vez).
+                mysqli_query($conector, "INSERT INTO tbl_ctp_anexos
+                        (anexo_ctp_id, anexo_nome, anexo_arquivo, anexo_tamanho, anexo_incluido_em, anexo_incluido_por)
+                    SELECT $novo_id_r, anexo_nome, anexo_arquivo, anexo_tamanho, anexo_incluido_em, anexo_incluido_por
+                    FROM tbl_ctp_anexos WHERE anexo_ctp_id = $primeiro_id_r");
+            }
             salvar_rateio($novo_id_r, $conector, $nomeusuario, $data_sistema);
         };
 
