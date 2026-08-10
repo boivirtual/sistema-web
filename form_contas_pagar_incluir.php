@@ -1604,12 +1604,13 @@ $data_sistema = date("Y-m-d");
                         return erro('Informe o Banco/Conta Pagamento.', $('#codigo_forma_rec'));
                     }
                     if ($('#pago').is(':checked')) {
-                        if (!$('#number_doc').val().trim()) {
-                            return erro('Marcando a parcela como Paga, informe o Número Documento.', $('#number_doc'));
-                        }
                         var tipoDoc = $('#tipo_doc').val();
                         if (!tipoDoc || tipoDoc === '00') {
                             return erro('Marcando a parcela como Paga, informe o Tipo Documento.', $('#tipo_doc'));
+                        }
+                        var tipoDocTexto = $('#tipo_doc option:selected').text().trim();
+                        if (tipoDocTexto.toLowerCase() !== 'recibos' && !$('#number_doc').val().trim()) {
+                            return erro('Marcando a parcela como Paga, informe o Número Documento.', $('#number_doc'));
                         }
                     }
                 } else if (n >= 1) {
@@ -1619,12 +1620,13 @@ $data_sistema = date("Y-m-d");
                     // Banco/Conta Pagamento de cada parcela é validado em validarParcelamento()
                     for (var pi = 0; pi < n; pi++) {
                         if ($('#parc_pago_' + pi).is(':checked')) {
-                            if (!$('#number_doc').val().trim()) {
-                                return erro('Marcando a ' + ordinal(pi + 1) + ' parcela como Paga, informe o Número Documento.', $('#number_doc'));
-                            }
                             var tipoDocParc = $('#parc_tipodoc_' + pi).val();
                             if (!tipoDocParc || tipoDocParc === '00') {
                                 return erro('Marcando a ' + ordinal(pi + 1) + ' parcela como Paga, informe o Tipo Documento dessa parcela.', $('#parc_tipodoc_' + pi));
+                            }
+                            var tipoDocParcTexto = $('#parc_tipodoc_' + pi + ' option:selected').text().trim();
+                            if (tipoDocParcTexto.toLowerCase() !== 'recibos' && !$('#number_doc').val().trim()) {
+                                return erro('Marcando a ' + ordinal(pi + 1) + ' parcela como Paga, informe o Número Documento.', $('#number_doc'));
                             }
                         }
                     }
