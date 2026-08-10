@@ -1480,7 +1480,11 @@ function exibir_dados_baixa() {
     );
 }
 
+var _baixaCtrIndividualEmAndamento = false;
+
 function executar_baixa_conta_receber_individual() {
+    if (_baixaCtrIndividualEmAndamento) return;
+
     var dadosarray = new Array();
     dadosarray[0] = $("#number_doc").val();
     dadosarray[1] = $("#number_parcela").val();
@@ -1490,13 +1494,15 @@ function executar_baixa_conta_receber_individual() {
     dadosarray[7] = $("#historico").val();
     dadosarray[8] = $("#nome_cli").val();
     dadosarray[9] = $("#id_ctr").val();
-    
+
+    _baixaCtrIndividualEmAndamento = true;
     $("#btn_confirmar_baixa_individual").attr("disabled", true);
 
     $.post(
         "gravar_baixa_contas_receber_individual.php",
         { dadosarray: dadosarray },
         function (get_retorno) {
+            _baixaCtrIndividualEmAndamento = false;
             $("#btn_confirmar_baixa_individual").attr("disabled", false);
             if (get_retorno == 0) {
                 $("#mensagem_retorno").modal();
@@ -1509,6 +1515,7 @@ function executar_baixa_conta_receber_individual() {
             }
         }
     ).fail(function () {
+        _baixaCtrIndividualEmAndamento = false;
         $("#btn_confirmar_baixa_individual").attr("disabled", false);
         $("#mensagem_erro").modal();
         $("#mensagem_erro .modal-body").html('Erro na comunicação com o servidor.');
