@@ -17,3 +17,11 @@ vendor - Copia/
 *.bak
 Thumbs.db
 .DS_Store
+
+# Backups/dumps e arquivos de editor que não fazem parte do código do sistema
+sistema.zip
+*.sql
+sftp-config.json
+objects_salary.txt
+pai.csv
+teste_style.html
