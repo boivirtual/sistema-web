@@ -1284,6 +1284,8 @@ function baixar_conta_selecionada() {
         return;
     }
 
+    $("#baixar_selecionada_individual").attr("disabled", true);
+
     $.post(
         "gravar_baixa_contas_receber_selecionada.php",
         {   ctr_id: ctr_id,
@@ -1293,6 +1295,7 @@ function baixar_conta_selecionada() {
             conta_pag: conta_pag,
         },
         function (get_retorno) {
+            $("#baixar_selecionada_individual").attr("disabled", false);
             if (get_retorno != 0) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(get_retorno);
@@ -1303,7 +1306,11 @@ function baixar_conta_selecionada() {
                 );
             }
         }
-    );
+    ).fail(function () {
+        $("#baixar_selecionada_individual").attr("disabled", false);
+        $("#mensagem_erro").modal();
+        $("#mensagem_erro .modal-body").html('Erro na comunicação com o servidor.');
+    });
 }
 
 function baixar_contas_selecionadas() {
