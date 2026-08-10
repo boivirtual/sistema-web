@@ -821,20 +821,15 @@ ob_start(function($buffer) {
                 mysqli_close($conector); exit;
             }
             $novo_id_r = mysqli_insert_id($conector);
-            // Cada ocorrência é um lançamento independente: precisa da própria cópia do
-            // rateio e dos anexos/links (não só a 1ª), senão a edição/baixa de ocorrências
-            // seguintes não encontra Local/CC/Conta nem os anexos.
             if ($primeiro_id_r === null) {
                 $primeiro_id_r = $novo_id_r;
+                // Anexos/links ficam só na 1ª ocorrência — a busca (api/get_anexos.php)
+                // já enxerga todo o grupo de repetição, então duplicar aqui só faria o
+                // mesmo anexo aparecer repetido N vezes no popup.
                 salvar_anexos($primeiro_id_r, $conector, $nomeusuario, $data_sistema);
-            } else {
-                // Replica os anexos/links já salvos na 1ª ocorrência (sem reprocessar
-                // $_FILES — o arquivo físico já foi movido e só pode ser lido uma vez).
-                mysqli_query($conector, "INSERT INTO tbl_ctp_anexos
-                        (anexo_ctp_id, anexo_nome, anexo_arquivo, anexo_tamanho, anexo_incluido_em, anexo_incluido_por)
-                    SELECT $novo_id_r, anexo_nome, anexo_arquivo, anexo_tamanho, anexo_incluido_em, anexo_incluido_por
-                    FROM tbl_ctp_anexos WHERE anexo_ctp_id = $primeiro_id_r");
             }
+            // O rateio, diferente do anexo, é buscado pelo ctp_id exato da ocorrência
+            // (não pelo grupo inteiro) — por isso cada ocorrência precisa da própria cópia.
             salvar_rateio($novo_id_r, $conector, $nomeusuario, $data_sistema);
         };
 
