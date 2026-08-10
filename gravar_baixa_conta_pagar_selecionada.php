@@ -36,6 +36,16 @@ $parcela = $registro_conta->ctp_parcela;
 
 $historico = "Pag total do doc para: " . $razao;
 
+// Trava contra clique duplo/reenvio: se já existe uma baixa deste registro gravada
+// nos últimos segundos, não grava de novo.
+$limite_duplicidade = date("Y/m/d H:i:s", time() - 5);
+$rs_dup = mysqli_query($conector, "SELECT COUNT(*) c FROM baixa_contas_pagar WHERE bcp_id='$chave' AND bcp_data_aceite >= '$limite_duplicidade'");
+if ($rs_dup && mysqli_fetch_assoc($rs_dup)['c'] > 0) {
+    echo "Esta conta já teve uma baixa registrada há poucos segundos.";
+    mysqli_close($conector);
+    exit;
+}
+
 if ($numero_doc==0 || $numero_doc==''){
 	do {
 		$data_sistema = date("y/m/d");
