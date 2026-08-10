@@ -151,8 +151,6 @@
         $rs_qtd_an = mysqli_query($conector, "SELECT COUNT(*) as qtd FROM tbl_ctp_anexos WHERE anexo_ctp_id = '$chave_ctp'");
         $qtd_anexos = $rs_qtd_an ? (int)mysqli_fetch_object($rs_qtd_an)->qtd : 0;
     }
-    $row_qtd_an = $rs_qtd_an ? mysqli_fetch_object($rs_qtd_an) : null;
-    $qtd_anexos = $row_qtd_an ? (int)$row_qtd_an->qtd : 0;
 
     // Detecção de rateio: ctp_codigo_fazenda IS NULL indica conta com rateio
     $tem_rateio = is_null($registro_ctp->ctp_codigo_fazenda)
