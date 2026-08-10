@@ -824,11 +824,8 @@ ob_start(function($buffer) {
             if ($primeiro_id_r === null) {
                 $primeiro_id_r = $novo_id_r;
                 salvar_anexos($primeiro_id_r, $conector, $nomeusuario, $data_sistema);
+                salvar_rateio($primeiro_id_r, $conector, $nomeusuario, $data_sistema);
             }
-            // Cada ocorrência é um lançamento independente: precisa da própria
-            // cópia do rateio (não só a 1ª), senão a edição de ocorrências
-            // seguintes não encontra Local/CC/Conta.
-            salvar_rateio($novo_id_r, $conector, $nomeusuario, $data_sistema);
         };
 
         if ($tem_rateio && count($rateio_locais_r) > 0) {

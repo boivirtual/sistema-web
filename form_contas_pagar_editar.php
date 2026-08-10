@@ -94,6 +94,7 @@
     $descricao_compra = $registro_ctp->ctp_descricao_compra;
     $observacoes_ctp  = $registro_ctp->ctp_observacoes;
     $tipo_documento = $registro_ctp->ctp_tipo_documento;
+    $grupo_repeticao_ctp = $registro_ctp->ctp_grupo_repeticao;
 
     if($agendamento=="S") {
         $desc_agendamento='*Este registro faz parte de um agendamento. Data para pagamento: ' . $data_agendamento->format('d/m/Y');
