@@ -1759,7 +1759,7 @@ $('#modal_baixar').on('show.bs.modal', function (event) {
     modal.find('#vlr_total_baixar').val(valor)
     modal.find('#data_pagamento_baixar').val(vencimento)
     modal.find('#codigo_forma_pagto_baixar').val(forma_pag)
-    modal.find('#tipo_doc_baixar').val(tipo_doc)
+    modal.find('#tipo_doc_baixar').val(tipo_doc || '00')
 })
 
 function baixar_conta_selecionada() {
