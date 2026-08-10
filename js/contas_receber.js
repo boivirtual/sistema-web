@@ -1270,7 +1270,11 @@ $("#modal_baixar").on("show.bs.modal", function (event) {
     modal.find("#codigo_conta_pagto_baixar").val(conta_pag);
 });
 
+var _baixaCtrSelecionadaEmAndamento = false;
+
 function baixar_conta_selecionada() {
+    if (_baixaCtrSelecionadaEmAndamento) return;
+
     var ctr_id = $("#id_baixar").val();
     var numero_doc = $("#number_doc_baixar").val();
     var parcela_doc = $("#number_parcela_baixar").val();
@@ -1284,6 +1288,7 @@ function baixar_conta_selecionada() {
         return;
     }
 
+    _baixaCtrSelecionadaEmAndamento = true;
     $("#baixar_selecionada_individual").attr("disabled", true);
 
     $.post(
@@ -1295,6 +1300,7 @@ function baixar_conta_selecionada() {
             conta_pag: conta_pag,
         },
         function (get_retorno) {
+            _baixaCtrSelecionadaEmAndamento = false;
             $("#baixar_selecionada_individual").attr("disabled", false);
             if (get_retorno != 0) {
                 $("#mensagem_erro").modal();
@@ -1307,6 +1313,7 @@ function baixar_conta_selecionada() {
             }
         }
     ).fail(function () {
+        _baixaCtrSelecionadaEmAndamento = false;
         $("#baixar_selecionada_individual").attr("disabled", false);
         $("#mensagem_erro").modal();
         $("#mensagem_erro .modal-body").html('Erro na comunicação com o servidor.');
