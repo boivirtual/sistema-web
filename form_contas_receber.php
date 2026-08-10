@@ -591,7 +591,7 @@ if ($num_rows_usuario != 0) {
                                     <div class="row">
                                         <div class="form-group col-md-12">
 
-                                            <button type="button" class="btn btn-primary pull-left" id="baixar_selecionadas" onClick="baixar_conta_selecionada()">Confirme a Baixa</button>
+                                            <button type="button" class="btn btn-primary pull-left" id="baixar_selecionada_individual" onClick="baixar_conta_selecionada()">Confirme a Baixa</button>
 
                                             <button data-dismiss="modal" class="btn btn-info pull-right fecha_dados_baixa" type="button">Fechar</button>
                                         </div>
