@@ -2226,7 +2226,10 @@ function executar_baixa_conta_pagar_individual() {
     dadosarray[9] = $("#ctp_id").val();
     dadosarray[10] = tipoDoc;
 
+    $("#btn_confirmar_baixa_individual").attr("disabled", true);
+
     $.post("gravar_baixa_contas_pagar_individual.php", {dadosarray: dadosarray}, function (get_retorno) {
+        $("#btn_confirmar_baixa_individual").attr("disabled", false);
         if (get_retorno == 0) {
             $("#mensagem_retorno").modal();
             $("#mensagem_retorno .modal-body").html('Baixa efetuada com sucesso');
@@ -2234,6 +2237,10 @@ function executar_baixa_conta_pagar_individual() {
             $("#mensagem_erro").modal();
             $("#mensagem_erro .modal-body").html(get_retorno);
         }
+    }).fail(function () {
+        $("#btn_confirmar_baixa_individual").attr("disabled", false);
+        $("#mensagem_erro").modal();
+        $("#mensagem_erro .modal-body").html('Erro na comunicação com o servidor.');
     });
 }
 
