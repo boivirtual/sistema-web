@@ -20,6 +20,16 @@ $valor_juros=0.00;
 $valor_desconto=0.00;
 $valor_acrescimo=0.00;
 
+// Trava contra clique duplo/reenvio: se já existe uma baixa deste registro gravada
+// nos últimos segundos, não grava de novo.
+$limite_duplicidade = date("Y/m/d H:i:s", time() - 5);
+$rs_dup = mysqli_query($conector, "SELECT COUNT(*) c FROM baixa_contas_receber WHERE bcr_id='$id_ctr' AND bcr_data_aceite >= '$limite_duplicidade'");
+if ($rs_dup && mysqli_fetch_assoc($rs_dup)['c'] > 0) {
+    echo "Esta conta já teve uma baixa registrada há poucos segundos.";
+    mysqli_close($conector);
+    exit;
+}
+
 // pega o ultimo registro da baixa para saber qual a sequencia
 $rs = mysqli_query ($conector, "SELECT * FROM baixa_contas_receber
 	WHERE bcr_id ='$id_ctr' 
