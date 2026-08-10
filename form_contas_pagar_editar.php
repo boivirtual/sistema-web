@@ -125,17 +125,31 @@
 
     $tbl_local = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0");
 
-    $nd_esc_an  = mysqli_real_escape_string($conector, $numero_ctp);
-    $for_esc_an = intval($codigo_fornecedor);
-    $gr_esc_an  = mysqli_real_escape_string($conector, $grupo_repeticao_ctp);
+    $nd_esc_an   = mysqli_real_escape_string($conector, $numero_ctp);
+    $for_esc_an  = intval($codigo_fornecedor);
+    $gr_esc_an   = mysqli_real_escape_string($conector, $grupo_repeticao_ctp);
+    $inc_esc_an  = mysqli_real_escape_string($conector, $registro_ctp->ctp_incluido_em);
+
+    // Busca em cascata (mesma lógica de api/get_anexos.php): tenta grupo de repetição,
+    // depois número do documento, depois fornecedor+instante de inclusão, e por fim o
+    // próprio ctp_id — necessário porque uma baixa pode preencher o número do documento
+    // só desta linha, sem que o anexo (salvo na 1ª parcela/ocorrência) a acompanhe.
+    $qtd_anexos = 0;
     if ($gr_esc_an !== '') {
-        // Repetição: o anexo pode ter sido salvo em outra ocorrência do mesmo grupo —
-        // prioriza o grupo, pois o Número do Documento pode já ter mudado (ex.: após baixa).
         $rs_qtd_an = mysqli_query($conector, "SELECT COUNT(*) as qtd FROM tbl_ctp_anexos a INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id WHERE c.ctp_grupo_repeticao = '$gr_esc_an'");
-    } elseif ($nd_esc_an !== '' && $nd_esc_an !== '0') {
+        $qtd_anexos = $rs_qtd_an ? (int)mysqli_fetch_object($rs_qtd_an)->qtd : 0;
+    }
+    if ($qtd_anexos === 0 && $nd_esc_an !== '' && $nd_esc_an !== '0') {
         $rs_qtd_an = mysqli_query($conector, "SELECT COUNT(*) as qtd FROM tbl_ctp_anexos a INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id WHERE c.ctp_numero_doc = '$nd_esc_an' AND c.ctp_codigo_fornecedor = '$for_esc_an'");
-    } else {
+        $qtd_anexos = $rs_qtd_an ? (int)mysqli_fetch_object($rs_qtd_an)->qtd : 0;
+    }
+    if ($qtd_anexos === 0 && $inc_esc_an !== '') {
+        $rs_qtd_an = mysqli_query($conector, "SELECT COUNT(*) as qtd FROM tbl_ctp_anexos a INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id WHERE c.ctp_codigo_fornecedor = '$for_esc_an' AND c.ctp_incluido_em = '$inc_esc_an'");
+        $qtd_anexos = $rs_qtd_an ? (int)mysqli_fetch_object($rs_qtd_an)->qtd : 0;
+    }
+    if ($qtd_anexos === 0) {
         $rs_qtd_an = mysqli_query($conector, "SELECT COUNT(*) as qtd FROM tbl_ctp_anexos WHERE anexo_ctp_id = '$chave_ctp'");
+        $qtd_anexos = $rs_qtd_an ? (int)mysqli_fetch_object($rs_qtd_an)->qtd : 0;
     }
     $row_qtd_an = $rs_qtd_an ? mysqli_fetch_object($rs_qtd_an) : null;
     $qtd_anexos = $row_qtd_an ? (int)$row_qtd_an->qtd : 0;
