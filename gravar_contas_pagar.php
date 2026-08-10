@@ -267,6 +267,25 @@ ob_start(function($buffer) {
         $codigo_ccusto_n  = isset($_POST['codigo_cc']) ? mysqli_real_escape_string($conector, $_POST['codigo_cc']) : '';
         $observacoes_n    = isset($_POST['observacoes']) ? mysqli_real_escape_string($conector, $_POST['observacoes']) : '';
 
+        // Se alguma parcela (ou a conta à vista) vier marcada como Paga e o Número do
+        // Documento estiver vazio, gera um número automaticamente — mesma regra da baixa.
+        // Só ocorre de fato para Recibo: para os demais tipos o front-end já exige que o
+        // usuário digite o número antes de confirmar.
+        if (empty($numero_doc_n)) {
+            $tem_pago_n = isset($_POST['pago']);
+            if (!$tem_pago_n && isset($_POST['parcela']) && is_array($_POST['parcela'])) {
+                foreach ($_POST['parcela'] as $parc_chk) {
+                    if (isset($parc_chk['pago'])) { $tem_pago_n = true; break; }
+                }
+            }
+            if ($tem_pago_n) {
+                do {
+                    $numero_doc_n = sonumero(date('y/m/d')) . substr(mt_rand(), 0, 4);
+                    $rs_chk_doc = mysqli_query($conector, "SELECT COUNT(*) c FROM contas_pagar WHERE ctp_numero_doc='$numero_doc_n' AND ctp_codigo_fornecedor='$codigo_for'");
+                } while (mysqli_fetch_assoc($rs_chk_doc)['c'] > 0);
+            }
+        }
+
         // Resolve local (fazenda) — pode ser array
         $cod_local_raw = isset($_POST['codigo_fazenda']) ? $_POST['codigo_fazenda'] : [];
         if (!is_array($cod_local_raw)) $cod_local_raw = [$cod_local_raw];
