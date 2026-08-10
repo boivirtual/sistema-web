@@ -27,15 +27,15 @@ $ctp_id_param      = isset($_GET['ctp_id'])            ? intval($_GET['ctp_id'])
 $fornecedor_resolvido = null;
 $incluido_em_resolvido = null;
 
-// Repetição: ctp_numero_doc fica vazio em todas as ocorrências. Se o grupo não veio
-// explícito, descobre pelo próprio ctp_id (fonte de dados) — assim o anexo aparece em
-// todas as parcelas da série mesmo que o parâmetro não tenha sido enviado.
-if ($grupo_repeticao === '' && ($numero_doc === '' || $numero_doc === '0') && $ctp_id_param > 0) {
+// Repetição: ctp_numero_doc fica vazio em todas as ocorrências até que uma delas seja
+// baixada (aí ganha número próprio) — então resolve o grupo pelo ctp_id sempre que ele
+// não tiver vindo explícito, independente do Número do Documento estar preenchido ou não.
+if ($grupo_repeticao === '' && $ctp_id_param > 0) {
     $rs_gr  = mysqli_query($conector, "SELECT ctp_grupo_repeticao, ctp_codigo_fornecedor, ctp_incluido_em FROM contas_pagar WHERE ctp_id = '$ctp_id_param'");
     $row_gr = $rs_gr ? mysqli_fetch_object($rs_gr) : null;
     if ($row_gr && !empty($row_gr->ctp_grupo_repeticao)) {
         $grupo_repeticao = $row_gr->ctp_grupo_repeticao;
-    } elseif ($row_gr) {
+    } elseif ($row_gr && ($numero_doc === '' || $numero_doc === '0')) {
         // Parcelamento sem número de documento (nem repetição): agrupa por fornecedor +
         // instante de inclusão idêntico (todas as parcelas de um lançamento são gravadas
         // no mesmo instante) — senão o anexo só apareceria na parcela onde foi anexado.
@@ -44,7 +44,20 @@ if ($grupo_repeticao === '' && ($numero_doc === '' || $numero_doc === '0') && $c
     }
 }
 
-if ($numero_doc !== '' && $numero_doc !== '0') {
+// Grupo de Repetição tem prioridade sobre o Número do Documento: uma ocorrência da série
+// pode já ter recebido número próprio (ex.: após uma baixa) sem deixar de pertencer ao
+// grupo onde o anexo/link foi originalmente salvo.
+if ($grupo_repeticao !== '') {
+    $gr_esc = mysqli_real_escape_string($conector, $grupo_repeticao);
+
+    $ssql = "SELECT a.anexo_id, a.anexo_nome, a.anexo_arquivo, a.anexo_tamanho,
+                    a.anexo_incluido_em, a.anexo_incluido_por
+             FROM tbl_ctp_anexos a
+             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
+             WHERE c.ctp_grupo_repeticao = '$gr_esc'
+             ORDER BY a.anexo_id ASC";
+
+} elseif ($numero_doc !== '' && $numero_doc !== '0') {
     $nd_esc  = mysqli_real_escape_string($conector, $numero_doc);
     $for_esc = intval($codigo_fornecedor);
 
@@ -54,16 +67,6 @@ if ($numero_doc !== '' && $numero_doc !== '0') {
              INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
              WHERE c.ctp_numero_doc = '$nd_esc'
                AND c.ctp_codigo_fornecedor = '$for_esc'
-             ORDER BY a.anexo_id ASC";
-
-} elseif ($grupo_repeticao !== '') {
-    $gr_esc = mysqli_real_escape_string($conector, $grupo_repeticao);
-
-    $ssql = "SELECT a.anexo_id, a.anexo_nome, a.anexo_arquivo, a.anexo_tamanho,
-                    a.anexo_incluido_em, a.anexo_incluido_por
-             FROM tbl_ctp_anexos a
-             INNER JOIN contas_pagar c ON c.ctp_id = a.anexo_ctp_id
-             WHERE c.ctp_grupo_repeticao = '$gr_esc'
              ORDER BY a.anexo_id ASC";
 
 } elseif (!empty($fornecedor_resolvido) && !empty($incluido_em_resolvido)) {
