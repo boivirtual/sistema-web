@@ -1775,7 +1775,7 @@ function baixar_conta_selecionada() {
         total_baixar = replace_valor(total_baixar);
     }
 
-    if (tipo_doc=='' || tipo_doc=='0') {
+    if (tipo_doc=='' || tipo_doc=='0' || tipo_doc=='00') {
         $("#mensagem_erro").modal();
         $("#mensagem_erro .modal-body").html('Informe o tipo de documento.');
         return;
