@@ -1793,7 +1793,10 @@ function baixar_conta_selecionada() {
         return;
     }
 
+    $("#baixar_selecionada_individual").attr("disabled", true);
+
     $.post("gravar_baixa_conta_pagar_selecionada.php", {chave: chave, num_doc: numero_doc, tipo_doc: tipo_doc, data_pagamento: data_pagamento, forma_pag:forma_pag, total_baixar:total_baixar}, function (get_retorno) {
+        $("#baixar_selecionada_individual").attr("disabled", false);
         if (get_retorno != 0) {
             $("#mensagem_erro").modal();
             $("#mensagem_erro .modal-body").html(get_retorno);
@@ -1802,6 +1805,10 @@ function baixar_conta_selecionada() {
             $("#mensagem_retorno").modal();
             $("#mensagem_retorno .modal-body").html('Baixa efetuada com sucesso');
         }
+    }).fail(function () {
+        $("#baixar_selecionada_individual").attr("disabled", false);
+        $("#mensagem_erro").modal();
+        $("#mensagem_erro .modal-body").html('Erro na comunicação com o servidor.');
     });
 }
 
