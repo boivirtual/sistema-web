@@ -1,15 +1,22 @@
 <?php
 /**
- * Reparo pontual: lançamentos "Repetir Lançamento" com Rateio e/ou Anexos/Links
- * gravados só na 1ª ocorrência (bug corrigido em gravar_contas_pagar.php).
+ * Reparo pontual: lançamentos "Repetir Lançamento" com Rateio gravado só na
+ * 1ª ocorrência (bug corrigido em gravar_contas_pagar.php).
  *
- * Copia o rateio (tbl_ctp_rateio) e os anexos/links (tbl_ctp_anexos) da 1ª ocorrência
- * de cada grupo de repetição (ctp_grupo_repeticao) para as demais ocorrências do
- * mesmo grupo que ainda estiverem sem esses dados.
+ * RATEIO: copia tbl_ctp_rateio da 1ª ocorrência de cada grupo de repetição
+ * (ctp_grupo_repeticao) para as demais ocorrências do mesmo grupo que ainda
+ * estiverem sem esses dados — a tela de edição busca o rateio pelo ctp_id
+ * exato da ocorrência, então cada uma precisa da própria cópia.
  *
- * Idempotente: só insere o que está faltando. Rodar de novo não duplica nada.
- * Usa a conexão da sessão logada (mesma lógica multi-tenant do resto do sistema) —
- * não precisa de credenciais, só estar logado no cliente certo.
+ * ANEXOS/LINKS: NÃO precisam ser duplicados — a busca (api/get_anexos.php)
+ * já enxerga o grupo de repetição inteiro numa única consulta, então o anexo
+ * salvo só na 1ª ocorrência já aparece em todas. Este script apenas detecta e
+ * remove eventuais cópias duplicadas (caso uma versão anterior deste mesmo
+ * script já tenha rodado e duplicado por engano).
+ *
+ * Idempotente: rodar de novo não duplica nem quebra nada.
+ * Usa a conexão da sessão logada (mesma lógica multi-tenant do resto do
+ * sistema) — não precisa de credenciais, só estar logado no cliente certo.
  *
  * Uso:
  *   manutencao_reparo_recorrencia.php            → modo PREVIEW (não grava nada)
@@ -39,12 +46,12 @@ function grupos_com_dados($conector, $tabela, $coluna_id) {
     return $grupos;
 }
 
-// ── RATEIO ──────────────────────────────────────────────────────────────
-echo "=== RATEIO (tbl_ctp_rateio) ===\n";
+// ── RATEIO: preenche o que falta em cada ocorrência ────────────────────
+echo "=== RATEIO (tbl_ctp_rateio) — preenchendo o que falta ===\n";
 $total_rateio = 0;
 foreach (grupos_com_dados($conector, 'tbl_ctp_rateio', 'rc_ctp_id') as $g) {
     $ge = mysqli_real_escape_string($conector, $g);
-    $membros = mysqli_query($conector, "SELECT ctp_id FROM contas_pagar WHERE ctp_grupo_repeticao='$ge'");
+    $membros = mysqli_query($conector, "SELECT ctp_id FROM contas_pagar WHERE ctp_grupo_repeticao='$ge' ORDER BY ctp_id");
     $ids = [];
     while ($m = mysqli_fetch_assoc($membros)) { $ids[] = (int)$m['ctp_id']; }
     if (!$ids) continue;
@@ -77,37 +84,31 @@ foreach (grupos_com_dados($conector, 'tbl_ctp_rateio', 'rc_ctp_id') as $g) {
 }
 echo $aplicar ? "Total de linhas de rateio inseridas: $total_rateio\n\n" : "\n";
 
-// ── ANEXOS/LINKS ────────────────────────────────────────────────────────
-echo "=== ANEXOS/LINKS (tbl_ctp_anexos) ===\n";
-$total_anexos = 0;
+// ── ANEXOS/LINKS: remove cópias duplicadas, mantém só na 1ª ocorrência ──
+echo "=== ANEXOS/LINKS (tbl_ctp_anexos) — removendo duplicatas, se houver ===\n";
+$total_anexos_removidos = 0;
 foreach (grupos_com_dados($conector, 'tbl_ctp_anexos', 'anexo_ctp_id') as $g) {
     $ge = mysqli_real_escape_string($conector, $g);
-    $membros = mysqli_query($conector, "SELECT ctp_id FROM contas_pagar WHERE ctp_grupo_repeticao='$ge'");
+    $membros = mysqli_query($conector, "SELECT ctp_id FROM contas_pagar WHERE ctp_grupo_repeticao='$ge' ORDER BY ctp_id");
     $ids = [];
     while ($m = mysqli_fetch_assoc($membros)) { $ids[] = (int)$m['ctp_id']; }
     if (!$ids) continue;
 
-    $com_dados = mysqli_query($conector, "SELECT DISTINCT anexo_ctp_id FROM tbl_ctp_anexos WHERE anexo_ctp_id IN (" . implode(',', $ids) . ")");
-    $fonte = null;
-    while ($cd = mysqli_fetch_assoc($com_dados)) { $fonte = (int)$cd['anexo_ctp_id']; break; }
-    if (!$fonte) continue;
+    // Mantém os anexos da ocorrência mais antiga (1ª) do grupo; remove cópias das demais.
+    $manter = $ids[0];
+    $outros = array_slice($ids, 1);
+    if (!$outros) continue;
 
-    foreach ($ids as $id) {
-        if ($id === $fonte) continue;
-        $chk = mysqli_query($conector, "SELECT COUNT(*) c FROM tbl_ctp_anexos WHERE anexo_ctp_id=$id");
-        if (mysqli_fetch_assoc($chk)['c'] > 0) continue;
-
-        echo "grupo $g: falta anexo em $id (copiando de $fonte)\n";
+    $rs_dup = mysqli_query($conector, "SELECT anexo_id, anexo_ctp_id FROM tbl_ctp_anexos WHERE anexo_ctp_id IN (" . implode(',', $outros) . ")");
+    while ($d = mysqli_fetch_assoc($rs_dup)) {
+        echo "grupo $g: anexo duplicado (id {$d['anexo_id']}, na ocorrência {$d['anexo_ctp_id']}) — mantendo só em $manter\n";
         if ($aplicar) {
-            mysqli_query($conector, "INSERT INTO tbl_ctp_anexos
-                    (anexo_ctp_id, anexo_nome, anexo_arquivo, anexo_tamanho, anexo_incluido_em, anexo_incluido_por)
-                SELECT $id, anexo_nome, anexo_arquivo, anexo_tamanho, anexo_incluido_em, anexo_incluido_por
-                FROM tbl_ctp_anexos WHERE anexo_ctp_id = $fonte");
-            $total_anexos += mysqli_affected_rows($conector);
+            mysqli_query($conector, "DELETE FROM tbl_ctp_anexos WHERE anexo_id = {$d['anexo_id']}");
+            $total_anexos_removidos += mysqli_affected_rows($conector);
         }
     }
 }
-echo $aplicar ? "Total de linhas de anexo inseridas: $total_anexos\n" : "\n";
+echo $aplicar ? "Total de anexos duplicados removidos: $total_anexos_removidos\n" : "\n";
 
 echo "\n" . ($aplicar ? "Concluído." : "Revise a lista acima. Se estiver correta, adicione ?aplicar=1 na URL para gravar de verdade.") . "\n";
 echo "</pre>";
