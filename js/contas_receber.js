@@ -1484,10 +1484,13 @@ function executar_baixa_conta_receber_individual() {
     dadosarray[8] = $("#nome_cli").val();
     dadosarray[9] = $("#id_ctr").val();
     
+    $("#btn_confirmar_baixa_individual").attr("disabled", true);
+
     $.post(
         "gravar_baixa_contas_receber_individual.php",
         { dadosarray: dadosarray },
         function (get_retorno) {
+            $("#btn_confirmar_baixa_individual").attr("disabled", false);
             if (get_retorno == 0) {
                 $("#mensagem_retorno").modal();
                 $("#mensagem_retorno .modal-body").html(
@@ -1498,7 +1501,11 @@ function executar_baixa_conta_receber_individual() {
                 $("#mensagem_erro .modal-body").html(get_retorno);
             }
         }
-    );
+    ).fail(function () {
+        $("#btn_confirmar_baixa_individual").attr("disabled", false);
+        $("#mensagem_erro").modal();
+        $("#mensagem_erro .modal-body").html('Erro na comunicação com o servidor.');
+    });
 }
 
 function formataValor(valor) {
