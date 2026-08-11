@@ -769,7 +769,7 @@
                 $desc_origem = '';
             }
 
-            if ($peso_nasc!=0 || $peso_nasc!=null) {
+            if ($tem_peso_nascimento_real) {
                 echo "<tr>";
                 echo "<td width='8%'>".$data_edi."</td>";
                 echo "<td width='15%'>Nascimento</td>";
