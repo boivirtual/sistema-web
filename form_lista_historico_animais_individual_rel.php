@@ -743,8 +743,13 @@
                 } 
             }
 
-            $data = new DateTime($reg_animal->tbl_animal_data_primeiro_peso); 
-            $data_edi = $data->format('d/m/Y');
+            if ($reg_animal->tbl_animal_data_primeiro_peso!='' && $reg_animal->tbl_animal_data_primeiro_peso!=null) {
+                $data = new DateTime($reg_animal->tbl_animal_data_primeiro_peso);
+                $data_edi = $data->format('d/m/Y');
+            }
+            else {
+                $data_edi = '';
+            }
 
             $sql = "SELECT * FROM tbl_movimentacao_estoque
                 INNER JOIN tbl_pessoa
