@@ -149,6 +149,8 @@
             if ($peso_desmama==0) {$peso_desmama='';}
             if ($ultimo_peso==0) {$ultimo_peso='';}
 
+            $tem_peso_nascimento_real = ($peso_nasc!=='' && $peso_nasc!=0);
+
             $codigo_compra = $reg_animal->tbl_animal_movimentacao_compra;
             $data_compra = $reg_animal->tbl_animal_data_compra;
 
