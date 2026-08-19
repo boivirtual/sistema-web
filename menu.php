@@ -1482,9 +1482,9 @@ function tratarDescricaoVersao($texto) {
                                     <div class="agenda-dashboard-filtro">
                                         <label for="codigo_local_agenda" class="control-label" style="font-weight: normal; margin-right: 6px;">Fazenda</label>
                                         <select class="form-control input-sm" id="codigo_local_agenda" name="codigo_local_agenda">
-                                            <option value="000000000">Todas</option>
                                             <?php
                                                 $tbl_local_filtro_agenda = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0");
+                                                $fazendas_usuario_agenda = array();
 
                                                 while ($reg_local_filtro_agenda = mysqli_fetch_object($tbl_local_filtro_agenda)) {
                                                     foreach ($array_locais_usuario as $value) {
@@ -1492,9 +1492,17 @@ function tratarDescricaoVersao($texto) {
                                                         $value = rtrim($value);
 
                                                         if ($value == $reg_local_filtro_agenda->tbl_pessoa_id) {
-                                                            echo '<option value="' . $value . '">' . $reg_local_filtro_agenda->tbl_pessoa_nome . '</option>';
+                                                            $fazendas_usuario_agenda[] = array('id' => $value, 'nome' => $reg_local_filtro_agenda->tbl_pessoa_nome);
                                                         }
                                                     }
+                                                }
+
+                                                $unica_fazenda_usuario_agenda = (count($fazendas_usuario_agenda) == 1);
+
+                                                echo '<option value="000000000"' . ($unica_fazenda_usuario_agenda ? '' : ' selected') . '>Todas</option>';
+
+                                                foreach ($fazendas_usuario_agenda as $fazenda_usuario_agenda) {
+                                                    echo '<option value="' . $fazenda_usuario_agenda['id'] . '"' . ($unica_fazenda_usuario_agenda ? ' selected' : '') . '>' . $fazenda_usuario_agenda['nome'] . '</option>';
                                                 }
                                             ?>
                                         </select>
