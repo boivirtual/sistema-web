@@ -323,7 +323,11 @@ function agendarAplicacaoTooltips(){
 }
 
 $(document).on('hidden.bs.modal', '.modal', function(){
-    $(this).find('[data-toggle="tooltip"]').tooltip('hide');
+    $(this).find('[data-toggle="tooltip"], .agenda-tooltip-ancora, .fc-event-title').each(function(){
+        if ($(this).data('bs.tooltip')) {
+            $(this).tooltip('hide');
+        }
+    });
 });
 
 function medirLarguraTextoIsolada(texto, elementoReferencia){
