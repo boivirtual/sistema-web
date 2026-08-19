@@ -9,7 +9,7 @@ function incluir_nova() {
     $('#local').selectpicker('refresh');
     $("#atividade").val('2');
     $("#atividade").prop("disabled", false);
-    $("#titulo_agenda").val('');
+    $("#titulo_agenda").val('Reprodução-');
     document.getElementById("descricao_agenda").value='';
     $(".datas").val('');
     $("#dia_inteiro").prop("checked", true);
