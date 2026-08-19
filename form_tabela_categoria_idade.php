@@ -194,7 +194,7 @@
                         </div>
 
                         <div class="modal-body">
-                            <form method="POST" action="gravar_categoria_idade.php" enctype="multipart/form-data">
+                            <form method="POST" action="gravar_categoria_idade.php" enctype="multipart/form-data" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
                                 <div class="form-group col-md-12">
                                     <label for="codigo_categoria" class="control-label"></label>
                                     <input name="codigo_categoria" type="hidden" class="form-control" id="codigo_categoria" 
@@ -241,7 +241,7 @@
                         </div>
 
                         <div class="modal-body">
-                            <form method="POST" action="gravar_categoria_idade.php" enctype="multipart/form-data">
+                            <form method="POST" action="gravar_categoria_idade.php" enctype="multipart/form-data" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
                                 <div class="form-group col-md-12">
                                     <label for="codigo_categoria" class="control-label">Código:</label>
                                     <input name="codigo_categoria" type="text" class="form-control" id="codigo_categoria" 

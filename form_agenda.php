@@ -54,7 +54,158 @@
         color: #007aff;
         background: transparent;
         font-size: 13px;
-        font-weight: 500;        
+        font-weight: 500;
+    }
+
+    .agenda-body-flex {
+        display: flex;
+        flex-wrap: wrap;
+        background: #fff;
+        border: 1px solid #e3e6e8;
+        border-radius: 4px;
+    }
+
+    .agenda-sidebar {
+        flex: 0 0 240px;
+        width: 240px;
+        padding: 16px 14px;
+        background: #f7f8f9;
+        border-right: 1px solid #e3e6e8;
+    }
+
+    .agenda-btn-incluir {
+        width: 100%;
+    }
+
+    .agenda-filtro-titulo {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        color: #939ba2;
+        margin: 16px 0 6px;
+    }
+
+    .agenda-fazenda-lista {
+        max-height: 180px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+
+    .agenda-fazenda-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: normal;
+        padding: 6px 2px;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .agenda-fazenda-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .agenda-main {
+        flex: 1 1 320px;
+        min-width: 0;
+    }
+
+    .agenda-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e3e6e8;
+    }
+
+    .agenda-toolbar-nav {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .agenda-toolbar-nav i {
+        font-size: 14px;
+        color: #5c6670;
+        cursor: pointer;
+    }
+
+    #agenda_periodo_titulo {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .agenda-view-switch {
+        display: inline-flex;
+        background: #eef0f2;
+        border-radius: 6px;
+        padding: 2px;
+    }
+
+    .agenda-view-btn {
+        border: none;
+        background: transparent;
+        font-size: 12px;
+        padding: 5px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        color: #5c6670;
+    }
+
+    .agenda-view-btn.active {
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(0,0,0,.12);
+        font-weight: 600;
+        color: #222;
+    }
+
+    .agenda-calendar-area {
+        padding: 14px 16px;
+        max-height: 650px;
+        overflow-y: auto;
+    }
+
+    .tooltip {
+        pointer-events: none;
+    }
+
+    .tooltip-inner {
+        white-space: pre-line;
+    }
+
+    .agenda-calendar-area .fc-scrollgrid-section-sticky > * {
+        position: relative !important;
+        top: auto !important;
+    }
+
+    .agenda-calendar-area .fc-timegrid-now-indicator-arrow,
+    .agenda-calendar-area .fc-timegrid-now-indicator-line {
+        position: absolute !important;
+    }
+
+    @media (max-width: 767.98px) {
+        .agenda-sidebar {
+            flex: 1 1 100%;
+            width: 100%;
+            border-right: none;
+            border-bottom: 1px solid #e3e6e8;
+        }
+
+        .agenda-main {
+            flex: 1 1 100%;
+        }
+
+        .agenda-toolbar {
+            justify-content: center;
+            text-align: center;
+        }
     }
   </style>
 </head>
@@ -149,91 +300,68 @@
 	        <div class="row">
 		        <div class="col-lg-12">
 
-                    <div  class="form-group">
-                        <a href="#">
-                            <input type="button" class="btn btn-primary" aria-label="Left Align" value="Incluir Nova" onclick="incluir_nova()"/>
-                        </a>
-                    </div> 
+                    <div class="agenda-body-flex">
+                        <div class="agenda-sidebar">
+                            <button type="button" class="btn btn-primary agenda-btn-incluir" onclick="incluir_nova()">Incluir Nova</button>
 
-                    <div class="row col-md-12" id="consulta_contas">
-                        <form method="GET" action="form_agenda.php" enctype="multipart/form-data" >
-                            
-                            <div class="tab-panel">
-                                <div class="tab-pane active">
-                                    <fieldset class="scheduler-border" id="dados_consulta">
-                                        <legend class="scheduler-border fonte-legend">Consultar Agenda</legend>
+                            <div class="agenda-filtro-titulo">Fazendas</div>
+                            <div class="agenda-fazenda-lista">
+                                <?php
+                                    $paleta_cores_fazenda_agenda = array('#378ADD', '#1D9E75', '#D85A30', '#993556', '#BA7517', '#7F77DD', '#639922', '#4A90A4');
+                                    $indice_cor_fazenda_agenda = 0;
 
-                                        <div class="row">    
-                                            <div class="form-group col-md-4">
-                                                <label for="codigo_local" class="control-label">Fazenda</label>
-                                                <select class="form-control selectpicker" id="codigo_local" multiple name="codigo_local">
-                                                <?php 
-                                                    while($reg_local = mysqli_fetch_object($tbl_local)) { 
-                                                    
-                                                        foreach ($array_locais_usuario as $value) {
-                                                            $value = ltrim($value);
-                                                            $value = rtrim($value);
-                                                            if ($value==$reg_local->tbl_pessoa_id) {
-                                                                echo '<option value="'.$value.'">' .$reg_local->tbl_pessoa_nome. '</option>'; 
-                                                            }
-                                                        }
-                                                    } 
-                                                 ?>
-                                                </select>
-                                            </div>
+                                    while ($reg_local_filtro_agenda = mysqli_fetch_object($tbl_local)) {
+                                        foreach ($array_locais_usuario as $value) {
+                                            $value = ltrim($value);
+                                            $value = rtrim($value);
 
-                                            <div class="form-group col-md-4">
-                                                <label for="tipo_agenda" class="control-label">Visualizar</label>
-                                                <select class="form-control" id="tipo_agenda" name="tipo_agenda">
+                                            if ($value == $reg_local_filtro_agenda->tbl_pessoa_id) {
+                                                $cor_fazenda_agenda = $paleta_cores_fazenda_agenda[$indice_cor_fazenda_agenda % count($paleta_cores_fazenda_agenda)];
+                                                $indice_cor_fazenda_agenda++;
+                                ?>
+                                                <label class="agenda-fazenda-item">
+                                                    <input type="checkbox" class="agenda-fazenda-check" value="<?php echo $value; ?>" checked>
+                                                    <span class="agenda-fazenda-dot" style="background: <?php echo $cor_fazenda_agenda; ?>;"></span>
+                                                    <?php echo $reg_local_filtro_agenda->tbl_pessoa_nome; ?>
+                                                </label>
+                                <?php
+                                            }
+                                        }
+                                    }
+                                ?>
+                            </div>
 
-                                                <option value="1"
-                                                    <?php 
-                                                    /*    if ($array_tipo!="") {
-                                                            foreach ($array_tipo as $value) {
-                                                                if ($value==1) { 
-                                                                    echo "selected";       
-                                                                }
-                                                            }                           
-                                                        }*/
-                                                    ?>>Dia</option>
+                            <div class="agenda-filtro-titulo">Atividade</div>
+                            <select class="form-control selectpicker" id="agenda_atividade_filtro" data-live-search="true" data-width="100%">
+                                <option value="">Todas</option>
+                                <?php
+                                    $tbl_atividade_filtro_agenda = mysqli_query($conector, "select * from tbl_atividades_padrao where tbl_atividade_padrao_lixeira=0");
 
-                                                <option value="2" selected
-                                                    <?php 
-                                                    /*    if ($array_tipo!="") {
-                                                            foreach ($array_tipo as $value) {
-                                                                if ($value==2) { 
-                                                                    echo "selected";       
-                                                                }
-                                                            }                           
-                                                        }*/
-                                                    ?>>Semana</option>
+                                    while ($reg_atividade_filtro_agenda = mysqli_fetch_object($tbl_atividade_filtro_agenda)) {
+                                        echo '<option value="' . $reg_atividade_filtro_agenda->tbl_atividade_padrao_id . '">' . $reg_atividade_filtro_agenda->tbl_atividade_padrao_descricao . '</option>';
+                                    }
+                                ?>
+                            </select>
+                        </div>
 
-                                                <option value="3"
-                                                    <?php 
-                                                    /*    if ($array_tipo!="") {
-                                                            foreach ($array_tipo as $value) {
-                                                                if ($value==3) { 
-                                                                    echo "selected";       
-                                                                }
-                                                            }                           
-                                                        }*/
-                                                    ?>>Mês</option>
-                                                </select>
-                                            </div>
-
-                                            <!--<div class="form-group col-md-2">
-                                                <label class="control-label">&nbsp;</label>
-                                                <button type="button" class="form-control btn btn-info pull-right" onclick="consultar()">Consultar</button>
-                                            </div>-->
-                                        </div>
-                                    </fieldset>
+                        <div class="agenda-main">
+                            <div class="agenda-toolbar">
+                                <div class="agenda-toolbar-nav">
+                                    <button type="button" class="btn btn-default btn-sm" id="agenda_hoje">Hoje</button>
+                                    <i class="fas fa-chevron-left" id="agenda_anterior" title="Período anterior"></i>
+                                    <i class="fas fa-chevron-right" id="agenda_proximo" title="Próximo período"></i>
+                                    <span id="agenda_periodo_titulo"></span>
+                                </div>
+                                <div class="agenda-view-switch">
+                                    <button type="button" class="agenda-view-btn" data-view="timeGridDay">Dia</button>
+                                    <button type="button" class="agenda-view-btn active" data-view="timeGridWeek">Semana</button>
+                                    <button type="button" class="agenda-view-btn" data-view="dayGridMonth">Mês</button>
                                 </div>
                             </div>
-                        </form>
-                    </div>    
-                    <div id="dump"></div>
-                    <div class="col-lg-12" id="exibir_agenda">
-                        <div class="col-lg-12" id="calendar">
+
+                            <div class="agenda-calendar-area">
+                                <div id="calendar"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -258,9 +386,9 @@
                                 <div class="row">
                                     <div class="form-group col-md-6">
                                         <label class="control-label"><span class="required">*</span> Fazenda(s)</label>
-                                        <select class="form-control selectpicker local" id="local" name="local[]" multiple>
- 
-                                        <?php 
+                                        <select class="form-control selectpicker local" id="local" name="local[]" multiple title="Selecione a Fazenda" data-none-selected-text="Selecione a Fazenda">
+
+                                        <?php
                                             while($reg_local = mysqli_fetch_object($local)) { 
                                                         
                                                 foreach ($array_locais_usuario as $value) {
@@ -338,7 +466,7 @@
                                 <div class="row m-bot15">
                                     <div class="col-md-12">
                                         <label for="descricao_agenda" class="control-label">Descrição</label>
-                                        <textarea name="descricao_agenda" type="text" class="form-control" id="descricao_agenda" rows="5"></textarea>
+                                        <textarea name="descricao_agenda" type="text" class="form-control" id="descricao_agenda" rows="8" style="min-height: 140px;"></textarea>
                                     </div>
                                 </div>
                             </form>
@@ -411,6 +539,59 @@
                             <button data-dismiss="modal" class="btn btn-default" type="button" onclick="">Fechar</button>
                             <button class="btn btn-danger" id="excluirEvento" onclick="excluirEvento()">Excluir</button>
                             <button class="btn btn-success" id="editarEvento" onclick="editar_evento()">Salvar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalPreviewEvento" tabindex="-1" role="dialog"
+                aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content" style="border-radius: 8px; overflow: hidden;">
+                        <div class="modal-header" style="border-bottom: none; padding: 20px 22px 14px; display: flex; align-items: center; justify-content: flex-end; gap: 22px;">
+                            <i class="fas fa-pen" data-toggle="tooltip" data-placement="bottom" title="Editar" style="cursor: pointer; color: #5c6670; font-size: 15px;" onclick="editarEventoDoPreview()" aria-hidden="true"></i>
+                            <i class="fas fa-trash-alt" data-toggle="tooltip" data-placement="bottom" title="Excluir" style="cursor: pointer; color: #5c6670; font-size: 15px;" onclick="excluirEventoDoPreview()" aria-hidden="true"></i>
+                            <i class="fas fa-times" data-toggle="tooltip" data-placement="bottom" title="Fechar" data-dismiss="modal" style="cursor: pointer; color: #5c6670; font-size: 15px;" aria-hidden="true"></i>
+                        </div>
+                        <div class="modal-body" style="padding-top: 22px;">
+                            <input type="hidden" id="idEventoPreview">
+
+                            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                <span id="preview_evento_cor" style="width: 12px; height: 12px; border-radius: 50%; margin-top: 6px; flex-shrink: 0;"></span>
+                                <div style="flex: 1; min-width: 0;">
+                                    <h4 id="preview_evento_titulo" style="margin: 0 0 4px; font-size: 17px; font-weight: 500; word-wrap: break-word;"></h4>
+                                    <div id="preview_evento_data" style="font-size: 13px; color: #6c757d; margin-bottom: 26px;"></div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                <i class="fas fa-align-left" style="color: #6c757d; width: 12px; margin-top: 3px;" aria-hidden="true"></i>
+                                <p id="preview_evento_descricao" style="white-space: pre-wrap; word-wrap: break-word; margin: 0; font-size: 14px; color: #333; flex: 1; min-width: 0;"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalConfirmarExclusao" tabindex="-1" role="dialog"
+                aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Excluir evento</h4>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="idEventoExclusao">
+
+                            <h4 id="exclusao_evento_titulo" style="margin: 0 0 6px; font-size: 16px; font-weight: 500; word-wrap: break-word;"></h4>
+                            <div id="exclusao_evento_data" style="font-size: 13px; color: #6c757d; margin-bottom: 4px;"></div>
+                            <div id="exclusao_evento_atividade" style="font-size: 13px; color: #6c757d; margin-bottom: 14px;"></div>
+                            <p id="exclusao_evento_descricao" style="white-space: pre-wrap; word-wrap: break-word; margin: 0; font-size: 14px; color: #333;"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button data-dismiss="modal" class="btn btn-default" type="button">Fechar</button>
+                            <button class="btn btn-danger" type="button" onclick="confirmarExclusaoEvento()">Excluir</button>
                         </div>
                     </div>
                 </div>

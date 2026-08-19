@@ -2563,16 +2563,28 @@ function lista_abortos(codigo_id) {
     });
 }
 
+var _gravarAnimaisEmAndamento = false;
+
+function _animaisFimGravacao() {
+    _gravarAnimaisEmAndamento = false;
+    $('.confirma_gravar').attr('disabled', false);
+}
+
 function gravar_animais() {
+    if (_gravarAnimaisEmAndamento) return;
+
     var tipo_gravacao = $("#tipo_gravacao").val();
     if (tipo_gravacao==2) {
         if (window.confirm("Atenção! Ao confirmar enviar esse registro para lixeira, não será possível recupera-lo pelo sistema. Confirmar assim mesmo?")) {
             var dados = $('#form_gravar_animal').serialize();
+            _gravarAnimaisEmAndamento = true;
+            $('.confirma_gravar').attr('disabled', true);
             $.ajax({
                 type: "POST",
                 url: 'gravar_animais.php',
                 data: dados,
                 success: function(data){
+                    _animaisFimGravacao();
                     if (data.error) {
                         $("#mensagem_erro").modal();
                         $("#mensagem_erro .modal-body").html(data.message);
@@ -2581,18 +2593,22 @@ function gravar_animais() {
                         $("#mensagem_retorno").modal();
                         $("#mensagem_retorno .modal-body").html(data.message);
                     }
-                }
+                },
+                error: function(){ _animaisFimGravacao(); }
             });
         }
     }
     else if (tipo_gravacao==3) {
         if (window.confirm("Confirma remover esse registro da lixeira?")) {
             var dados = $('#form_gravar_animal').serialize();
+            _gravarAnimaisEmAndamento = true;
+            $('.confirma_gravar').attr('disabled', true);
             $.ajax({
                 type: "POST",
                 url: 'gravar_animais.php',
                 data: dados,
                 success: function(data){
+                    _animaisFimGravacao();
                     if (data.error) {
                         $("#mensagem_erro").modal();
                         $("#mensagem_erro .modal-body").html(data.message);
@@ -2601,17 +2617,21 @@ function gravar_animais() {
                         $("#mensagem_retorno").modal();
                         $("#mensagem_retorno .modal-body").html(data.message);
                     }
-                }
+                },
+                error: function(){ _animaisFimGravacao(); }
             });
         }
     }
     else {
         var dados = $('#form_gravar_animal').serialize();
+        _gravarAnimaisEmAndamento = true;
+        $('.confirma_gravar').attr('disabled', true);
         $.ajax({
             type: "POST",
             url: 'gravar_animais.php',
             data: dados,
             success: function(data){
+                _animaisFimGravacao();
                 if (data.error) {
                     $("#mensagem_erro").modal();
                     $("#mensagem_erro .modal-body").html(data.message);
@@ -2626,7 +2646,8 @@ function gravar_animais() {
                         $("#mensagem_retorno .modal-body").html(data.message);
                     }
                 }
-            }
+            },
+            error: function(){ _animaisFimGravacao(); }
         });
     }
 }

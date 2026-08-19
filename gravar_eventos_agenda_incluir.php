@@ -58,7 +58,7 @@ if ($tipo_gravacao==0) {
 
     if ($local==''){
         header('Content-type: application/json');
-        echo json_encode(array('error' => true, 'message' => 'Informe a(s) Fazenda(s).'));
+        echo json_encode(array('error' => true, 'message' => 'Selecione a(s) Fazenda(s).'));
         exit;
     }
 
@@ -72,16 +72,18 @@ if ($tipo_gravacao==0) {
     }
 }
 
-if ($titulo==''){
-    header('Content-type: application/json');
-    echo json_encode(array('error' => true, 'message' => 'Informe o Título.'));
-    exit;
-}
+if ($tipo_gravacao!=2) {
+    if ($titulo==''){
+        header('Content-type: application/json');
+        echo json_encode(array('error' => true, 'message' => 'Informe o Título.'));
+        exit;
+    }
 
-if ($data_inicial==''){
-    header('Content-type: application/json');
-    echo json_encode(array('error' => true, 'message' => 'Informe a Data.'));
-    exit;
+    if ($data_inicial==''){
+        header('Content-type: application/json');
+        echo json_encode(array('error' => true, 'message' => 'Informe a Data.'));
+        exit;
+    }
 }
 
 if ($tipo_gravacao==1) {

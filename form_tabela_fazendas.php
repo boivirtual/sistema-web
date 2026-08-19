@@ -184,7 +184,7 @@
                         </div>
 
                         <div class="modal-body">
-                            <form method="POST" action="gravar_fazendas.php" enctype="multipart/form-data">
+                            <form method="POST" action="gravar_fazendas.php" enctype="multipart/form-data" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
                                 <div class="form-group col-md-12">
                                     <label for="codigo_fazenda" class="control-label"></label>
                                     <input name="codigo_fazenda" type="hidden" class="form-control" id="codigo_fazenda" 
@@ -234,7 +234,7 @@
                         </div>
 
                         <div class="modal-body">
-                            <form method="POST" action="gravar_fazendas.php" enctype="multipart/form-data">
+                            <form method="POST" action="gravar_fazendas.php" enctype="multipart/form-data" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
                                 <div class="form-group col-md-12">
                                     <label for="codigo_fazenda" class="control-label">Código</label>
                                     <input name="codigo_fazenda" type="text" class="form-control" id="codigo_fazenda" 

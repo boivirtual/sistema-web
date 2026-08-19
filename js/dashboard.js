@@ -1,21 +1,13 @@
 /**DASHBOARD*/
 var array_json='';
 var estacao_monta_reproducao = '';
-var local_agenda = 0;
+var dashboardCalendar = null;
 
 window.addEventListener("load", function(event) {
     sizeOfThings();
 
     $.post("lista_local.php", {tipo:1}, function(valor){
         $("select[name=codigo_local]").html(valor);
-        $("select[name=codigo_local_agenda]").html(valor);
-
-        local_agenda = $("#codigo_local_agenda").val();
-
-        if (abrir_agenda=='') {
-            consultar_agenda();
-        }
-
         consultar_fazenda();
     });
 
@@ -32,6 +24,10 @@ window.addEventListener("load", function(event) {
     var validar_cliente = $("#validar_cliente").val();
     var grupo_usuario = $("#grupo_usuario").val();
     var cnpj_empresa = $("#bd").val();
+
+    if (abrir_agenda=='') {
+        consultar_agenda();
+    }
 
     if (controle_estoque=='I') {
         //$("#aguardar").modal();
@@ -222,18 +218,35 @@ $(document).ready(function(){
         mostrar_dias_chuva();
     });
 
-    $('#codigo_local_agenda').change(function(event) {
-        local_agenda = $("#codigo_local_agenda").val();
-
-        consultar_agenda();
-    });
-
     $('#codigo_estacao_filtro').change(function(event) {
         estacao_monta_reproducao = $("#codigo_estacao_filtro").val();
 
         listar_situacao_reprodutiva_iatf();
     });
 
+    $(document).on('change', '#codigo_local_agenda', function() {
+        if (dashboardCalendar) {
+            dashboardCalendar.refetchEvents();
+        }
+    });
+
+    $(document).on('click', '#agenda_hoje', function() {
+        if (dashboardCalendar) {
+            dashboardCalendar.today();
+        }
+    });
+
+    $(document).on('click', '#agenda_anterior', function() {
+        if (dashboardCalendar) {
+            dashboardCalendar.prev();
+        }
+    });
+
+    $(document).on('click', '#agenda_proximo', function() {
+        if (dashboardCalendar) {
+            dashboardCalendar.next();
+        }
+    });
 
 });
 
@@ -325,9 +338,9 @@ function gravar_evento() {
                 $("#mensagem_erro .modal-body").html(data.message);
             }
             else if (data.success){
-                local_agenda = $("#codigo_local_agenda").val();
-
-                consultar_agenda();
+                if (dashboardCalendar) {
+                    dashboardCalendar.refetchEvents();
+                }
 
                 document.getElementById("gravar").disabled = false;
                 $('#modal_incluir').modal('hide');
@@ -688,48 +701,52 @@ function consultar_cliente_boi() {
 }
 
 function consultar_agenda(){
-    startCalendar(local_agenda);
+    $("#agenda").modal('show');
+
+    if (dashboardCalendar) {
+        dashboardCalendar.refetchEvents();
+    }
+    else {
+        iniciarCalendarioAgenda();
+    }
 }
 
-function startCalendar(local){
-    var source = [
-        {
-            url: "ler_eventos_agenda_dashboard.php",
-            method: "POST",
-            extraParams: {
-                "local" : local
-            }
-        }
-    ];
-
-    var tipo = 'dayGridMonth'
-
+function iniciarCalendarioAgenda(){
     var calendarEl = document.getElementById("calendar");
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        contentHeight: 200,
-        //initialView: 'listDay',
+    dashboardCalendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridDay',
         locale: 'pt-br',
-        buttonText:{
-          today:    'Hoje',
-          month:    'Mês',
-          week:     'Semana',
-          day:      'Dia'
-        },
-        eventSources: source,
+        headerToolbar: false,
+        height: 'auto',
+        eventSources: [
+            {
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    var local = $('#codigo_local_agenda').val();
+
+                    $.post('ler_eventos_agenda_dashboard.php', {
+                        local: local
+                    }, function(data){
+                        successCallback(data);
+                    }, 'json').fail(function(){
+                        failureCallback();
+                    });
+                }
+            }
+        ],
         eventClick: function(info){
             $("#idEvento").val(info.event.id);
             editar_evento();
         },
         eventMouseEnter: function(info){
             info.el.style.cursor = 'pointer';
+        },
+        datesSet: function(info){
+            $('#agenda_periodo_titulo').text(info.view.title);
         }
     });
-    
-    $("#agenda").modal(open).show();    
 
-    calendar.render();
+    dashboardCalendar.render();
 }
 
 // Editar/Excluir Evento

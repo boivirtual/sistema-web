@@ -152,6 +152,79 @@ function tratarDescricaoVersao($texto) {
             }
         }
 
+        #agenda .modal-body {
+            padding: 16px;
+            max-height: 82vh;
+            overflow-y: auto;
+        }
+
+        .agenda-dashboard-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .agenda-btn-incluir {
+            white-space: nowrap;
+        }
+
+        .agenda-dashboard-filtro {
+            display: flex;
+            align-items: center;
+        }
+
+        .agenda-dashboard-filtro select {
+            min-width: 200px;
+        }
+
+        .agenda-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px 0;
+            border-top: 1px solid #e3e6e8;
+            border-bottom: 1px solid #e3e6e8;
+        }
+
+        .agenda-toolbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .agenda-toolbar-nav i {
+            font-size: 14px;
+            color: #5c6670;
+            cursor: pointer;
+        }
+
+        #agenda_periodo_titulo {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .agenda-calendar-area {
+            padding-top: 14px;
+        }
+
+        @media (max-width: 767.98px) {
+            .agenda-dashboard-toolbar {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .agenda-toolbar {
+                justify-content: center;
+                text-align: center;
+            }
+        }
+
         @media (min-width: 400px) {
             #chart_div {
                 width: 90%;
@@ -1389,35 +1462,47 @@ function tratarDescricaoVersao($texto) {
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                <h4 class="modal-title">Agenda&nbsp;&nbsp;
-
-                                    <a href="#" style="color: gray" onclick="incluir_nova()" data-toggle='tooltip' data-placement='right' title="Incluir Tarefa"><i class="far fa-calendar-plus"></i>
-                                    </a>
-                                </h4>
-
+                                <h4 class="modal-title">Agenda</h4>
                             </div>
                             <div class="modal-body">
-                                <div class="modal"></div>
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <ul class="">
-                                            <li id="fazendas-select">
-                                                <label style="font-size: 16px; font-weight: normal;">Fazendas:
-                                                </label>
+                                <div class="agenda-dashboard-toolbar">
+                                    <button type="button" class="btn btn-primary agenda-btn-incluir" onclick="incluir_nova()">
+                                        Incluir Nova
+                                    </button>
 
-                                                <select class="form-control" id="codigo_local_agenda" name="codigo_local_agenda" onchange="consultar_fazenda()">
-                                                    <option value="0">Todas</option>
-                                                </select>
-                                            </li>
-                                        </ul>
+                                    <div class="agenda-dashboard-filtro">
+                                        <label for="codigo_local_agenda" class="control-label" style="font-weight: normal; margin-right: 6px;">Fazenda</label>
+                                        <select class="form-control input-sm" id="codigo_local_agenda" name="codigo_local_agenda">
+                                            <option value="000000000">Todas</option>
+                                            <?php
+                                                $tbl_local_filtro_agenda = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0");
+
+                                                while ($reg_local_filtro_agenda = mysqli_fetch_object($tbl_local_filtro_agenda)) {
+                                                    foreach ($array_locais_usuario as $value) {
+                                                        $value = ltrim($value);
+                                                        $value = rtrim($value);
+
+                                                        if ($value == $reg_local_filtro_agenda->tbl_pessoa_id) {
+                                                            echo '<option value="' . $value . '">' . $reg_local_filtro_agenda->tbl_pessoa_nome . '</option>';
+                                                        }
+                                                    }
+                                                }
+                                            ?>
+                                        </select>
                                     </div>
                                 </div>
 
-                                <hr>
-
-                                <div class="row">
-                                    <div class="col-lg-12" id="calendar">
+                                <div class="agenda-toolbar">
+                                    <div class="agenda-toolbar-nav">
+                                        <button type="button" class="btn btn-default btn-sm" id="agenda_hoje">Hoje</button>
+                                        <i class="fas fa-chevron-left" id="agenda_anterior" title="Dia anterior"></i>
+                                        <i class="fas fa-chevron-right" id="agenda_proximo" title="Próximo dia"></i>
+                                        <span id="agenda_periodo_titulo"></span>
                                     </div>
+                                </div>
+
+                                <div class="agenda-calendar-area">
+                                    <div id="calendar"></div>
                                 </div>
                             </div>
 
@@ -1447,7 +1532,7 @@ function tratarDescricaoVersao($texto) {
                                     <div class="row">
                                         <div class="form-group col-md-6">
                                             <label class="control-label"><span class="required">*</span> Fazenda(s)</label>
-                                            <select class="form-control selectpicker" id="local" name="local[]" multiple>
+                                            <select class="form-control selectpicker" id="local" name="local[]" multiple title="Selecione a Fazenda" data-none-selected-text="Selecione a Fazenda">
 
                                                 <?php
                                                 while ($reg_local = mysqli_fetch_object($local)) {
@@ -1527,7 +1612,7 @@ function tratarDescricaoVersao($texto) {
                                     <div class="row m-bot15">
                                         <div class="col-md-12">
                                             <label class="control-label">Descrição</label>
-                                            <textarea name="descricao_agenda" type="text" class="form-control" id="descricao_agenda" rows="2"></textarea>
+                                            <textarea name="descricao_agenda" type="text" class="form-control" id="descricao_agenda" rows="6" style="min-height: 110px;"></textarea>
                                         </div>
                                     </div>
                                 </form>

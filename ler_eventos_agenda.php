@@ -30,7 +30,7 @@
     if ($local == '') {
         $eventos = [];
 
-        if ($atividade==2) {
+        if ($atividade!='' && $atividade!='0') {
             $sql = "SELECT * FROM tbl_agenda 
                 WHERE tbl_agenda_lixeira = 0 AND 
                       tbl_agenda_atividade_padrao='$atividade'";
@@ -129,7 +129,7 @@
         $eventos = [];
 
         foreach($array_local as $local){
-            if ($atividade==2) {
+            if ($atividade!='' && $atividade!='0') {
                 $sql = "SELECT * FROM tbl_agenda 
                     WHERE tbl_agenda_local = $local AND 
                           tbl_agenda_lixeira = 0 AND 

@@ -126,16 +126,28 @@ function enviar_lixeira(array_registro, opcao) {
     $('#modal_incluir').modal('show');
 }
 
+var _gravarEscoreEmAndamento = false;
+
+function _escoreFimGravacao() {
+    _gravarEscoreEmAndamento = false;
+    $('.confirma_gravar').attr('disabled', false);
+}
+
 function gravar_escore() {
+    if (_gravarEscoreEmAndamento) return;
+
     var tipo_gravacao = $("#tipo_gravacao").val();
     if (tipo_gravacao==2) {
         if (window.confirm("Atenção! Ao confirmar enviar esse registro para lixeira, não será possível recupera-lo pelo sistema. Confirmar assim mesmo?")) {
             var dados = $('#form_gravar_escore').serialize();
+            _gravarEscoreEmAndamento = true;
+            $('.confirma_gravar').attr('disabled', true);
             $.ajax({
                 type: "POST",
                 url: 'gravar_escore.php',
                 data: dados,
                 success: function(data){
+                    _escoreFimGravacao();
                     if (data.error) {
                         $("#mensagem_erro").modal();
                         $("#mensagem_erro .modal-body").html(data.message);
@@ -144,18 +156,22 @@ function gravar_escore() {
                         $("#mensagem_retorno").modal();
                         $("#mensagem_retorno .modal-body").html(data.message);
                     }
-                }
+                },
+                error: function(){ _escoreFimGravacao(); }
             });
         }
     }
     else if (tipo_gravacao==3) {
         if (window.confirm("Confirma remover esse registro da lixeira?")) {
             var dados = $('#form_gravar_escore').serialize();
+            _gravarEscoreEmAndamento = true;
+            $('.confirma_gravar').attr('disabled', true);
             $.ajax({
                 type: "POST",
                 url: 'gravar_escore.php',
                 data: dados,
                 success: function(data){
+                    _escoreFimGravacao();
                     if (data.error) {
                         $("#mensagem_erro").modal();
                         $("#mensagem_erro .modal-body").html(data.message);
@@ -164,18 +180,22 @@ function gravar_escore() {
                         $("#mensagem_retorno").modal();
                         $("#mensagem_retorno .modal-body").html(data.message);
                     }
-                }
+                },
+                error: function(){ _escoreFimGravacao(); }
             });
         }
     }
     else if (tipo_gravacao==1){
         var dados = $('#form_gravar_escore').serialize();
         console.log(dados);
+        _gravarEscoreEmAndamento = true;
+        $('.confirma_gravar').attr('disabled', true);
         $.ajax({
             type: "POST",
             url: 'gravar_escore.php',
             data: dados,
             success: function(data){
+                _escoreFimGravacao();
                 if (data.error) {
                     $("#mensagem_erro").modal();
                     $("#mensagem_erro .modal-body").html(data.message);
@@ -184,16 +204,20 @@ function gravar_escore() {
                     $("#mensagem_retorno").modal();
                     $("#mensagem_retorno .modal-body").html(data.message);
                 }
-            }
+            },
+            error: function(){ _escoreFimGravacao(); }
         });
     }
     else {
         var dados = $('#form_gravar_escore').serialize();
+        _gravarEscoreEmAndamento = true;
+        $('.confirma_gravar').attr('disabled', true);
         $.ajax({
             type: "POST",
             url: 'gravar_escore.php',
             data: dados,
             success: function(data){
+                _escoreFimGravacao();
                 if (data.error) {
                     $("#mensagem_erro").modal();
                     $("#mensagem_erro .modal-body").html(data.message);
@@ -202,7 +226,8 @@ function gravar_escore() {
                     $("#mensagem_retorno_inclusao").modal();
                     $("#mensagem_retorno_inclusao .modal-body").html(data.message);
                 }
-            }
+            },
+            error: function(){ _escoreFimGravacao(); }
         });
     }
 }

@@ -247,7 +247,7 @@
                         </div>
 
                         <div class="modal-body">
-                            <form method="POST" action="gravar_forma_recebimento.php" enctype="multipart/form-data">
+                            <form method="POST" action="gravar_forma_recebimento.php" enctype="multipart/form-data" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
                                 <div class="form-group col-md-12">
                                     <label for="codigo_tipo" class="control-label"></label>
                                     <input name="codigo_tipo" type="hidden" class="form-control" id="codigo_tipo" 
@@ -357,7 +357,7 @@
                         </div>
 
                         <div class="modal-body">
-                            <form method="POST" action="gravar_forma_recebimento.php" enctype="multipart/form-data">
+                            <form method="POST" action="gravar_forma_recebimento.php" enctype="multipart/form-data" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
                                 <div class="form-group col-md-12">
                                     <input name="codigo_tipo_editar" type="hidden" class="form-control" 
                                     id="codigo_tipo_editar" readonly="" >

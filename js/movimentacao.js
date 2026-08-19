@@ -6520,17 +6520,20 @@ function gravar_movimentacao_pesagem() {
         $("#array_itens").val(grupo_itens);
 
         var tipo_gravacao = $("#tipo_gravacao").val();
-        
-        //alert ('vou gravar com pesagem transferecia ou venda - gravar_movimentacao_individual.php'); 
+
+        //alert ('vou gravar com pesagem transferecia ou venda - gravar_movimentacao_individual.php');
         // Gravar movimentação com pesagem
 
         var dados = $('#form_gravar').serialize();
-        
+
+        $('.btn_confirmar_mov_pesagem').prop('disabled', true);
+
         $.ajax({
-            type: "POST", 
+            type: "POST",
             url: 'gravar_movimentacao_individual.php',
             data: dados,
             success: function(data){
+                $('.btn_confirmar_mov_pesagem').prop('disabled', false);
                 if (data.error) {
                     $("#mensagem_erro").modal();
                     $("#mensagem_erro .modal-body").html(data.message);
@@ -6541,6 +6544,11 @@ function gravar_movimentacao_pesagem() {
                     $("#mensagem_retorno").modal();
                     $("#mensagem_retorno .modal-body").html(data.message);
                 }
+            },
+            error: function(){
+                $('.btn_confirmar_mov_pesagem').prop('disabled', false);
+                $("#mensagem_erro").modal();
+                $("#mensagem_erro .modal-body").html('Erro ao comunicar com o servidor.');
             }
         });
     }
@@ -7058,16 +7066,19 @@ function gravar_morte() {
 
     $("#array_itens").val(grupo_itens);
 
-    //alert ('vou gravar morte - gravar_movimentacao_individual.php'); 
+    //alert ('vou gravar morte - gravar_movimentacao_individual.php');
     // gravar morte
 
     var dados = $('#form_gravar').serialize();
 
+    $("#confirmar_morte").prop('disabled', true);
+
     $.ajax({
-        type: "POST", 
+        type: "POST",
         url: 'gravar_movimentacao_individual.php',
         data: dados,
         success: function(data){
+            $("#confirmar_morte").prop('disabled', false);
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -7076,6 +7087,11 @@ function gravar_morte() {
                 $("#mensagem_retorno_morte").modal();
                 $("#mensagem_retorno_morte .modal-body").html(data.message);
             }
+        },
+        error: function(){
+            $("#confirmar_morte").prop('disabled', false);
+            $("#mensagem_erro").modal();
+            $("#mensagem_erro .modal-body").html('Erro ao comunicar com o servidor.');
         }
     });
 }
@@ -7148,14 +7164,18 @@ function gravar_outra() {
 
     $("#array_itens").val(grupo_itens);
 
-    //alert ('vou gravar outra - gravar_movimentacao_individual.php'); 
+    //alert ('vou gravar outra - gravar_movimentacao_individual.php');
     // gravar outra
     var dados = $('#form_gravar').serialize();
+
+    $("#confirmar_outra").prop('disabled', true);
+
     $.ajax({
-        type: "POST", 
+        type: "POST",
         url: 'gravar_movimentacao_individual.php',
         data: dados,
         success: function(data){
+            $("#confirmar_outra").prop('disabled', false);
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -7164,6 +7184,11 @@ function gravar_outra() {
                 $("#mensagem_retorno_outra").modal();
                 $("#mensagem_retorno_outra .modal-body").html(data.message);
             }
+        },
+        error: function(){
+            $("#confirmar_outra").prop('disabled', false);
+            $("#mensagem_erro").modal();
+            $("#mensagem_erro .modal-body").html('Erro ao comunicar com o servidor.');
         }
     });
 }

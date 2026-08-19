@@ -448,7 +448,7 @@
                                                 </div>
 
                                                 <div class="col-md-2">
-                                                    <input type="button" class="form-control btn btn-primary" onclick="gravar_movimentacao_pesagem()" value="Confirmar">
+                                                    <input type="button" class="form-control btn btn-primary btn_confirmar_mov_pesagem" onclick="gravar_movimentacao_pesagem()" value="Confirmar">
                                                 </div>
 
                                                 <div class="col-md-1">
@@ -526,7 +526,7 @@
                                                 <div class="col-md-9">
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <input type="button" class="form-control btn btn-primary" onclick="gravar_movimentacao_pesagem()" value="Confirmar">
+                                                    <input type="button" class="form-control btn btn-primary btn_confirmar_mov_pesagem" onclick="gravar_movimentacao_pesagem()" value="Confirmar">
                                                 </div>
 
                                                 <div class="col-md-1">
@@ -1005,7 +1005,7 @@
 
                                             <div class="form-group col-md-2">
                                                 <label class="control-label">&nbsp;</label>
-                                                <button type="button" class="form-control btn-success" onClick="salvar_outra()">Confirmar</button>
+                                                <button type="button" id="confirmar_outra" class="form-control btn-success" onClick="salvar_outra()">Confirmar</button>
                                             </div>
                                         </div>
 

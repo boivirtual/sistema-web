@@ -104,11 +104,14 @@ $(document).ready(function(){
         }
 
         var dados = $('#form_gravar_plano_contas').serialize();
+        var $btn = $(this);
+        $btn.prop('disabled', true);
         $.ajax({
             type: "POST",
             url: 'gravar_plano_contas.php',
             data: dados,
             success: function(data){
+                $btn.prop('disabled', false);
                 if (data.error) {
                     if (data.error==true) {
                         $("#mensagem_erro").modal();
@@ -123,6 +126,11 @@ $(document).ready(function(){
                     $("#mensagem_retorno").modal();
                     $("#mensagem_retorno .modal-body").html(data.message);
                 }
+            },
+            error: function(){
+                $btn.prop('disabled', false);
+                $("#mensagem_erro").modal();
+                $("#mensagem_erro .modal-body").html('Erro ao comunicar com o servidor.');
             }
         });
     });

@@ -456,7 +456,16 @@ function enviar_lixeira(array_registro, opcao) {
     $('#modal_incluir').modal('show');
 }
 
+var _gravarPastoEmAndamento = false;
+
+function _pastoFimGravacao() {
+    _gravarPastoEmAndamento = false;
+    $('.confirma_gravar').attr('disabled', false);
+}
+
 function gravar_pasto() {
+    if (_gravarPastoEmAndamento) return;
+
     if (controle_estoque=='I') {
         var categoria = new Array();
         var array_categoria = "";
@@ -521,11 +530,14 @@ function gravar_pasto() {
     if (tipo_gravacao==2) {
         if (window.confirm("Atenção! Ao confirmar enviar esse registro para lixeira, não será possível recupera-lo pelo sistema. Confirmar assim mesmo?")) {
             var dados = $('#form_gravar_pasto').serialize();
+            _gravarPastoEmAndamento = true;
+            $('.confirma_gravar').attr('disabled', true);
             $.ajax({
                 type: "POST",
                 url: 'gravar_pasto.php',
                 data: dados,
                 success: function(data){
+                    _pastoFimGravacao();
                     if (data.error) {
                         $("#mensagem_erro").modal();
                         $("#mensagem_erro .modal-body").html(data.message);
@@ -534,18 +546,22 @@ function gravar_pasto() {
                         $("#mensagem_retorno").modal();
                         $("#mensagem_retorno .modal-body").html(data.message);
                     }
-                }
+                },
+                error: function(){ _pastoFimGravacao(); }
             });
         }
     }
     else if (tipo_gravacao==3) {
         if (window.confirm("Confirma remover esse registro da lixeira?")) {
             var dados = $('#form_gravar_pasto').serialize();
+            _gravarPastoEmAndamento = true;
+            $('.confirma_gravar').attr('disabled', true);
             $.ajax({
                 type: "POST",
                 url: 'gravar_pasto.php',
                 data: dados,
                 success: function(data){
+                    _pastoFimGravacao();
                     if (data.error) {
                         $("#mensagem_erro").modal();
                         $("#mensagem_erro .modal-body").html(data.message);
@@ -554,17 +570,21 @@ function gravar_pasto() {
                         $("#mensagem_retorno").modal();
                         $("#mensagem_retorno .modal-body").html(data.message);
                     }
-                }
+                },
+                error: function(){ _pastoFimGravacao(); }
             });
         }
     }
     else if (tipo_gravacao==1){ // alterar
         var dados = $('#form_gravar_pasto').serialize();
+        _gravarPastoEmAndamento = true;
+        $('.confirma_gravar').attr('disabled', true);
         $.ajax({
             type: "POST",
             url: 'gravar_pasto.php',
             data: dados,
             success: function(data){
+                _pastoFimGravacao();
                 if (data.error) {
                     $("#mensagem_erro").modal();
                     $("#mensagem_erro .modal-body").html(data.message);
@@ -573,17 +593,21 @@ function gravar_pasto() {
                     $("#mensagem_retorno").modal();
                     $("#mensagem_retorno .modal-body").html(data.message);
                 }
-            }
+            },
+            error: function(){ _pastoFimGravacao(); }
         });
     }
     else { // incluir
         var dados = $('#form_gravar_pasto').serialize();
 
+        _gravarPastoEmAndamento = true;
+        $('.confirma_gravar').attr('disabled', true);
         $.ajax({
             type: "POST",
             url: 'gravar_pasto.php',
             data: dados,
             success: function(data){
+                _pastoFimGravacao();
 
                 if (data.error) {
                     $("#mensagem_erro").modal();
@@ -593,7 +617,8 @@ function gravar_pasto() {
                     $("#mensagem_retorno_inclusao").modal();
                     $("#mensagem_retorno_inclusao .modal-body").html(data.message);
                 }
-            }
+            },
+            error: function(){ _pastoFimGravacao(); }
         });
     }
 }

@@ -132,12 +132,37 @@ $(document).ready(function(){
         $("#titulo_agenda").val(desc_titulo);
     });
 
-    $('#tipo_agenda').change(function(){
-        consultar();
+    $(document).on('change', '.agenda-fazenda-check, #agenda_atividade_filtro', function() {
+        if (agendaCalendar) {
+            agendaCalendar.refetchEvents();
+        }
     });
 
-    $('#codigo_local').change(function(){
-        consultar();
+    $(document).on('click', '#agenda_hoje', function() {
+        if (agendaCalendar) {
+            agendaCalendar.today();
+        }
+    });
+
+    $(document).on('click', '#agenda_anterior', function() {
+        if (agendaCalendar) {
+            agendaCalendar.prev();
+        }
+    });
+
+    $(document).on('click', '#agenda_proximo', function() {
+        if (agendaCalendar) {
+            agendaCalendar.next();
+        }
+    });
+
+    $(document).on('click', '.agenda-view-btn', function() {
+        $('.agenda-view-btn').removeClass('active');
+        $(this).addClass('active');
+
+        if (agendaCalendar) {
+            agendaCalendar.changeView($(this).data('view'));
+        }
     });
 
     $("#dia_inteiro").click(function(){
@@ -172,11 +197,71 @@ $(document).ready(function(){
 });
 
 function excluir_evento() {
-    $("#tipo_gravacao").val(2);
+    var id_evento = $("#idEvento").val();
+    $("#modal_incluir").modal('hide');
+    mostrarConfirmarExclusao(id_evento);
+}
 
-    if(confirm("Confirma excluir este evento? Após excluir, o registro não poderá ser recuperado pelo sistema")){      
-        gravar_evento();
+function excluirEventoDoPreview(){
+    var id_evento = $("#idEventoPreview").val();
+    $("#modalPreviewEvento").modal('hide');
+    mostrarConfirmarExclusao(id_evento);
+}
+
+function formatarDataHoraBanco(dataStr){
+    if (!dataStr) {
+        return '';
     }
+
+    var partes = dataStr.split(' ');
+    var data = partes[0].split('-');
+    var hora = partes[1];
+    var dt = new Date(data[0], data[1] - 1, data[2]);
+    var opcoesDia = { weekday: 'long', day: 'numeric', month: 'long' };
+    var dataFormatada = dt.toLocaleDateString('pt-BR', opcoesDia);
+    dataFormatada = dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
+
+    if (!hora || hora === '00:00:00') {
+        return dataFormatada;
+    }
+
+    return dataFormatada + ' · ' + hora.substring(0, 5);
+}
+
+function mostrarConfirmarExclusao(id_evento){
+    $.ajax({
+        type: "POST",
+        url: 'ler_eventos_agenda_editar.php',
+        dataType: "json",
+        data: {
+                "id_evento": id_evento
+            },
+        success: function(data){
+            if (data.error) {
+                $("#mensagem_erro").modal();
+                $("#mensagem_erro .modal-body").html(data.message);
+                return;
+            }
+
+            $("#idEventoExclusao").val(id_evento);
+            $("#exclusao_evento_titulo").text(data.tbl_agenda_titulo);
+            $("#exclusao_evento_data").text(formatarDataHoraBanco(data.tbl_agenda_data_inicial));
+
+            var nomeAtividade = $('#agenda_atividade_filtro option[value="' + data.tbl_agenda_atividade_padrao + '"]').text();
+            $("#exclusao_evento_atividade").text(nomeAtividade ? 'Atividade: ' + nomeAtividade : '');
+
+            $("#exclusao_evento_descricao").text(data.tbl_agenda_descricao ? data.tbl_agenda_descricao : 'Sem descrição.');
+
+            $("#modalConfirmarExclusao").modal('show');
+        }
+    });
+}
+
+function confirmarExclusaoEvento(){
+    $("#idEvento").val($("#idEventoExclusao").val());
+    $("#tipo_gravacao").val(2);
+    $("#modalConfirmarExclusao").modal('hide');
+    gravar_evento();
 }
 
 function gravar_evento() {
@@ -204,12 +289,14 @@ function gravar_evento() {
             else if (data.success){
                 var tipo_gravacao = $("#tipo_gravacao").val();
 
+                $("#modal_incluir").modal('hide');
+
                 if (tipo_gravacao==0) {
-                    $("#mensagem_retorno").modal();
+                    $("#mensagem_retorno").modal('show');
                     $("#mensagem_retorno .modal-body").html(data.message);
                 }
                 else {
-                    $("#mensagem_retorno_editar").modal();
+                    $("#mensagem_retorno_editar").modal('show');
                     $("#mensagem_retorno_editar .modal-body").html(data.message);
                 }
             }
@@ -217,120 +304,237 @@ function gravar_evento() {
     });
 }
 
+var agendaCalendar = null;
+
 function consultar(){
-    var tipoAgenda = $("#tipo_agenda").val();
-    var local = $("#codigo_local").val();
-
-    if(local == null){   
-        local = '';
-    }  
-
-    startCalendar(tipoAgenda, local);
-    $("#exibir_agenda").css({
-        "background-color": "#ffffff", "padding-top": "15px", "padding-bottom": "15px"});
+    if (agendaCalendar) {
+        agendaCalendar.refetchEvents();
+    }
+    else {
+        iniciarCalendarioAgenda();
+    }
 }
 
-function startCalendar(option, l){
-    var local = l;
-    var source = [
-        {
-            url: "ler_eventos_agenda.php",
-            method: "POST",
-            extraParams: {
-                "local" : local,
-                "atividade" : ''
-            }
+function agendarAplicacaoTooltips(){
+    aplicarTooltipsEventos();
+    setTimeout(aplicarTooltipsEventos, 50);
+    setTimeout(aplicarTooltipsEventos, 200);
+    setTimeout(aplicarTooltipsEventos, 500);
+}
+
+function medirLarguraTextoIsolada(texto, elementoReferencia){
+    var estiloRef = window.getComputedStyle(elementoReferencia);
+    var temp = document.createElement('span');
+    temp.style.cssText = 'position:absolute; visibility:hidden; white-space:nowrap; left:-9999px; top:-9999px;';
+    temp.style.fontSize = estiloRef.fontSize;
+    temp.style.fontFamily = estiloRef.fontFamily;
+    temp.style.fontWeight = estiloRef.fontWeight;
+    temp.style.letterSpacing = estiloRef.letterSpacing;
+    temp.textContent = texto;
+    document.body.appendChild(temp);
+    var largura = temp.getBoundingClientRect().width;
+    document.body.removeChild(temp);
+    return largura;
+}
+
+function aplicarTooltipsEventos(){
+    document.querySelectorAll('.fc-event').forEach(function(el){
+        var tituloEl = el.querySelector('.fc-event-title');
+
+        if (!tituloEl) {
+            return;
         }
-    ];
-    var tipo = "";
 
-    if(option == 2){
-        tipo = 'timeGridWeek'
-    }else{
-        tipo = 'dayGridMonth'
-    }
+        var ancoraAntiga = tituloEl.querySelector('.agenda-tooltip-ancora');
+        var $alvoAntigo = ancoraAntiga ? $(ancoraAntiga) : $(tituloEl);
 
-    if(option == 1){
-        var calendarEl = document.getElementById("calendar");
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            //initialView: 'listDay',
-            initialView: 'dayGridDay',
-            locale: 'pt-br',
-            buttonText:{
-              today:    'Hoje',
-              month:    'Mês',
-              week:     'Semana',
-              day:      'Dia'
-            },
-            eventSources: source,
-            eventClick: function(info){
-                $("#idEvento").val(info.event.id);
-                editar_evento();
+        if ($alvoAntigo.data('bs.tooltip')) {
+            $alvoAntigo.tooltip('destroy');
+        }
 
-                /*$("#tituloEvento").val(info.event.title);
-                $("#descricaoEvento").html(info.event.extendedProps.description);
-                var d = info.event.end;
-                var inicio = [d.getFullYear(),
-                  (d.getMonth()+1).AddZero(),
-                  d.getDate().AddZero()].join('-')+'T'+
-                   [d.getHours().AddZero(),
-                   d.getMinutes().AddZero()].join(':');
-                $("#dataHoraEvento").val(inicio);
-                $("#modalEditarEvento").modal('show');*/
-            },
+        if (ancoraAntiga) {
+            ancoraAntiga.remove();
+        }
 
-            eventMouseEnter: function(info){
-                info.el.style.cursor = 'pointer';
+        var tituloEvento = tituloEl.textContent;
+        var larguraTextoReal = medirLarguraTextoIsolada(tituloEvento, tituloEl);
+        var larguraDisponivel = tituloEl.getBoundingClientRect().width;
+
+        var cortado = larguraTextoReal > larguraDisponivel + 1;
+        var textoTooltip = cortado ? (tituloEvento + '\nClique para mais informações') : 'Clique para mais informações';
+        var alvo = tituloEl;
+
+        if (!cortado) {
+            var ancora = document.createElement('span');
+            ancora.className = 'agenda-tooltip-ancora';
+            ancora.style.cssText = 'position:absolute; left:0; top:0; width:' + Math.min(larguraTextoReal, larguraDisponivel) + 'px; height:100%;';
+
+            if (window.getComputedStyle(tituloEl).position === 'static') {
+                tituloEl.style.position = 'relative';
             }
-        });
-    }else{
-        var calendarEl = document.getElementById("calendar");
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: tipo,
-            locale: 'pt-br',
-            buttonText:{
-              today:    'Hoje',
-              month:    'Mês',
-              week:     'Semana',
-              day:      'Dia'
-            },
-            eventSources: source,
-            eventClick: function(info){
-                $("#idEvento").val(info.event.id);
-                editar_evento();
-                /*$("#tituloEvento").val(info.event.title);
-                var d = info.event.end;
-                var inicio = [d.getFullYear(),
-                    (d.getMonth()+1).AddZero(),
-                    d.getDate().AddZero()].join('-')+'T'+
-                   [d.getHours().AddZero(),
-                    d.getMinutes().AddZero()].join(':');
-                $("#dataHoraEvento").val(inicio);
-                $("#descricaoEvento").html(info.event.extendedProps.description);
-                $("#modalEditarEvento").modal('show');*/
-            },
 
-            eventMouseEnter: function(info){
-                info.el.style.cursor = 'pointer';
-            },
-            editable: true,
-            eventDrop: function(info){
-                if(confirm("Tem certeza que deseja alterar a data deste evento?")){
-                    var e = info.event;
-                    //var d = info.event.start;
-                    //var inicio = [d.getFullYear(),
-                    //    (d.getMonth()+1).AddZero(),
-                    //    d.getDate().AddZero()].join('-')+'T'+
-                    //   [d.getHours().AddZero(),
-                    //    d.getMinutes().AddZero()].join(':');
-                    //editarEvento(e.id, e.title, inicio);
-                    editarEvento(e.id, e.title, e.start);
+            tituloEl.appendChild(ancora);
+            alvo = ancora;
+        }
+
+        $(alvo).attr('title', textoTooltip);
+        $(alvo).tooltip({ placement: 'top', container: 'body' });
+    });
+}
+
+function iniciarCalendarioAgenda(){
+    var calendarEl = document.getElementById("calendar");
+
+    agendaCalendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        locale: 'pt-br',
+        headerToolbar: false,
+        height: 'auto',
+        allDayText: 'Dia todo',
+        nowIndicator: true,
+        dayMaxEvents: false,
+        editable: true,
+        eventSources: [
+            {
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    var locais = $('.agenda-fazenda-check:checked').map(function(){ return this.value; }).get();
+
+                    if (locais.length === 0) {
+                        successCallback([]);
+                        return;
+                    }
+
+                    var atividade = $('#agenda_atividade_filtro').val();
+
+                    $.post('ler_eventos_agenda.php', {
+                        local: locais.join(','),
+                        atividade: atividade
+                    }, function(data){
+                        successCallback(data);
+                    }, 'json').fail(function(){
+                        failureCallback();
+                    });
                 }
             }
-        });
+        ],
+        eventClick: function(info){
+            mostrarPreviewEvento(info.event);
+        },
+        eventMouseEnter: function(info){
+            info.el.style.cursor = 'pointer';
+        },
+        eventWillUnmount: function(info){
+            var tituloEl = info.el.querySelector('.fc-event-title');
+
+            if (!tituloEl) {
+                return;
+            }
+
+            var ancora = tituloEl.querySelector('.agenda-tooltip-ancora');
+            var $alvo = ancora ? $(ancora) : $(tituloEl);
+
+            if ($alvo.data('bs.tooltip')) {
+                $alvo.tooltip('destroy');
+            }
+        },
+        eventsSet: function(events){
+            agendarAplicacaoTooltips();
+        },
+        eventDrop: function(info){
+            if(confirm("Tem certeza que deseja alterar a data deste evento?")){
+                var e = info.event;
+                editarEvento(e.id, e.title, e.start);
+            }
+        },
+        datesSet: function(info){
+            $('#agenda_periodo_titulo').text(info.view.title);
+            agendarAplicacaoTooltips();
+        }
+    });
+
+    agendaCalendar.render();
+
+    ajustarAlturaCalendario();
+
+    $(window).off('resize.agendaAltura').on('resize.agendaAltura', function(){
+        ajustarAlturaCalendario();
+    });
+
+    $('#main-content').off('scroll.agendaPopover').on('scroll.agendaPopover', function(){
+        $('.fc-popover').remove();
+    });
+}
+
+function ajustarAlturaCalendario(){
+    var $area = $('.agenda-calendar-area');
+
+    if (!$area.length) {
+        return;
     }
 
-    calendar.render();
+    var topo = $area.offset().top - $('#main-content').offset().top + $('#main-content').scrollTop();
+    var alturaDisponivel = $('#main-content').height() - topo - 20;
+
+    if (alturaDisponivel < 300) {
+        alturaDisponivel = 300;
+    }
+
+    $area.css('max-height', alturaDisponivel + 'px');
+
+    if (agendaCalendar) {
+        agendaCalendar.updateSize();
+    }
+}
+
+function formatarDataPreviewEvento(evento){
+    var opcoesDia = { weekday: 'long', day: 'numeric', month: 'long' };
+    var dataFormatada = evento.start.toLocaleDateString('pt-BR', opcoesDia);
+    dataFormatada = dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
+
+    if (evento.allDay) {
+        return dataFormatada;
+    }
+
+    var horaInicio = evento.start.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+    var horaFim = evento.end ? evento.end.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) : '';
+
+    return dataFormatada + ' · ' + horaInicio + (horaFim ? ' - ' + horaFim : '');
+}
+
+function mostrarPreviewEvento(evento){
+    var id_evento = evento.id;
+
+    $("#idEventoPreview").val(id_evento);
+    $("#preview_evento_titulo").text(evento.title);
+    $("#preview_evento_data").text(formatarDataPreviewEvento(evento));
+    $("#preview_evento_cor").css('background', evento.backgroundColor || evento.borderColor || '#378ADD');
+    $("#preview_evento_descricao").text('Carregando...');
+    $("#modalPreviewEvento").modal('show');
+
+    $.ajax({
+        type: "POST",
+        url: 'ler_eventos_agenda_editar.php',
+        dataType: "json",
+        data: {
+                "id_evento": id_evento
+            },
+        success: function(data){
+            if (data.error) {
+                $("#modalPreviewEvento").modal('hide');
+                $("#mensagem_erro").modal();
+                $("#mensagem_erro .modal-body").html(data.message);
+            }
+            else {
+                $("#preview_evento_descricao").text(data.tbl_agenda_descricao ? data.tbl_agenda_descricao : 'Sem descrição.');
+            }
+        }
+    });
+}
+
+function editarEventoDoPreview(){
+    $("#modalPreviewEvento").modal('hide');
+    $("#idEvento").val($("#idEventoPreview").val());
+    editar_evento();
 }
 
 // Editar/Excluir Evento
