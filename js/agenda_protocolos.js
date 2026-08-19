@@ -7,9 +7,18 @@ function incluir_nova() {
     $("#local").val('[]');
     $("#local").prop("disabled", false);
     $('#local').selectpicker('refresh');
-    $("#atividade").val('2');
     $("#atividade").prop("disabled", false);
-    $("#titulo_agenda").val('Reprodução-');
+
+    var $opcaoAtividadeUnica = $('#atividade option[value!="0"]');
+
+    if ($opcaoAtividadeUnica.length === 1) {
+        $("#atividade").val($opcaoAtividadeUnica.val());
+        $("#titulo_agenda").val($opcaoAtividadeUnica.text().trim() + '-');
+    }
+    else {
+        $("#atividade").val('0');
+        $("#titulo_agenda").val('');
+    }
     document.getElementById("descricao_agenda").value='';
     $(".datas").val('');
     $("#dia_inteiro").prop("checked", true);
