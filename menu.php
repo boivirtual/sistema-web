@@ -215,6 +215,7 @@ function tratarDescricaoVersao($texto) {
 
         .tooltip {
             pointer-events: none;
+            z-index: 1060;
         }
 
         .tooltip-inner {
