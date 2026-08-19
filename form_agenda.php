@@ -473,10 +473,8 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button class="btn btn-success confirma_gravar" onclick="gravar_evento()">Confirmar</button>
+                            <button class="btn btn-success confirma_gravar pull-left" onclick="gravar_evento()">Confirmar</button>
 
-                            <button class="btn btn-danger confirma_exclusao" onclick="excluir_evento()">Excluir</button>
-                            
                             <button data-dismiss="modal" class="btn btn-default" type="button" onclick="">Fechar</button>
                         </div>
                     </div>
