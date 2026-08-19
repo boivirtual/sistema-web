@@ -11,6 +11,33 @@ permanecer em inglês.
 
 ---
 
+## Premissa obrigatória nº 2: Branch correta por tipo de projeto
+
+Este repositório (`sistema-web`) contém o código do **sistema web** em PHP.
+Todo commit de arquivo do sistema web deve ser feito **exclusivamente na
+branch `master`**.
+
+A branch `offline-pesagem` deste mesmo repositório pertence ao
+**aplicativo mobile Flutter** (funcionalidade de pesagem offline) e deve
+conter apenas arquivos da pasta `api/` relacionados ao app. O ideal é que
+esse trabalho fique em um repositório próprio `aplicativo-mobile`, mas por
+enquanto ele convive neste mesmo repositório — por isso o cuidado abaixo é
+obrigatório.
+
+**Antes de editar ou commitar qualquer arquivo fora da pasta `api/`, é
+obrigatório rodar `git branch --show-current` e garantir que a branch ativa
+é `master`.** Se estiver em `offline-pesagem` (ou qualquer outra branch),
+troque para `master` ANTES de tocar em qualquer arquivo do sistema web —
+nunca commite arquivos do sistema web estando em `offline-pesagem`.
+
+Isso vale em qualquer sessão, inclusive se houver mais de uma sessão aberta
+ao mesmo tempo nesta pasta: como todas compartilham o mesmo diretório de
+trabalho do git, se uma sessão trocar de branch, isso afeta imediatamente
+as demais. Por isso a verificação da branch deve ser feita a cada tarefa,
+não apenas uma vez no início da sessão.
+
+---
+
 ## Projeto
 **Nome:** Boi Virtual — Sistema Web  
 **Tecnologias:** PHP, MySQL, Bootstrap 3, jQuery, DataTables, Font Awesome 5  
