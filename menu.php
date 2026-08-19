@@ -213,6 +213,14 @@ function tratarDescricaoVersao($texto) {
             padding-top: 14px;
         }
 
+        .tooltip {
+            pointer-events: none;
+        }
+
+        .tooltip-inner {
+            white-space: pre-line;
+        }
+
         @media (max-width: 767.98px) {
             .agenda-dashboard-toolbar {
                 justify-content: center;
