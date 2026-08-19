@@ -290,6 +290,10 @@ function agendarAplicacaoTooltips(){
     setTimeout(aplicarTooltipsEventos, 500);
 }
 
+$(document).on('hidden.bs.modal', '.modal', function(){
+    $(this).find('[data-toggle="tooltip"]').tooltip('hide');
+});
+
 function aplicarTooltipsEventos(){
     document.querySelectorAll('.fc-event').forEach(function(el){
         var tituloEl = el.querySelector('.fc-event-title');
