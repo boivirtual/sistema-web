@@ -588,8 +588,8 @@
                             <p id="exclusao_evento_descricao" style="white-space: pre-wrap; word-wrap: break-word; margin: 0; font-size: 14px; color: #333;"></p>
                         </div>
                         <div class="modal-footer">
+                            <button class="btn btn-danger pull-left" type="button" onclick="confirmarExclusaoEvento()">Excluir</button>
                             <button data-dismiss="modal" class="btn btn-default" type="button">Fechar</button>
-                            <button class="btn btn-danger" type="button" onclick="confirmarExclusaoEvento()">Excluir</button>
                         </div>
                     </div>
                 </div>
