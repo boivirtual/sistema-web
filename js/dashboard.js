@@ -250,9 +250,18 @@ $(document).ready(function(){
 
 });
 
-function incluir_nova() { 
-    $("#local").val('[]');
+function incluir_nova() {
     $("#local").prop("disabled", false);
+
+    var $opcaoLocalUnica = $('#local option');
+
+    if ($opcaoLocalUnica.length === 1) {
+        $("#local").val($opcaoLocalUnica.val());
+    }
+    else {
+        $("#local").val('[]');
+    }
+
     $('#local').selectpicker('refresh');
     $("#atividade").val('0');
     $("#titulo_agenda").val('');
