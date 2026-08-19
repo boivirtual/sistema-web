@@ -1522,6 +1522,33 @@ function tratarDescricaoVersao($texto) {
                     </div>
                 </div>
 
+                <div class="modal fade" id="modalPreviewEvento" tabindex="-1" role="dialog"
+                    aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content" style="border-radius: 8px; overflow: hidden;">
+                            <div class="modal-header" style="border-bottom: none; padding: 20px 22px 14px; display: flex; align-items: center; justify-content: flex-end;">
+                                <i class="fas fa-times" data-toggle="tooltip" data-placement="bottom" title="Fechar" data-dismiss="modal" style="cursor: pointer; color: #5c6670; font-size: 15px;" aria-hidden="true"></i>
+                            </div>
+                            <div class="modal-body" style="padding-top: 22px;">
+                                <input type="hidden" id="idEventoPreview">
+
+                                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                    <span id="preview_evento_cor" style="width: 12px; height: 12px; border-radius: 50%; margin-top: 6px; flex-shrink: 0;"></span>
+                                    <div style="flex: 1; min-width: 0;">
+                                        <h4 id="preview_evento_titulo" style="margin: 0 0 4px; font-size: 17px; font-weight: 500; word-wrap: break-word;"></h4>
+                                        <div id="preview_evento_data" style="font-size: 13px; color: #6c757d; margin-bottom: 26px;"></div>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                    <i class="fas fa-align-left" style="color: #6c757d; width: 12px; margin-top: 3px;" aria-hidden="true"></i>
+                                    <p id="preview_evento_descricao" style="white-space: pre-wrap; word-wrap: break-word; margin: 0; font-size: 14px; color: #333; flex: 1; min-width: 0;"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="modal fade" id="modal_incluir" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
                     <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="width: 100%;">
                         <div class="modal-content">
