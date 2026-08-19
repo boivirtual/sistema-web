@@ -322,6 +322,10 @@ function agendarAplicacaoTooltips(){
     setTimeout(aplicarTooltipsEventos, 500);
 }
 
+$(document).on('hidden.bs.modal', '.modal', function(){
+    $(this).find('[data-toggle="tooltip"]').tooltip('hide');
+});
+
 function medirLarguraTextoIsolada(texto, elementoReferencia){
     var estiloRef = window.getComputedStyle(elementoReferencia);
     var temp = document.createElement('span');
