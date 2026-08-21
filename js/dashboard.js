@@ -1172,7 +1172,11 @@ function mostrar_dias_chuva() {
     });
 }
 
+var _gravarTermoUsoEmAndamento = false;
+
 function gravar_termo_uso() {
+    if (_gravarTermoUsoEmAndamento) return;
+
     var concordo = $("input[name='aceite_termos']:checked").val();
 
     if (concordo==undefined) {
@@ -1181,12 +1185,17 @@ function gravar_termo_uso() {
         return;
     }
 
+    _gravarTermoUsoEmAndamento = true;
+    $(".gravar_termo_uso").attr("disabled", true);
+
     var dados = $('#form_aceite_termos').serialize();
     $.ajax({
         type: "POST",
         url: 'gravar_termo_uso.php',
         data: dados,
         success: function(data){
+            _gravarTermoUsoEmAndamento = false;
+            $(".gravar_termo_uso").attr("disabled", false);
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -1195,6 +1204,10 @@ function gravar_termo_uso() {
                 $("#mensagem_retorno").modal();
                 $("#mensagem_retorno .modal-body").html(data.message);
             }
+        },
+        error: function(){
+            _gravarTermoUsoEmAndamento = false;
+            $(".gravar_termo_uso").attr("disabled", false);
         }
     });
 }
