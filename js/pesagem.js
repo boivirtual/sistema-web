@@ -5375,11 +5375,14 @@ function gravar_pesagem_lote() {
 
     var dados = $("#form_gravar_pesagem").serialize();
 
+    _gravarPesagemLoteEmAndamento = true;
+
     $.ajax({
         type: "POST",
         url: "gravar_pesagem_lote.php",
         data: dados,
         success: function (data) {
+            _gravarPesagemLoteEmAndamento = false;
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -5389,6 +5392,9 @@ function gravar_pesagem_lote() {
                 //$("#numero_pesagem_id").val(data.numero_doc);
                 //$("#tipo_gravacao").val(2);
             }
+        },
+        error: function () {
+            _gravarPesagemLoteEmAndamento = false;
         },
     });
 }
