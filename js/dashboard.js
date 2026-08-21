@@ -1065,7 +1065,11 @@ function mostrar_dias_chuva() {
 }
 */
 
+var _gravarChuvaEmAndamento = false;
+
 function verificar_gravar_chuva() {
+    if (_gravarChuvaEmAndamento) return;
+
     var local = $("#codigo_local_chuva").val();
     var volume_chuva = $("#volume_chuva").val();
     var data_chuva = $("#data_chuva").val();
@@ -1085,6 +1089,8 @@ function verificar_gravar_chuva() {
         return;
     }
 
+    _gravarChuvaEmAndamento = true;
+
     $.ajax({
         type: "POST",
         url: 'ler_volume_chuva.php',
@@ -1094,13 +1100,19 @@ function verificar_gravar_chuva() {
         },
         success: function(data){
             if (data.error) {
-                if (window.confirm(data.message)) {     
+                if (window.confirm(data.message)) {
                     gravar_chuva();
+                }
+                else {
+                    _gravarChuvaEmAndamento = false;
                 }
             }
             else if (data.success){
                 gravar_chuva();
             }
+        },
+        error: function(){
+            _gravarChuvaEmAndamento = false;
         }
     });
 }
@@ -1113,6 +1125,7 @@ function gravar_chuva() {
         url: 'gravar_volume_chuva.php',
         data: dados,
         success: function(data){
+            _gravarChuvaEmAndamento = false;
             if (data.error) {
                 alert (data.message);
             }
@@ -1123,6 +1136,9 @@ function gravar_chuva() {
                 $("#data_chuva").val($("#data_atual").val());
                 mostrar_dias_chuva();
             }
+        },
+        error: function(){
+            _gravarChuvaEmAndamento = false;
         }
     });
 }
