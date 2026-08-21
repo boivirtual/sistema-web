@@ -6396,11 +6396,15 @@ function gravar_item_editar_pesagem() {
     $("#array_itens").val(grupo_itens);
 
     var dados = $('#form_gravar_pesagem').serialize();
+
+    _gravarItemEditarPesagemEmAndamento = true;
+
     $.ajax({
         type: "POST",
         url: 'gravar_pesagem_item.php',
         data: dados,
         success: function(data){
+            _gravarItemEditarPesagemEmAndamento = false;
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -6409,6 +6413,9 @@ function gravar_item_editar_pesagem() {
                 //$("#mensagem_retorno").modal();
                 //$("#mensagem_retorno .modal-body").html(data.message);
             }
+        },
+        error: function(){
+            _gravarItemEditarPesagemEmAndamento = false;
         }
     });
 }
