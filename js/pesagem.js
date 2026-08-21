@@ -5327,7 +5327,11 @@ function gravar_pesagem_sem_finalizar_offline() {
     });
 }
 
+var _gravarPesagemLoteEmAndamento = false;
+
 function gravar_pesagem_lote() {
+    if (_gravarPesagemLoteEmAndamento) return;
+
     var array_tabela_itens = new Array();
     var valor = new Array();
     var grupo_itens = "";
