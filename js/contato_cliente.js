@@ -70,20 +70,27 @@ $(document).ready(function(){
         $("#errors").html('');
 
         if ($("#form_gravar_contato_cliente")[0].checkValidity()){
+            var $btn = $(this);
+            $btn.prop('disabled', true);
+
             var dados = $('#form_gravar_contato_cliente').serialize();
             $.ajax({
                 type: "POST",
                 url: 'gravar_contato_clientes.php',
                 data: dados,
                 success: function(data){
+                    $btn.prop('disabled', false);
                     $("#botao_incluir_contato").modal('hide');
                     $("#mensagem_retorno_contato").modal();
                     $("#mensagem_retorno_contato .modal-body").html(data.message);
-              
+
                     if (data.error) {
                         html_error = gerar_alerta(data.message);
                         $("#errors").html(html_error);
                     }
+                },
+                error: function(){
+                    $btn.prop('disabled', false);
                 }
             });
         } else {
