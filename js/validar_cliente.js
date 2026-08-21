@@ -205,7 +205,11 @@ window.addEventListener("load", function (event) {
     });
 });
 
+var _gravarAlteracaoClienteEmAndamento = false;
+
 function gravar_alteracao(opcao) {
+    if (_gravarAlteracaoClienteEmAndamento) return;
+
     var nome_empresa = $("#nome_empresa").val();
 
     $("#opcao_validar").val(opcao);
