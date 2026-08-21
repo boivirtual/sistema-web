@@ -600,7 +600,7 @@
                                      ORDER BY rc_id ASC");
                                 $total_rat = mysqli_num_rows($rs_rat);
                                 $first_rat = mysqli_fetch_object($rs_rat);
-                                $desc_conta   = $first_rat ? $first_rat->rc_nome_conta : 'Rateio';
+                                $desc_conta   = $first_rat ? $first_rat->rc_nome_conta : 'Não Informado';
                                 if ($total_rat > 1) {
                                     $desc_conta .= ' <span style="color:#337ab7;font-weight:600">+' . ($total_rat - 1) . '</span>';
                                 }
