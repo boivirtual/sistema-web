@@ -153,7 +153,7 @@ $data_sistema = date("Y-m-d");;
                                                 <div class="form-group col-md-12">
                                                     <button type="button" class="btn btn-primary btn_gravar_alteracao_cliente" title="Somente Confirma as alterções" data-toggle='tooltip' data-placement='top' onclick="gravar_alteracao(0)">Confirmar Edição</button>
 
-                                                    <button type="button" class="btn btn-success" title="Confirma as alterções e valida o cliente criando os dados no banco de dados" data-toggle='tooltip' data-placement='top' onclick="gravar_alteracao(1)">Autorizar</button>
+                                                    <button type="button" class="btn btn-success btn_gravar_alteracao_cliente" title="Confirma as alterções e valida o cliente criando os dados no banco de dados" data-toggle='tooltip' data-placement='top' onclick="gravar_alteracao(1)">Autorizar</button>
 
                                                     <button type="button" class="btn btn-info pull-right sair_programa">Voltar</button>
                                                 </div>
@@ -514,7 +514,7 @@ $data_sistema = date("Y-m-d");;
 
                                                     <button type="button" class="btn btn-primary btn_gravar_alteracao_cliente" title="Somente Confirma as alterções" data-toggle='tooltip' data-placement='top' onclick="gravar_alteracao(0)">Confirmar Edição</button>
 
-                                                    <button type="button" class="btn btn-success" title="Confirma as alterções e valida o cliente criando os dados no banco de dados" data-toggle='tooltip' data-placement='top' onclick="gravar_alteracao(1)">Autorizar</button>
+                                                    <button type="button" class="btn btn-success btn_gravar_alteracao_cliente" title="Confirma as alterções e valida o cliente criando os dados no banco de dados" data-toggle='tooltip' data-placement='top' onclick="gravar_alteracao(1)">Autorizar</button>
 
                                                     <button type="button" class="btn btn-info pull-right sair_programa">Voltar</button>
                                                 </div>
