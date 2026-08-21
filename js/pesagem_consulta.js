@@ -5604,11 +5604,14 @@ function gravar_pesagem(opcao) {
     $("#array_itens").val(grupo_itens);
     var dados = $("#form_gravar_pesagem").serialize();
 
+    _gravarPesagemEmAndamento = true;
+
     $.ajax({
         type: "POST",
         url: "gravar_pesagem_individual.php",
         data: dados,
         success: function (data) {
+            _gravarPesagemEmAndamento = false;
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -5623,6 +5626,9 @@ function gravar_pesagem(opcao) {
                     monta_lista_editar_online();
                 }
             }
+        },
+        error: function () {
+            _gravarPesagemEmAndamento = false;
         },
     });
 }
