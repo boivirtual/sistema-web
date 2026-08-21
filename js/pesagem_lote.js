@@ -1485,7 +1485,12 @@ function gravar_item_alterado_editar_pesagem(
 }
 
 // Finalizar a pesagem on-line/of-line
+var _gravarPesagemFinalizarEmAndamento = false;
+
 function gravar_pesagem_finalizar() {
+    if (_gravarPesagemFinalizarEmAndamento) return;
+    _gravarPesagemFinalizarEmAndamento = true;
+
     $("#finalizar_pesagem").val("S");
 
     var dados = $("#form_gravar_pesagem").serialize();
@@ -1495,6 +1500,7 @@ function gravar_pesagem_finalizar() {
         url: "gravar_pesagem_finalizar.php",
         data: dados,
         success: function (data) {
+            _gravarPesagemFinalizarEmAndamento = false;
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -1503,11 +1509,18 @@ function gravar_pesagem_finalizar() {
                 $("#mensagem_retorno .modal-body").html(data.message);
             }
         },
+        error: function () {
+            _gravarPesagemFinalizarEmAndamento = false;
+        },
     });
 }
 
 // Grava peso digitado na pesagem on-line
+var _gravarPesagemEmAndamento = false;
+
 function gravar_pesagem() {
+    if (_gravarPesagemEmAndamento) return;
+
     var array_tabela_itens = new Array();
     var valor = new Array();
     var grupo_itens = "";
