@@ -5107,6 +5107,8 @@ function gravar_pasto_grupo_pesagem(pasto, grupo, id_pesagem){
 
 
 // Grava peso digitado na lista do excel
+var _pesagemItemEmAndamento = {};
+
 function gravar_item_alterado_editar_pesagem(
     codigo_id,
     item,
@@ -5115,6 +5117,7 @@ function gravar_item_alterado_editar_pesagem(
     excluir,
     grupo
 ) {
+    if (_pesagemItemEmAndamento[codigo_id]) return;
 
     var total_peso = 0;
     var animais_pesados = 0;
