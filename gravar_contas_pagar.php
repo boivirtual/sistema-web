@@ -737,7 +737,7 @@ ob_start(function($buffer) {
         if ($vlr_r <= 0)              { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Valor.']); mysqli_close($conector); exit; }
         if (!$tem_rateio && empty($codigo_local_r))  { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Local.']); mysqli_close($conector); exit; }
         if (!$tem_rateio && empty($codigo_ccusto_r)) { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Centro de Custos.']); mysqli_close($conector); exit; }
-        if (!$tem_rateio && $codigo_conta_r == '0000000') { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Código Contábil.']); mysqli_close($conector); exit; }
+        if (!$tem_rateio && (empty($codigo_conta_r) || $codigo_conta_r == '0000000')) { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Código Contábil.']); mysqli_close($conector); exit; }
         if (empty($rep_prim_venc))   { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Vencimento.']); mysqli_close($conector); exit; }
         if ($rep_banco == 0)          { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Banco/Conta Pagamento.']); mysqli_close($conector); exit; }
 
