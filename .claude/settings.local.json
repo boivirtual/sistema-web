@@ -20,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd 'C:\\wamp64\\www\\reproducao\\sistema'; $status = git status --porcelain; if ($status) { $files = ($status -split \"`n\" | ForEach-Object { $_.Substring(3).Trim() }) -join ', '; git add -A; git commit -m \"Ajuste: $files\"; git push origin master }",
+            "command": "cd 'C:\\wamp64\\www\\reproducao\\sistema'; $status1 = git status --porcelain; if ($status1) { $files1 = ($status1 -split \"`n\" | ForEach-Object { $_.Substring(3).Trim() }) -join ', '; git add -A; git commit -m \"Ajuste: $files1\"; git push origin master }; cd 'C:\\Users\\George\\Desktop\\boivirtual'; $status2 = git status --porcelain; if ($status2) { $files2 = ($status2 -split \"`n\" | ForEach-Object { $_.Substring(3).Trim() }) -join ', '; git add -A; git commit -m \"Ajuste: $files2\"; git push origin HEAD }",
             "shell": "powershell",
             "timeout": 60,
             "statusMessage": "Enviando alterações para o GitHub..."
