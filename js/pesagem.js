@@ -5190,11 +5190,15 @@ function gravar_item_alterado_editar_pesagem(
     $("#grupo_id").val(grupo);
 
     var dados = $("#form_gravar_pesagem").serialize();
+
+    _pesagemItemEmAndamento[codigo_id] = true;
+
     $.ajax({
         type: "POST",
         url: "gravar_pesagem_item.php",
         data: dados,
         success: function (data) {
+            delete _pesagemItemEmAndamento[codigo_id];
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -5202,6 +5206,9 @@ function gravar_item_alterado_editar_pesagem(
                 $("#mensagem_retorno_excluir").modal();
                 $("#mensagem_retorno_excluir .modal-body").html(data.message);
             }
+        },
+        error: function () {
+            delete _pesagemItemEmAndamento[codigo_id];
         },
     });
 }
