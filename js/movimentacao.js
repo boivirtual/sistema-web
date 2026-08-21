@@ -6362,7 +6362,11 @@ function enviar_lixeira(array_animal, opcao) {
     $('#modal_incluir').modal('show');
 }
 
+var _gravarItemEditarPesagemEmAndamento = false;
+
 function gravar_item_editar_pesagem() {
+    if (_gravarItemEditarPesagemEmAndamento) return;
+
     var array_tabela_itens = new Array();
     var valor = new Array();
     var grupo_itens = "";
