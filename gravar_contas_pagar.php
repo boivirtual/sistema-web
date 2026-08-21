@@ -373,7 +373,7 @@ ob_start(function($buffer) {
             echo json_encode(array('error' => true, 'message' => 'Informe o Centro de Custos.'));
             mysqli_close($conector); exit;
         }
-        if (!$tem_rateio && $codigo_conta_n == '0000000') {
+        if (!$tem_rateio && (empty($codigo_conta_n) || $codigo_conta_n == '0000000')) {
             header('Content-type: application/json');
             echo json_encode(array('error' => true, 'message' => 'Informe o Código Contábil.'));
             mysqli_close($conector); exit;
