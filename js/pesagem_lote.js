@@ -1559,11 +1559,15 @@ function gravar_pesagem() {
     $("#array_itens").val(grupo_itens);
 
     var dados = $("#form_gravar_pesagem").serialize();
+
+    _gravarPesagemEmAndamento = true;
+
     $.ajax({
         type: "POST",
         url: "gravar_pesagem_individual.php",
         data: dados,
         success: function (data) {
+            _gravarPesagemEmAndamento = false;
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -1572,10 +1576,17 @@ function gravar_pesagem() {
                 $("#tipo_gravacao").val(2);
             }
         },
+        error: function () {
+            _gravarPesagemEmAndamento = false;
+        },
     });
 }
 
+var _gravarPesagemLoteEmAndamento = false;
+
 function gravar_pesagem_lote() {
+    if (_gravarPesagemLoteEmAndamento) return;
+
     var array_tabela_itens = new Array();
     var valor = new Array();
     var grupo_itens = "";
