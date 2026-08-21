@@ -138,12 +138,15 @@ $(document).ready(function(){
 });
 
 function gravar_evento() {
+    document.getElementById("gravar").disabled = true;
+
     var dados = $('#form_incluir').serialize();
     $.ajax({
         type: "POST",
         url: 'gravar_eventos_agenda_incluir.php',
         data: dados,
         success: function(data){
+            document.getElementById("gravar").disabled = false;
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -154,6 +157,9 @@ function gravar_evento() {
                 $("#mensagem_retorno_agenda").modal();
                 $("#mensagem_retorno_agenda .modal-body").html(data.message);
             }
+        },
+        error: function(){
+            document.getElementById("gravar").disabled = false;
         }
     });
 }
