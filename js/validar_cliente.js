@@ -346,11 +346,17 @@ function gravar_alteracao(opcao) {
     }
 
     var dados = $("#form_gravar_cliente").serialize();
+
+    _gravarAlteracaoClienteEmAndamento = true;
+    $(".btn_gravar_alteracao_cliente").prop("disabled", true);
+
     $.ajax({
         type: "POST",
         url: "gravar_cliente_boi_virtual.php",
         data: dados,
         success: function (data) {
+            _gravarAlteracaoClienteEmAndamento = false;
+            $(".btn_gravar_alteracao_cliente").prop("disabled", false);
             if (data.error) {
                 if (data.error == true) {
                     $("#mensagem_erro").modal();
@@ -363,6 +369,10 @@ function gravar_alteracao(opcao) {
                 $("#mensagem_retorno").modal();
                 $("#mensagem_retorno .modal-body").html(data.message);
             }
+        },
+        error: function () {
+            _gravarAlteracaoClienteEmAndamento = false;
+            $(".btn_gravar_alteracao_cliente").prop("disabled", false);
         },
     });
 }
