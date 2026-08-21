@@ -909,7 +909,7 @@ ob_start(function($buffer) {
 	    exit;
     }*/
 
-    if (!$tem_rateio && $codigo_conta=='0000000') {
+    if (!$tem_rateio && (empty($codigo_conta) || $codigo_conta=='0000000')) {
 	    header('Content-type: application/json');
 	    echo json_encode(array('error' => true, 'message' => 'Informe a Conta.'));
 	    mysqli_close($conector);
