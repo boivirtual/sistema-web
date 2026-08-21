@@ -264,7 +264,13 @@ function confirmarExclusaoEvento(){
     gravar_evento();
 }
 
+var _gravarEventoEmAndamento = false;
+
 function gravar_evento() {
+    if (_gravarEventoEmAndamento) return;
+    _gravarEventoEmAndamento = true;
+    $(".confirma_gravar").attr("disabled", true);
+
     var dados = $('#form_incluir').serialize();
 
     $.ajax({
@@ -272,6 +278,7 @@ function gravar_evento() {
         url: 'gravar_eventos_agenda_incluir.php',
         data: dados,
         success: function(data){
+            _gravarEventoEmAndamento = false;
             if (data.error) {
                 $(".confirma_gravar").attr("disabled", false);
                 var tipo_gravacao = $("#tipo_gravacao").val();
@@ -287,6 +294,7 @@ function gravar_evento() {
                 $("#mensagem_erro .modal-body").html(data.message);
             }
             else if (data.success){
+                $(".confirma_gravar").attr("disabled", false);
                 var tipo_gravacao = $("#tipo_gravacao").val();
 
                 $("#modal_incluir").modal('hide');
@@ -300,6 +308,10 @@ function gravar_evento() {
                     $("#mensagem_retorno_editar .modal-body").html(data.message);
                 }
             }
+        },
+        error: function(){
+            _gravarEventoEmAndamento = false;
+            $(".confirma_gravar").attr("disabled", false);
         }
     });
 }
