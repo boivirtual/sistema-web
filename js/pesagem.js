@@ -5226,7 +5226,11 @@ function gravar_pesagem_finalizar() {
 }
 
 // Grava peso digitado na pesagem on-line
+var _gravarPesagemEmAndamento = false;
+
 function gravar_pesagem(opcao) {
+    if (_gravarPesagemEmAndamento) return;
+
     var array_tabela_itens = [];
     var grupo_itens = "";
 
