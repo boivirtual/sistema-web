@@ -675,13 +675,19 @@ $("#enviar_formulario").on("click", () => {
 
     //console.log(obj);
 
+    $("#enviar_formulario").prop("disabled", true);
+
     $.ajax({
         method: "POST",
         url: "gravar_cliente_boi_virtual.php",
         data: { data: JSON.stringify(obj) },
         success: (data) => {
+            $("#enviar_formulario").prop("disabled", false);
             $("#mensagem_gravar").html(data.message);
             $("#msg_gravar").modal("show");
+        },
+        error: () => {
+            $("#enviar_formulario").prop("disabled", false);
         },
     });
 });
