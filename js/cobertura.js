@@ -2198,7 +2198,10 @@ function opcao_diagnostico(id, value) {
 
 // Essa função foi inserida no dia 28/01/2026 chamada do programa form_cobertura_animais_diagnostico.php
 // Conforme o trello Cartão: OBSERVAÇÕES NO USO DA REPRODUÇÃO, Checklist: AJUSTE REUNIAO 27/01/2026
+var _gravarDiagnosticoNegativoConfirmacaoEmAndamento = false;
+
 function gravar_diagnostico_negativo_confirmacao() {
+    if (_gravarDiagnosticoNegativoConfirmacaoEmAndamento) return;
     let cobertura = $("#cobertura_id").val();
     let ordem = $("#ordem_negativo").val();
     let local = $("#local_id").val();
