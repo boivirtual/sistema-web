@@ -43,10 +43,9 @@ function incluir_nova() {
 
 function voltar_protocolo() {
     var local = $("#local_request").val();
-    var estacao_monta = $("#estacao_request").val();
-    var id_estacao_monta = $("#codigo_estacao_request").val();
+    var estacao_monta_id = $("#estacao_monta_id_request").val();
 
-    location.href= "form_cobertura_animais.php?local=" + local + "&estacao=" + estacao_monta + "&id_estacao=" + id_estacao_monta;
+    location.href= "form_cobertura_animais.php?local=" + local + "&estacao_monta_id=" + estacao_monta_id + "&voltar_protocolo=1";
 }
 
 function fechar_editar() {
