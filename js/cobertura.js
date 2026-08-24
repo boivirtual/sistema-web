@@ -96,7 +96,10 @@ $(window).unload(function (e){
 
 function agenda_protocolo(){
     var local = $("#codigo_local").val();
-    location.href= "form_agenda_protocolos.php?local=" + local;   
+    var estacao_monta = $(".data_estacao_monta").text();
+    var id_estacao_monta = $("#codigo_estacao_request").val();
+
+    location.href= "form_agenda_protocolos.php?local=" + local + "&estacao=" + estacao_monta + "&id_estacao=" + id_estacao_monta;
 }
 
 function ler_busca() {
