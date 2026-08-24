@@ -2070,6 +2070,9 @@ function confirmaMatriz(c, q, d){
                 _confirmaMatrizEmAndamento = false;
                 alert("Gravado com sucesso!");
                 atualizarData(data);
+            },
+            error: function(){
+                _confirmaMatrizEmAndamento = false;
             }
         });
     }

@@ -160,6 +160,7 @@
         padding: 14px 16px;
         max-height: 650px;
         overflow-y: auto;
+        overflow-x: auto;
     }
 
     .agenda-calendar-area .fc-scrollgrid-section-sticky > * {
