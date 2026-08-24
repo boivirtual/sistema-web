@@ -294,6 +294,12 @@
                     <input type="hidden" id="local_request"
                     <?php echo "value='".$local_id."'";?>>
 
+                    <input type="hidden" id="estacao_request"
+                    <?php echo "value='".$estacao_monta."'";?>>
+
+                    <input type="hidden" id="codigo_estacao_request"
+                    <?php echo "value='".$id_estacao_monta."'";?>>
+
                     <div class="agenda-body-flex">
                         <div class="agenda-sidebar">
                             <button type="button" class="btn btn-primary agenda-btn-incluir" onclick="incluir_nova()">Incluir Nova</button>
