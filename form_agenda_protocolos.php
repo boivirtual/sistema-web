@@ -275,7 +275,7 @@
     <!--main content start-->
     <section id="main-content">
         <section class="wrapper" style="margin-left: 5px;">
-            <span class="caminho-programa">Reprodução <i class="fa fa-angle-right seta-direita"></i><a class="voltar-menu" href="form_cobertura_animais.php">Protocolo IATF</a><i class="fa fa-angle-right seta-direita"></i>
+            <span class="caminho-programa">Reprodução <i class="fa fa-angle-right seta-direita"></i><a class="voltar-menu" href="#" onclick="voltar_protocolo()">Protocolo IATF</a><i class="fa fa-angle-right seta-direita"></i>
             <span class="titulo">Agenda de Protocolos</span></span>
 
             <a href="#" style="color: gray; margin-left: 10px;" data-toggle='tooltip' data-placement='right' title="Orientações de uso" onclick="informacoes_uso()"><i class="far fa-question-circle"></i></a>
