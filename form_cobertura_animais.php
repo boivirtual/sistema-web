@@ -11,14 +11,17 @@
 
     if(isset($_REQUEST['local'])) {
         $local = $_REQUEST['local'];
-        $estacao_monta = $_REQUEST['estacao'];
-        $id_estacao_monta = $_REQUEST['id_estacao'];
+        $estacao_monta = isset($_REQUEST['estacao']) ? $_REQUEST['estacao'] : '';
+        $id_estacao_monta = isset($_REQUEST['id_estacao']) ? $_REQUEST['id_estacao'] : 0;
     }
     else {
         $local = 0;
         $estacao_monta = '';
-        $id_estacao_monta = 0;      
+        $id_estacao_monta = 0;
     }
+
+    $estacao_monta_id = isset($_REQUEST['estacao_monta_id']) ? $_REQUEST['estacao_monta_id'] : 0;
+    $voltar_protocolo = isset($_REQUEST['voltar_protocolo']) ? $_REQUEST['voltar_protocolo'] : '';
 
     /*$tipo_monta = $_SESSION['tipo_monta'];
     $tipo_iatf = $_SESSION['tipo_iatf'];
