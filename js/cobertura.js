@@ -2415,14 +2415,19 @@ function gravar_diagnostico_negativo() {
     }
 }
 
+var _gravarDiagnosticoAlterarParaPositivoEmAndamento = false;
+
 function gravar_diagnostico_alterar_para_positivo_femeas_servidas() {
+    if (_gravarDiagnosticoAlterarParaPositivoEmAndamento) return;
     let local = $("#local_id").val();
     let estacao = $("#estacao_id").val();
     let ordem = $("#ordem_positivo").val();
     let animal_id = $(`#animal_id${ordem}`).val();
     let codigo_animal = $(`#animal_codigo${ordem}`).val();
     let cobertura = ordem.substring(0, 9);
-    let item = ordem.substring(9, 13); 
+    let item = ordem.substring(9, 13);
+
+    _gravarDiagnosticoAlterarParaPositivoEmAndamento = true;
 
     $.ajax({
         type: "POST",
@@ -2436,6 +2441,7 @@ function gravar_diagnostico_alterar_para_positivo_femeas_servidas() {
             local: local,
         },
         success: function(data){
+            _gravarDiagnosticoAlterarParaPositivoEmAndamento = false;
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -2450,6 +2456,9 @@ function gravar_diagnostico_alterar_para_positivo_femeas_servidas() {
                 //var diagnostico = 'N';
                 //listar_femeas_servidas_estacao(diagnostico);
             }
+        },
+        error: function(){
+            _gravarDiagnosticoAlterarParaPositivoEmAndamento = false;
         }
     });
 }
