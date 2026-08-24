@@ -2463,7 +2463,10 @@ function gravar_diagnostico_alterar_para_positivo_femeas_servidas() {
     });
 }
 
+var _gravarDiagnosticoNegativoFemeasServidasEmAndamento = false;
+
 function gravar_diagnostico_negativo_femeas_servidas() {
+    if (_gravarDiagnosticoNegativoFemeasServidasEmAndamento) return;
     let local = $("#local_id").val();
     let estacao = $("#estacao_id").val();
     let opcao_nova_cobertura = $(`input[name='opcao_nova_cobertura']:checked`).val();
@@ -2481,6 +2484,8 @@ function gravar_diagnostico_negativo_femeas_servidas() {
     let cobertura = ordem.substring(0, 9);
     let item = ordem.substring(9, 13);
 
+    _gravarDiagnosticoNegativoFemeasServidasEmAndamento = true;
+
     if (opcao_nova_cobertura=='G') {
         $.ajax({
             type: "POST",
@@ -2495,6 +2500,7 @@ function gravar_diagnostico_negativo_femeas_servidas() {
                 ordem: item,
             },
             success: function(data){
+                _gravarDiagnosticoNegativoFemeasServidasEmAndamento = false;
                 if (data.error) {
                     $("#mensagem_erro").modal();
                     $("#mensagem_erro .modal-body").html(data.message);
@@ -2513,12 +2519,12 @@ function gravar_diagnostico_negativo_femeas_servidas() {
                     var elemento = document.querySelector(`.resultadoP${ordem}`);
                     elemento.setAttribute('data-toggle', 'tooltip');
                     elemento.setAttribute('data-placement', 'right');
-                    elemento.setAttribute('title', 'A alteração de Diagnóstico Negativo para Positivo só poderá ser feita pela lista dos Diagnósticos Negativos.');                    
+                    elemento.setAttribute('title', 'A alteração de Diagnóstico Negativo para Positivo só poderá ser feita pela lista dos Diagnósticos Negativos.');
 
                     var elemento = document.querySelector(`.resultadoN${ordem}`);
                     elemento.setAttribute('data-toggle', 'tooltip');
                     elemento.setAttribute('data-placement', 'right');
-                    elemento.setAttribute('title', 'A alteração de Diagnóstico Negativo para Positivo só poderá ser feita pela lista dos Diagnósticos Negativos.');                    
+                    elemento.setAttribute('title', 'A alteração de Diagnóstico Negativo para Positivo só poderá ser feita pela lista dos Diagnósticos Negativos.');
 
                     $('[data-toggle="tooltip"]').tooltip();
 
@@ -2530,6 +2536,9 @@ function gravar_diagnostico_negativo_femeas_servidas() {
                     //$("#mensagem_retorno").modal();
                     //$("#mensagem_retorno .modal-body").html('Gravado em novo grupo com sucesso!');
                 }
+            },
+            error: function(){
+                _gravarDiagnosticoNegativoFemeasServidasEmAndamento = false;
             }
         });
     }
@@ -2547,6 +2556,7 @@ function gravar_diagnostico_negativo_femeas_servidas() {
                 opcao_nova_cobertura: opcao_nova_cobertura,
             },
             success: function(data){
+                _gravarDiagnosticoNegativoFemeasServidasEmAndamento = false;
                 if (data.error) {
                     $("#mensagem_erro").modal();
                     $("#mensagem_erro .modal-body").html(data.message);
@@ -2565,12 +2575,12 @@ function gravar_diagnostico_negativo_femeas_servidas() {
                     var elemento = document.querySelector(`.resultadoP${ordem}`);
                     elemento.setAttribute('data-toggle', 'tooltip');
                     elemento.setAttribute('data-placement', 'right');
-                    elemento.setAttribute('title', 'A alteração de Diagnóstico Negativo para Positivo só poderá ser feita pela lista dos Diagnósticos Negativos.');                    
+                    elemento.setAttribute('title', 'A alteração de Diagnóstico Negativo para Positivo só poderá ser feita pela lista dos Diagnósticos Negativos.');
 
                     var elemento = document.querySelector(`.resultadoN${ordem}`);
                     elemento.setAttribute('data-toggle', 'tooltip');
                     elemento.setAttribute('data-placement', 'right');
-                    elemento.setAttribute('title', 'A alteração de Diagnóstico Negativo para Positivo só poderá ser feita pela lista dos Diagnósticos Negativos.');                    
+                    elemento.setAttribute('title', 'A alteração de Diagnóstico Negativo para Positivo só poderá ser feita pela lista dos Diagnósticos Negativos.');
 
                     $('[data-toggle="tooltip"]').tooltip();
 
@@ -2591,6 +2601,9 @@ function gravar_diagnostico_negativo_femeas_servidas() {
                 $(`#descartar`).prop("checked", false);
                 $("#modal_diagnostico_negativo").modal('hide');
                 alert("Gravado com sucesso!");*/
+            },
+            error: function(){
+                _gravarDiagnosticoNegativoFemeasServidasEmAndamento = false;
             }
         });
     }
