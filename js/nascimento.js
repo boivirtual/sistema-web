@@ -1470,7 +1470,10 @@ function fechar_erro_gravar() {
     $("#mensagem_erro").modal('hide');
 }
 
+var _gravarParametrosNascimentoEmAndamento = false;
+
 function gravar_parametros() {
+    if (_gravarParametrosNascimentoEmAndamento) return;
     var fazenda = new Array();
     var array_fazenda = "";
     var codigo_fazenda = document.getElementsByName("codigo_fazenda");

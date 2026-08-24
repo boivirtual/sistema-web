@@ -251,20 +251,20 @@
                                     </fieldset>
 
                                     <div class="row">
-                                        <div class="form-group col-md-7"></div>
+                                        <div class="form-group col-md-7 busca-spacer"></div>
 
-                                        <div class="form-group col-md-2 busca_animal" hidden style="padding: 0px 5px 0px 0px;">
+                                        <div class="form-group col-xs-6 col-md-2 busca_animal" hidden style="padding: 0px 5px 0px 0px;">
                                             <label class="control-label">&nbsp;</label>
                                             <p style="margin-top: 5px; text-align: right;">Busca:</p>
                                         </div>
 
-                                        <div class="form-group col-md-2 busca_animal" hidden style="padding: 0;">
+                                        <div class="form-group col-xs-6 col-md-2 busca_animal" hidden style="padding: 0;">
                                             <label for="codigo_numerico" class="control-label">&nbsp;</label>
                                             <input name="codigo_numerico" type="text" class="form-control" id="codigo_numerico" onchange="show_consulta()"
                                             autocomplete="off" placeholder="Código do Animal">
                                         </div>
 
-                                        <div class="col-md-1 busca_limpar" hidden>
+                                        <div class="col-xs-6 col-md-1 busca_limpar" hidden>
                                             <label class="control-label">&nbsp;</label>
                                             <p>
                                             <a href="#" onclick="limpar_filtros_animal()">Limpar
