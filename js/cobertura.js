@@ -2216,6 +2216,8 @@ function gravar_diagnostico_negativo_confirmacao() {
 
     opcao_nova_cobertura = 'L';
 
+    _gravarDiagnosticoNegativoConfirmacaoEmAndamento = true;
+
     $.ajax({
         type: "POST",
         url: 'gravar_cobertura_diagnostico_negativo.php',
@@ -2229,6 +2231,7 @@ function gravar_diagnostico_negativo_confirmacao() {
             opcao_nova_cobertura: opcao_nova_cobertura,
         },
         success: function(data){
+            _gravarDiagnosticoNegativoConfirmacaoEmAndamento = false;
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -2239,13 +2242,13 @@ function gravar_diagnostico_negativo_confirmacao() {
                 var elemento = document.getElementById('resultadoP' + ordem);
                 elemento.setAttribute('data-toggle', 'tooltip');
                 elemento.setAttribute('data-placement', 'right');
-                elemento.setAttribute('title', 'A alteração do Diagnóstico Negativo para Positivo só poderá ser feita clicando na opção Diagnóstico Negativo (acima).');                    
+                elemento.setAttribute('title', 'A alteração do Diagnóstico Negativo para Positivo só poderá ser feita clicando na opção Diagnóstico Negativo (acima).');
                 $(elemento).tooltip();
 
                 var elemento = document.getElementById('resultadoN' + ordem);
                 elemento.setAttribute('data-toggle', 'tooltip');
                 elemento.setAttribute('data-placement', 'right');
-                elemento.setAttribute('title', 'A alteração do Diagnóstico Negativo para Positivo só poderá ser feita clicando na opção Diagnóstico Negativo (acima).');                    
+                elemento.setAttribute('title', 'A alteração do Diagnóstico Negativo para Positivo só poderá ser feita clicando na opção Diagnóstico Negativo (acima).');
                 $(elemento).tooltip();
 
                 var opcaoP = document.querySelector(`#resultadoP${ordem}`);
@@ -2254,6 +2257,9 @@ function gravar_diagnostico_negativo_confirmacao() {
                 var opcaoN = document.querySelector(`#resultadoN${ordem}`);
                 opcaoN.disabled = true;
             }
+        },
+        error: function(){
+            _gravarDiagnosticoNegativoConfirmacaoEmAndamento = false;
         }
     });
 }
