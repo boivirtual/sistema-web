@@ -164,6 +164,12 @@
                                                 <input type="hidden" id="tipo_registro"
                                                 value="C">
 
+                                                <input type="hidden" id="estacao_monta_id_request"
+                                                <?php echo "value='".$estacao_monta_id."'";?>>
+
+                                                <input type="hidden" id="voltar_protocolo_request"
+                                                <?php echo "value='".$voltar_protocolo."'";?>>
+
                                                 <label class="control-label"><span class="required">*</span> Fazenda</label>
 
                                                 <select class="form-control" id="codigo_local" name="codigo_local" onchange="listar_coberturas(this.value);"> 
