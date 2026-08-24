@@ -2704,6 +2704,9 @@ function gravar_diagnostico_positivo_femeas_servidas(id, value){
                 opcaoN.disabled = true;
                 alert("Gravado com sucesso!");
             }
+        },
+        error: function(){
+            _gravarDiagnosticoPositivoFemeasServidasEmAndamento[ordem] = false;
         }
     });
 }
