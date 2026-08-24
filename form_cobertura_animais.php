@@ -260,7 +260,9 @@
                                         </div>
                                     </div>
 
-                                    <div id="lista_cobertura"></div>
+                                    <div class="table-responsive">
+                                        <div id="lista_cobertura"></div>
+                                    </div>
                                 </div>
                             </div>
                         </form>
