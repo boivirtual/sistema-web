@@ -1992,13 +1992,15 @@ function confirmaMatriz(c, q, d){
         }
     }
 
+    _confirmaMatrizEmAndamento = true;
+
     if (data_protocolo_1!='') {
         data_protocolo_1 = data_protocolo_1.replace(/[^\d]+/g,'');
         data_protocolo_1_edi = data_protocolo_1.substring(6, 8) + '/' + data_protocolo_1.substring(4, 6) + '/' + data_protocolo_1.substring(0, 4);
 
 
         if (data_protocolo_1<data_hoje && desabilitado=='') {
-            if (window.confirm('D0 esta agendado para ' + data_protocolo_1_edi + ' confirma o inicio do protocolo nessa data?')) {     
+            if (window.confirm('D0 esta agendado para ' + data_protocolo_1_edi + ' confirma o inicio do protocolo nessa data?')) {
                 $.ajax({
                     type: 'POST',
                     url: 'gravar_cobertura.php',
@@ -2011,12 +2013,14 @@ function confirmaMatriz(c, q, d){
                         if (data.success) {
                             alert (data.message);
                         }*/
+                        _confirmaMatrizEmAndamento = false;
                         alert("Gravado com sucesso!");
                         atualizarData(data);
                     }
-                });   
+                });
             }
             else {
+                _confirmaMatrizEmAndamento = false;
                 $(`#checkAllDias${1}`).prop("checked", false);
                 $(`.diaProtocolo${1}`).prop("checked", false);
                 $("#volta_lista_cobertura").modal();
@@ -2037,10 +2041,11 @@ function confirmaMatriz(c, q, d){
                     if (data.success) {
                         alert (data.message);
                     }*/
+                    _confirmaMatrizEmAndamento = false;
                     alert("Gravado com sucesso!");
                     atualizarData(data);
                 }
-            });   
+            });
         }
     }
     else {
@@ -2056,10 +2061,11 @@ function confirmaMatriz(c, q, d){
                 if (data.success) {
                     alert (data.message);
                 }*/
+                _confirmaMatrizEmAndamento = false;
                 alert("Gravado com sucesso!");
                 atualizarData(data);
             }
-        });   
+        });
     }
 }
 
