@@ -1760,7 +1760,10 @@ function gerar_lista_excel() {
     tout = setTimeout('limpar_tela()', 8000);
 }
 
+var _confirmaMatrizEmAndamento = false;
+
 function confirmaMatriz(c, q, d){
+    if (_confirmaMatrizEmAndamento) return;
 
     var data_protocolo_1 = '';
     var data_protocolo_2 = '';
