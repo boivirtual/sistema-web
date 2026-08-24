@@ -293,11 +293,8 @@
                     <input type="hidden" id="local_request"
                     <?php echo "value='".$local_id."'";?>>
 
-                    <input type="hidden" id="estacao_request"
-                    <?php echo "value='".$estacao_monta."'";?>>
-
-                    <input type="hidden" id="codigo_estacao_request"
-                    <?php echo "value='".$id_estacao_monta."'";?>>
+                    <input type="hidden" id="estacao_monta_id_request"
+                    <?php echo "value='".$estacao_monta_id."'";?>>
 
                     <div class="agenda-body-flex">
                         <div class="agenda-sidebar">
