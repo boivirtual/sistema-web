@@ -2264,7 +2264,10 @@ function gravar_diagnostico_negativo_confirmacao() {
     });
 }
 
+var _gravarDiagnosticoNegativoEmAndamento = false;
+
 function gravar_diagnostico_negativo() {
+    if (_gravarDiagnosticoNegativoEmAndamento) return;
     let cobertura = $("#cobertura_id").val();
     let ordem = $("#ordem_negativo").val();
     let local = $("#local_id").val();
