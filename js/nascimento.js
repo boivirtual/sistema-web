@@ -1506,11 +1506,15 @@ function gravar_parametros() {
     $("#array_codigo_numerico").val(array_numerico);
 
     var dados = $('#form_gravar_animal').serialize();
+
+    _gravarParametrosNascimentoEmAndamento = true;
+
     $.ajax({
         type: "POST",
         url: 'gravar_parametro_nascimento.php',
         data: dados,
         success: function(data){
+            _gravarParametrosNascimentoEmAndamento = false;
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $('#mensagem_erro .modal-title').html('Paramentro - Mensagem');
@@ -1521,6 +1525,9 @@ function gravar_parametros() {
                 $('#mensagem_retorno_inclusao .modal-title').html('Parametro');
                 $("#mensagem_retorno_inclusao .modal-body").html(data.message);
             }
+        },
+        error: function(){
+            _gravarParametrosNascimentoEmAndamento = false;
         }
     });
 }
