@@ -2654,11 +2654,17 @@ function gravar_diagnostico_negativo_femeas_servidas_monta(){
     });
 }
 
+var _gravarDiagnosticoPositivoFemeasServidasEmAndamento = {};
+
 function gravar_diagnostico_positivo_femeas_servidas(id, value){
     let local = $("#local_id").val();
     let estacao = $("#estacao_id").val();
 
     let ordem = id.split("resultadoP").pop();
+
+    if (_gravarDiagnosticoPositivoFemeasServidasEmAndamento[ordem]) return;
+    _gravarDiagnosticoPositivoFemeasServidasEmAndamento[ordem] = true;
+
     $("#ordem_negativo").val(ordem);
 
     let codigo_animal = $(`#animal_codigo${ordem}`).val();
@@ -2678,6 +2684,7 @@ function gravar_diagnostico_positivo_femeas_servidas(id, value){
             ordem: item,
         },
         success: function(data){
+            _gravarDiagnosticoPositivoFemeasServidasEmAndamento[ordem] = false;
             var array_registro = data.split('|');
             var cob = array_registro[0].split("\n").pop();
 
@@ -2687,7 +2694,7 @@ function gravar_diagnostico_positivo_femeas_servidas(id, value){
                 return;
             }
             else {
-                qtd_diagnostico = ("00" + cob).slice(-2); 
+                qtd_diagnostico = ("00" + cob).slice(-2);
                 $(`#qtd_diagnosticos${ordem}`).text(qtd_diagnostico);
 
                 var opcaoP = document.querySelector(`#resultadoP${ordem}`);
