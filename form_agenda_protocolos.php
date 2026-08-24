@@ -184,6 +184,10 @@
             justify-content: center;
             text-align: center;
         }
+
+        #calendar {
+            min-width: 700px;
+        }
     }
   </style>
 </head>
