@@ -217,8 +217,7 @@
         $local_id = 0;
     }
 
-    $estacao_monta = isset($_REQUEST['estacao']) ? $_REQUEST['estacao'] : '';
-    $id_estacao_monta = isset($_REQUEST['id_estacao']) ? $_REQUEST['id_estacao'] : 0;
+    $estacao_monta_id = isset($_REQUEST['estacao_monta_id']) ? $_REQUEST['estacao_monta_id'] : 0;
 
     $atividade = mysqli_query($conector, "select * from tbl_atividades_padrao 
         where tbl_atividade_padrao_lixeira=0 and 
