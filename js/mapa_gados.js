@@ -3516,7 +3516,10 @@ function animal_sem_id(){
     }
 }
 
+var _gravarMorteMapaGadosEmAndamento = false;
+
 function salvar_morte(){
+    if (_gravarMorteMapaGadosEmAndamento) return;
     var controle_estoque = $("#controle_estoque").val();
     var animal_codigo_id = $("#codigo_id_morte").val();
     var codigo_animal = $("#id_animal_morte").val();
