@@ -2609,7 +2609,10 @@ function gravar_diagnostico_negativo_femeas_servidas() {
     }
 }
 
+var _gravarDiagnosticoNegativoFemeasServidasMontaEmAndamento = false;
+
 function gravar_diagnostico_negativo_femeas_servidas_monta(){
+    if (_gravarDiagnosticoNegativoFemeasServidasMontaEmAndamento) return;
     let local = $("#codigo_local").val();
     let id_cobertura = $("#id_cobertura_monta").val();
     //let estacao_monta = $("#estacao_monta_servidas").val();
@@ -2622,6 +2625,8 @@ function gravar_diagnostico_negativo_femeas_servidas_monta(){
         return;
     }
 
+    _gravarDiagnosticoNegativoFemeasServidasMontaEmAndamento = true;
+
     $.ajax({
         type: "POST",
         url: 'gravar_cobertura_diagnostico_negativo_monta.php',
@@ -2632,6 +2637,7 @@ function gravar_diagnostico_negativo_femeas_servidas_monta(){
             estacao_monta: estacao_monta
         },
         success: function(data){
+            _gravarDiagnosticoNegativoFemeasServidasMontaEmAndamento = false;
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -2641,6 +2647,9 @@ function gravar_diagnostico_negativo_femeas_servidas_monta(){
                 $("#mensagem_retorno_monta").modal();
                 $("#mensagem_retorno_monta .modal-body").html(data.message);
             }
+        },
+        error: function(){
+            _gravarDiagnosticoNegativoFemeasServidasMontaEmAndamento = false;
         }
     });
 }
