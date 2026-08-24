@@ -272,7 +272,7 @@
                                             </p>
                                         </div>
 
-                                        <div class="form-group col-md-1 busca_consultar" hidden>
+                                        <div class="form-group col-xs-6 col-md-1 busca_consultar" hidden>
                                             <label class="control-label">&nbsp;</label>
                                             <button type="button" class="form-control btn btn-info pull-right" onclick="consultar_cobertura()">Buscar</button>
                                         </div>
