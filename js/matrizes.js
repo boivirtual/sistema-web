@@ -2284,11 +2284,15 @@ function gravar_parametros() {
     //$("#array_codigo_numerico").val(array_numerico);
 
     var dados = $('#form_gravar_selecionados').serialize();
+
+    _gravarParametrosEmAndamento = true;
+
     $.ajax({
         type: "POST",
         url: 'gravar_parametro_estacao_monta.php',
         data: dados,
         success: function(data){
+            _gravarParametrosEmAndamento = false;
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -2297,6 +2301,9 @@ function gravar_parametros() {
                 $("#mensagem_retorno_parametro").modal();
                 $("#mensagem_retorno_parametro .modal-body").html(data.message);
             }
+        },
+        error: function(){
+            _gravarParametrosEmAndamento = false;
         }
     });
 }
