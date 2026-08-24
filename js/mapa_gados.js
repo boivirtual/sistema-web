@@ -3664,6 +3664,7 @@ function gravar_morte() {
         url: 'gravar_morte.php',
         data: dados,
         success: function(data){
+            _gravarMorteMapaGadosEmAndamento = false;
             if (data.error) {
                 $("#mensagem_erro").modal();
                 $("#mensagem_erro .modal-body").html(data.message);
@@ -3672,6 +3673,9 @@ function gravar_morte() {
                 $("#mensagem_retorno_morte").modal();
                 $("#mensagem_retorno_morte .modal-body").html(data.message);
             }
+        },
+        error: function(){
+            _gravarMorteMapaGadosEmAndamento = false;
         }
     });
 }
