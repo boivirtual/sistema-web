@@ -30,8 +30,19 @@ window.addEventListener("load", function(){
         var id_estacao_monta = $('#codigo_estacao_request').val();
         var tipo_registro = $('#tipo_registro').val();
         var diagnostico = $('#diagnostico_request').val();
+        var voltar_protocolo = $('#voltar_protocolo_request').val();
+        var estacao_monta_id_protocolo = $('#estacao_monta_id_request').val();
 
-        if (local_femeas_servidas!=0 && local_femeas_servidas!=undefined){
+        if (voltar_protocolo=='1' && local_femeas_servidas!=0 && local_femeas_servidas!=undefined) {
+            $("#codigo_local").val(local_femeas_servidas);
+
+            $.post("lista_estacao_monta.php", {local:local_femeas_servidas, estacao_monta: ''}, function(valor){
+                $("select[name=estacao_monta]").html(valor);
+                $("#estacao_monta").val(estacao_monta_id_protocolo);
+                consultar_cobertura();
+            });
+        }
+        else if (local_femeas_servidas!=0 && local_femeas_servidas!=undefined){
             $("#codigo_local").val(local_femeas_servidas);
             $(".data_estacao_monta").text(estacao_monta);
 
@@ -56,7 +67,7 @@ window.addEventListener("load", function(){
                     }
                 }
             });
-        } 
+        }
         else if($('#codigo_local option').length == 1){
             var local = $('#codigo_local option').val();
 
