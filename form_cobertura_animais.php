@@ -52,6 +52,24 @@
   <link rel="stylesheet" href="css/select-1.13.14.css"> 
   <link href="css/style-busca.css?<?php echo Versao; ?>" rel="stylesheet">
 
+  <style>
+    @media (max-width: 767px) {
+        .busca-spacer {
+            display: none;
+        }
+
+        .busca_animal .control-label,
+        .busca_limpar .control-label,
+        .busca_consultar .control-label {
+            display: none;
+        }
+
+        .busca_animal p {
+            text-align: left;
+            margin-top: 0;
+        }
+    }
+  </style>
 </head>
 
 <body>
