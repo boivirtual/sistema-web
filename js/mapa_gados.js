@@ -3595,6 +3595,7 @@ function salvar_morte(){
         }
     }
 
+    _gravarMorteMapaGadosEmAndamento = true;
     gravar_morte();
 };
 
