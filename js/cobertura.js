@@ -2289,6 +2289,8 @@ function gravar_diagnostico_negativo() {
         return;
     }
 
+    _gravarDiagnosticoNegativoEmAndamento = true;
+
     if (opcao_nova_cobertura=='G') {
         $.ajax({
             type: "POST",
@@ -2303,6 +2305,7 @@ function gravar_diagnostico_negativo() {
                 ordem: ordem,
             },
             success: function(data){
+                _gravarDiagnosticoNegativoEmAndamento = false;
                 if (data.error) {
                     $("#mensagem_erro").modal();
                     $("#mensagem_erro .modal-body").html(data.message);
@@ -2322,13 +2325,13 @@ function gravar_diagnostico_negativo() {
                     var elemento = document.getElementById('resultadoP' + ordem);
                     elemento.setAttribute('data-toggle', 'tooltip');
                     elemento.setAttribute('data-placement', 'right');
-                    elemento.setAttribute('title', 'A alteração do Diagnóstico Negativo para Positivo só poderá ser feita clicando na opção Diagnóstico Negativo (acima).');                    
+                    elemento.setAttribute('title', 'A alteração do Diagnóstico Negativo para Positivo só poderá ser feita clicando na opção Diagnóstico Negativo (acima).');
                     $(elemento).tooltip();
 
                     var elemento = document.getElementById('resultadoN' + ordem);
                     elemento.setAttribute('data-toggle', 'tooltip');
                     elemento.setAttribute('data-placement', 'right');
-                    elemento.setAttribute('title', 'A alteração do Diagnóstico Negativo para Positivo só poderá ser feita clicando na opção Diagnóstico Negativo (acima).');                    
+                    elemento.setAttribute('title', 'A alteração do Diagnóstico Negativo para Positivo só poderá ser feita clicando na opção Diagnóstico Negativo (acima).');
                     $(elemento).tooltip();
 
                     var opcaoP = document.querySelector(`#resultadoP${ordem}`);
@@ -2340,6 +2343,9 @@ function gravar_diagnostico_negativo() {
                     //$("#mensagem_retorno").modal();
                     //$("#mensagem_retorno .modal-body").html('Gravado em novo grupo com sucesso!');
                 }
+            },
+            error: function(){
+                _gravarDiagnosticoNegativoEmAndamento = false;
             }
         });
     }
@@ -2357,6 +2363,7 @@ function gravar_diagnostico_negativo() {
                 opcao_nova_cobertura: opcao_nova_cobertura,
             },
             success: function(data){
+                _gravarDiagnosticoNegativoEmAndamento = false;
                 if (data.error) {
                     $("#mensagem_erro").modal();
                     $("#mensagem_erro .modal-body").html(data.message);
@@ -2375,13 +2382,13 @@ function gravar_diagnostico_negativo() {
                     var elemento = document.getElementById('resultadoP' + ordem);
                     elemento.setAttribute('data-toggle', 'tooltip');
                     elemento.setAttribute('data-placement', 'right');
-                    elemento.setAttribute('title', 'A alteração do Diagnóstico Negativo para Positivo só poderá ser feita clicando na opção Diagnóstico Negativo (acima).');                    
+                    elemento.setAttribute('title', 'A alteração do Diagnóstico Negativo para Positivo só poderá ser feita clicando na opção Diagnóstico Negativo (acima).');
                     $(elemento).tooltip();
 
                     var elemento = document.getElementById('resultadoN' + ordem);
                     elemento.setAttribute('data-toggle', 'tooltip');
                     elemento.setAttribute('data-placement', 'right');
-                    elemento.setAttribute('title', 'A alteração do Diagnóstico Negativo para Positivo só poderá ser feita clicando na opção Diagnóstico Negativo (acima).');                    
+                    elemento.setAttribute('title', 'A alteração do Diagnóstico Negativo para Positivo só poderá ser feita clicando na opção Diagnóstico Negativo (acima).');
                     $(elemento).tooltip();
 
                     var opcaoP = document.querySelector(`#resultadoP${ordem}`);
@@ -2400,6 +2407,9 @@ function gravar_diagnostico_negativo() {
                 //$(`#descartar`).prop("checked", false);
                 //$("#modal_diagnostico_negativo").modal('hide');
                 //alert("Gravado com sucesso!");
+            },
+            error: function(){
+                _gravarDiagnosticoNegativoEmAndamento = false;
             }
         });
     }
