@@ -2173,7 +2173,10 @@ function ler_parametro(value) {
     });
 }
 
+var _gravarParametrosEmAndamento = false;
+
 function gravar_parametros() {
+    if (_gravarParametrosEmAndamento) return;
     var fazenda = new Array();
     var array_fazenda = "";
     var codigo_fazenda = document.getElementsByName("codigo_fazenda");
