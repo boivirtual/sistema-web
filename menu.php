@@ -240,6 +240,10 @@ function tratarDescricaoVersao($texto) {
             vertical-align: top !important;
         }
 
+        .agenda-calendar-area .fc-timegrid .fc-timegrid-axis {
+            vertical-align: top !important;
+        }
+
         #main-content.agenda-scroll-lock {
             overflow: hidden !important;
         }
