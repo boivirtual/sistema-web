@@ -256,7 +256,7 @@ $(document).ready(function(){
 
         if (dashboardCalendar) {
             dashboardCalendar.changeView(view);
-            dashboardCalendar.setOption('height', view === 'dayGridDay' ? 220 : 360);
+            dashboardCalendar.setOption('height', 220);
             dashboardCalendar.setOption('expandRows', view === 'dayGridDay');
         }
     });
