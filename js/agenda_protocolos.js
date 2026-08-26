@@ -511,9 +511,6 @@ function iniciarCalendarioAgenda(){
         dayCellDidMount: function(arg){
             aplicarTooltipCelula(arg.el, arg.date, true);
         },
-        slotLaneDidMount: function(arg){
-            aplicarTooltipCelula(arg.el, arg.date, false);
-        },
         eventMouseEnter: function(info){
             info.el.style.cursor = 'pointer';
 
