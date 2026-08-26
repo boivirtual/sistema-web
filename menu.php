@@ -1475,10 +1475,6 @@ function tratarDescricaoVersao($texto) {
                             </div>
                             <div class="modal-body">
                                 <div class="agenda-dashboard-toolbar">
-                                    <button type="button" class="btn btn-primary agenda-btn-incluir" onclick="incluir_nova()">
-                                        Incluir Nova
-                                    </button>
-
                                     <div class="agenda-dashboard-filtro">
                                         <label for="codigo_local_agenda" class="control-label" style="font-weight: normal; margin-right: 6px;">Fazenda</label>
                                         <select class="form-control input-sm" id="codigo_local_agenda" name="codigo_local_agenda">
