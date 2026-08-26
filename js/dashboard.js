@@ -636,7 +636,8 @@ function iniciarCalendarioAgenda(){
         initialView: 'dayGridDay',
         locale: 'pt-br',
         headerToolbar: false,
-        height: 'auto',
+        height: 220,
+        expandRows: true,
         eventSources: [
             {
                 events: function(fetchInfo, successCallback, failureCallback) {
