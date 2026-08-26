@@ -227,6 +227,14 @@ function tratarDescricaoVersao($texto) {
             min-height: 220px;
         }
 
+        .agenda-calendar-area .fc-scrollgrid-section-header .fc-scroller {
+            overflow: visible !important;
+        }
+
+        #main-content.agenda-scroll-lock {
+            overflow: hidden !important;
+        }
+
         .tooltip {
             pointer-events: none;
             z-index: 1060;
