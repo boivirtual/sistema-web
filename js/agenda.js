@@ -445,6 +445,9 @@ function iniciarCalendarioAgenda(){
         eventClick: function(info){
             mostrarPreviewEvento(info.event);
         },
+        dateClick: function(info){
+            tratarCliqueData(info);
+        },
         eventMouseEnter: function(info){
             info.el.style.cursor = 'pointer';
         },
