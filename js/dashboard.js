@@ -250,69 +250,7 @@ $(document).ready(function(){
 
 });
 
-function incluir_nova() {
-    $("#local").prop("disabled", false);
-
-    var $opcaoLocalUnica = $('#local option');
-
-    if ($opcaoLocalUnica.length === 1) {
-        $("#local").val($opcaoLocalUnica.val());
-    }
-    else {
-        $("#local").val('[]');
-    }
-
-    $('#local').selectpicker('refresh');
-    $("#atividade").val('0');
-    $("#titulo_agenda").val('');
-    document.getElementById("descricao_agenda").value='';
-    $(".datas").val('');
-    $("#dia_inteiro").prop("checked", true);
-    $(".dia_todo").show();
-    $(".data_hora").hide();
-    $(".data").show();
-    $(".confirma_gravar").attr("disabled", false);
-    $('#modal_incluir .modal-title').html('Agenda - Incluir');
-    $(".confirma_exclusao").hide();
-    $('.confirma_gravar').html('Confirmar').removeClass('btn-danger').addClass('btn-primary');
-    $('.confirma_gravar').show();
-    $("#tipo_gravacao").val(0);
-
-    $("#atividade").prop("disabled", false);
-    $("#titulo_agenda").prop("disabled", false);
-    $("#descricao_agenda").prop("disabled", false);
-    $("#dia_inteiro").prop("disabled", false);
-    $("#data_agenda_inicio").prop("disabled", false);
-    $("#data_agenda_fim").prop("disabled", false);
-    $("#data_hora_agenda_inicio").prop("disabled", false);
-    $("#data_hora_agenda_fim").prop("disabled", false);
-
-    $('#modal_incluir').modal('show');
-}
-
 $(document).ready(function(){
-    $('#atividade').change(function(){
-
-        select = document.getElementById('atividade');
-        desc_titulo = select.options[select.selectedIndex].text+'-';
-
-        $("#titulo_agenda").val(desc_titulo);
-    });
-
-    $("#dia_inteiro").click(function(){
-        $(".datas").val('');
-
-        if ($("#dia_inteiro").is(":checked") == true){
-            $(".data_hora").hide();
-            $(".data").show();
-
-        }
-        else {
-            $(".data_hora").show();
-            $(".data").hide();
-        }
-    });
-
     $('.contas').DataTable({
         "responsive": true,
         "paging":   false,
