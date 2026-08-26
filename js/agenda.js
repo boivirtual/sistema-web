@@ -329,9 +329,29 @@ function consultar(){
 
 function agendarAplicacaoTooltips(){
     aplicarTooltipsEventos();
-    setTimeout(aplicarTooltipsEventos, 50);
-    setTimeout(aplicarTooltipsEventos, 200);
-    setTimeout(aplicarTooltipsEventos, 500);
+    aplicarTooltipsColunasHora();
+    setTimeout(function(){ aplicarTooltipsEventos(); aplicarTooltipsColunasHora(); }, 50);
+    setTimeout(function(){ aplicarTooltipsEventos(); aplicarTooltipsColunasHora(); }, 200);
+    setTimeout(function(){ aplicarTooltipsEventos(); aplicarTooltipsColunasHora(); }, 500);
+}
+
+function aplicarTooltipsColunasHora(){
+    var hojeStr = formatarDataInputDate(new Date());
+
+    document.querySelectorAll('.fc-timegrid-col[data-date]').forEach(function(col){
+        var dataCol = col.getAttribute('data-date');
+
+        if ($(col).data('bs.tooltip')) {
+            $(col).tooltip('destroy');
+        }
+
+        if (dataCol >= hojeStr) {
+            $(col).attr('title', 'Clique para incluir um evento').tooltip({ placement: 'top', container: 'body' });
+        }
+        else {
+            $(col).removeAttr('title');
+        }
+    });
 }
 
 $(document).on('hidden.bs.modal', '.modal', function(){
