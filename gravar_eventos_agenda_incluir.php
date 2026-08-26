@@ -161,7 +161,7 @@ else {
     for ($k=0; $k < $quantidade_local; $k++) {
         $local = $matriz_local[$k];
 
-        $inicias = pegar_inicias($local, $conector);
+        $inicias = pegar_inicias($local, $conector, $posicao_sigla == 'inicio');
 
         if ($posicao_sigla == 'inicio') {
             $titulo = $inicias.' '.$_POST["titulo_agenda"];
