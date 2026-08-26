@@ -244,6 +244,11 @@ function tratarDescricaoVersao($texto) {
             vertical-align: top !important;
         }
 
+        .agenda-calendar-area .fc-timegrid .fc-timegrid-axis-frame {
+            align-items: flex-start !important;
+            padding-top: 4px;
+        }
+
         #main-content.agenda-scroll-lock {
             overflow: hidden !important;
         }
