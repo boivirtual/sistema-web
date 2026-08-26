@@ -1504,7 +1504,18 @@ function tratarDescricaoVersao($texto) {
                                 <h4 class="modal-title">Agenda</h4>
                             </div>
                             <div class="modal-body">
-                                <div class="agenda-dashboard-toolbar">
+                                <div class="agenda-toolbar">
+                                    <div class="agenda-toolbar-nav">
+                                        <button type="button" class="btn btn-default btn-sm" id="agenda_hoje">Hoje</button>
+                                        <i class="fas fa-chevron-left" id="agenda_anterior" title="Período anterior"></i>
+                                        <i class="fas fa-chevron-right" id="agenda_proximo" title="Próximo período"></i>
+                                        <span id="agenda_periodo_titulo"></span>
+                                    </div>
+                                    <div class="agenda-view-switch">
+                                        <button type="button" class="agenda-view-btn active" data-view="dayGridDay">Dia</button>
+                                        <button type="button" class="agenda-view-btn" data-view="timeGridWeek">Semana</button>
+                                        <button type="button" class="agenda-view-btn" data-view="dayGridMonth">Mês</button>
+                                    </div>
                                     <div class="agenda-dashboard-filtro">
                                         <label for="codigo_local_agenda" class="control-label" style="font-weight: normal; margin-right: 6px;">Fazenda:</label>
                                         <select class="form-control input-sm" id="codigo_local_agenda" name="codigo_local_agenda">
@@ -1532,20 +1543,6 @@ function tratarDescricaoVersao($texto) {
                                                 }
                                             ?>
                                         </select>
-                                    </div>
-                                </div>
-
-                                <div class="agenda-toolbar">
-                                    <div class="agenda-toolbar-nav">
-                                        <button type="button" class="btn btn-default btn-sm" id="agenda_hoje">Hoje</button>
-                                        <i class="fas fa-chevron-left" id="agenda_anterior" title="Período anterior"></i>
-                                        <i class="fas fa-chevron-right" id="agenda_proximo" title="Próximo período"></i>
-                                        <span id="agenda_periodo_titulo"></span>
-                                    </div>
-                                    <div class="agenda-view-switch">
-                                        <button type="button" class="agenda-view-btn active" data-view="dayGridDay">Dia</button>
-                                        <button type="button" class="agenda-view-btn" data-view="timeGridWeek">Semana</button>
-                                        <button type="button" class="agenda-view-btn" data-view="dayGridMonth">Mês</button>
                                     </div>
                                 </div>
 
