@@ -241,13 +241,9 @@ function tratarDescricaoVersao($texto) {
         }
 
         @media (max-width: 767.98px) {
-            .agenda-dashboard-toolbar {
-                justify-content: center;
-                text-align: center;
-            }
-
             .agenda-toolbar {
-                justify-content: center;
+                grid-template-columns: 1fr;
+                justify-items: center;
                 text-align: center;
             }
         }
