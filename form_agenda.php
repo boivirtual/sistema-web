@@ -383,6 +383,8 @@
 
                                 <input type="hidden" name="tipo_gravacao" id="tipo_gravacao">
 
+                                <input type="hidden" name="posicao_sigla" value="inicio">
+
                                 <div class="row">
                                     <div class="form-group col-md-6">
                                         <label class="control-label"><span class="required">*</span> Fazenda(s)</label>
