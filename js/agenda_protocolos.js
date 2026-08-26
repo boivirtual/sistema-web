@@ -424,7 +424,7 @@ function aplicarTooltipCelula(el, data, ehDiaTodo){
     }
 
     if (valido) {
-        el.setAttribute('title', 'Clique para incluir um evento');
+        $(el).attr('title', 'Clique para incluir um evento').tooltip({ placement: 'top', container: 'body' });
     }
 }
 
