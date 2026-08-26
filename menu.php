@@ -223,7 +223,7 @@ function tratarDescricaoVersao($texto) {
 
         .agenda-calendar-area {
             padding-top: 14px;
-            max-height: 480px;
+            max-height: 360px;
             overflow-y: auto;
         }
 
