@@ -168,6 +168,10 @@
         top: auto !important;
     }
 
+    .agenda-calendar-area .fc-timegrid-slot-lane {
+        pointer-events: none;
+    }
+
     @media (max-width: 767.98px) {
         .agenda-sidebar {
             flex: 1 1 100%;
