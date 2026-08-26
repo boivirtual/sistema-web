@@ -573,6 +573,23 @@ function tratarCliqueData(info){
     }
 }
 
+function aplicarTooltipCelula(el, data, ehDiaTodo){
+    var agora = new Date();
+    var valido;
+
+    if (ehDiaTodo) {
+        var hojeSemHora = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+        valido = data >= hojeSemHora;
+    }
+    else {
+        valido = data >= agora;
+    }
+
+    if (valido) {
+        el.setAttribute('title', 'Clique para incluir um evento');
+    }
+}
+
 function mostrarPreviewEvento(evento){
     var id_evento = evento.id;
 
