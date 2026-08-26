@@ -248,6 +248,19 @@ $(document).ready(function(){
         }
     });
 
+    $(document).on('click', '.agenda-view-btn', function() {
+        $('.agenda-view-btn').removeClass('active');
+        $(this).addClass('active');
+
+        var view = $(this).data('view');
+
+        if (dashboardCalendar) {
+            dashboardCalendar.changeView(view);
+            dashboardCalendar.setOption('height', view === 'dayGridDay' ? 220 : 'auto');
+            dashboardCalendar.setOption('expandRows', view === 'dayGridDay');
+        }
+    });
+
 });
 
 $(document).ready(function(){
