@@ -161,7 +161,7 @@ function tratarDescricaoVersao($texto) {
         .agenda-dashboard-toolbar {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-end;
             flex-wrap: wrap;
             gap: 12px;
             margin-bottom: 14px;
