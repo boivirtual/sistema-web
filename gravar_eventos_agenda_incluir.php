@@ -156,13 +156,20 @@ else if ($tipo_gravacao==2) {
     exit;
 }
 else {
-    for ($k=0; $k < $quantidade_local; $k++) { 
+    $posicao_sigla = isset($_POST['posicao_sigla']) ? $_POST['posicao_sigla'] : 'fim';
+
+    for ($k=0; $k < $quantidade_local; $k++) {
         $local = $matriz_local[$k];
 
         $inicias = pegar_inicias($local, $conector);
 
-        $titulo = $_POST["titulo_agenda"];
-        $titulo.= ' '.$inicias;
+        if ($posicao_sigla == 'inicio') {
+            $titulo = $inicias.' '.$_POST["titulo_agenda"];
+        }
+        else {
+            $titulo = $_POST["titulo_agenda"];
+            $titulo.= ' '.$inicias;
+        }
 
         if ($data_final=='') {
             $sql = "INSERT INTO tbl_agenda(
