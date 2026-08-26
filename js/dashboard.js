@@ -261,6 +261,14 @@ $(document).ready(function(){
         }
     });
 
+    $('#agenda').on('show.bs.modal', function() {
+        $('#main-content').addClass('agenda-scroll-lock');
+    });
+
+    $('#agenda').on('hidden.bs.modal', function() {
+        $('#main-content').removeClass('agenda-scroll-lock');
+    });
+
 });
 
 $(document).ready(function(){
