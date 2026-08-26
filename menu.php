@@ -1476,7 +1476,7 @@ function tratarDescricaoVersao($texto) {
                             <div class="modal-body">
                                 <div class="agenda-dashboard-toolbar">
                                     <div class="agenda-dashboard-filtro">
-                                        <label for="codigo_local_agenda" class="control-label" style="font-weight: normal; margin-right: 6px;">Fazenda</label>
+                                        <label for="codigo_local_agenda" class="control-label" style="font-weight: normal; margin-right: 6px;">Fazenda:</label>
                                         <select class="form-control input-sm" id="codigo_local_agenda" name="codigo_local_agenda">
                                             <?php
                                                 $tbl_local_filtro_agenda = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0");
