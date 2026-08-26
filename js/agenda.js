@@ -456,6 +456,12 @@ function iniciarCalendarioAgenda(){
         },
         eventMouseEnter: function(info){
             info.el.style.cursor = 'pointer';
+
+            var $celulaDia = $(info.el).closest('.fc-daygrid-day');
+
+            if ($celulaDia.length && $celulaDia.data('bs.tooltip')) {
+                $celulaDia.tooltip('hide');
+            }
         },
         eventWillUnmount: function(info){
             var tituloEl = info.el.querySelector('.fc-event-title');
