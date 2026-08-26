@@ -174,8 +174,6 @@ function tratarDescricaoVersao($texto) {
             align-items: center;
             gap: 10px;
             padding: 10px 0;
-            border-top: 1px solid #e3e6e8;
-            border-bottom: 1px solid #e3e6e8;
         }
 
         .agenda-toolbar-nav {
