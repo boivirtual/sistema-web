@@ -529,6 +529,44 @@ function formatarDataPreviewEvento(evento){
     return dataFormatada + ' · ' + horaInicio + (horaFim ? ' - ' + horaFim : '');
 }
 
+function formatarDataInputDate(data){
+    return data.getFullYear() + '-' + (data.getMonth() + 1).AddZero() + '-' + data.getDate().AddZero();
+}
+
+function formatarDataInputDateTime(data){
+    return formatarDataInputDate(data) + 'T' + data.getHours().AddZero() + ':' + data.getMinutes().AddZero();
+}
+
+function tratarCliqueData(info){
+    var agora = new Date();
+
+    if (info.allDay) {
+        var hojeSemHora = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+
+        if (info.date < hojeSemHora) {
+            return;
+        }
+    }
+    else if (info.date < agora) {
+        return;
+    }
+
+    incluir_nova();
+
+    if (info.allDay) {
+        $("#dia_inteiro").prop("checked", true);
+        $(".data_hora").hide();
+        $(".data").show();
+        $("#data_agenda_inicio").val(formatarDataInputDate(info.date));
+    }
+    else {
+        $("#dia_inteiro").prop("checked", false);
+        $(".data_hora").show();
+        $(".data").hide();
+        $("#data_hora_agenda_inicio").val(formatarDataInputDateTime(info.date));
+    }
+}
+
 function mostrarPreviewEvento(evento){
     var id_evento = evento.id;
 
