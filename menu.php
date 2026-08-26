@@ -231,9 +231,13 @@ function tratarDescricaoVersao($texto) {
             overflow: hidden !important;
         }
 
-        .agenda-calendar-area .fc-scroller:has(.fc-daygrid-body) {
-            max-height: 30px;
+        .agenda-calendar-area .fc-timegrid .fc-scroller:has(.fc-daygrid-body) {
+            max-height: 44px;
             overflow-y: auto !important;
+        }
+
+        .agenda-calendar-area .fc-timegrid .fc-daygrid-body td {
+            vertical-align: top !important;
         }
 
         #main-content.agenda-scroll-lock {
