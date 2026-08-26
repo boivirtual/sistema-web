@@ -209,8 +209,34 @@ function tratarDescricaoVersao($texto) {
             color: #333;
         }
 
+        .agenda-view-switch {
+            display: inline-flex;
+            background: #eef0f2;
+            border-radius: 6px;
+            padding: 2px;
+        }
+
+        .agenda-view-btn {
+            border: none;
+            background: transparent;
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #5c6670;
+        }
+
+        .agenda-view-btn.active {
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(0,0,0,.12);
+            font-weight: 600;
+            color: #222;
+        }
+
         .agenda-calendar-area {
             padding-top: 14px;
+            max-height: 480px;
+            overflow-y: auto;
         }
 
         .agenda-calendar-area #calendar {
