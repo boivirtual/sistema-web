@@ -178,10 +178,6 @@ function tratarDescricaoVersao($texto) {
             border-bottom: 1px solid #e3e6e8;
         }
 
-        .agenda-view-switch {
-            justify-self: center;
-        }
-
         .agenda-toolbar-nav {
             display: flex;
             align-items: center;
