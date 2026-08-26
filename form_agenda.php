@@ -468,7 +468,7 @@
                                 <div class="row m-bot15">
                                     <div class="col-md-12">
                                         <label for="descricao_agenda" class="control-label">Descrição</label>
-                                        <textarea name="descricao_agenda" type="text" class="form-control" id="descricao_agenda" rows="8" style="min-height: 140px;"></textarea>
+                                        <textarea name="descricao_agenda" type="text" class="form-control" id="descricao_agenda" rows="4" style="min-height: 70px;"></textarea>
                                     </div>
                                 </div>
                             </form>
