@@ -460,7 +460,14 @@ function iniciarCalendarioAgenda(){
             var $celulaDia = $(info.el).closest('.fc-daygrid-day');
 
             if ($celulaDia.length && $celulaDia.data('bs.tooltip')) {
-                $celulaDia.tooltip('hide');
+                $celulaDia.tooltip('hide').tooltip('disable');
+            }
+        },
+        eventMouseLeave: function(info){
+            var $celulaDia = $(info.el).closest('.fc-daygrid-day');
+
+            if ($celulaDia.length && $celulaDia.data('bs.tooltip')) {
+                $celulaDia.tooltip('enable');
             }
         },
         eventWillUnmount: function(info){
