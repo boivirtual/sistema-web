@@ -213,6 +213,10 @@ function tratarDescricaoVersao($texto) {
             padding-top: 14px;
         }
 
+        .agenda-calendar-area #calendar {
+            min-height: 220px;
+        }
+
         .tooltip {
             pointer-events: none;
             z-index: 1060;
