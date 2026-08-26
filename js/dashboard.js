@@ -651,6 +651,14 @@ function iniciarCalendarioAgenda(){
         headerToolbar: false,
         height: 220,
         expandRows: true,
+        allDayText: 'Dia todo',
+        nowIndicator: true,
+        dayMaxEvents: false,
+        slotLabelFormat: {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        },
         eventSources: [
             {
                 events: function(fetchInfo, successCallback, failureCallback) {
