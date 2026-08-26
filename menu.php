@@ -1538,9 +1538,14 @@ function tratarDescricaoVersao($texto) {
                                 <div class="agenda-toolbar">
                                     <div class="agenda-toolbar-nav">
                                         <button type="button" class="btn btn-default btn-sm" id="agenda_hoje">Hoje</button>
-                                        <i class="fas fa-chevron-left" id="agenda_anterior" title="Dia anterior"></i>
-                                        <i class="fas fa-chevron-right" id="agenda_proximo" title="Próximo dia"></i>
+                                        <i class="fas fa-chevron-left" id="agenda_anterior" title="Período anterior"></i>
+                                        <i class="fas fa-chevron-right" id="agenda_proximo" title="Próximo período"></i>
                                         <span id="agenda_periodo_titulo"></span>
+                                    </div>
+                                    <div class="agenda-view-switch">
+                                        <button type="button" class="agenda-view-btn active" data-view="dayGridDay">Dia</button>
+                                        <button type="button" class="agenda-view-btn" data-view="timeGridWeek">Semana</button>
+                                        <button type="button" class="agenda-view-btn" data-view="dayGridMonth">Mês</button>
                                     </div>
                                 </div>
 
