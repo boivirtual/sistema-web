@@ -1623,23 +1623,6 @@ function tratarDescricaoVersao($texto) {
                     </div>
                 </div>
 
-                <div class="modal fade" id="mensagem_retorno_agenda" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                <h4 class="modal-title">Agenda </h4>
-                            </div>
-
-                            <div class="modal-body"></div>
-
-                            <div class="modal-footer">
-                                <button data-dismiss="modal" class="btn btn-default" type="button">Fechar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </section> <!--main content end-->
         </section>
         <!-- container section start -->
