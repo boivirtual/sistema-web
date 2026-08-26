@@ -269,35 +269,6 @@ $(document).ready(function(){
 
 });
 
-function gravar_evento() {
-
-    document.getElementById("gravar").disabled = true;
-
-    var dados = $('#form_incluir').serialize();
-    $.ajax({
-        type: "POST",
-        url: 'gravar_eventos_agenda_incluir.php',
-        data: dados,
-        success: function(data){
-            if (data.error) {
-                document.getElementById("gravar").disabled = false;
-                $("#mensagem_erro").modal();
-                $("#mensagem_erro .modal-body").html(data.message);
-            }
-            else if (data.success){
-                if (dashboardCalendar) {
-                    dashboardCalendar.refetchEvents();
-                }
-
-                document.getElementById("gravar").disabled = false;
-                $('#modal_incluir').modal('hide');
-                $("#mensagem_retorno_agenda").modal();
-                $("#mensagem_retorno_agenda .modal-body").html(data.message);
-            }
-        }
-    });
-}
-
 // Monta tabela categorias (será substituido pelo grafico)
 function consultar_fazenda() {
     var local = $("#codigo_local").val();
