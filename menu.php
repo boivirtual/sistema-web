@@ -201,6 +201,7 @@ function tratarDescricaoVersao($texto) {
             background: #eef0f2;
             border-radius: 6px;
             padding: 2px;
+            justify-self: center;
         }
 
         .agenda-view-btn {
