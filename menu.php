@@ -158,22 +158,10 @@ function tratarDescricaoVersao($texto) {
             overflow-y: auto;
         }
 
-        .agenda-dashboard-toolbar {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-
-        .agenda-btn-incluir {
-            white-space: nowrap;
-        }
-
         .agenda-dashboard-filtro {
             display: flex;
             align-items: center;
+            justify-self: end;
         }
 
         .agenda-dashboard-filtro select {
@@ -181,14 +169,17 @@ function tratarDescricaoVersao($texto) {
         }
 
         .agenda-toolbar {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
             gap: 10px;
             padding: 10px 0;
             border-top: 1px solid #e3e6e8;
             border-bottom: 1px solid #e3e6e8;
+        }
+
+        .agenda-view-switch {
+            justify-self: center;
         }
 
         .agenda-toolbar-nav {
