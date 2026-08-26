@@ -516,6 +516,12 @@ function iniciarCalendarioAgenda(){
         },
         eventMouseEnter: function(info){
             info.el.style.cursor = 'pointer';
+
+            var $celulaDia = $(info.el).closest('.fc-daygrid-day');
+
+            if ($celulaDia.length && $celulaDia.data('bs.tooltip')) {
+                $celulaDia.tooltip('hide');
+            }
         },
         eventDrop: function(info){
             if(confirm("Tem certeza que deseja alterar a data deste evento?")){
