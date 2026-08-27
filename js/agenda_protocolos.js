@@ -482,14 +482,20 @@ function configurarTooltipCliqueIncluir(el, valido){
         var sobreEvento = !!$(e.target).closest('.fc-event').length;
         var visivel = $el.data('agendaTooltipCliqueVisivel');
 
-        if (sobreEvento && visivel) {
-            $el.tooltip('hide');
-            $el.data('agendaTooltipCliqueVisivel', false);
+        if (sobreEvento) {
+            if (visivel) {
+                $el.tooltip('hide');
+                $el.data('agendaTooltipCliqueVisivel', false);
+            }
+            return;
         }
-        else if (!sobreEvento && !visivel) {
+
+        if (!visivel) {
             $el.tooltip('show');
             $el.data('agendaTooltipCliqueVisivel', true);
         }
+
+        posicionarTooltipNoMouse($el, e);
     });
 
     $el.on('mouseleave.agendaTooltipClique', function(){
@@ -498,6 +504,20 @@ function configurarTooltipCliqueIncluir(el, valido){
             $el.data('agendaTooltipCliqueVisivel', false);
         }
     });
+}
+
+function posicionarTooltipNoMouse($el, e){
+    var tipData = $el.data('bs.tooltip');
+
+    if (!tipData || !tipData.$tip) {
+        return;
+    }
+
+    var largura = tipData.$tip.outerWidth();
+    var topo = e.clientY + window.pageYOffset - 36;
+    var esquerda = e.clientX + window.pageXOffset - (largura / 2);
+
+    tipData.$tip.css({ top: topo + 'px', left: esquerda + 'px' });
 }
 
 function mostrarPreviewEvento(evento){
