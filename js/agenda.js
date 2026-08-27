@@ -350,6 +350,13 @@ $(document).on('hidden.bs.modal', '.modal', function(){
             $(this).tooltip('hide');
         }
     });
+
+    $('.fc-daygrid-day, .fc-timegrid-col').each(function(){
+        if ($(this).data('agendaTooltipCliqueVisivel')) {
+            $(this).tooltip('hide');
+            $(this).data('agendaTooltipCliqueVisivel', false);
+        }
+    });
 });
 
 function medirLarguraTextoIsolada(texto, elementoReferencia){
