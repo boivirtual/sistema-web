@@ -1670,6 +1670,11 @@
     $numero_item = 0;
 
     foreach ($animais as $animal) {
+        // Desmama: não lista animais com mais de 12 meses
+        if ($epoca_e_desmama && (int)$animal['idadeMeses'] > 12) {
+            continue;
+        }
+
         $nascimento = new DateTime($animal['dataNascimento']);
         $nascimento_edi = $nascimento->format('d/m/Y');
 
