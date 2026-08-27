@@ -533,19 +533,6 @@ function iniciarCalendarioAgenda(){
         },
         eventMouseEnter: function(info){
             info.el.style.cursor = 'pointer';
-
-            var $celulaDia = $(info.el).closest('.fc-daygrid-day, .fc-timegrid-col');
-
-            if ($celulaDia.length && $celulaDia.data('bs.tooltip')) {
-                $celulaDia.tooltip('hide').tooltip('disable');
-            }
-        },
-        eventMouseLeave: function(info){
-            var $celulaDia = $(info.el).closest('.fc-daygrid-day, .fc-timegrid-col');
-
-            if ($celulaDia.length && $celulaDia.data('bs.tooltip')) {
-                $celulaDia.tooltip('enable');
-            }
         },
         eventDrop: function(info){
             if(confirm("Tem certeza que deseja alterar a data deste evento?")){
