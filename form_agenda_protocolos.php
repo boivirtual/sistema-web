@@ -172,6 +172,10 @@
         pointer-events: none;
     }
 
+    .agenda-calendar-area table[aria-hidden="true"] {
+        pointer-events: none;
+    }
+
     @media (max-width: 767.98px) {
         .agenda-sidebar {
             flex: 1 1 100%;
