@@ -443,6 +443,15 @@ function aplicarTooltipCelula(el, data, ehDiaTodo){
     configurarTooltipCliqueIncluir(el, valido);
 }
 
+function esconderTooltipsCliqueIncluir(){
+    $('.fc-daygrid-day, .fc-timegrid-col').each(function(){
+        if ($(this).data('agendaTooltipCliqueVisivel')) {
+            $(this).tooltip('hide');
+            $(this).data('agendaTooltipCliqueVisivel', false);
+        }
+    });
+}
+
 function configurarTooltipCliqueIncluir(el, valido){
     var $el = $(el);
 
