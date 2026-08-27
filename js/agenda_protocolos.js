@@ -613,8 +613,6 @@ function iniciarCalendarioAgenda(){
         $('.fc-popover').remove();
     });
 
-    $('#main-content').off('scroll.agendaTooltipClique').on('scroll.agendaTooltipClique', esconderTooltipsCliqueIncluir);
-    $('.agenda-calendar-area').off('scroll.agendaTooltipClique').on('scroll.agendaTooltipClique', esconderTooltipsCliqueIncluir);
 }
 
 function ajustarAlturaCalendario(){
