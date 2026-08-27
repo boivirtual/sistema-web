@@ -359,6 +359,10 @@ $(document).on('hidden.bs.modal', '.modal', function(){
     });
 });
 
+document.addEventListener('scroll', function(){
+    esconderTooltipsCliqueIncluir();
+}, true);
+
 function medirLarguraTextoIsolada(texto, elementoReferencia){
     var estiloRef = window.getComputedStyle(elementoReferencia);
     var temp = document.createElement('span');
