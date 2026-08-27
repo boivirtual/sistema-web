@@ -791,7 +791,7 @@
                                             <div class='form-group col-md-3'>
                                                 <label class="control-label">&nbsp;</label>
 
-                                                <button type='button' class='form-control btn btn-success' 
+                                                <button type='button' class='form-control btn btn-success confirma_nutricao'
                                                 onClick='confirma_nutricao()'>Confirmar Inclusão
                                                 </button>
                                             </div>
