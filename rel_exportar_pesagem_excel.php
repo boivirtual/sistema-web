@@ -297,6 +297,10 @@
         $desc_epoca = 'Não Informada';
     }
 
+    // Desmama (motivo id 2): a planilha off-line não lista animais com mais de
+    // 12 meses. Mesma regra do aplicativo e da pesagem on-line.
+    $epoca_e_desmama = ((int)$epoca === 2);
+
     // Pega estacao atual da fazenda (ultima estacao)
     $tbl_estacao = mysqli_query($conector, "SELECT * FROM tbl_parametro_estacao_monta
         WHERE tbl_par_codigo_local='$local' AND 
