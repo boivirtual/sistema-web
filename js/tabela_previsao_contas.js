@@ -790,16 +790,21 @@ function enviar_lixeira(array_registro, opcao) {
     $('#modal_incluir').modal('show');
 }
 
+var _gravarContaPrevisaoEmAndamento = false;
+
 function gravar_conta() {
+    if (_gravarContaPrevisaoEmAndamento) return;
     var tipo_gravacao = $("#tipo_gravacao").val();
     if (tipo_gravacao==2) {
         if (window.confirm("Atenção! Ao confirmar enviar esse registro para lixeira, não será possível recupera-lo pelo sistema. Confirmar assim mesmo?")) {
             var dados = $('#form_gravar_conta').serialize();
+            _gravarContaPrevisaoEmAndamento = true;
             $.ajax({
                 type: "POST",
                 url: 'gravar_previsao_contas.php',
                 data: dados,
                 success: function(data){
+                    _gravarContaPrevisaoEmAndamento = false;
                     if (data.error) {
                         $("#mensagem_erro").modal();
                         $("#mensagem_erro .modal-body").html(data.message);
@@ -808,6 +813,9 @@ function gravar_conta() {
                         $("#mensagem_retorno").modal();
                         $("#mensagem_retorno .modal-body").html(data.message);
                     }
+                },
+                error: function(){
+                    _gravarContaPrevisaoEmAndamento = false;
                 }
             });
         }
@@ -815,11 +823,13 @@ function gravar_conta() {
     else if (tipo_gravacao==3) {
         if (window.confirm("Confirma remover esse registro da lixeira?")) {
             var dados = $('#form_gravar_conta').serialize();
+            _gravarContaPrevisaoEmAndamento = true;
             $.ajax({
                 type: "POST",
                 url: 'gravar_previsao_contas.php',
                 data: dados,
                 success: function(data){
+                    _gravarContaPrevisaoEmAndamento = false;
                     if (data.error) {
                         $("#mensagem_erro").modal();
                         $("#mensagem_erro .modal-body").html(data.message);
@@ -828,17 +838,22 @@ function gravar_conta() {
                         $("#mensagem_retorno").modal();
                         $("#mensagem_retorno .modal-body").html(data.message);
                     }
+                },
+                error: function(){
+                    _gravarContaPrevisaoEmAndamento = false;
                 }
             });
         }
     }
     else if (tipo_gravacao==1){
         var dados = $('#form_gravar_conta').serialize();
+        _gravarContaPrevisaoEmAndamento = true;
         $.ajax({
             type: "POST",
             url: 'gravar_previsao_contas.php',
             data: dados,
             success: function(data){
+                _gravarContaPrevisaoEmAndamento = false;
                 if (data.error) {
                     $("#mensagem_erro").modal();
                     $("#mensagem_erro .modal-body").html(data.message);
@@ -847,12 +862,16 @@ function gravar_conta() {
                     $("#mensagem_retorno").modal();
                     $("#mensagem_retorno .modal-body").html(data.message);
                 }
+            },
+            error: function(){
+                _gravarContaPrevisaoEmAndamento = false;
             }
         });
     }
     else {
         var dados = $('#form_gravar_conta').serialize();
 
+        _gravarContaPrevisaoEmAndamento = true;
         $(".confirma_gravar").attr("disabled", true);
 
         $.ajax({
@@ -860,6 +879,7 @@ function gravar_conta() {
             url: 'gravar_previsao_contas.php',
             data: dados,
             success: function(data){
+                _gravarContaPrevisaoEmAndamento = false;
                 if (data.error) {
                     $(".confirma_gravar").attr("disabled", false);
                     $("#mensagem_erro").modal();
@@ -870,6 +890,10 @@ function gravar_conta() {
                     $("#mensagem_retorno_inclusao").modal();
                     $("#mensagem_retorno_inclusao .modal-body").html(data.message);
                 }
+            },
+            error: function(){
+                _gravarContaPrevisaoEmAndamento = false;
+                $(".confirma_gravar").attr("disabled", false);
             }
         });
     }
