@@ -934,6 +934,25 @@ function ler_animal() {
                 $("#pelagem_animal").val(php[4]);
                 $("#mae_animal").val(php[5]);
                 $("#ultimo_peso_animal").val(php[28]);
+
+                // Desmama (motivo id 2): não permite pesar animal com mais de 12 meses.
+                // Mesma regra do aplicativo (calcula os meses pelo nascimento x data atual).
+                if (parseInt($("#epoca_pesagem").val(), 10) === 2 &&
+                    parseInt(php[36], 10) > 12) {
+                    $("#codigo_id").val(0);
+                    $("#codigo_number_filtro").val("");
+                    $("#peso_animal").val("");
+                    $("#descricao_animal").text("");
+                    $("#ultimo_peso").text("");
+                    $("#data_ult_peso").text("");
+                    $("#desc_descarte").text("");
+                    $("#alert_erro_animal .negrito").html("");
+                    $("#alert_erro_animal span").html("Idade do animal inválida para Desmama");
+                    $(".alert_erro_animal").show();
+                    document.getElementById("codigo_number_filtro").focus();
+                    return;
+                }
+
                 $("#peso_animal").focus();
             }
 
