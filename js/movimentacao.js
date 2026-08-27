@@ -6565,7 +6565,11 @@ function gravar_movimentacao_pesagem() {
     }
 }
 
+var _gravarMovimentacaoVendaTransferenciaEmAndamento = false;
+
 function gravar_movimentacao_venda_transferencia() {
+    if (_gravarMovimentacaoVendaTransferenciaEmAndamento) return;
+    _gravarMovimentacaoVendaTransferenciaEmAndamento = true;
     var controle_estoque = $("#controle_estoque").val();
     var array_tabela_itens = new Array();
     var valor = new Array();
