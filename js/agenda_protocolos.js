@@ -354,6 +354,8 @@ function configurarTooltipCliqueIncluirHora(el, diaValido){
     $el.data('agendaTooltipCliqueVisivel', false);
 
     $el.on('mousemove.agendaTooltipClique', function(e){
+        $el.data('agendaTooltipCliqueUltimoY', e.clientY);
+
         var sobreEvento = !!$(e.target).closest('.fc-event').length;
         var horaValida = calcularDataHoraNaColunaHora(el, e.clientY) >= new Date();
         var visivel = $el.data('agendaTooltipCliqueVisivel');
