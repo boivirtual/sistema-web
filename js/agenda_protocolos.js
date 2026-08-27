@@ -612,7 +612,6 @@ function iniciarCalendarioAgenda(){
     $('#main-content').off('scroll.agendaPopover').on('scroll.agendaPopover', function(){
         $('.fc-popover').remove();
     });
-
 }
 
 function ajustarAlturaCalendario(){
