@@ -6828,6 +6828,7 @@ function gravar_movimentacao_venda_transferencia() {
             url: 'gravar_movimentacao_baixa_venda_transferencia.php',
             data: dados,
             success: function(data){
+                _gravarMovimentacaoVendaTransferenciaEmAndamento = false;
                 $('#aguardar').modal('hide');
                 if (data.error) {
                     $("#mensagem_erro").modal();
@@ -6837,6 +6838,10 @@ function gravar_movimentacao_venda_transferencia() {
                     $("#mensagem_retorno").modal();
                     $("#mensagem_retorno .modal-body").html(data.message);
                 }
+            },
+            error: function(){
+                _gravarMovimentacaoVendaTransferenciaEmAndamento = false;
+                $('#aguardar').modal('hide');
             }
         });
     }
@@ -6846,6 +6851,7 @@ function gravar_movimentacao_venda_transferencia() {
             url: 'gravar_movimentacao_baixa_venda_transferencia_lote.php',
             data: dados,
             success: function(data){
+                _gravarMovimentacaoVendaTransferenciaEmAndamento = false;
                 $('#aguardar').modal('hide');
                 if (data.error) {
                     $("#mensagem_erro").modal();
@@ -6855,6 +6861,10 @@ function gravar_movimentacao_venda_transferencia() {
                     $("#mensagem_retorno").modal();
                     $("#mensagem_retorno .modal-body").html(data.message);
                 }
+            },
+            error: function(){
+                _gravarMovimentacaoVendaTransferenciaEmAndamento = false;
+                $('#aguardar').modal('hide');
             }
         });
     }
