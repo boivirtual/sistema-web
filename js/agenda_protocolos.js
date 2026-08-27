@@ -311,7 +311,81 @@ function aplicarTooltipsColunasHora(){
 
     document.querySelectorAll('.fc-timegrid-col[data-date]').forEach(function(col){
         var dataCol = col.getAttribute('data-date');
-        configurarTooltipCliqueIncluir(col, dataCol >= hojeStr);
+        configurarTooltipCliqueIncluirHora(col, dataCol >= hojeStr);
+    });
+}
+
+function calcularDataHoraNaColunaHora(col, clientY){
+    var rect = col.getBoundingClientRect();
+    var proporcao = (clientY - rect.top) / rect.height;
+
+    if (proporcao < 0) { proporcao = 0; }
+    if (proporcao > 1) { proporcao = 1; }
+
+    var minutosNoDia = proporcao * 24 * 60;
+    var partes = col.getAttribute('data-date').split('-');
+    var data = new Date(partes[0], partes[1] - 1, partes[2]);
+    data.setMinutes(minutosNoDia);
+    return data;
+}
+
+function configurarTooltipCliqueIncluirHora(el, diaValido){
+    var $el = $(el);
+
+    if (!diaValido) {
+        el.style.cursor = '';
+
+        if ($el.data('agendaTooltipCliqueConfigurado')) {
+            $el.tooltip('destroy');
+            $el.off('.agendaTooltipClique');
+            $el.removeData('agendaTooltipCliqueConfigurado');
+            $el.removeData('agendaTooltipCliqueVisivel');
+        }
+
+        return;
+    }
+
+    if ($el.data('agendaTooltipCliqueConfigurado')) {
+        return;
+    }
+
+    $el.attr('title', 'Clique para incluir um evento').tooltip({ placement: 'top', container: 'body', trigger: 'manual' });
+    $el.data('agendaTooltipCliqueConfigurado', true);
+    $el.data('agendaTooltipCliqueVisivel', false);
+
+    $el.on('mousemove.agendaTooltipClique', function(e){
+        var sobreEvento = !!$(e.target).closest('.fc-event').length;
+        var horaValida = calcularDataHoraNaColunaHora(el, e.clientY) >= new Date();
+        var visivel = $el.data('agendaTooltipCliqueVisivel');
+
+        if (sobreEvento || !horaValida) {
+            el.style.cursor = '';
+
+            if (visivel) {
+                $el.tooltip('hide');
+                $el.data('agendaTooltipCliqueVisivel', false);
+            }
+
+            return;
+        }
+
+        el.style.cursor = 'pointer';
+
+        if (!visivel) {
+            $el.tooltip('show');
+            $el.data('agendaTooltipCliqueVisivel', true);
+        }
+
+        posicionarTooltipNoMouse($el, e);
+    });
+
+    $el.on('mouseleave.agendaTooltipClique', function(){
+        el.style.cursor = '';
+
+        if ($el.data('agendaTooltipCliqueVisivel')) {
+            $el.tooltip('hide');
+            $el.data('agendaTooltipCliqueVisivel', false);
+        }
     });
 }
 
