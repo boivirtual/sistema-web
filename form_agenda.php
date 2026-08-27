@@ -191,7 +191,8 @@
 
     .agenda-calendar-area .fc-timegrid-col,
     .agenda-calendar-area .fc-daygrid-day,
-    .agenda-calendar-area .fc-event {
+    .agenda-calendar-area .fc-event,
+    .agenda-calendar-area .fc-event * {
         pointer-events: auto !important;
     }
 
