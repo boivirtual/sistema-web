@@ -683,6 +683,30 @@ function esconderTooltipsCliqueIncluir(){
     });
 }
 
+setInterval(function(){
+    $('.fc-timegrid-col').each(function(){
+        var $el = $(this);
+
+        if (!$el.data('agendaTooltipCliqueVisivel')) {
+            return;
+        }
+
+        var ultimoY = $el.data('agendaTooltipCliqueUltimoY');
+
+        if (ultimoY === undefined) {
+            return;
+        }
+
+        var horaValida = calcularDataHoraNaColunaHora(this, ultimoY) >= new Date();
+
+        if (!horaValida) {
+            $el.tooltip('hide');
+            $el.data('agendaTooltipCliqueVisivel', false);
+            this.style.cursor = '';
+        }
+    });
+}, 15000);
+
 function configurarTooltipCliqueIncluir(el, valido){
     var $el = $(el);
 
