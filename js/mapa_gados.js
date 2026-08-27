@@ -3734,6 +3734,7 @@ function confirma_nutricao(){
             var descricao_lote = $("#descricao_lote_m").val();
         }
 
+        _confirmaNutricaoEmAndamento = true;
         $(".confirma_nutricao").attr("disabled", true);
 
         $.ajax({
@@ -3754,6 +3755,7 @@ function confirma_nutricao(){
                 ano_lote: ano_lote
             },
             success: function(data){
+                _confirmaNutricaoEmAndamento = false;
                 if (data.error) {
                     $(".confirma_nutricao").attr("disabled", false);
                     $("#mensagem_erro_data").modal();
@@ -3765,6 +3767,10 @@ function confirma_nutricao(){
                     $("#mensagem_retorno .modal-body").html(data.message);
                     lerNutricao();
                 }
+            },
+            error: function(){
+                _confirmaNutricaoEmAndamento = false;
+                $(".confirma_nutricao").attr("disabled", false);
             }
         });
     }
