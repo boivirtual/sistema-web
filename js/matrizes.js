@@ -2028,9 +2028,12 @@ function gravar_matrizes() {
     });
 }
 
+var _gravarInserirMatrizesEmAndamento = false;
+
 function gravar_inserir_matrizes() {
+    if (_gravarInserirMatrizesEmAndamento) return;
     var codigo_id = $("#codigo_id").val();
-    
+
     if (codigo_id==0) {
         $("#mensagem_erro").modal();
         $("#mensagem_erro .modal-body").html('Informe o Nº da Fêmea.');
@@ -2039,13 +2042,15 @@ function gravar_inserir_matrizes() {
 
     var dados = $('#form_inserir_matriz').serialize();
 
+    _gravarInserirMatrizesEmAndamento = true;
     $(".gravar_inserir").attr("disabled", true);
-    
+
     $.ajax({
         type: "POST",
         url: 'gravar_matrizes_inserir_nova.php',
         data: dados,
         success: function(data){
+            _gravarInserirMatrizesEmAndamento = false;
             if (data.error) {
                 $(".gravar_inserir").attr("disabled", false);
                 $("#mensagem_erro").modal();
@@ -2056,6 +2061,10 @@ function gravar_inserir_matrizes() {
                 $("#mensagem_retorno").modal();
                 $("#mensagem_retorno .modal-body").html(data.message);
             }
+        },
+        error: function(){
+            _gravarInserirMatrizesEmAndamento = false;
+            $(".gravar_inserir").attr("disabled", false);
         }
     });
 }
