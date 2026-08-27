@@ -6805,8 +6805,9 @@ function gravar_movimentacao_venda_transferencia() {
     }
 
     $("#array_itens").val(grupo_itens);
-    
+
     if (grupo_itens=='') {
+        _gravarMovimentacaoVendaTransferenciaEmAndamento = false;
         $("#mensagem_retorno").modal();
         $("#mensagem_retorno .modal-body").html('Movimentação finalizada sem gravar itens.');
         return;
