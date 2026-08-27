@@ -698,6 +698,10 @@ function iniciarCalendarioAgenda(){
             tratarCliqueData(info);
         },
         dayCellDidMount: function(arg){
+            if (arg.el.classList.contains('fc-timegrid-col')) {
+                return;
+            }
+
             aplicarTooltipCelula(arg.el, arg.date, true);
         },
         eventMouseEnter: function(info){
