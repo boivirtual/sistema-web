@@ -592,9 +592,55 @@ function aplicarTooltipCelula(el, data, ehDiaTodo){
         valido = data >= agora;
     }
 
-    if (valido) {
-        $(el).attr('title', 'Clique para incluir um evento').tooltip({ placement: 'top', container: 'body' });
+    configurarTooltipCliqueIncluir(el, valido);
+}
+
+function configurarTooltipCliqueIncluir(el, valido){
+    var $el = $(el);
+
+    if (!valido) {
+        el.style.cursor = '';
+
+        if ($el.data('agendaTooltipCliqueConfigurado')) {
+            $el.tooltip('destroy');
+            $el.off('.agendaTooltipClique');
+            $el.removeData('agendaTooltipCliqueConfigurado');
+            $el.removeData('agendaTooltipCliqueVisivel');
+        }
+
+        return;
     }
+
+    el.style.cursor = 'pointer';
+
+    if ($el.data('agendaTooltipCliqueConfigurado')) {
+        return;
+    }
+
+    $el.attr('title', 'Clique para incluir um evento').tooltip({ placement: 'top', container: 'body', trigger: 'manual' });
+    $el.data('agendaTooltipCliqueConfigurado', true);
+    $el.data('agendaTooltipCliqueVisivel', false);
+
+    $el.on('mousemove.agendaTooltipClique', function(e){
+        var sobreEvento = !!$(e.target).closest('.fc-event').length;
+        var visivel = $el.data('agendaTooltipCliqueVisivel');
+
+        if (sobreEvento && visivel) {
+            $el.tooltip('hide');
+            $el.data('agendaTooltipCliqueVisivel', false);
+        }
+        else if (!sobreEvento && !visivel) {
+            $el.tooltip('show');
+            $el.data('agendaTooltipCliqueVisivel', true);
+        }
+    });
+
+    $el.on('mouseleave.agendaTooltipClique', function(){
+        if ($el.data('agendaTooltipCliqueVisivel')) {
+            $el.tooltip('hide');
+            $el.data('agendaTooltipCliqueVisivel', false);
+        }
+    });
 }
 
 function mostrarPreviewEvento(evento){
