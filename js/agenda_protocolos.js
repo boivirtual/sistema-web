@@ -311,17 +311,7 @@ function aplicarTooltipsColunasHora(){
 
     document.querySelectorAll('.fc-timegrid-col[data-date]').forEach(function(col){
         var dataCol = col.getAttribute('data-date');
-
-        if ($(col).data('bs.tooltip')) {
-            $(col).tooltip('destroy');
-        }
-
-        if (dataCol >= hojeStr) {
-            $(col).attr('title', 'Clique para incluir um evento').tooltip({ placement: 'top', container: 'body' });
-        }
-        else {
-            $(col).removeAttr('title');
-        }
+        configurarTooltipCliqueIncluir(col, dataCol >= hojeStr);
     });
 }
 
