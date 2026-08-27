@@ -3712,7 +3712,10 @@ function limpa_campos_inclusao() {
     $("#undProduto").val('');   
 } 
 
+var _confirmaNutricaoEmAndamento = false;
+
 function confirma_nutricao(){
+    if (_confirmaNutricaoEmAndamento) return;
     if($("#slctCocho").val() != '000000000' && $("#dataNutricao").val() != '' && $("#nomeProduto").val() != '000000000' && $("#qtdProduto").val() != '' && $("#undProduto").val() != ''){
         var qtdProduto = $("#qtdProduto").val();
 
