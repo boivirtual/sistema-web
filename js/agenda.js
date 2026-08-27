@@ -493,6 +493,8 @@ function aplicarTooltipsEventos(){
 function iniciarCalendarioAgenda(){
     var calendarEl = document.getElementById("calendar");
 
+    $('body > .tooltip').remove();
+
     agendaCalendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'timeGridWeek',
         locale: 'pt-br',
