@@ -189,6 +189,10 @@
         pointer-events: none;
     }
 
+    .agenda-calendar-area table[aria-hidden="true"] {
+        pointer-events: none;
+    }
+
     .agenda-calendar-area .fc-timegrid-now-indicator-arrow,
     .agenda-calendar-area .fc-timegrid-now-indicator-line {
         position: absolute !important;
