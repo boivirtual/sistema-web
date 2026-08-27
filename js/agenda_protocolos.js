@@ -583,7 +583,7 @@ function posicionarTooltipNoMouse($el, e){
     }
 
     var largura = tipData.$tip.outerWidth();
-    var topo = e.clientY + window.pageYOffset - 36;
+    var topo = e.clientY + window.pageYOffset - 20;
     var esquerda = e.clientX + window.pageXOffset - (largura / 2);
 
     tipData.$tip.css({ top: topo + 'px', left: esquerda + 'px' });
