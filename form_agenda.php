@@ -185,12 +185,14 @@
         top: auto !important;
     }
 
-    .agenda-calendar-area .fc-timegrid-slot-lane {
+    .agenda-calendar-area .fc-timegrid * {
         pointer-events: none;
     }
 
-    .agenda-calendar-area table[aria-hidden="true"] {
-        pointer-events: none;
+    .agenda-calendar-area .fc-timegrid-col,
+    .agenda-calendar-area .fc-daygrid-day,
+    .agenda-calendar-area .fc-event {
+        pointer-events: auto !important;
     }
 
     .agenda-calendar-area .fc-timegrid-now-indicator-arrow,
