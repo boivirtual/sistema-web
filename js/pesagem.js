@@ -1337,7 +1337,7 @@ function ler_animal_editar_apos_time() {
 
                     // Desmama (motivo id 2): não permite pesar animal com mais de 12 meses.
                     // Mesma regra do aplicativo (calcula os meses pelo nascimento x data atual).
-                    if (parseInt($("#epoca_pesagem").val(), 10) === 2 &&
+                    if (parseInt($("select#epoca_pesagem").val(), 10) === 2 &&
                         parseInt($("#idade_meses").val(), 10) > 12) {
                         $("#codigo_id").val("");
                         $("#codigo_number_filtro").val("");
