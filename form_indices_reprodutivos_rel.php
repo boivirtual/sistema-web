@@ -691,8 +691,6 @@
                     }
                 }
 
-                print_r('animal: ' . $codigo_numerico_animal . 'Data sistema: ' . $data_prenhes . '</br>');
-                
                 $qtd_coberturas++;
 
                 if ($categoria_animal=='N') {
