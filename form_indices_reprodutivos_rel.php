@@ -335,11 +335,8 @@
             $cobertura_id = $reg_cobertura->tbl_ite_cobertura_numero_id;
             $item_cobertura = $reg_cobertura->tbl_ite_cobertura_numero_item;
             $data_prenhes = $reg_cobertura->tbl_ite_cobertura_data_prenhes;
-            // Verifica numero de partos
-            $tbl_animais = mysqli_query($conector, "SELECT * FROM tbl_animais
-                WHERE tbl_animal_codigo_mae = '$codigo_id_animal'");  
-
-            $num_rows = mysqli_num_rows($tbl_animais);
+            // Verifica numero de partos (contagem pré-carregada em $mapa_partos)
+            $num_rows = isset($mapa_partos[$codigo_id_animal]) ? $mapa_partos[$codigo_id_animal] : 0;
 
             if ($num_rows==0) {
                 $sub_categoria[0]='Novilhas';
