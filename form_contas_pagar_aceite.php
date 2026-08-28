@@ -54,6 +54,12 @@
             width: 40%;
         }
 
+        /* Destaque temporário na linha após retorno da edição */
+        .ctp-destaque {
+            background-color: #fffde7 !important;
+            transition: background-color 1.5s ease;
+        }
+
     </style>
 
 </head>
