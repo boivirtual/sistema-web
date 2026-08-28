@@ -410,7 +410,7 @@
                         echo "<td width='12%'>" . $vlr_display . "</td>";
                         echo "<td></td>";
                         echo "<td width='10%'>" . $desc_situacao . "</td>";
-                        echo "<td width='3%'>" . $icon_anexo . "</td>";
+                        echo "<td width='3%' align='center'>" . $icon_anexo . $icon_editar . "</td>";
                         echo "</tr>";
                     }
                 }
