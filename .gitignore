@@ -1,9 +1,13 @@
 # Arquivos de conexão e credenciais - NUNCA enviar ao GitHub
 conecta_mysql.inc
 conecta_mysql*.inc
-valida_sessao.inc
 *.env
 config.php
+
+# valida_sessao.inc É versionado (contém só o define("Versao", ...), sem
+# credenciais). Precisa entrar no Git para o cache-buster dos JS/CSS subir
+# junto com as alterações. O ambiente de cada servidor pode ter o número
+# ajustado manualmente no deploy via FTP.
 
 # Pastas desnecessárias
 vendor-copia/

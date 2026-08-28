@@ -859,6 +859,13 @@ while ($reg_conta_pag = mysqli_fetch_object($conta_pagamento)) {
 
 <?php include "modal_anexos.php"; ?>
 
+<script>
+  // Define de onde a edição foi chamada. Quando vale "aceite", o botão "Voltar"
+  // retorna para form_contas_pagar_aceite.php; caso contrário mantém o
+  // comportamento padrão (form_contas_pagar.php).
+  var ctpEditarOrigem = '<?php echo (isset($_GET["origem"]) && $_GET["origem"] === "aceite") ? "aceite" : ""; ?>';
+</script>
+
 <?php
   $javascript_file_name = 'contas_pagar.js';
   require 'rodape.php';
