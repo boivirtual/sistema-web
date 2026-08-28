@@ -3734,7 +3734,9 @@ function pausar_pesagem() {
     $("#tabela_itens tbody tr").each(function () {
         var id_lista = $(this).find(".id_animal").html();
 
-        if (id_lista != "") {
+        // Ignora a linha de placeholder do DataTable ("Nenhum animal inserido"),
+        // que não possui a coluna .id_animal (retorna undefined).
+        if (id_lista != undefined && id_lista != "") {
             tem_itens = "S";
         }
     });
