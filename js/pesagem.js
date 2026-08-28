@@ -3762,7 +3762,9 @@ function pausar_pesagem_estimada() {
     $("#itens_pesagem_lote tbody tr").each(function () {
         var categoria = $(this).find(".id_categoria").html();
 
-        if (categoria != "") {
+        // Ignora a linha de placeholder do DataTable, que não possui a coluna
+        // .id_categoria (retorna undefined).
+        if (categoria != undefined && categoria != "") {
             tem_itens = "S";
         }
     });
