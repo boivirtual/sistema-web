@@ -371,6 +371,9 @@
                             . '<i class="fas fa-paperclip" style="color:#337ab7;"></i></a>';
                     }
 
+                    // Ícone de edição — padrão do sistema, presente em todas as linhas
+                    $icon_editar = "<a class='btn' style='font-size: 11px;' href='form_contas_pagar_editar.php?id=" . intval($ctp_id) . "'><i class='icon_pencil' data-toggle='tooltip' data-placement='left' title='Editar esse registro'></i></a>";
+
                     if ($chave_anterior != $registro) {
                         // Ícone de expansão do rateio — só na 1ª linha do documento
                         $icon_rateio = '';
