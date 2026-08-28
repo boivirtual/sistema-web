@@ -415,7 +415,7 @@ function consultar_ctp(flag) {
         '&array_conta='      + array_conta +
         '&array_fazenda='    + array_fazenda +
         '&limpa_filtros='    + flag,
-        function() { $('[data-toggle="tooltip"]').tooltip(); }
+        function() { $('[data-toggle="tooltip"]').tooltip(); restaurarPosicaoAceite(); }
     );
 }
 
