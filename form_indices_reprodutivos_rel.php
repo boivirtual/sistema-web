@@ -718,21 +718,12 @@
 
                     $animal_anterior=$codigo_id_animal;
 
-                    // verifica desmama 
-                    $sql = mysqli_query($conector, "SELECT * FROM tbl_animais
-                        INNER JOIN tbl_item_pesagem 
-                                ON tbl_ite_pesagem_codigo_id_animal=tbl_animal_codigo_id
-                        INNER JOIN tbl_pesagem
-                                ON tbl_pesagem_id = tbl_ite_pesagem_numero_id 
-                        WHERE tbl_animal_codigo_mae = '$codigo_id_animal' AND  
-                              tbl_pesagem_codigo_epoca = 2 AND 
-                              tbl_animal_codigo_cobertura = '$cobertura_id'");
-
-                    // verificar os animais que tiveram peso de desmama independente de estar ativo ou não. Não precisa considerar a idade 
-                    $num_rows = mysqli_num_rows($sql);
+                    // verifica desmama (contagem pré-carregada em $mapa_desmame)
+                    // verificar os animais que tiveram peso de desmama independente de estar ativo ou não. Não precisa considerar a idade
+                    $num_rows = isset($mapa_desmame[$codigo_id_animal . '|' . $cobertura_id]) ? $mapa_desmame[$codigo_id_animal . '|' . $cobertura_id] : 0;
 
                     if ($num_rows!=0) {
-                        while ($reg_animal = mysqli_fetch_object($sql)) {
+                        for ($d = 0; $d < $num_rows; $d++) {
                             /*$data_nascimento = $reg_animal->tbl_animal_data_nascimento;  
                             //VER AQUI QUANDO O ANIMAL FOI VENDIDO, MORTO OU OUTRA SAIDA PARA CALCULAR A IDADE. SO VALE PARA ANIMAIS DESMAMADOS <= DATA DA MOVIMENTACAO E TIVEREM > 7 MESES                          
                             $data_acompanhamento_calculo = date("Y-m-d");
