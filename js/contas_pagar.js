@@ -658,7 +658,11 @@ $(document).ready(function(){
     });
 
     $(".fecha_editar_dados").click(function(){
-		location.href='form_contas_pagar.php'
+		if (typeof ctpEditarOrigem !== 'undefined' && ctpEditarOrigem === 'aceite') {
+			location.href = 'form_contas_pagar_aceite.php';
+		} else {
+			location.href = 'form_contas_pagar.php';
+		}
     });
 
     $(".fecha_dados_baixa").click(function(){
