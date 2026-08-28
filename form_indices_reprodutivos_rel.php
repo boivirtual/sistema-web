@@ -213,6 +213,61 @@
 
     $num_rows = mysqli_num_rows($tbl_item_cobertura);
 
+    // -------------------------------------------------------------------------
+    // Pré-carrega em memória as contagens que antes eram consultadas uma vez
+    // por linha do laço (problema N+1). Os mapas reproduzem exatamente o
+    // resultado das consultas antigas:
+    //   $mapa_partos[mae]          -> nº de filhos registrados para a mãe
+    //                                 (usado para classificar a categoria)
+    //   $mapa_desmame["mae|chave"] -> nº de pesagens de desmama (época 2),
+    //                                 chave = estação de nascimento (IATF)
+    //                                 ou código da cobertura (Monta)
+    // -------------------------------------------------------------------------
+    $mapa_partos = array();
+    $res_mapa_partos = mysqli_query($conector, "SELECT tbl_animal_codigo_mae AS mae,
+            COUNT(*) AS qtd
+        FROM tbl_animais
+        GROUP BY tbl_animal_codigo_mae");
+
+    if ($res_mapa_partos) {
+        while ($reg_mapa = mysqli_fetch_object($res_mapa_partos)) {
+            $mapa_partos[$reg_mapa->mae] = (int) $reg_mapa->qtd;
+        }
+    }
+
+    $mapa_desmame = array();
+
+    if ($tipo_cobertura=='I') {
+        $res_mapa_desmame = mysqli_query($conector, "SELECT tbl_animal_codigo_mae AS mae,
+                tbl_animal_estacao_monta_nascimento AS chave,
+                COUNT(*) AS qtd
+            FROM tbl_animais
+            INNER JOIN tbl_item_pesagem
+                    ON tbl_ite_pesagem_codigo_id_animal = tbl_animal_codigo_id
+            INNER JOIN tbl_pesagem
+                    ON tbl_pesagem_id = tbl_ite_pesagem_numero_id
+            WHERE tbl_pesagem_codigo_epoca = 2
+            GROUP BY tbl_animal_codigo_mae, tbl_animal_estacao_monta_nascimento");
+    }
+    else {
+        $res_mapa_desmame = mysqli_query($conector, "SELECT tbl_animal_codigo_mae AS mae,
+                tbl_animal_codigo_cobertura AS chave,
+                COUNT(*) AS qtd
+            FROM tbl_animais
+            INNER JOIN tbl_item_pesagem
+                    ON tbl_ite_pesagem_codigo_id_animal = tbl_animal_codigo_id
+            INNER JOIN tbl_pesagem
+                    ON tbl_pesagem_id = tbl_ite_pesagem_numero_id
+            WHERE tbl_pesagem_codigo_epoca = 2
+            GROUP BY tbl_animal_codigo_mae, tbl_animal_codigo_cobertura");
+    }
+
+    if ($res_mapa_desmame) {
+        while ($reg_mapa = mysqli_fetch_object($res_mapa_desmame)) {
+            $mapa_desmame[$reg_mapa->mae . '|' . $reg_mapa->chave] = (int) $reg_mapa->qtd;
+        }
+    }
+
     $estacao_anterior = 0;
     $local_anterior = 0;
     $animal_anterior = 0;
