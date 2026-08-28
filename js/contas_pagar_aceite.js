@@ -36,6 +36,28 @@ function toggleRateio(id) {
 const idConta = [];
 const selectedConta = [];
 
+// Ao clicar no ícone de edição, guarda o ctp_id para reposicionar a lista
+// nessa linha quando o usuário voltar da tela de edição.
+$(document).off('click.ctpAceiteEdit').on('click.ctpAceiteEdit', 'a[href*="form_contas_pagar_editar.php"]', function () {
+    var m = ($(this).attr('href') || '').match(/[?&]id=([^&]+)/);
+    if (m) sessionStorage.setItem('ctp_aceite_retorno_id', m[1]);
+});
+
+// Reposiciona e destaca a linha do registro que chamou a edição.
+function restaurarPosicaoAceite() {
+    var ctpId = sessionStorage.getItem('ctp_aceite_retorno_id');
+    if (!ctpId) return;
+    sessionStorage.removeItem('ctp_aceite_retorno_id');
+    setTimeout(function () {
+        var $row = $('#tabela_aceite_contas tr[data-ctp-id="' + ctpId + '"]').first();
+        if ($row.length) {
+            $row[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            $row.addClass('ctp-destaque');
+            setTimeout(function () { $row.removeClass('ctp-destaque'); }, 2500);
+        }
+    }, 400);
+}
+
 $(window).load(function () {
     // Restaura filtro de local
     var filtro_local = $("#exibe_local").val();
