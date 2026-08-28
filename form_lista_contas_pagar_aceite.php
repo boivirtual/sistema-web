@@ -460,7 +460,7 @@
                 <th>Valor</th>
                 <th>Descrição</th>
                 <th>Pgto</th>
-                <th></th>
+                <th><i class="icon_cogs"></i> Ações</th>
             </tr>
         </thead>
         <tfoot>
