@@ -35,15 +35,13 @@ if($_POST["tipoGravacao"] == 0){
         array_push($arrayDias, $desc);
     }
 
-    $sql = "SELECT tbl_pessoa_nome FROM tbl_pessoa WHERE tbl_pessoa_id = $local AND tbl_pessoa_lixeira = 0";
-    $response = mysqli_query($conector, $sql);
-    $objLocal = mysqli_fetch_object($response);
+    $siglaLocal = pegar_inicias($local, $conector, true);
 
     foreach($arrayDias as $dia){
         $diaFormat = trim($dia);
         $dataHoraEvento = date('Y-m-d h:i:s', strtotime($data."+ {$dia} days"));
         $dataEvento = date('Y-m-d', strtotime($data."+ {$dia} days"));
-        $stringBase = "{$objLocal->tbl_pessoa_nome}-D{$diaFormat}-GRUPO {$objCobertura->tbl_cobertura_codigo_grupo}-{$objCobertura->tbl_cobertura_qtd_animais} FÊMEAS";
+        $stringBase = "{$siglaLocal}-D{$diaFormat}-GRUPO {$objCobertura->tbl_cobertura_codigo_grupo}-{$objCobertura->tbl_cobertura_qtd_animais} FÊMEAS";
         $sql = "INSERT INTO tbl_agenda(
             tbl_agenda_local,
             tbl_agenda_titulo,
