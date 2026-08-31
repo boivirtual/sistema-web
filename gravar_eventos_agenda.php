@@ -140,4 +140,21 @@ if($_POST["tipoGravacao"] == 0){
     mysqli_query($conector, $sql) or die(mysqli_error($conector));
 }
 
+function pegar_inicias($local, $conector, $ignorar_palavra_fazenda = false) {
+
+    $local = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_id='$local'");
+    $reg = mysqli_fetch_object($local);
+
+    $nome_fazenda = $reg->tbl_pessoa_nome;
+
+    $nome = preg_split("/((de|da|do|dos|das)?)[\s,_-]+/", $nome_fazenda);
+    $iniciais = "";
+    foreach($nome as $n) {
+        if (strlen($n) > 0 && !($ignorar_palavra_fazenda && strcasecmp($n, 'fazenda') == 0)) {
+            $iniciais .= $n[0];
+        }
+    }
+    return $iniciais;
+}
+
 ?>
