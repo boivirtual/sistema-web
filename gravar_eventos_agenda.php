@@ -79,7 +79,7 @@ if($_POST["tipoGravacao"] == 0){
     }
 
     $data_diagnostico = date("Y-m-d h:i:s", strtotime($dataEvento . "+{$dias_diagnostico} days"));
-    $stringBase = "{$objLocal->tbl_pessoa_nome}-DIAGNOSTICO-GRUPO {$objCobertura->tbl_cobertura_codigo_grupo}-{$objCobertura->tbl_cobertura_qtd_animais} FÊMEAS";
+    $stringBase = "{$siglaLocal}-DIAGNOSTICO-GRUPO {$objCobertura->tbl_cobertura_codigo_grupo}-{$objCobertura->tbl_cobertura_qtd_animais} FÊMEAS";
 
     $sql = "INSERT INTO tbl_agenda(
             tbl_agenda_local,
