@@ -2,6 +2,17 @@
     include "conecta_mysql.inc";
     include "valida_sessao.inc";
 
+    // Monta lista de valores para cláusula IN (...) já escapando cada item
+    if (!function_exists('sg_in_list')) {
+        function sg_in_list($conector, $valores) {
+            $itens = array();
+            foreach ($valores as $v) {
+                $itens[] = "'" . mysqli_real_escape_string($conector, $v) . "'";
+            }
+            return implode(',', $itens);
+        }
+    }
+
     $data_hoje = date("Y-m-d");
     $controle = 'C';
     $animais_listados = 0;
