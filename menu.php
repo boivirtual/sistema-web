@@ -265,8 +265,8 @@ function tratarDescricaoVersao($texto) {
         @media (max-width: 767.98px) {
             .agenda-toolbar {
                 grid-template-columns: 1fr;
-                justify-items: center;
-                text-align: center;
+                justify-items: start;
+                text-align: left;
             }
 
             .agenda-toolbar-nav {
@@ -284,11 +284,6 @@ function tratarDescricaoVersao($texto) {
 
             #agenda_periodo_titulo {
                 font-size: 16px;
-            }
-
-            .agenda-dashboard-filtro {
-                justify-self: start;
-                text-align: left;
             }
         }
 
