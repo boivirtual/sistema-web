@@ -1241,12 +1241,7 @@ function ImprimirFemea($conector, $animais_listados, $codigo_id, $codigo_alfa, $
         $descricao_pai = '';
     }
 
-    $tbl_aborto = mysqli_query($conector, "SELECT * FROM tbl_movimentacao_estoque 
-        WHERE tbl_mov_estoque_codigo_mae='$codigo_id' AND 
-              tbl_mov_estoque_codigo_id_animal=999999999 AND 
-              tbl_mov_estoque_entrada_saida='A'");
-
-    $numero_abortos = mysqli_num_rows($tbl_aborto);
+    $numero_abortos = isset($GLOBALS['mapa_qtd_abortos_a'][$codigo_id]) ? $GLOBALS['mapa_qtd_abortos_a'][$codigo_id] : 0;
 
     // VERIFICA NATIMORTO E SOMA NO NUMERO DE PARTOS/DATA APTIDAO
     $natimorto = VerNatimorto($conector, $codigo_id, $data_hoje);
