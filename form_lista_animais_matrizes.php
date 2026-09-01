@@ -1065,7 +1065,20 @@ function VerAborto($conector, $codigo_id, $data_ref) {
     $dias_aborto = 0;
     $data_aborto = '0000.00.00';
 
-    $tbl_aborto = mysqli_query($conector, "SELECT * FROM tbl_movimentacao_estoque 
+    // Caminho rápido: usa o cache pré-carregado (aborto A/B mais recente por mãe).
+    // Mesma lógica da consulta original — apenas sem ir ao banco a cada chamada.
+    if (!empty($GLOBALS['cache_carregado'])) {
+        if (isset($GLOBALS['cache_aborto'][$codigo_id])) {
+            $teve_aborto = 'S';
+            $data_aborto = $GLOBALS['cache_aborto'][$codigo_id];
+            $data_ref = date("Y-m-d", strtotime($data_ref . "- 35 days"));
+            $diferenca = strtotime($data_ref) - strtotime($data_aborto);
+            $dias_aborto = floor($diferenca / (60 * 60 * 24));
+        }
+        return [$teve_aborto, $dias_aborto, $data_aborto];
+    }
+
+    $tbl_aborto = mysqli_query($conector, "SELECT * FROM tbl_movimentacao_estoque
         WHERE tbl_mov_estoque_codigo_mae='$codigo_id' AND 
               tbl_mov_estoque_codigo_id_animal=999999999 AND
               tbl_mov_estoque_entrada_saida='A' AND 
