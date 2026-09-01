@@ -1111,7 +1111,19 @@ function VerNatimorto($conector, $codigo_id, $data_ref) {
     $dias_natimorto = 0;
     $data_natimorto = '0000.00.00';
 
-    $tbl_natimorto = mysqli_query($conector, "SELECT * FROM tbl_movimentacao_estoque 
+    // Caminho rápido: usa o cache pré-carregado (natimorto 'M' mais recente por mãe).
+    if (!empty($GLOBALS['cache_carregado'])) {
+        if (isset($GLOBALS['cache_natimorto'][$codigo_id])) {
+            $teve_natimorto = 'S';
+            $data_natimorto = $GLOBALS['cache_natimorto'][$codigo_id];
+            $data_ref = date("Y-m-d", strtotime($data_ref . "- 35 days"));
+            $diferenca = strtotime($data_ref) - strtotime($data_natimorto);
+            $dias_natimorto = floor($diferenca / (60 * 60 * 24));
+        }
+        return [$teve_natimorto, $dias_natimorto, $data_natimorto];
+    }
+
+    $tbl_natimorto = mysqli_query($conector, "SELECT * FROM tbl_movimentacao_estoque
         WHERE tbl_mov_estoque_codigo_mae='$codigo_id' AND 
               tbl_mov_estoque_codigo_id_animal=999999999 AND
               tbl_mov_estoque_entrada_saida='S' AND 
