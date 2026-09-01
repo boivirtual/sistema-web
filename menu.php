@@ -271,6 +271,7 @@ function tratarDescricaoVersao($texto) {
 
             .agenda-toolbar-nav {
                 font-size: 16px;
+                justify-self: start;
             }
 
             .agenda-toolbar-nav .btn {
@@ -284,6 +285,12 @@ function tratarDescricaoVersao($texto) {
 
             #agenda_periodo_titulo {
                 font-size: 16px;
+            }
+
+            .agenda-view-switch,
+            .agenda-dashboard-filtro {
+                justify-self: start;
+                text-align: left;
             }
         }
 
