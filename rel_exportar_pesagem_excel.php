@@ -1670,8 +1670,10 @@
     $numero_item = 0;
 
     foreach ($animais as $animal) {
-        // Desmama: não lista animais com mais de 12 meses
-        if ($epoca_e_desmama && (int)$animal['idadeMeses'] > 12) {
+        // Desmama: não lista animais com mais de 12 meses nem os que já têm
+        // peso de desmama registrado (tbl_animal_peso_desmama).
+        if ($epoca_e_desmama &&
+            ((int)$animal['idadeMeses'] > 12 || (float)$animal['pesoDesmama'] > 0)) {
             continue;
         }
 
