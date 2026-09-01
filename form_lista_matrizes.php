@@ -13,13 +13,29 @@
     }
     $codigo_alfa_numerico = $_POST["codigo_alfa_numerico"];
 
-    @ session_start(); 
+    @ session_start();
 
     $_SESSION['local_matrizes']=$local;
-    $_SESSION['estacao_monta_matrizes']=$estacao_monta; 
+    $_SESSION['estacao_monta_matrizes']=$estacao_monta;
     $_SESSION['tipo_registro_matrizes']=$tipo_registro;
     $_SESSION['codigo_numerico_matrizes']=$codigo_alfa_numerico;
-    $_SESSION['lista_matrizes']='S';    
+    $_SESSION['lista_matrizes']='S';
+
+    // Versões tratadas para uso em SQL (não altera os valores gravados na sessão)
+    $local_sql = mysqli_real_escape_string($conector, $local);
+    $estacao_monta_sql = mysqli_real_escape_string($conector, $estacao_monta);
+    $codigo_alfa_numerico_sql = mysqli_real_escape_string($conector, $codigo_alfa_numerico);
+
+    // Monta a lista de valores para cláusulas IN (...) já escapando cada item
+    if (!function_exists('lm_in_list')) {
+        function lm_in_list($conector, $valores) {
+            $itens = array();
+            foreach ($valores as $v) {
+                $itens[] = "'" . mysqli_real_escape_string($conector, $v) . "'";
+            }
+            return implode(',', $itens);
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -50,7 +66,7 @@
       .table_overflow th{
         background-color: #eee;
       }
-      
+
       table.dataTable.no-footer{
           border: none;
       }
@@ -69,9 +85,9 @@
 
 </head>
 
-<body> 
+<body>
 
-  <?php   
+  <?php
     echo '<section class="panel lista_contas">';
 
     if ($tipo_registro=='C') { // IATF
@@ -80,29 +96,91 @@
         echo '<tbody>';
 
         if ($codigo_alfa_numerico!='') {
-            $tbl_matrizes = mysqli_query($conector, "SELECT * FROM tbl_item_cobertura
-                INNER JOIN tbl_cobertura 
-                        ON tbl_cobertura_id = tbl_ite_cobertura_numero_id 
-                WHERE tbl_cobertura_lixeira=0 AND 
-                      tbl_cobertura_controle='C' AND 
-                      tbl_cobertura_codigo_local='$local' AND 
-                      tbl_cobertura_codigo_estacao_monta='$estacao_monta' AND
-                      tbl_ite_cobertura_codigo_animal='$codigo_alfa_numerico'
-                ORDER BY tbl_cobertura_codigo_local, tbl_cobertura_codigo_grupo ASC"); 
-        } 
+            $tbl_matrizes = mysqli_query($conector, "SELECT tbl_cobertura_id, tbl_cobertura_codigo_local,
+                       tbl_cobertura_codigo_grupo, tbl_cobertura_codigo_estacao_monta, tbl_cobertura_qtd_animais,
+                       tbl_cobertura_protocoloiatf, tbl_cobertura_planilha_processada, tbl_cobertura_data
+                FROM tbl_item_cobertura
+                INNER JOIN tbl_cobertura
+                        ON tbl_cobertura_id = tbl_ite_cobertura_numero_id
+                WHERE tbl_cobertura_lixeira=0 AND
+                      tbl_cobertura_controle='C' AND
+                      tbl_cobertura_codigo_local='$local_sql' AND
+                      tbl_cobertura_codigo_estacao_monta='$estacao_monta_sql' AND
+                      tbl_ite_cobertura_codigo_animal='$codigo_alfa_numerico_sql'
+                ORDER BY tbl_cobertura_codigo_local, tbl_cobertura_codigo_grupo ASC");
+        }
         else {
-            $tbl_matrizes = mysqli_query($conector, "SELECT * FROM tbl_cobertura 
-                WHERE tbl_cobertura_lixeira=0 AND 
-                      tbl_cobertura_controle='C' AND 
-                      tbl_cobertura_codigo_local='$local' AND 
-                      tbl_cobertura_codigo_estacao_monta='$estacao_monta'
-                ORDER BY tbl_cobertura_codigo_local, tbl_cobertura_codigo_grupo ASC"); 
-        }        
+            $tbl_matrizes = mysqli_query($conector, "SELECT tbl_cobertura_id, tbl_cobertura_codigo_local,
+                       tbl_cobertura_codigo_grupo, tbl_cobertura_codigo_estacao_monta, tbl_cobertura_qtd_animais,
+                       tbl_cobertura_protocoloiatf, tbl_cobertura_planilha_processada, tbl_cobertura_data
+                FROM tbl_cobertura
+                WHERE tbl_cobertura_lixeira=0 AND
+                      tbl_cobertura_controle='C' AND
+                      tbl_cobertura_codigo_local='$local_sql' AND
+                      tbl_cobertura_codigo_estacao_monta='$estacao_monta_sql'
+                ORDER BY tbl_cobertura_codigo_local, tbl_cobertura_codigo_grupo ASC");
+        }
 
-        $num_rows_matrizes = mysqli_num_rows($tbl_matrizes);
+        // Carrega o resultado em memória e coleta as chaves para as consultas em lote
+        $rows_matrizes = array();
+        $ids_cobertura = array();
+        $ids_grupo = array();
+        $ids_protocolo = array();
+
+        while ($reg_matrizes = mysqli_fetch_object($tbl_matrizes)){
+            $rows_matrizes[] = $reg_matrizes;
+            $ids_cobertura[$reg_matrizes->tbl_cobertura_id] = true;
+            $ids_grupo[$reg_matrizes->tbl_cobertura_codigo_grupo] = true;
+            if ($reg_matrizes->tbl_cobertura_protocoloiatf !== null && $reg_matrizes->tbl_cobertura_protocoloiatf !== '') {
+                $ids_protocolo[$reg_matrizes->tbl_cobertura_protocoloiatf] = true;
+            }
+        }
+
+        $num_rows_matrizes = count($rows_matrizes);
+
+        // Local (o filtro garante que todas as coberturas pertencem ao mesmo local)
+        $desc_local = '';
+        $tbl_local = mysqli_query($conector, "select tbl_pessoa_nome from tbl_pessoa where tbl_pessoa_id='$local_sql'");
+        if ($reg = mysqli_fetch_object($tbl_local)) {
+            $desc_local = $reg->tbl_pessoa_nome;
+        }
+
+        // Mapa de descrições de grupo (mesmo local e mesma estação de monta do filtro)
+        $mapa_grupo = array();
+        $q_grupo = mysqli_query($conector, "select tbl_grupo_id, tbl_grupo_descricao from tbl_grupo_estacao_monta
+                where tbl_grupo_codigo_local='$local_sql' and
+                      tbl_grupo_codigo_estacao_monta='$estacao_monta_sql'");
+        while ($r = mysqli_fetch_object($q_grupo)) {
+            $mapa_grupo[$r->tbl_grupo_id] = $r->tbl_grupo_descricao;
+        }
+
+        // Mapa de descrições de protocolo
+        $mapa_protocolo = array();
+        if (count($ids_protocolo) > 0) {
+            $lista_protocolo = lm_in_list($conector, array_keys($ids_protocolo));
+            $q_protocolo = mysqli_query($conector, "select tbl_protocoloiatf_id, tbl_protocoloiatf_descricao
+                    from tbl_protocoloiatf where tbl_protocoloiatf_id IN ($lista_protocolo)");
+            while ($r = mysqli_fetch_object($q_protocolo)) {
+                $mapa_protocolo[$r->tbl_protocoloiatf_id] = $r->tbl_protocoloiatf_descricao;
+            }
+        }
+
+        // Mapa "iniciou protocolo": alguma linha do item com dia_1='S' ou dia_2='S'
+        $mapa_iniciou = array();
+        if (count($ids_cobertura) > 0) {
+            $lista_cobertura = lm_in_list($conector, array_keys($ids_cobertura));
+            $q_iniciou = mysqli_query($conector, "SELECT tbl_ite_cobertura_numero_id,
+                        MAX(tbl_ite_cobertura_dia_1='S' OR tbl_ite_cobertura_dia_2='S') AS iniciou
+                    FROM tbl_item_cobertura
+                    WHERE tbl_ite_cobertura_numero_id IN ($lista_cobertura)
+                    GROUP BY tbl_ite_cobertura_numero_id");
+            while ($r = mysqli_fetch_object($q_iniciou)) {
+                $mapa_iniciou[$r->tbl_ite_cobertura_numero_id] = $r->iniciou;
+            }
+        }
 
         if ($num_rows_matrizes!=0) {
-            while ($reg_matrizes = mysqli_fetch_object($tbl_matrizes)){
+            foreach ($rows_matrizes as $reg_matrizes){
                 $codigo = $reg_matrizes->tbl_cobertura_id;
                 $codigo_local = $reg_matrizes->tbl_cobertura_codigo_local;
                 $codigo_grupo = $reg_matrizes->tbl_cobertura_codigo_grupo;
@@ -112,57 +190,13 @@
                 $iniciou_protocolo = '';
                 $planilha_processada = $reg_matrizes->tbl_cobertura_planilha_processada;
 
-                $tbl_local = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_id='$codigo_local'");
-                $num_rows = mysqli_num_rows($tbl_local);
+                $desc_grupo = isset($mapa_grupo[$codigo_grupo]) ? $mapa_grupo[$codigo_grupo] : '';
 
-                if ($num_rows!=0){
-                    $reg = mysqli_fetch_object($tbl_local);
-                    $desc_local = $reg->tbl_pessoa_nome;
-                }
-                else {
-                    $desc_local = '';
+                if (isset($mapa_iniciou[$codigo]) && $mapa_iniciou[$codigo]) {
+                    $iniciou_protocolo = 'S';
                 }
 
-                $itens = mysqli_query($conector, "SELECT * FROM tbl_item_cobertura
-                        WHERE tbl_ite_cobertura_numero_id ='$codigo'");
-                $num_rows_itens = mysqli_num_rows($itens);
-
-                if ($num_rows_itens!=0){
-                    while ($fila = mysqli_fetch_object($itens)){
-                        $dia_1 = $fila->tbl_ite_cobertura_dia_1;
-                        $dia_2 = $fila->tbl_ite_cobertura_dia_2;
-                        
-                        if ($dia_1=='S' || $dia_2=='S') {
-                            $iniciou_protocolo = 'S';
-                        }
-                    }
-                }
-
-                $tbl_grupo = mysqli_query($conector, "select * from tbl_grupo_estacao_monta
-                        where tbl_grupo_id='$codigo_grupo' and 
-                              tbl_grupo_codigo_local='$codigo_local' and 
-                              tbl_grupo_codigo_estacao_monta='$codigo_estacao'");
-                $num_rows = mysqli_num_rows($tbl_grupo);
-
-                if ($num_rows!=0){
-                    $reg = mysqli_fetch_object($tbl_grupo);
-                    $desc_grupo = $reg->tbl_grupo_descricao;
-                }
-                else {
-                    $desc_grupo = '';
-                }
-
-                $tbl_protocolo = mysqli_query($conector, "select * from tbl_protocoloiatf
-                        where tbl_protocoloiatf_id ='$protocolo'");
-                $num_rows = mysqli_num_rows($tbl_protocolo);
-
-                if ($num_rows!=0){
-                    $reg = mysqli_fetch_object($tbl_protocolo);
-                    $desc_protocolo = $reg->tbl_protocoloiatf_descricao;
-                }
-                else {
-                    $desc_protocolo = '';
-                }
+                $desc_protocolo = isset($mapa_protocolo[$protocolo]) ? $mapa_protocolo[$protocolo] : '';
 
                 $data_matrizes = new DateTime($reg_matrizes->tbl_cobertura_data);
                 $data_cobertura_edi = $data_matrizes->format('d/m/Y');
@@ -177,7 +211,7 @@
                     echo "<td width='8%' class='status_nao'>".$qtd_animais."</td>";
                     echo "<td width='20%' class='status_nao'>".$desc_protocolo."</td>";
                     echo "<td width='17%' class='status_nao'>Definir Grupos para Reprodução</td>";
-                    echo "<td width='15%'>";    
+                    echo "<td width='15%'>";
                     echo "<div class='btn-group'>";
 
                     echo "<a class='btn' href='#'>
@@ -196,7 +230,7 @@
                     echo "</div>";
                     echo "</td>";
                 }
-                else { 
+                else {
                     echo "<td width='5%'>".$codigo_grupo."</td>";
                     echo "<td width='10%'>".$desc_grupo."</td>";
                     echo "<td width='10%'>".$data_cobertura_edi."</td>";
@@ -204,9 +238,9 @@
                     echo "<td width='8%'>".$qtd_animais."</td>";
                     echo "<td width='20%'>".$desc_protocolo."</td>";
                     echo "<td width='17%'></td>";
-                    echo "<td width='15%'>";    
+                    echo "<td width='15%'>";
                     echo "<div class='btn-group'>";
-                    echo "<a class='btn' href='form_selecao_matrizes_consultar.php?id=".$codigo."'><i class='icon_search' data-toggle='tooltip' data-placement='left' title='Consultar esse registro'></i></a>"; 
+                    echo "<a class='btn' href='form_selecao_matrizes_consultar.php?id=".$codigo."'><i class='icon_search' data-toggle='tooltip' data-placement='left' title='Consultar esse registro'></i></a>";
 
                     if ($iniciou_protocolo=='') {
                         echo "<a class='btn' href='#'>
@@ -239,7 +273,7 @@
         echo '</section>';
     }
     else if ($tipo_registro=='M'){ // Monta
-        $tbl_local = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_id='$local'");
+        $tbl_local = mysqli_query($conector, "select tbl_pessoa_nome from tbl_pessoa where tbl_pessoa_id='$local_sql'");
         $num_rows = mysqli_num_rows($tbl_local);
 
         if ($num_rows!=0){
@@ -262,12 +296,14 @@
 
 
         // Verifica se tem lista de animais em excel para processar
-        $tbl_matrizes = mysqli_query($conector, "SELECT * FROM tbl_cobertura
-            WHERE tbl_cobertura_lixeira=0 AND 
-                  tbl_cobertura_controle='M' AND 
-                  tbl_cobertura_planilha_processada='A' AND 
-                  tbl_cobertura_codigo_local='$local' 
-            ORDER BY tbl_cobertura_data DESC"); 
+        $tbl_matrizes = mysqli_query($conector, "SELECT tbl_cobertura_id, tbl_cobertura_planilha_processada,
+                  tbl_cobertura_qtd_animais, tbl_cobertura_data
+            FROM tbl_cobertura
+            WHERE tbl_cobertura_lixeira=0 AND
+                  tbl_cobertura_controle='M' AND
+                  tbl_cobertura_planilha_processada='A' AND
+                  tbl_cobertura_codigo_local='$local_sql'
+            ORDER BY tbl_cobertura_data DESC");
 
         $num_rows_matrizes = mysqli_num_rows($tbl_matrizes);
 
@@ -287,7 +323,7 @@
                 echo '<td>'.$data_cobertura_edi.'</td>';
                 echo '<td>'.$desc_local.'</td>';
                 echo '<td>'.$qtd_animais.'</td>';
-                echo "<td width='15%'>";    
+                echo "<td width='15%'>";
                 echo "<div class='btn-group'>";
 
                 echo "<a class='btn' href='#'>
@@ -322,7 +358,7 @@
         }
 
         echo '
-        <div class="row">  
+        <div class="row">
             <div class="form-group col-md-5">
                 <label class="control-label">&nbsp;</label>
                 <p onclick="modal_inserir_nova_matriz_monta()" style="color: #1E90FF; cursor: pointer; font-size: 15px;">
@@ -336,46 +372,116 @@
             <div class="form-group col-md-2">
                 <label class="control-label">&nbsp;</label>
                 <button type="button" class="form-control btn btn-info pull-right" onclick="diagnostico_monta()">Diagnóstico</button>
-            </div>            
+            </div>
         </div>';
 
         // Lista animais em Monta ja confirmados
         if ($codigo_alfa_numerico!='') {
-            $tbl_matrizes = mysqli_query($conector, "SELECT * FROM tbl_item_cobertura
-                INNER JOIN tbl_cobertura 
-                        ON tbl_cobertura_id = tbl_ite_cobertura_numero_id 
-                WHERE tbl_cobertura_lixeira=0 AND 
-                      tbl_cobertura_controle='M' AND 
-                       tbl_cobertura_planilha_processada!='A' AND 
-                      tbl_cobertura_codigo_local='$local' AND
-                      tbl_ite_cobertura_codigo_animal='$codigo_alfa_numerico'
-                ORDER BY tbl_ite_cobertura_codigo_numerico ASC"); 
-        } 
+            $tbl_matrizes = mysqli_query($conector, "SELECT tbl_cobertura_id, tbl_ite_cobertura_numero_item,
+                      tbl_cobertura_planilha_processada, tbl_cobertura_qtd_animais,
+                      tbl_ite_cobertura_codigo_id_animal, tbl_ite_cobertura_codigo_animal,
+                      tbl_ite_cobertura_codigo_alfa, tbl_ite_cobertura_codigo_numerico,
+                      tbl_cobertura_data, tbl_ite_cobertura_data_prenhes, tbl_ite_cobertura_previsao_parto
+                FROM tbl_item_cobertura
+                INNER JOIN tbl_cobertura
+                        ON tbl_cobertura_id = tbl_ite_cobertura_numero_id
+                WHERE tbl_cobertura_lixeira=0 AND
+                      tbl_cobertura_controle='M' AND
+                       tbl_cobertura_planilha_processada!='A' AND
+                      tbl_cobertura_codigo_local='$local_sql' AND
+                      tbl_ite_cobertura_codigo_animal='$codigo_alfa_numerico_sql'
+                ORDER BY tbl_ite_cobertura_codigo_numerico ASC");
+        }
         else {
-            $tbl_matrizes = mysqli_query($conector, "SELECT * FROM tbl_item_cobertura
-                INNER JOIN tbl_cobertura 
-                        ON tbl_cobertura_id = tbl_ite_cobertura_numero_id 
-                WHERE tbl_cobertura_lixeira=0 AND 
-                      tbl_cobertura_controle='M' AND 
-                      (tbl_cobertura_planilha_processada='S' OR 
+            $tbl_matrizes = mysqli_query($conector, "SELECT tbl_cobertura_id, tbl_ite_cobertura_numero_item,
+                      tbl_cobertura_planilha_processada, tbl_cobertura_qtd_animais,
+                      tbl_ite_cobertura_codigo_id_animal, tbl_ite_cobertura_codigo_animal,
+                      tbl_ite_cobertura_codigo_alfa, tbl_ite_cobertura_codigo_numerico,
+                      tbl_cobertura_data, tbl_ite_cobertura_data_prenhes, tbl_ite_cobertura_previsao_parto
+                FROM tbl_item_cobertura
+                INNER JOIN tbl_cobertura
+                        ON tbl_cobertura_id = tbl_ite_cobertura_numero_id
+                WHERE tbl_cobertura_lixeira=0 AND
+                      tbl_cobertura_controle='M' AND
+                      (tbl_cobertura_planilha_processada='S' OR
                        tbl_cobertura_planilha_processada='' OR
-                       tbl_cobertura_planilha_processada IS NULL) AND 
-                      tbl_cobertura_codigo_local='$local' AND 
-                      (tbl_ite_cobertura_resultado_diagnostico='P' OR 
-                        tbl_ite_cobertura_resultado_diagnostico='' OR 
-                        tbl_ite_cobertura_resultado_diagnostico is null) AND 
+                       tbl_cobertura_planilha_processada IS NULL) AND
+                      tbl_cobertura_codigo_local='$local_sql' AND
+                      (tbl_ite_cobertura_resultado_diagnostico='P' OR
+                        tbl_ite_cobertura_resultado_diagnostico='' OR
+                        tbl_ite_cobertura_resultado_diagnostico is null) AND
                       (tbl_ite_cobertura_nascido = '' OR tbl_ite_cobertura_nascido IS NULL)
-                ORDER BY tbl_ite_cobertura_codigo_numerico ASC"); 
-        }        
+                ORDER BY tbl_ite_cobertura_codigo_numerico ASC");
+        }
 
-        $num_rows_matrizes = mysqli_num_rows($tbl_matrizes);
+        // Carrega o resultado em memória e coleta os códigos de animal para consultas em lote
+        $rows_matrizes = array();
+        $ids_animal = array();
+
+        while ($reg_matrizes = mysqli_fetch_object($tbl_matrizes)){
+            $rows_matrizes[] = $reg_matrizes;
+            if ($reg_matrizes->tbl_ite_cobertura_codigo_id_animal !== null) {
+                $ids_animal[$reg_matrizes->tbl_ite_cobertura_codigo_id_animal] = true;
+            }
+        }
+
+        $num_rows_matrizes = count($rows_matrizes);
+
+        // Mapas: dados do animal, raça, nº de partos (filhos) e nº de abortos
+        $mapa_animal = array();
+        $mapa_raca = array();
+        $mapa_partos = array();
+        $mapa_abortos = array();
+
+        if (count($ids_animal) > 0) {
+            $lista_animal = lm_in_list($conector, array_keys($ids_animal));
+
+            $q_animal = mysqli_query($conector, "select tbl_animal_codigo_id, tbl_animal_data_nascimento,
+                    tbl_animal_baixado_em, tbl_animal_codigo_raca
+                from tbl_animais where tbl_animal_codigo_id IN ($lista_animal)");
+            $ids_raca = array();
+            while ($r = mysqli_fetch_object($q_animal)) {
+                $mapa_animal[$r->tbl_animal_codigo_id] = $r;
+                if ($r->tbl_animal_codigo_raca !== null && $r->tbl_animal_codigo_raca !== '') {
+                    $ids_raca[$r->tbl_animal_codigo_raca] = true;
+                }
+            }
+
+            if (count($ids_raca) > 0) {
+                $lista_raca = lm_in_list($conector, array_keys($ids_raca));
+                $q_raca = mysqli_query($conector, "select tab_codigo_raca, tab_descricao_raca from tabela_racas
+                    where tab_registro_lixeira_raca = 0 and tab_codigo_raca IN ($lista_raca)");
+                while ($r = mysqli_fetch_object($q_raca)) {
+                    $mapa_raca[$r->tab_codigo_raca] = $r->tab_descricao_raca;
+                }
+            }
+
+            $q_partos = mysqli_query($conector, "select tbl_animal_codigo_mae, COUNT(*) AS c from tbl_animais
+                where tbl_animal_codigo_mae IN ($lista_animal)
+                group by tbl_animal_codigo_mae");
+            while ($r = mysqli_fetch_object($q_partos)) {
+                $mapa_partos[$r->tbl_animal_codigo_mae] = $r->c;
+            }
+
+            $q_abortos = mysqli_query($conector, "SELECT tbl_mov_estoque_codigo_mae, COUNT(*) AS c
+                FROM tbl_movimentacao_estoque
+                WHERE tbl_mov_estoque_codigo_mae IN ($lista_animal) AND
+                      tbl_mov_estoque_codigo_id_animal=999999999 AND
+                      tbl_mov_estoque_entrada_saida='A' AND
+                      (tbl_mov_estoque_tipo_movimentacao='A' OR
+                       tbl_mov_estoque_tipo_movimentacao='B')
+                GROUP BY tbl_mov_estoque_codigo_mae");
+            while ($r = mysqli_fetch_object($q_abortos)) {
+                $mapa_abortos[$r->tbl_mov_estoque_codigo_mae] = $r->c;
+            }
+        }
 
         echo '<table class="table table-striped table-advance table-hover" id="tabela_lista_matrizes_monta" style="font-size: 12px">';
-                              
+
         echo '<tbody>';
 
         if ($num_rows_matrizes!=0) {
-            while ($reg_matrizes = mysqli_fetch_object($tbl_matrizes)){
+            foreach ($rows_matrizes as $reg_matrizes){
                 $cobertura_id = $reg_matrizes->tbl_cobertura_id;
                 $numero_item = $reg_matrizes->tbl_ite_cobertura_numero_item;
                 $planilha_processada = $reg_matrizes->tbl_cobertura_planilha_processada;
@@ -387,12 +493,8 @@
                 $codigo_alfa = $reg_matrizes->tbl_ite_cobertura_codigo_alfa;
                 $codigo_numerico = intval($reg_matrizes->tbl_ite_cobertura_codigo_numerico);
 
-                $tbl_animal = mysqli_query($conector, "select * from tbl_animais 
-                    where tbl_animal_codigo_id ='$codigo_animal_id'"); 
-                $num_row_animal = mysqli_num_rows($tbl_animal);
-
-                if ($num_row_animal!=0) {
-                    $reg_animal = mysqli_fetch_object($tbl_animal);
+                if (isset($mapa_animal[$codigo_animal_id])) {
+                    $reg_animal = $mapa_animal[$codigo_animal_id];
                     $data_nascimento = $reg_animal->tbl_animal_data_nascimento;
                     $data_baixa = $reg_animal->tbl_animal_baixado_em;
 
@@ -403,7 +505,7 @@
                         $data_acompanhamento_calculo = date("Y-m-d");
                     }
 
-                    $date = new DateTime($data_nascimento); 
+                    $date = new DateTime($data_nascimento);
                     $idade_acompanhamento = $date->diff(new DateTime($data_acompanhamento_calculo));
                     $idade_acompanhamento_mostra_anos = $idade_acompanhamento->format('%Y')*12;
                     $idade_acompanhamento_mostra_meses = $idade_acompanhamento->format('%m');
@@ -414,37 +516,14 @@
                     $numero_abortos = 0;
                     $dias_ultimo_parto = 0;
                     $coberturas_estacao = 0;
-                    
+
                     $codigo_raca= $reg_animal->tbl_animal_codigo_raca;
 
-                    $tbl_raca = mysqli_query($conector,"select * from tabela_racas 
-                        where tab_codigo_raca ='$codigo_raca' and 
-                              tab_registro_lixeira_raca = 0"); 
-                    $num_row_raca = mysqli_num_rows($tbl_raca);
+                    $desc_raca = isset($mapa_raca[$codigo_raca]) ? $mapa_raca[$codigo_raca] : '';
 
-                    if ($num_row_raca!=0) {
-                        $reg_raca = mysqli_fetch_object($tbl_raca);
-                        $desc_raca = $reg_raca->tab_descricao_raca;
-                    }
-                    else {
-                        $desc_raca = '';
-                    }
+                    $numero_partos = isset($mapa_partos[$codigo_animal_id]) ? (int)$mapa_partos[$codigo_animal_id] : 0;
 
-                    $tbl_filhos = mysqli_query($conector,"select * from tbl_animais 
-                        where tbl_animal_codigo_mae='$codigo_animal_id'
-                        order by tbl_animal_codigo_numerico ASC"); 
-
-                    $numero_partos = mysqli_num_rows($tbl_filhos);
-
-                    $tbl_aborto = mysqli_query($conector, "SELECT * FROM tbl_movimentacao_estoque 
-                        WHERE tbl_mov_estoque_codigo_mae='$codigo_animal_id' AND 
-                              tbl_mov_estoque_codigo_id_animal=999999999 AND
-                              tbl_mov_estoque_entrada_saida='A' AND 
-                              (tbl_mov_estoque_tipo_movimentacao='A' OR
-                               tbl_mov_estoque_tipo_movimentacao='B') 
-                        ORDER BY tbl_mov_estoque_nascimento DESC");
-
-                    $numero_abortos = mysqli_num_rows($tbl_aborto);
+                    $numero_abortos = isset($mapa_abortos[$codigo_animal_id]) ? (int)$mapa_abortos[$codigo_animal_id] : 0;
                 }
 
 
@@ -487,14 +566,14 @@
                 echo '<td>'.$idade_ano_mes.'</td>';
                 echo '<td>'.$data_prenhes_edi.'</td>';
                 echo '<td>'.$data_previsao_parto_edi.'</td>';
-                echo "<td width='15%'>";    
+                echo "<td width='15%'>";
                 echo "<div class='btn-group'>";
                 echo "<a class='btn' href='#'>
                     <i class='icon_trash_alt' data-toggle='tooltip' data-placement='left' title='Excluir essa fêmea' onClick='excluir_matriz_lista(\"{$cobertura_id}\",\"{$numero_item}\",\"{$codigo_animal_id}\",\"{$codigo_animal}\")'>
                             </i></a>";
                 echo "</div>";
                 echo "</td>";
-                
+
                 echo '</tr>';
             }
         }
@@ -516,14 +595,14 @@
         <th> Previsão Parto</th>
         <th><i class="icon_cogs"></i> Ações</th>
         </tr>';
-        
+
         echo '</thead>';
         echo '</table>';
         echo '</section>';
     }
     else { // Tipo Registro Descarte
         echo '
-        <div class="row">  
+        <div class="row">
             <div class="form-group col-md-5">
                 <label class="control-label">&nbsp;</label>
                 <p onclick="modal_inserir_nova_matriz_descarte()" style="color: #1E90FF; cursor: pointer; font-size: 15px;">
@@ -536,21 +615,78 @@
         </div>';
 
         echo '<table class="table table-striped table-advance table-hover" id="tabela_lista_matrizes_descarte" style="font-size: 12px">';
-                              
+
         echo '<tbody>';
 
-        $tbl_matrizes = mysqli_query($conector, "SELECT * FROM tbl_animais 
+        $tbl_matrizes = mysqli_query($conector, "SELECT tbl_animal_codigo_id, tbl_animal_codigo_alfa,
+                tbl_animal_codigo_numerico, tab_descricao_raca, tbl_animal_data_nascimento, tbl_animal_baixado_em
+            FROM tbl_animais
             INNER JOIN tabela_racas
                     ON tab_codigo_raca = tbl_animal_codigo_raca
-            WHERE tbl_animal_ativo='S' AND 
-                  tbl_animal_codigo_fazenda = '$local' AND 
+            WHERE tbl_animal_ativo='S' AND
+                  tbl_animal_codigo_fazenda = '$local_sql' AND
                   tbl_animal_descarte_reproducao='S'
             ORDER BY tbl_animal_codigo_numerico ASC");
 
-        $num_rows_matrizes = mysqli_num_rows($tbl_matrizes);
+        // Carrega o resultado em memória e coleta os códigos de animal para consultas em lote
+        $rows_matrizes = array();
+        $ids_animal = array();
+
+        while ($reg_matrizes = mysqli_fetch_object($tbl_matrizes)){
+            $rows_matrizes[] = $reg_matrizes;
+            if ($reg_matrizes->tbl_animal_codigo_id !== null) {
+                $ids_animal[$reg_matrizes->tbl_animal_codigo_id] = true;
+            }
+        }
+
+        $num_rows_matrizes = count($rows_matrizes);
+
+        // Mapas: nº de partos (filhos), nº de abortos e último item de cobertura de descarte
+        $mapa_partos = array();
+        $mapa_abortos = array();
+        $mapa_ultimo_item = array();
+
+        if (count($ids_animal) > 0) {
+            $lista_animal = lm_in_list($conector, array_keys($ids_animal));
+
+            $q_partos = mysqli_query($conector, "SELECT tbl_animal_codigo_mae, COUNT(*) AS c FROM tbl_animais
+                WHERE tbl_animal_codigo_mae IN ($lista_animal)
+                GROUP BY tbl_animal_codigo_mae");
+            while ($r = mysqli_fetch_object($q_partos)) {
+                $mapa_partos[$r->tbl_animal_codigo_mae] = $r->c;
+            }
+
+            $q_abortos = mysqli_query($conector, "SELECT tbl_mov_estoque_codigo_mae, COUNT(*) AS c
+                FROM tbl_movimentacao_estoque
+                WHERE tbl_mov_estoque_codigo_mae IN ($lista_animal) AND
+                      tbl_mov_estoque_codigo_id_animal=999999999 AND
+                      tbl_mov_estoque_entrada_saida='A' AND
+                      (tbl_mov_estoque_tipo_movimentacao='A' OR
+                       tbl_mov_estoque_tipo_movimentacao='B')
+                GROUP BY tbl_mov_estoque_codigo_mae");
+            while ($r = mysqli_fetch_object($q_abortos)) {
+                $mapa_abortos[$r->tbl_mov_estoque_codigo_mae] = $r->c;
+            }
+
+            $q_itens = mysqli_query($conector, "SELECT tbl_ite_cobertura_codigo_id_animal, tbl_cobertura_id,
+                    tbl_ite_cobertura_numero_item, tbl_ite_cobertura_codigo_animal, tbl_ite_cobertura_data_emissao
+                FROM tbl_item_cobertura
+                INNER JOIN tbl_cobertura
+                    ON tbl_cobertura_id = tbl_ite_cobertura_numero_id
+                WHERE tbl_cobertura_lixeira=0 AND
+                  tbl_cobertura_controle='D' AND
+                  tbl_ite_cobertura_codigo_id_animal IN ($lista_animal)
+                ORDER BY tbl_cobertura_id DESC");
+            while ($r = mysqli_fetch_object($q_itens)) {
+                // Como está ordenado por tbl_cobertura_id DESC, a 1ª ocorrência de cada animal é a mais recente (equivale ao LIMIT 1 original)
+                if (!isset($mapa_ultimo_item[$r->tbl_ite_cobertura_codigo_id_animal])) {
+                    $mapa_ultimo_item[$r->tbl_ite_cobertura_codigo_id_animal] = $r;
+                }
+            }
+        }
 
         if ($num_rows_matrizes!=0) {
-            while ($reg_matrizes = mysqli_fetch_object($tbl_matrizes)){
+            foreach ($rows_matrizes as $reg_matrizes){
                 $codigo_animal_id = $reg_matrizes->tbl_animal_codigo_id;
                 $codigo_alfa = $reg_matrizes->tbl_animal_codigo_alfa;
                 $codigo_numerico = intval($reg_matrizes->tbl_animal_codigo_numerico);
@@ -566,7 +702,7 @@
                     $data_acompanhamento_calculo = date("Y-m-d");
                 }
 
-                $date = new DateTime($data_nascimento); 
+                $date = new DateTime($data_nascimento);
                 $idade_acompanhamento = $date->diff(new DateTime($data_acompanhamento_calculo));
                 $idade_acompanhamento_mostra_anos = $idade_acompanhamento->format('%Y')*12;
                 $idade_acompanhamento_mostra_meses = $idade_acompanhamento->format('%m');
@@ -576,33 +712,13 @@
 
                 $numero_abortos = 0;
                 $numero_abortos = 0;
-                    
-                $tbl_filhos = mysqli_query($conector,"SELECT * FROM tbl_animais 
-                    WHERE tbl_animal_codigo_mae='$codigo_animal_id'"); 
 
-                $numero_partos = mysqli_num_rows($tbl_filhos);
+                $numero_partos = isset($mapa_partos[$codigo_animal_id]) ? (int)$mapa_partos[$codigo_animal_id] : 0;
 
-                $tbl_aborto = mysqli_query($conector, "SELECT * FROM tbl_movimentacao_estoque 
-                    WHERE tbl_mov_estoque_codigo_mae='$codigo_animal_id' AND 
-                          tbl_mov_estoque_codigo_id_animal=999999999 AND
-                          tbl_mov_estoque_entrada_saida='A' AND 
-                          (tbl_mov_estoque_tipo_movimentacao='A' OR
-                           tbl_mov_estoque_tipo_movimentacao='B')");
+                $numero_abortos = isset($mapa_abortos[$codigo_animal_id]) ? (int)$mapa_abortos[$codigo_animal_id] : 0;
 
-                $numero_abortos = mysqli_num_rows($tbl_aborto);
-
-                $tbl_item_cobertura = mysqli_query($conector, "SELECT * FROM tbl_item_cobertura
-                    INNER JOIN tbl_cobertura 
-                        ON tbl_cobertura_id = tbl_ite_cobertura_numero_id 
-                    WHERE tbl_cobertura_lixeira=0 AND 
-                      tbl_cobertura_controle='D' AND 
-                      tbl_ite_cobertura_codigo_id_animal='$codigo_animal_id'
-                    ORDER BY tbl_cobertura_id DESC LIMIT 1");        
-
-                $num_rows_itens = mysqli_num_rows($tbl_item_cobertura);
-
-                if ($num_rows_itens!=0) {
-                    $reg_itens = mysqli_fetch_object($tbl_item_cobertura);
+                if (isset($mapa_ultimo_item[$codigo_animal_id])) {
+                    $reg_itens = $mapa_ultimo_item[$codigo_animal_id];
                     $cobertura_id = $reg_itens->tbl_cobertura_id;
                     $numero_item = $reg_itens->tbl_ite_cobertura_numero_item;
                     $codigo_animal = $reg_itens->tbl_ite_cobertura_codigo_animal;
@@ -630,7 +746,7 @@
                 echo '<td>'.$numero_partos.'</td>';
                 echo '<td>'.$numero_abortos.'</td>';
                 echo '<td>'.$idade_ano_mes.'</td>';
-                echo "<td width='15%'>";    
+                echo "<td width='15%'>";
                 echo "<div class='btn-group'>";
                 echo "<a class='btn' href='#'>
                         <i class='icon_trash_alt' data-toggle='tooltip' data-placement='left' title='Excluir essa fêmea' onClick='excluir_matriz_lista(\"{$cobertura_id}\",\"{$numero_item}\",\"{$codigo_animal_id}\",\"{$codigo_animal}\")'>
@@ -656,7 +772,7 @@
         <th> Idade mês/ano</th>
         <th><i class="icon_cogs"></i> Ações</th>
         </tr>';
-        
+
         echo '</thead>';
         echo '</table>';
         echo '</section>';
@@ -672,6 +788,6 @@
 </script>
 
 </body>
-</html> 
-          
-                
+</html>
+
+
