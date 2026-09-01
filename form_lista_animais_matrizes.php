@@ -769,18 +769,11 @@
 
             $femea_selecionada = '';
 
-            $tbl_selecao = mysqli_query($conector, "SELECT * FROM tbl_cobertura
-                INNER JOIN tbl_item_cobertura 
-                        ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
-                WHERE tbl_cobertura_lixeira=0 AND 
-                      tbl_ite_cobertura_codigo_id_animal = '$codigo_id' AND 
-                      (tbl_cobertura_controle = 'C' OR tbl_cobertura_controle = 'M')
-                ORDER BY tbl_cobertura_incluido_em DESC LIMIT 1");
+            $reg_selecao = isset($GLOBALS['mapa_ultima_selecao'][$codigo_id]) ? $GLOBALS['mapa_ultima_selecao'][$codigo_id] : null;
 
-            $selecionada_estacao = mysqli_num_rows($tbl_selecao);
+            $selecionada_estacao = ($reg_selecao !== null) ? 1 : 0;
 
             if ($selecionada_estacao!=0) {
-                $reg_selecao = mysqli_fetch_object($tbl_selecao);
                 $femea_selecionada = 'S';
 
                 $diagnostico_selecao = $reg_selecao->tbl_ite_cobertura_resultado_diagnostico;
