@@ -435,7 +435,199 @@
       //  while ($reg_animal = mysqli_fetch_object($sql)){
 
     mysqli_free_result($tbl_animais);
-    unset($tbl_animais);    
+    unset($tbl_animais);
+
+    // ===================================================================
+    // PRÉ-CARGA EM LOTE — elimina as consultas repetidas dentro do foreach.
+    // Nenhuma regra de negócio é alterada: os mapas abaixo apenas substituem
+    // consultas que antes rodavam uma vez por fêmea (ou várias) por poucas
+    // consultas equivalentes com IN(...) / GROUP BY.
+    // ===================================================================
+    $ids_femeas_lista = array();
+    foreach ($dados_animais as $rf) {
+        if ($rf->tbl_animal_codigo_id !== null && $rf->tbl_animal_codigo_id !== '') {
+            $ids_femeas_lista[$rf->tbl_animal_codigo_id] = true;
+        }
+    }
+
+    $GLOBALS['mapa_ultimo_filho']  = array(); // último filho (maior codigo_id) por mãe
+    $GLOBALS['mapa_qtd_filhos']    = array(); // nº de filhos por mãe
+    $GLOBALS['mapa_ultima_selecao']= array(); // última cobertura C/M por fêmea
+    $GLOBALS['mapa_cob_estacao']   = array(); // nº coberturas P/N nesta estação por fêmea
+    $GLOBALS['mapa_qtd_abortos_a'] = array(); // nº movimentações entrada_saida='A' por mãe
+    $GLOBALS['cache_aborto']       = array(); // aborto (A/B) mais recente por mãe
+    $GLOBALS['cache_natimorto']    = array(); // natimorto (saída 'M') mais recente por mãe
+    $GLOBALS['mapa_pai_semem']     = array();
+    $GLOBALS['mapa_pai_animal']    = array();
+    $GLOBALS['cache_carregado']    = true;
+
+    $codigos_pais_ult_filho = array();
+
+    if (!empty($ids_femeas_lista)) {
+        $in_femeas = flam_in_list($conector, array_keys($ids_femeas_lista));
+
+        // Último filho por mãe (ORDER BY codigo_id DESC -> 1ª ocorrência = LIMIT 1 original)
+        $q = mysqli_query($conector, "SELECT tbl_animal_codigo_mae, tbl_animal_codigo_id,
+                tbl_animal_codigo_pai, tbl_animal_codigo_numerico, tbl_animal_data_nascimento,
+                tbl_animal_ativo, tbl_animal_situacao, tbl_animal_baixado_em
+            FROM tbl_animais
+            WHERE tbl_animal_codigo_mae IN ($in_femeas)
+            ORDER BY tbl_animal_codigo_id DESC");
+        while ($r = mysqli_fetch_object($q)) {
+            if (!isset($GLOBALS['mapa_ultimo_filho'][$r->tbl_animal_codigo_mae])) {
+                $GLOBALS['mapa_ultimo_filho'][$r->tbl_animal_codigo_mae] = $r;
+                if ($r->tbl_animal_codigo_pai !== null && $r->tbl_animal_codigo_pai !== '') {
+                    $codigos_pais_ult_filho[$r->tbl_animal_codigo_pai] = true;
+                }
+            }
+        }
+
+        // Nº de filhos por mãe
+        $q = mysqli_query($conector, "SELECT tbl_animal_codigo_mae, COUNT(*) AS c
+            FROM tbl_animais WHERE tbl_animal_codigo_mae IN ($in_femeas)
+            GROUP BY tbl_animal_codigo_mae");
+        while ($r = mysqli_fetch_object($q)) {
+            $GLOBALS['mapa_qtd_filhos'][$r->tbl_animal_codigo_mae] = (int)$r->c;
+        }
+
+        // Última seleção (cobertura C ou M) por fêmea
+        $q = mysqli_query($conector, "SELECT tbl_ite_cobertura_codigo_id_animal,
+                tbl_ite_cobertura_resultado_diagnostico, tbl_cobertura_controle,
+                tbl_ite_cobertura_nascido, tbl_cobertura_codigo_estacao_monta
+            FROM tbl_cobertura
+            INNER JOIN tbl_item_cobertura
+                    ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
+            WHERE tbl_cobertura_lixeira=0 AND
+                  tbl_ite_cobertura_codigo_id_animal IN ($in_femeas) AND
+                  (tbl_cobertura_controle = 'C' OR tbl_cobertura_controle = 'M')
+            ORDER BY tbl_cobertura_incluido_em DESC");
+        while ($r = mysqli_fetch_object($q)) {
+            if (!isset($GLOBALS['mapa_ultima_selecao'][$r->tbl_ite_cobertura_codigo_id_animal])) {
+                $GLOBALS['mapa_ultima_selecao'][$r->tbl_ite_cobertura_codigo_id_animal] = $r;
+            }
+        }
+
+        // Nº de coberturas com diagnóstico P/N nesta estação e local, por fêmea
+        $q = mysqli_query($conector, "SELECT tbl_ite_cobertura_codigo_id_animal, COUNT(*) AS c
+            FROM tbl_cobertura
+            INNER JOIN tbl_item_cobertura
+                    ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
+            WHERE tbl_cobertura_lixeira=0 AND
+                  tbl_cobertura_codigo_local = '$local' AND
+                  tbl_cobertura_codigo_estacao_monta = '$id_parametro_estacao' AND
+                  tbl_ite_cobertura_codigo_id_animal IN ($in_femeas) AND
+                  (tbl_ite_cobertura_resultado_diagnostico='P' OR
+                   tbl_ite_cobertura_resultado_diagnostico='N')
+            GROUP BY tbl_ite_cobertura_codigo_id_animal");
+        while ($r = mysqli_fetch_object($q)) {
+            $GLOBALS['mapa_cob_estacao'][$r->tbl_ite_cobertura_codigo_id_animal] = (int)$r->c;
+        }
+
+        // Nº de movimentações de aborto (entrada_saida='A') por mãe — usado em ImprimirFemea
+        $q = mysqli_query($conector, "SELECT tbl_mov_estoque_codigo_mae, COUNT(*) AS c
+            FROM tbl_movimentacao_estoque
+            WHERE tbl_mov_estoque_codigo_mae IN ($in_femeas) AND
+                  tbl_mov_estoque_codigo_id_animal=999999999 AND
+                  tbl_mov_estoque_entrada_saida='A'
+            GROUP BY tbl_mov_estoque_codigo_mae");
+        while ($r = mysqli_fetch_object($q)) {
+            $GLOBALS['mapa_qtd_abortos_a'][$r->tbl_mov_estoque_codigo_mae] = (int)$r->c;
+        }
+
+        // Cache do aborto (A/B) mais recente por mãe — usado por VerAborto()
+        $q = mysqli_query($conector, "SELECT tbl_mov_estoque_codigo_mae, tbl_mov_estoque_nascimento
+            FROM tbl_movimentacao_estoque
+            WHERE tbl_mov_estoque_codigo_mae IN ($in_femeas) AND
+                  tbl_mov_estoque_codigo_id_animal=999999999 AND
+                  tbl_mov_estoque_entrada_saida='A' AND
+                  (tbl_mov_estoque_tipo_movimentacao='A' OR
+                   tbl_mov_estoque_tipo_movimentacao='B')
+            ORDER BY tbl_mov_estoque_nascimento DESC");
+        while ($r = mysqli_fetch_object($q)) {
+            if (!isset($GLOBALS['cache_aborto'][$r->tbl_mov_estoque_codigo_mae])) {
+                $GLOBALS['cache_aborto'][$r->tbl_mov_estoque_codigo_mae] = $r->tbl_mov_estoque_nascimento;
+            }
+        }
+
+        // Cache do natimorto (saída 'M') mais recente por mãe — usado por VerNatimorto() e no laço principal
+        $q = mysqli_query($conector, "SELECT tbl_mov_estoque_codigo_mae, tbl_mov_estoque_nascimento
+            FROM tbl_movimentacao_estoque
+            WHERE tbl_mov_estoque_codigo_mae IN ($in_femeas) AND
+                  tbl_mov_estoque_codigo_id_animal=999999999 AND
+                  tbl_mov_estoque_entrada_saida='S' AND
+                  tbl_mov_estoque_tipo_movimentacao='M'
+            ORDER BY tbl_mov_estoque_nascimento DESC");
+        while ($r = mysqli_fetch_object($q)) {
+            if (!isset($GLOBALS['cache_natimorto'][$r->tbl_mov_estoque_codigo_mae])) {
+                $GLOBALS['cache_natimorto'][$r->tbl_mov_estoque_codigo_mae] = $r->tbl_mov_estoque_nascimento;
+            }
+        }
+    }
+
+    // Descrição do pai (sêmen ou animal) do último filho — em lote
+    if (!empty($codigos_pais_ult_filho)) {
+        $in_pais = flam_in_list($conector, array_keys($codigos_pais_ult_filho));
+        $q = mysqli_query($conector, "SELECT tbl_semem_codigo_id, tbl_semem_nome
+            FROM tbl_semem WHERE tbl_semem_codigo_id IN ($in_pais)");
+        while ($r = mysqli_fetch_object($q)) {
+            $GLOBALS['mapa_pai_semem'][$r->tbl_semem_codigo_id] = $r->tbl_semem_nome;
+        }
+        $q = mysqli_query($conector, "SELECT tbl_animal_codigo_id, tbl_animal_codigo_alfa,
+                tbl_animal_codigo_numerico
+            FROM tbl_animais WHERE tbl_animal_codigo_id IN ($in_pais)");
+        while ($r = mysqli_fetch_object($q)) {
+            $GLOBALS['mapa_pai_animal'][$r->tbl_animal_codigo_id] = $r;
+        }
+    }
+
+    // Select de grupos (idêntico para todas as fêmeas IATF) — montado uma única vez
+    $GLOBALS['opcoes_grupo_iatf'] = '';
+    if ($tipo_registro=='I') {
+        $GLOBALS['opcoes_grupo_iatf'] = '<option value="000">...</option>';
+
+        $grupo_estacao = mysqli_query($conector, "SELECT tbl_grupo_id, tbl_grupo_descricao
+            FROM tbl_grupo_estacao_monta
+            WHERE tbl_grupo_codigo_estacao_monta ='$id_parametro_estacao' AND
+                  tbl_grupo_codigo_local = '$local'
+            ORDER BY tbl_grupo_id  ASC");
+
+        if (mysqli_num_rows($grupo_estacao)!=0) {
+            // coberturas por grupo (uma consulta para todos os grupos da estação/local)
+            $mapa_cob_grupo = array();
+            $qcg = mysqli_query($conector, "SELECT tbl_cobertura_codigo_grupo,
+                    tbl_cobertura_qtd_animais, tbl_cobertura_protocoloiatf
+                FROM tbl_cobertura
+                WHERE tbl_cobertura_lixeira=0 AND
+                      tbl_cobertura_codigo_estacao_monta='$id_parametro_estacao' AND
+                      tbl_cobertura_codigo_local='$local'");
+            while ($rcg = mysqli_fetch_object($qcg)) {
+                if (!isset($mapa_cob_grupo[$rcg->tbl_cobertura_codigo_grupo])) {
+                    $mapa_cob_grupo[$rcg->tbl_cobertura_codigo_grupo] = array('n' => 0, 'reg' => $rcg);
+                }
+                $mapa_cob_grupo[$rcg->tbl_cobertura_codigo_grupo]['n']++;
+            }
+
+            while ($reg_grupo = mysqli_fetch_object($grupo_estacao)){
+                $codigo_grupo = $reg_grupo->tbl_grupo_id;
+                $desc_grupo = $reg_grupo->tbl_grupo_descricao;
+
+                $num_rows_cobertura = isset($mapa_cob_grupo[$codigo_grupo]) ? $mapa_cob_grupo[$codigo_grupo]['n'] : 0;
+
+                if ($num_rows_cobertura==0 || $codigo_grupo==999) {
+                    $GLOBALS['opcoes_grupo_iatf'] .= '<option value="'.$codigo_grupo.'">' .$desc_grupo. '</option>';
+                }
+                else if ($num_rows_cobertura!=0) {
+                    $reg_cobertura = $mapa_cob_grupo[$codigo_grupo]['reg'];
+                    $qtd_animais = trim($reg_cobertura->tbl_cobertura_qtd_animais, "0");
+                    $protocolo_iatf = $reg_cobertura->tbl_cobertura_protocoloiatf;
+
+                    if ($protocolo_iatf==0) {
+                        $GLOBALS['opcoes_grupo_iatf'] .= '<option value="'.$codigo_grupo.'">' .$desc_grupo. ' - ' . $qtd_animais .' Fêmea(s)</option>';
+                    }
+                }
+            }
+        }
+    }
 
     if (!empty($dados_animais)) {
         foreach ($dados_animais as $reg_animal) {
