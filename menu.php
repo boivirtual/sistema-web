@@ -866,7 +866,7 @@ function tratarDescricaoVersao($texto) {
                             ?>
 
                             <div class="col-xs-12 col-sm-7 col-md-7">
-                                <div class="card card-title reproducao" style="height: 340px;">
+                                <div class="card card-title reproducao" style="height: 370px;">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <span class="titulo_gray">
