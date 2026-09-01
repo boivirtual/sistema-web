@@ -1297,17 +1297,7 @@ function ImprimirFemea($conector, $animais_listados, $codigo_id, $codigo_alfa, $
         $data_aptidao_edi = date("d/m/Y", strtotime($data_aborto_natimorto . "+ 35 days"));
     }
 
-    $tbl_cobertura = mysqli_query($conector, "SELECT * FROM tbl_cobertura
-        INNER JOIN tbl_item_cobertura 
-                ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
-        WHERE tbl_cobertura_lixeira=0 AND 
-              tbl_cobertura_codigo_local = '$local' AND 
-              tbl_cobertura_codigo_estacao_monta = '$id_parametro_estacao' AND 
-              tbl_ite_cobertura_codigo_id_animal='$codigo_id' AND
-              (tbl_ite_cobertura_resultado_diagnostico='P' or
-               tbl_ite_cobertura_resultado_diagnostico='N')");
-
-    $coberturas_estacao = mysqli_num_rows($tbl_cobertura);
+    $coberturas_estacao = isset($GLOBALS['mapa_cob_estacao'][$codigo_id]) ? $GLOBALS['mapa_cob_estacao'][$codigo_id] : 0;
 
     if ($tipo_registro=='I') {
         echo "<tr>";
