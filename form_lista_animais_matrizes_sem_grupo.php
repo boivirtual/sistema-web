@@ -329,25 +329,14 @@
                     str_pad($idade_acompanhamento->format('%m') , 2 , '0' , STR_PAD_LEFT) . ' m';
                 }
 
-                $tbl_cobertura = mysqli_query($conector, "SELECT * FROM tbl_cobertura
-                        INNER JOIN tbl_item_cobertura 
-                                on tbl_ite_cobertura_numero_id = tbl_cobertura_id
-                        WHERE tbl_cobertura_lixeira=0 AND 
-                              tbl_cobertura_codigo_local = '$local' AND 
-                              tbl_cobertura_codigo_estacao_monta='$id_parametro_estacao' AND 
-                              tbl_ite_cobertura_codigo_id_animal='$codigo_id' AND 
-                              (tbl_ite_cobertura_resultado_diagnostico='P' or 
-                               tbl_ite_cobertura_resultado_diagnostico='N')");
+                $coberturas_estacao = isset($GLOBALS['sg_cob_estacao'][$codigo_id]) ? $GLOBALS['sg_cob_estacao'][$codigo_id] : 0;
 
-                $coberturas_estacao = mysqli_num_rows($tbl_cobertura);
+                $numero_partos = isset($GLOBALS['sg_qtd_filhos'][$codigo_id]) ? (int)$GLOBALS['sg_qtd_filhos'][$codigo_id] : 0;
 
-                $tbl_filhos = mysqli_query($conector,"SELECT * FROM tbl_animais 
-                                    WHERE tbl_animal_codigo_mae='$codigo_id'
-                                    ORDER BY tbl_animal_codigo_numerico ASC"); 
-                $numero_partos = mysqli_num_rows($tbl_filhos);
+                $reg_filho_ult = isset($GLOBALS['sg_ultimo_filho'][$codigo_id]) ? $GLOBALS['sg_ultimo_filho'][$codigo_id] : null;
 
                 if ($numero_partos!=0) {
-                    while ($reg_filhos = mysqli_fetch_object($tbl_filhos)){
+                    foreach (array_filter(array($reg_filho_ult)) as $reg_filhos){
                         $codigo_pai=$reg_filhos->tbl_animal_codigo_pai;
                         $bezerro_ativo = $reg_filhos->tbl_animal_ativo;
                         $ultimo_parto=new DateTime($reg_filhos->tbl_animal_data_nascimento);
