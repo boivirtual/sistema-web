@@ -707,14 +707,11 @@
             // VERIFICA SE ANIMAL TEM PARTO A MENOS DE 35 DIAS
             $data_nasc_bezerro = '0000-00-00';
 
-            $tbl_filhos = mysqli_query($conector,"SELECT * FROM tbl_animais 
-                WHERE tbl_animal_codigo_mae='$codigo_id'
-                ORDER BY tbl_animal_codigo_id  DESC LIMIT 1"); 
+            $reg_parto = isset($GLOBALS['mapa_ultimo_filho'][$codigo_id]) ? $GLOBALS['mapa_ultimo_filho'][$codigo_id] : null;
 
-            $numero_rows_partos = mysqli_num_rows($tbl_filhos);
+            $numero_rows_partos = ($reg_parto !== null) ? 1 : 0;
 
             if ($numero_rows_partos!=0) {
-                $reg_parto = mysqli_fetch_object($tbl_filhos);
                 $codigo_bezerro = $reg_parto->tbl_animal_codigo_numerico;
                 $data_nasc_bezerro=$reg_parto->tbl_animal_data_nascimento;
                 $bezerro_ativo = $reg_parto->tbl_animal_ativo;
