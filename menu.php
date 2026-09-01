@@ -268,6 +268,25 @@ function tratarDescricaoVersao($texto) {
                 justify-items: center;
                 text-align: center;
             }
+
+            .agenda-toolbar-nav {
+                font-size: 16px;
+            }
+
+            .agenda-toolbar-nav .btn,
+            .agenda-toolbar-nav i {
+                font-size: 18px;
+            }
+
+            #agenda_periodo_titulo {
+                font-size: 16px;
+            }
+
+            .agenda-view-switch,
+            .agenda-dashboard-filtro {
+                justify-self: start;
+                text-align: left;
+            }
         }
 
         @media (min-width: 400px) {
