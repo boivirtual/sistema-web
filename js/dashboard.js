@@ -623,13 +623,11 @@ function listar_situacao_reprodutiva_monta() {
         }
 
         if (total_femeas > 0) {
-            var prenhez_geral = (total_prenhas_geral / total_femeas * 100).toFixed(2).replace('.', ',');
-
             html += '<tr>';
-            html += '<td width="29%" style="border-top: 1px solid #d0d7de; border-bottom: 1px solid transparent; font-weight: bold;">TOTAL</td>';
+            html += '<td width="29%" style="border-top: 1px solid #d0d7de; border-bottom: 1px solid transparent; font-weight: bold;"></td>';
             html += '<td width="8%" style="text-align: center; border-top: 1px solid #d0d7de; border-bottom: 1px solid transparent; font-weight: bold;">' + total_femeas + '</td>';
             html += '<td width="10%" style="text-align: center; border-top: 1px solid #d0d7de; border-bottom: 1px solid transparent; font-weight: bold;">' + total_prenhas_geral + '</td>';
-            html += '<td width="12%" style="text-align: center; border-top: 1px solid #d0d7de; border-bottom: 1px solid transparent; font-weight: bold;" class="fontes_mapa_ha">' + prenhez_geral + ' %</td>';
+            html += '<td width="12%" style="text-align: center; border-top: 1px solid #d0d7de; border-bottom: 1px solid transparent; font-weight: bold;" class="fontes_mapa_ha"></td>';
             html += '<td width="8%" style="text-align: center; border-top: 1px solid #d0d7de; border-bottom: 1px solid transparent; font-weight: bold;">' + total_diagnostico + '</td>';
             html += '</tr>';
         }
