@@ -2205,10 +2205,11 @@
         $valor[34] = $animal['codigoPaiAlfaNumerico'];
         $valor[35] = $animal['observacao'];
         $valor[36] = $animal['idadeMeses'];
+        $valor[37] = $animal['pesoDesmama'];
 
         $str=$valor[0] . '<|>';
 
-        for ($i=1; $i<=36; $i++){
+        for ($i=1; $i<=37; $i++){
             $str.=$valor[$i] . '<|>';
         }
         echo $str; 
