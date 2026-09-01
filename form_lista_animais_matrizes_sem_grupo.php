@@ -370,63 +370,47 @@
                     $descricao_pai = '';
                 }
 
-                // verifica NatMorto
-                $tbl_natimorto = mysqli_query($conector, "SELECT * FROM tbl_movimentacao_estoque 
-                    WHERE tbl_mov_estoque_codigo_mae='$codigo_id' AND 
-                          tbl_mov_estoque_codigo_id_animal=999999999 AND
-                          tbl_mov_estoque_entrada_saida='S' AND 
-                          tbl_mov_estoque_tipo_movimentacao='M'
-                    ORDER BY tbl_mov_estoque_nascimento DESC");
-
-                $num_natimorto = mysqli_num_rows($tbl_natimorto);
+                // verifica NatMorto (cache pré-carregado: quantidade e nascimento mais recente)
+                $nm = isset($GLOBALS['sg_natimorto'][$codigo_id]) ? $GLOBALS['sg_natimorto'][$codigo_id] : null;
+                $num_natimorto = ($nm !== null) ? (int)$nm['n'] : 0;
 
                 if ($num_natimorto==0) {
                     $data_natimorto = '0000-00-00';
                 }
                 else {
-                    $reg_natimorto = mysqli_fetch_object($tbl_natimorto);
-
-                    $data_natimorto=$reg_natimorto->tbl_mov_estoque_nascimento;
+                    $data_natimorto = $nm['ult'];
                     $descricao_pai = '';
-                    $numero_partos+=$num_natimorto; 
+                    $numero_partos+=$num_natimorto;
                 }
 
-                // verifica Aborto/Absorção
-                $tbl_aborto = mysqli_query($conector, "SELECT * FROM tbl_movimentacao_estoque 
-                    WHERE tbl_mov_estoque_codigo_mae='$codigo_id' AND 
-                          tbl_mov_estoque_codigo_id_animal=999999999 AND
-                          tbl_mov_estoque_entrada_saida='A' AND 
-                          (tbl_mov_estoque_tipo_movimentacao='A' OR
-                           tbl_mov_estoque_tipo_movimentacao='B') 
-                    ORDER BY tbl_mov_estoque_nascimento DESC");
-
-                $num_aborto = mysqli_num_rows($tbl_aborto);
+                // verifica Aborto/Absorção (cache pré-carregado: nascimento mais recente)
+                $ab = isset($GLOBALS['sg_aborto'][$codigo_id]) ? $GLOBALS['sg_aborto'][$codigo_id] : null;
+                $num_aborto = ($ab !== null) ? 1 : 0;
 
                 if ($num_aborto==0) {
                     $data_aborto = '0000-00-00';
                 }
                 else {
-                    $reg_aborto = mysqli_fetch_object($tbl_aborto);
-                    $data_aborto=$reg_aborto->tbl_mov_estoque_nascimento;
+                    $data_aborto = $ab;
                     $descricao_pai = '';
                 }
 
                 if ($data_natimorto>$ultimo_parto || $data_aborto>$ultimo_parto) {
                     if ($data_natimorto!='0000-00-00') {
-                        $ultimo_parto=new DateTime($reg_natimorto->tbl_mov_estoque_nascimento);
+                        $ultimo_parto=new DateTime($data_natimorto);
                         $ultimo_parto_edi = $ultimo_parto->format('d/m/Y');
 
-                        $data_aptidao_edi = date("d/m/Y", strtotime($reg_natimorto->tbl_mov_estoque_nascimento . "+ 35 days"));
+                        $data_aptidao_edi = date("d/m/Y", strtotime($data_natimorto . "+ 35 days"));
 
-                        $ultimo_parto=$reg_natimorto->tbl_mov_estoque_nascimento;
+                        $ultimo_parto=$data_natimorto;
                     }
                     else if ($data_aborto!='000-00-00') {
-                        $ultimo_parto=new DateTime($reg_aborto->tbl_mov_estoque_nascimento);
+                        $ultimo_parto=new DateTime($data_aborto);
                         $ultimo_parto_edi = $ultimo_parto->format('d/m/Y');
 
-                        $ultimo_parto=$reg_aborto->tbl_mov_estoque_nascimento;
+                        $ultimo_parto=$data_aborto;
 
-                        $data_aptidao_edi = date("d/m/Y", strtotime($reg_aborto->tbl_mov_estoque_nascimento . "+ 35 days"));
+                        $data_aptidao_edi = date("d/m/Y", strtotime($data_aborto . "+ 35 days"));
                     }
                 }
 
