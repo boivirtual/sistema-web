@@ -1230,27 +1230,15 @@ function ImprimirFemea($conector, $animais_listados, $codigo_id, $codigo_alfa, $
         $ultimo_parto = '0000-00-00';
     }
 
-    $tab_pai = mysqli_query($conector, "SELECT * FROM tbl_semem 
-        WHERE tbl_semem_codigo_id='$codigo_pai'");
-
-    $num_rows_pai = mysqli_num_rows($tab_pai);
-
-    if ($num_rows_pai!=0){
-        $reg = mysqli_fetch_object($tab_pai);
-        $descricao_pai = $reg->tbl_semem_nome;
+    if (isset($GLOBALS['mapa_pai_semem'][$codigo_pai])) {
+        $descricao_pai = $GLOBALS['mapa_pai_semem'][$codigo_pai];
+    }
+    else if (isset($GLOBALS['mapa_pai_animal'][$codigo_pai])) {
+        $reg = $GLOBALS['mapa_pai_animal'][$codigo_pai];
+        $descricao_pai = $reg->tbl_animal_codigo_alfa. ' ' . $reg->tbl_animal_codigo_numerico;
     }
     else {
-        $tab_pai = mysqli_query($conector, "SELECT * FROM tbl_animais WHERE tbl_animal_codigo_id='$codigo_pai'");
-
-        $num_rows_pai = mysqli_num_rows($tab_pai);
-
-        if ($num_rows_pai!=0){
-            $reg = mysqli_fetch_object($tab_pai);
-            $descricao_pai = $reg->tbl_animal_codigo_alfa. ' ' . $reg->tbl_animal_codigo_numerico;
-        }
-        else {
-            $descricao_pai = '';
-        }
+        $descricao_pai = '';
     }
 
     $tbl_aborto = mysqli_query($conector, "SELECT * FROM tbl_movimentacao_estoque 
