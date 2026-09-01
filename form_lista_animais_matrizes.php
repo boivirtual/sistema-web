@@ -1183,20 +1183,15 @@ function ImprimirFemea($conector, $animais_listados, $codigo_id, $codigo_alfa, $
         $desc_raca = '';
     }*/
 
-    // VERIFICA NUMERO DE PARTOS 
-    $tbl_filhos = mysqli_query($conector,"SELECT * FROM tbl_animais 
-        WHERE tbl_animal_codigo_mae='$codigo_id'"); 
+    // VERIFICA NUMERO DE PARTOS
+    $numero_partos = isset($GLOBALS['mapa_qtd_filhos'][$codigo_id]) ? $GLOBALS['mapa_qtd_filhos'][$codigo_id] : 0;
 
-    $numero_partos = mysqli_num_rows($tbl_filhos);
+    $reg_filho_ult = isset($GLOBALS['mapa_ultimo_filho'][$codigo_id]) ? $GLOBALS['mapa_ultimo_filho'][$codigo_id] : null;
 
-    $tbl_filhos = mysqli_query($conector,"SELECT * FROM tbl_animais 
-        WHERE tbl_animal_codigo_mae='$codigo_id'
-        ORDER BY tbl_animal_codigo_id DESC LIMIT 1"); 
-
-    $numero_rows_partos = mysqli_num_rows($tbl_filhos);
+    $numero_rows_partos = ($reg_filho_ult !== null) ? 1 : 0;
 
     if ($numero_rows_partos!=0) {
-        while ($reg_filhos = mysqli_fetch_object($tbl_filhos)){
+        foreach (array($reg_filho_ult) as $reg_filhos){
             $codigo_pai=$reg_filhos->tbl_animal_codigo_pai;
             $bezerro_ativo = $reg_filhos->tbl_animal_ativo;
             $bezerro_situacao = $reg_filhos->tbl_animal_situacao;
