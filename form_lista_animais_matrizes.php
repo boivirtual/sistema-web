@@ -743,20 +743,13 @@
             }
 
             // VERIFICA TAMBEM SE TEVE NATIMORTO A MENOS 35 DIAS
-            $tbl_natimorto = mysqli_query($conector, "SELECT * FROM tbl_movimentacao_estoque 
-                WHERE tbl_mov_estoque_codigo_mae='$codigo_id' AND 
-                      tbl_mov_estoque_codigo_id_animal=999999999 AND
-                      tbl_mov_estoque_entrada_saida='S' AND 
-                      tbl_mov_estoque_tipo_movimentacao='M' 
-                ORDER BY tbl_mov_estoque_nascimento DESC");
+            $natimorto_nasc = isset($GLOBALS['cache_natimorto'][$codigo_id]) ? $GLOBALS['cache_natimorto'][$codigo_id] : null;
 
-            $num_natimorto = mysqli_num_rows($tbl_natimorto);
+            $num_natimorto = ($natimorto_nasc !== null) ? 1 : 0;
 
             if ($num_natimorto!=0) {
-                $reg_natmorto = mysqli_fetch_object($tbl_natimorto);
-
-                if ($reg_natmorto->tbl_mov_estoque_nascimento>$data_nasc_bezerro) {
-                    $data_nasc_bezerro=$reg_natmorto->tbl_mov_estoque_nascimento;
+                if ($natimorto_nasc>$data_nasc_bezerro) {
+                    $data_nasc_bezerro=$natimorto_nasc;
 
                     //$data_ref = date("Y-m-d", strtotime($data_hoje . "- 35 days"));
                     $data_ref = date("Y-m-d");
