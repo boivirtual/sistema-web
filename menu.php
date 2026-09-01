@@ -273,7 +273,11 @@ function tratarDescricaoVersao($texto) {
                 font-size: 16px;
             }
 
-            .agenda-toolbar-nav .btn,
+            .agenda-toolbar-nav .btn {
+                font-size: 12px;
+                padding: 3px 8px;
+            }
+
             .agenda-toolbar-nav i {
                 font-size: 18px;
             }
@@ -282,7 +286,6 @@ function tratarDescricaoVersao($texto) {
                 font-size: 16px;
             }
 
-            .agenda-view-switch,
             .agenda-dashboard-filtro {
                 justify-self: start;
                 text-align: left;
