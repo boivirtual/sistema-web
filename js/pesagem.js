@@ -1348,25 +1348,38 @@ function ler_animal_editar_apos_time() {
                     $("#idade_meses").val(php[36]);
                     $("#observacao_cadastro").val(php[35]);
 
-                    // Desmama (motivo id 2): não permite pesar animal com mais de 12 meses.
-                    // Mesma regra do aplicativo (calcula os meses pelo nascimento x data atual).
-                    if (parseInt($("select#epoca_pesagem").val(), 10) === 2 &&
-                        parseInt($("#idade_meses").val(), 10) > 12) {
-                        $("#codigo_id").val("");
-                        $("#codigo_number_filtro").val("");
-                        $("#peso_animal").val("");
-                        $("#descricao_animal").text("");
-                        $("#ultimo_peso").text("");
-                        $("#ult_peso_calculo").val("");
-                        $("#data_ult_peso").text("");
-                        $("#desc_descarte").text("");
-                        $("#nascimento_animal").val("");
-                        $("#idade_meses").val("");
-                        $("#alert_erro_animal .negrito").html("");
-                        $("#alert_erro_animal span").html("Idade do animal inválida para Desmama");
-                        $(".alert_erro_animal").show();
-                        document.getElementById("codigo_number_filtro").focus();
-                        return;
+                    // Desmama (motivo id 2): só pode pesar animal com até 12 meses
+                    // (idade calculada pelo nascimento x data atual, igual ao app) e
+                    // que ainda não tenha peso de desmama registrado (tbl_animal_peso_desmama).
+                    if (parseInt($("select#epoca_pesagem").val(), 10) === 2) {
+                        var pesoDesmamaCad = parseFloat(
+                            (php[37] || "0").toString().replace(",", ".")
+                        );
+                        var msgDesmama = "";
+
+                        if (parseInt($("#idade_meses").val(), 10) > 12) {
+                            msgDesmama = "Idade do animal inválida para Desmama";
+                        } else if (pesoDesmamaCad > 0) {
+                            msgDesmama = "Animal já tem peso de desmama registrado";
+                        }
+
+                        if (msgDesmama != "") {
+                            $("#codigo_id").val("");
+                            $("#codigo_number_filtro").val("");
+                            $("#peso_animal").val("");
+                            $("#descricao_animal").text("");
+                            $("#ultimo_peso").text("");
+                            $("#ult_peso_calculo").val("");
+                            $("#data_ult_peso").text("");
+                            $("#desc_descarte").text("");
+                            $("#nascimento_animal").val("");
+                            $("#idade_meses").val("");
+                            $("#alert_erro_animal .negrito").html("");
+                            $("#alert_erro_animal span").html(msgDesmama);
+                            $(".alert_erro_animal").show();
+                            document.getElementById("codigo_number_filtro").focus();
+                            return;
+                        }
                     }
 
                     $("#peso_animal").focus();
