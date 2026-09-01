@@ -595,6 +595,10 @@ function listar_situacao_reprodutiva_monta() {
         html += '</tfoot>';
         html += '<tbody>';
 
+        var total_femeas = 0;
+        var total_prenhas_geral = 0;
+        var total_diagnostico = 0;
+
         for (var i = 0; i < numero_itens; i++) {
             var descricao = desc_fazenda[i];
             var animais = qtd_animais[i];
@@ -604,6 +608,10 @@ function listar_situacao_reprodutiva_monta() {
             var diagnostico = falta_diagnostico[i];
 
             if (descricao!='' && animais!=0) {
+                total_femeas += parseInt(animais) || 0;
+                total_prenhas_geral += parseInt(prenhas) || 0;
+                total_diagnostico += parseInt(diagnostico) || 0;
+
                 html += '<tr>';
                 html += '<td width="29%" style="border-bottom: 1px solid #f0f3f5;">' + descricao + '</td>';
                 html += '<td width="8%" style="text-align: center; border-bottom: 1px solid #f0f3f5;">' + animais + '</td>';
@@ -612,6 +620,18 @@ function listar_situacao_reprodutiva_monta() {
                 html += '<td width="8%" style="text-align: center; border-bottom: 1px solid #f0f3f5;">' + diagnostico + '</td>';
                 html += '</tr>';
             }
+        }
+
+        if (total_femeas > 0) {
+            var prenhez_geral = (total_prenhas_geral / total_femeas * 100).toFixed(2).replace('.', ',');
+
+            html += '<tr>';
+            html += '<td width="29%" style="border-top: 1px solid #d0d7de; border-bottom: 1px solid transparent; font-weight: bold;">TOTAL</td>';
+            html += '<td width="8%" style="text-align: center; border-top: 1px solid #d0d7de; border-bottom: 1px solid transparent; font-weight: bold;">' + total_femeas + '</td>';
+            html += '<td width="10%" style="text-align: center; border-top: 1px solid #d0d7de; border-bottom: 1px solid transparent; font-weight: bold;">' + total_prenhas_geral + '</td>';
+            html += '<td width="12%" style="text-align: center; border-top: 1px solid #d0d7de; border-bottom: 1px solid transparent; font-weight: bold;" class="fontes_mapa_ha">' + prenhez_geral + ' %</td>';
+            html += '<td width="8%" style="text-align: center; border-top: 1px solid #d0d7de; border-bottom: 1px solid transparent; font-weight: bold;">' + total_diagnostico + '</td>';
+            html += '</tr>';
         }
 
         html += '</tbody>';
