@@ -935,22 +935,35 @@ function ler_animal() {
                 $("#mae_animal").val(php[5]);
                 $("#ultimo_peso_animal").val(php[28]);
 
-                // Desmama (motivo id 2): não permite pesar animal com mais de 12 meses.
-                // Mesma regra do aplicativo (calcula os meses pelo nascimento x data atual).
-                if (parseInt($("select#epoca_pesagem").val(), 10) === 2 &&
-                    parseInt(php[36], 10) > 12) {
-                    $("#codigo_id").val(0);
-                    $("#codigo_number_filtro").val("");
-                    $("#peso_animal").val("");
-                    $("#descricao_animal").text("");
-                    $("#ultimo_peso").text("");
-                    $("#data_ult_peso").text("");
-                    $("#desc_descarte").text("");
-                    $("#alert_erro_animal .negrito").html("");
-                    $("#alert_erro_animal span").html("Idade do animal inválida para Desmama");
-                    $(".alert_erro_animal").show();
-                    document.getElementById("codigo_number_filtro").focus();
-                    return;
+                // Desmama (motivo id 2): só pode pesar animal com até 12 meses
+                // (idade calculada pelo nascimento x data atual, igual ao app) e
+                // que ainda não tenha peso de desmama registrado (tbl_animal_peso_desmama).
+                if (parseInt($("select#epoca_pesagem").val(), 10) === 2) {
+                    var pesoDesmamaCad = parseFloat(
+                        (php[37] || "0").toString().replace(",", ".")
+                    );
+                    var msgDesmama = "";
+
+                    if (parseInt(php[36], 10) > 12) {
+                        msgDesmama = "Idade do animal inválida para Desmama";
+                    } else if (pesoDesmamaCad > 0) {
+                        msgDesmama = "Animal já tem peso de desmama registrado";
+                    }
+
+                    if (msgDesmama != "") {
+                        $("#codigo_id").val(0);
+                        $("#codigo_number_filtro").val("");
+                        $("#peso_animal").val("");
+                        $("#descricao_animal").text("");
+                        $("#ultimo_peso").text("");
+                        $("#data_ult_peso").text("");
+                        $("#desc_descarte").text("");
+                        $("#alert_erro_animal .negrito").html("");
+                        $("#alert_erro_animal span").html(msgDesmama);
+                        $(".alert_erro_animal").show();
+                        document.getElementById("codigo_number_filtro").focus();
+                        return;
+                    }
                 }
 
                 $("#peso_animal").focus();
