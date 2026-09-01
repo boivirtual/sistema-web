@@ -196,6 +196,23 @@
             text-align: center;
         }
 
+        .agenda-toolbar-nav {
+            font-size: 16px;
+        }
+
+        .agenda-toolbar-nav .btn {
+            font-size: 12px;
+            padding: 3px 8px;
+        }
+
+        .agenda-toolbar-nav i {
+            font-size: 18px;
+        }
+
+        #agenda_periodo_titulo {
+            font-size: 16px;
+        }
+
         #calendar {
             min-width: 700px;
         }
