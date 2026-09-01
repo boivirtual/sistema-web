@@ -308,28 +308,15 @@
                 $data_natimorto = '0000-00-00';
                 $ultimo_parto = '0000-00-00';
 
-                $sql = mysqli_query($conector, "SELECT * FROM tbl_animais 
-                                WHERE tbl_animal_codigo_id = '$codigo_id'"); 
-                $num_row = mysqli_num_rows($sql);
+                $reg_animal = isset($GLOBALS['sg_animal'][$codigo_id]) ? $GLOBALS['sg_animal'][$codigo_id] : null;
+                $num_row = ($reg_animal !== null) ? 1 : 0;
 
                 if ($num_row!=0) {
-                    $reg_animal = mysqli_fetch_object($sql);
                     $data_nascimento= $reg_animal->tbl_animal_data_nascimento;
                     $codigo_raca= $reg_animal->tbl_animal_codigo_raca;
                     $descarte = $reg_animal->tbl_animal_descarte_reproducao;
 
-                    $tbl_raca = mysqli_query($conector,"SELECT * FROM tabela_racas 
-                        WHERE tab_codigo_raca ='$codigo_raca' AND 
-                              tab_registro_lixeira_raca = 0"); 
-                    $num_row_raca = mysqli_num_rows($tbl_raca);
-
-                    if ($num_row_raca!=0) {
-                        $reg_raca = mysqli_fetch_object($tbl_raca);
-                        $desc_raca = $reg_raca->tab_descricao_raca;
-                    }
-                    else {
-                        $desc_raca = '';
-                    }
+                    $desc_raca = isset($GLOBALS['sg_raca'][$codigo_raca]) ? $GLOBALS['sg_raca'][$codigo_raca] : '';
 
                     $data_nascimento= $reg_animal->tbl_animal_data_nascimento;
                     $data_acompanhamento_calculo = date("Y-m-d");
