@@ -1415,7 +1415,7 @@
                         <div class="modal-footer">
                             <button class="btn btn-success gravar" type="button" onclick="gravar_nascimento();">Confirmar Nascimento</button>
 
-                            <button class="btn btn-primary substituir" type="button" onclick="gravar_nascimento_monta_natural();">Substituir por Monta Natural</button>
+                            <button class="btn btn-primary substituir" type="button" onclick="$('#codigo_pai_animal').val('000000000'); gravar_nascimento_monta_natural();">Substituir por Monta Natural</button>
 
                             <button data-dismiss="modal" class="btn btn-danger" type="button" onclick="fechar_nascimento_erro();">Não Confirmar</button>
                         </div>
