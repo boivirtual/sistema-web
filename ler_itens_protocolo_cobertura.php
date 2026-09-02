@@ -418,9 +418,14 @@
             $lipc_cob_estacao[$rr->tbl_ite_cobertura_codigo_id_animal] = (int)$rr->c;
         }
 
-        // Pai: sêmen e touro (mesmos filtros das consultas originais)
+        // Pai: sêmen e touro (mesmos filtros das consultas originais, inclusive o
+        // espaço antes do id — ' 123' — presente no código original)
         if (!empty($lipc_pais_ids)) {
-            $in_pais = lipc_in_list($conector, array_keys($lipc_pais_ids));
+            $in_pais_parts = array();
+            foreach (array_keys($lipc_pais_ids) as $pv) {
+                $in_pais_parts[] = "' " . mysqli_real_escape_string($conector, $pv) . "'";
+            }
+            $in_pais = implode(',', $in_pais_parts);
 
             $q = mysqli_query($conector, "select tbl_semem_codigo_id, tbl_semem_nome from tbl_semem
                 where tbl_semem_lixeira=0 and tbl_semem_ativo='S' and tbl_semem_codigo_id IN ($in_pais)");
