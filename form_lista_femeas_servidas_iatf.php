@@ -443,11 +443,8 @@ foreach ($registros_cobertura as $reg_cobertura) {
         $cobertura_ordem = $cobertura_id . $numero_item;
         $num_coberturas = $coberturas_por_animal_cache[(int)$codigo_id] ?? null;
 
-        // 6.1. Cálculo de Partos (AINDA É UMA CONSULTA PONTUAL)
-        // Isso pode ser otimizado para um cache se houver muitos animais.
-        $tbl_filhos = mysqli_query($conector,"SELECT count(*) as numero_partos FROM tbl_animais WHERE tbl_animal_codigo_mae='$codigo_id'");
-        $numero_partos = mysqli_fetch_object($tbl_filhos)->numero_partos;
-        mysqli_free_result($tbl_filhos);
+        // 6.1. Cálculo de Partos (do cache em lote)
+        $numero_partos = $partos_por_animal_cache[(int)$codigo_id] ?? 0;
         
         // 6.2. Descrição de Sêmen (DO CACHE)
         $desc_semen = $semen_cache[$touro_semem] ?? '';
