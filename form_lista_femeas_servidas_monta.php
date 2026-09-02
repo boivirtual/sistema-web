@@ -355,35 +355,16 @@ foreach ($femeas_rows as $reg_animal) {
                 $idade_acompanhamento_mostra_meses = $idade_acompanhamento->format('%m');
                 $idade = $idade_acompanhamento_mostra_anos+$idade_acompanhamento_mostra_meses;
 
-                $tbl_raca = mysqli_query($conector, "SELECT * FROM tabela_racas 
-                    WHERE tab_codigo_raca='$codigo_raca' AND 
-                          tab_registro_lixeira_raca=0");  
-
-                $num_rows = mysqli_num_rows($tbl_raca);
-
-                if ($num_rows!=0){
-                    $reg_raca = mysqli_fetch_object($tbl_raca);
-                    $desc_raca = $reg_raca->tab_descricao_raca;
-                }
-                else {
-                    $desc_raca = '';
-                }
+                $desc_raca = isset($flsm_racas[$codigo_raca]) ? $flsm_racas[$codigo_raca] : '';
 
                 $numero_partos = 0;
                 $num_abortos = 0;
 
-                // primeiro verifica quantos partos
-                $tbl_filhos = mysqli_query($conector, "SELECT * FROM tbl_animais 
-                    WHERE tbl_animal_codigo_mae='$codigo_id'");
+                // primeiro verifica quantos partos (cache em lote)
+                $numero_partos = isset($flsm_partos[$codigo_id]) ? $flsm_partos[$codigo_id] : 0;
 
-                $numero_partos = mysqli_num_rows($tbl_filhos);
-
-                // verifica abortos/absorsão
-                $tbl_aborto = mysqli_query($conector, "select * from tbl_movimentacao_estoque 
-                    where tbl_mov_estoque_codigo_mae='$codigo_id' and 
-                          tbl_mov_estoque_entrada_saida='A'");
-
-                $num_abortos = mysqli_num_rows($tbl_aborto);
+                // verifica abortos/absorsão (cache em lote)
+                $num_abortos = isset($flsm_abortos[$codigo_id]) ? $flsm_abortos[$codigo_id] : 0;
 
                 echo "<tr>";
                 echo "<td hidden=''><input type='text' 
