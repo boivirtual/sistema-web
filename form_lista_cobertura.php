@@ -254,27 +254,18 @@
             $desc_situacao = 'Em Aberto';
         }   
                                                      
-        $sql = "SELECT * FROM tbl_protocoloiatf WHERE tbl_protocoloiatf_id = $protocolo_id AND tbl_protocoloiatf_lixeira = 0";
-        $response = mysqli_query($conector, $sql);
-
-        $reg_protocolo = mysqli_fetch_object($response);
+        $reg_protocolo = isset($flc_protocolo[$protocolo_id]) ? $flc_protocolo[$protocolo_id] : null;
 
         $protocolo_nome = $reg_protocolo->tbl_protocoloiatf_descricao;
         $protocolo_tipo = $reg_protocolo->tbl_protocoloiatf_tipo;
 
-        $sql = "SELECT * FROM tbl_protocolo_cobertura WHERE tbl_protocolo_cobertura_codigo_id = $cobertura_id";
-        $response = mysqli_query($conector, $sql);
-
-        $reg_pc = mysqli_fetch_object($response);
+        $reg_pc = isset($flc_pc[$cobertura_id]) ? $flc_pc[$cobertura_id] : null;
 
         $dia_0 = date('d/m/Y', strtotime($reg_pc->tbl_protocolo_cobertura_data));
 
-        $sql = "SELECT * FROM tbl_item_protocoloiatf WHERE tbl_ite_protocoloiatf_protocolo_id = $protocolo_id AND tbl_ite_protocoloiatf_lixeira = 0 ORDER BY tbl_ite_protocoloiatf_id ASC";
-        $response = mysqli_query($conector, $sql);
-
         $check_lixeira = false;
 
-        $arrayDias = [
+        $arrayDias = isset($flc_dias[$protocolo_id]) ? $flc_dias[$protocolo_id] : [
             0 => 0,
             1 => 0,
             2 => 0,
@@ -282,24 +273,8 @@
             4 => 0
         ];
 
-        $index = 0;
-
-        while($reg_ite_procolo = mysqli_fetch_object($response)){
-            $desc_ite_protocolo = $reg_ite_procolo->tbl_ite_protocoloiatf_descricao;
-            $desc = substr($desc_ite_protocolo, 3);
-
-            $arrayDias[$index] = $desc;
-            $index++;
-        }
-
-        $sql = "SELECT * FROM tbl_item_cobertura 
-            WHERE tbl_ite_cobertura_numero_id = $cobertura_id";
-        $res = mysqli_query($conector, $sql);
-
-        while($itemCob = mysqli_fetch_object($res)){
-            if($itemCob->tbl_ite_cobertura_dia_2 == 'S'){
-                $check_lixeira = true;
-            }
+        if (isset($flc_tem_dia2[$cobertura_id]) && $flc_tem_dia2[$cobertura_id]) {
+            $check_lixeira = true;
         }
 
         $data_1 = date('d/m/Y', strtotime($reg_pc->tbl_protocolo_cobertura_data."+{$arrayDias[1]} days"));
