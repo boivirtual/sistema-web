@@ -686,12 +686,7 @@
             <select name='lista_funcionario' id='lista_funcionario$ordem' class='form-control' onchange='lista_funcionario(this.id, this.value);' style='width: 1.6em; margin-left: -30px;'>
                         <option value='000000000'>...</option>";
 
-            $pessoa = mysqli_query($conector, "select * from tbl_pessoa 
-                where tbl_pessoa_lixeira=0 and 
-                      tbl_pessoa_classe=5 
-                order by tbl_pessoa_nome asc"); 
-                    
-            while($reg = mysqli_fetch_object($pessoa)) { 
+            foreach ($lipc_pessoa_lista as $reg) {
                 echo "<option value='$reg->tbl_pessoa_id'";
 
                     if ($reg->tbl_pessoa_nome==$inseminador) { 
