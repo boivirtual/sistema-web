@@ -282,20 +282,33 @@ class AnimalDao{
         return $a; 
     }      
 
-    // Exportação em massa dos animais ativos de uma fazenda, para popular o cache
-    // local do app (autocomplete + ficha funcionando offline). Retorna um array
-    // associativo enxuto (não os objetos Animal completos) porque pode envolver
-    // milhares de linhas por fazenda; usa as mesmas chaves de AnimalService::
+    // Exportação em massa dos animais ativos, para popular o cache local do
+    // app (autocomplete + ficha funcionando offline). Retorna um array
+    // associativo enxuto (não os objetos Animal completos) porque pode
+    // envolver milhares de linhas; usa as mesmas chaves de AnimalService::
     // getAnimalInfo() para facilitar o reaproveitamento do parsing no app.
+    //
+    // $local não filtra mais a consulta (mantido só pela assinatura/
+    // compatibilidade do endpoint) — o cache do app passou a baixar TODOS os
+    // animais do banco (bd) de uma vez, não só os das fazendas do array local
+    // do usuário, porque mãe/filho podem estar em fazendas às quais o
+    // usuário não tem acesso direto. Por isso a consulta agora também traz
+    // fazenda_id/fazenda_nome por animal (antes o app assumia que todo
+    // animal da resposta era da fazenda pedida, o que deixa de ser verdade).
+    //
+    // Além dos ativos, inclui fêmeas INATIVAS (tbl_animal_ativo = 'N') que
+    // tenham pelo menos um filho ativo — a mãe pode ter morrido/saído, mas o
+    // filho ainda ativo precisa continuar mostrando a info dela (Consultar
+    // Mãe). Um filho nunca entra aqui se ele mesmo estiver inativo.
     public function getAnimaisAtivosPorFazendaExport($local) {
-        $local = (int)$local;
-
         $sql = "SELECT
                     a.tbl_animal_codigo_id AS id,
                     a.tbl_animal_codigo_alfa AS codigo_alfa,
                     a.tbl_animal_codigo_numerico AS codigo_numerico,
                     a.tbl_animal_sexo AS sexo,
                     a.tbl_animal_data_nascimento AS nascimento,
+                    a.tbl_animal_codigo_fazenda AS fazenda_id,
+                    f.tbl_pessoa_nome AS fazenda_nome,
                     r.tab_descricao_raca AS raca,
                     pel.tab_descricao_pelagem AS pelagem,
                     a.tbl_animal_codigo_mae AS id_mae,
@@ -308,9 +321,21 @@ class AnimalDao{
                 LEFT JOIN tabela_racas r ON a.tbl_animal_codigo_raca = r.tab_codigo_raca
                 LEFT JOIN tabela_pelagens pel ON a.tbl_animal_codigo_pelagem = pel.tab_codigo_pelagem
                 LEFT JOIN tbl_animais mae ON a.tbl_animal_codigo_mae = mae.tbl_animal_codigo_id
+                LEFT JOIN tbl_pessoa f ON a.tbl_animal_codigo_fazenda = f.tbl_pessoa_id
                 WHERE a.tbl_animal_lixeira = 0
-                  AND a.tbl_animal_ativo = 'S'
-                  AND a.tbl_animal_codigo_fazenda = $local
+                  AND (
+                        a.tbl_animal_ativo = 'S'
+                        OR (
+                              a.tbl_animal_sexo = 'F'
+                              AND a.tbl_animal_ativo = 'N'
+                              AND EXISTS (
+                                    SELECT 1 FROM tbl_animais filho
+                                    WHERE filho.tbl_animal_codigo_mae = a.tbl_animal_codigo_id
+                                      AND filho.tbl_animal_ativo = 'S'
+                                      AND filho.tbl_animal_lixeira = 0
+                              )
+                        )
+                      )
                 ORDER BY a.tbl_animal_codigo_numerico ASC";
 
         mysqli_set_charset($this->con, "utf8");
@@ -334,6 +359,8 @@ class AnimalDao{
                     'codigo' => $codigo,
                     'sexo' => $dados['sexo'],
                     'nascimento' => $dados['nascimento'],
+                    'fazendaId' => $dados['fazenda_id'],
+                    'fazendaNome' => $dados['fazenda_nome'],
                     'raca' => $dados['raca'],
                     'pelagem' => $dados['pelagem'],
                     'idMae' => $dados['id_mae'],
