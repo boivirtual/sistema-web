@@ -319,17 +319,132 @@
     echo "</tr>";
     echo "</thead>";
 
-    $sql = "SELECT * FROM tbl_item_cobertura 
-        WHERE tbl_ite_cobertura_numero_id = $cobertura_id 
+    $sql = "SELECT * FROM tbl_item_cobertura
+        WHERE tbl_ite_cobertura_numero_id = $cobertura_id
         ORDER BY tbl_ite_cobertura_codigo_numerico ASC";
         //ORDER BY tbl_ite_cobertura_codigo_animal ASC";
-        
+
         //ORDER BY tbl_ite_cobertura_numero_item ASC";
     $rs = mysqli_query($conector, $sql);
 
+    // ===================================================================
+    // PRÉ-CARGA EM LOTE — as consultas abaixo rodavam uma vez por fêmea
+    // dentro do while (e as listas de sêmen/touros/inseminadores eram
+    // reconstruídas do banco a cada linha). Aqui são feitas uma única vez.
+    // Nenhuma regra de negócio ou saída HTML é alterada.
+    // ===================================================================
+    $itens_cobertura_rows = array();
+    $lipc_animal_ids = array();
+    while ($reg_itensCobertura = mysqli_fetch_object($rs)) {
+        $itens_cobertura_rows[] = $reg_itensCobertura;
+        if ($reg_itensCobertura->tbl_ite_cobertura_codigo_id_animal !== null) {
+            $lipc_animal_ids[$reg_itensCobertura->tbl_ite_cobertura_codigo_id_animal] = true;
+        }
+    }
+
+    $lipc_animal      = array(); // dados do animal (raça, pai) por id
+    $lipc_cob_estacao = array(); // nº de coberturas com dia_1='S' na estação, por animal
+    $lipc_pai_semem   = array(); // nome do pai (sêmen) por id
+    $lipc_pai_touro   = array(); // registro do pai (touro) por id
+
+    // Racas (todas as ativas) — usado para a raça da fêmea e a raça do touro/sêmen
+    $lipc_racas = array();
+    $q = mysqli_query($conector, "SELECT tab_codigo_raca, tab_descricao_raca FROM tabela_racas
+        WHERE tab_registro_lixeira_raca = 0");
+    while ($rr = mysqli_fetch_object($q)) {
+        $lipc_racas[$rr->tab_codigo_raca] = $rr->tab_descricao_raca;
+    }
+
+    // Lista de sêmen (mesma consulta do <select>) — carregada uma vez
+    $lipc_semem_lista = array();
+    $lipc_semem_map = array();
+    $q = mysqli_query($conector, "select tbl_semem_codigo_id, tbl_semem_nome, tbl_semem_codigo_raca
+        from tbl_semem where tbl_semem_lixeira=0 and tbl_semem_ativo='S' order by tbl_semem_nome asc");
+    while ($rr = mysqli_fetch_object($q)) {
+        $lipc_semem_lista[] = $rr;
+        $lipc_semem_map[$rr->tbl_semem_codigo_id] = $rr;
+    }
+
+    // Lista de touros (mesma consulta do <select>) — carregada uma vez
+    $lipc_touro_lista = array();
+    $lipc_touro_map = array();
+    $q = mysqli_query($conector, "select tbl_animal_codigo_id, tbl_animal_codigo_alfa,
+            tbl_animal_codigo_numerico, tbl_animal_nome, tbl_animal_codigo_raca
+        from tbl_animais
+        where tbl_animal_lixeira=0 and
+            tbl_animal_sexo='M' and
+            tbl_animal_reprodutor='S' and
+            tbl_animal_ativo = 'S'
+        order by ISNULL(tbl_animal_nome) asc, tbl_animal_nome asc, tbl_animal_codigo_numerico asc");
+    while ($rr = mysqli_fetch_object($q)) {
+        $lipc_touro_lista[] = $rr;
+        $lipc_touro_map[$rr->tbl_animal_codigo_id] = $rr;
+    }
+
+    // Lista de inseminadores (mesma consulta do <select>) — carregada uma vez
+    $lipc_pessoa_lista = array();
+    $q = mysqli_query($conector, "select tbl_pessoa_id, tbl_pessoa_nome from tbl_pessoa
+        where tbl_pessoa_lixeira=0 and tbl_pessoa_classe=5 order by tbl_pessoa_nome asc");
+    while ($rr = mysqli_fetch_object($q)) {
+        $lipc_pessoa_lista[] = $rr;
+    }
+
+    if (!empty($lipc_animal_ids)) {
+        $in_animais = lipc_in_list($conector, array_keys($lipc_animal_ids));
+
+        $q = mysqli_query($conector, "SELECT tbl_animal_codigo_id, tbl_animal_codigo_raca,
+                tbl_animal_codigo_pai
+            FROM tbl_animais WHERE tbl_animal_codigo_id IN ($in_animais)");
+        $lipc_pais_ids = array();
+        while ($rr = mysqli_fetch_object($q)) {
+            $lipc_animal[$rr->tbl_animal_codigo_id] = $rr;
+            if ($rr->tbl_animal_codigo_pai !== null && $rr->tbl_animal_codigo_pai !== '') {
+                $lipc_pais_ids[$rr->tbl_animal_codigo_pai] = true;
+            }
+        }
+
+        // Nº de coberturas com dia_1='S' na estação/local, por fêmea
+        $q = mysqli_query($conector, "select tbl_ite_cobertura_codigo_id_animal, COUNT(*) AS c
+            from tbl_cobertura
+            inner join tbl_item_cobertura
+                    on tbl_ite_cobertura_numero_id = tbl_cobertura_id
+            where tbl_cobertura_lixeira=0 and
+                  tbl_cobertura_codigo_local = '$local_cobertura' and
+                  tbl_cobertura_codigo_estacao_monta = '$estacao_monta' and
+                  tbl_ite_cobertura_codigo_id_animal IN ($in_animais) and
+                  tbl_ite_cobertura_dia_1='S'
+            group by tbl_ite_cobertura_codigo_id_animal");
+        while ($rr = mysqli_fetch_object($q)) {
+            $lipc_cob_estacao[$rr->tbl_ite_cobertura_codigo_id_animal] = (int)$rr->c;
+        }
+
+        // Pai: sêmen e touro (mesmos filtros das consultas originais)
+        if (!empty($lipc_pais_ids)) {
+            $in_pais = lipc_in_list($conector, array_keys($lipc_pais_ids));
+
+            $q = mysqli_query($conector, "select tbl_semem_codigo_id, tbl_semem_nome from tbl_semem
+                where tbl_semem_lixeira=0 and tbl_semem_ativo='S' and tbl_semem_codigo_id IN ($in_pais)");
+            while ($rr = mysqli_fetch_object($q)) {
+                $lipc_pai_semem[$rr->tbl_semem_codigo_id] = $rr->tbl_semem_nome;
+            }
+
+            $q = mysqli_query($conector, "select tbl_animal_codigo_id, tbl_animal_codigo_alfa,
+                    tbl_animal_codigo_numerico, tbl_animal_nome
+                from tbl_animais
+                where tbl_animal_lixeira=0 and
+                      tbl_animal_sexo='M' and
+                      tbl_animal_reprodutor='S' and
+                      tbl_animal_ativo = 'S' and
+                      tbl_animal_codigo_id IN ($in_pais)");
+            while ($rr = mysqli_fetch_object($q)) {
+                $lipc_pai_touro[$rr->tbl_animal_codigo_id] = $rr;
+            }
+        }
+    }
+
     echo "<tbody>";
 
-    while($reg_itensCobertura = mysqli_fetch_object($rs)){
+    foreach ($itens_cobertura_rows as $reg_itensCobertura){
         echo "<tr>";
 
         $ordem = $reg_itensCobertura->tbl_ite_cobertura_numero_item;
