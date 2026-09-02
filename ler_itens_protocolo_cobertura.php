@@ -485,30 +485,15 @@
         echo "<td align='left' width='8%'>$matriz</td>";
         echo "<td width='8%'>$raca</td>";
 
-        // Exibe pai
-        $semem = mysqli_query($conector, "select * from tbl_semem 
-            where tbl_semem_lixeira=0 and 
-                  tbl_semem_ativo='S' and  
-                  tbl_semem_codigo_id=' $pai_id'"); 
+        // Exibe pai (mapas pré-carregados; mesma prioridade sêmen -> touro)
+        if (isset($lipc_pai_semem[$pai_id])) {
+            $reg = $lipc_pai_semem[$pai_id];
 
-        $num_row = mysqli_num_rows($semem);
-
-        if ($num_row!=0) {
-            $reg = mysqli_fetch_object($semem);
-
-            echo "<td width='10%'>$reg->tbl_semem_nome</td>";
+            echo "<td width='10%'>$reg</td>";
         }
         else {
-            $touro = mysqli_query($conector, "select * from tbl_animais 
-                where tbl_animal_lixeira=0 and 
-                      tbl_animal_sexo='M' and 
-                      tbl_animal_reprodutor='S' and
-                      tbl_animal_ativo = 'S' and
-                      tbl_animal_codigo_id = ' $pai_id'"); 
-            $num_row = mysqli_num_rows($touro);
-
-            if ($num_row!=0) {
-                $reg = mysqli_fetch_object($touro);
+            if (isset($lipc_pai_touro[$pai_id])) {
+                $reg = $lipc_pai_touro[$pai_id];
 
                 if ($reg->tbl_animal_nome == "") {
                     echo "<td width='10%'>$reg->tbl_animal_codigo_alfa - $reg->tbl_animal_codigo_numerico</td>";
