@@ -356,9 +356,54 @@ if ($stmt = mysqli_prepare($conector, $sql_principal)) {
         $registros_cobertura[] = $reg_cobertura;
     }
     mysqli_stmt_close($stmt);
-} 
+}
 else {
     die("Erro ao preparar consulta principal: " . mysqli_error($conector));
+}
+
+// Caches em lote para eliminar as 2 consultas pontuais que restavam no loop
+// (nº de partos por fêmea e verificação de cobertura na estação atual p/ 'N').
+$partos_por_animal_cache = [];
+$coberturas_atual_cache = [];
+
+$ids_femeas_diag = [];
+foreach ($registros_cobertura as $rd) {
+    if ($rd->animal_id !== null && $rd->animal_id !== '') {
+        $ids_femeas_diag[(string)$rd->animal_id] = true;
+    }
+}
+
+if (!empty($ids_femeas_diag)) {
+    $in_femeas_diag = [];
+    foreach (array_keys($ids_femeas_diag) as $vd) {
+        $in_femeas_diag[] = "'" . mysqli_real_escape_string($conector, $vd) . "'";
+    }
+    $in_femeas_diag = implode(',', $in_femeas_diag);
+
+    $rs_partos = mysqli_query($conector, "SELECT tbl_animal_codigo_mae, COUNT(*) AS c
+        FROM tbl_animais WHERE tbl_animal_codigo_mae IN ($in_femeas_diag)
+        GROUP BY tbl_animal_codigo_mae");
+    while ($reg = mysqli_fetch_object($rs_partos)) {
+        $partos_por_animal_cache[(int)$reg->tbl_animal_codigo_mae] = (int)$reg->c;
+    }
+    mysqli_free_result($rs_partos);
+
+    if ($diagnostico == "N") {
+        $rs_atual = mysqli_query($conector, "SELECT tbl_ite_cobertura_codigo_id_animal AS aid,
+                COUNT(*) AS c
+            FROM tbl_item_cobertura
+            INNER JOIN tbl_cobertura ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
+            WHERE tbl_cobertura_lixeira=0 AND
+                  tbl_cobertura_codigo_local = '" . mysqli_real_escape_string($conector, $codigo_local) . "' AND
+                  tbl_cobertura_controle = 'C' AND
+                  tbl_cobertura_codigo_estacao_monta = '" . mysqli_real_escape_string($conector, $id_estacao_atual) . "' AND
+                  tbl_ite_cobertura_codigo_id_animal IN ($in_femeas_diag)
+            GROUP BY tbl_ite_cobertura_codigo_id_animal");
+        while ($reg = mysqli_fetch_object($rs_atual)) {
+            $coberturas_atual_cache[(int)$reg->aid] = (int)$reg->c;
+        }
+        mysqli_free_result($rs_atual);
+    }
 }
 
 $tem_thead = 'N';
