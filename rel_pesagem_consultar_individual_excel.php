@@ -229,8 +229,11 @@ if ($num_rows != 0) {
 
     while ($reg_itens = mysqli_fetch_object($tbl_itens)) {
         // O código do animal pode ser alfanumérico (ex.: "B-978"); usar intval() aqui
-        // zerava esses códigos. Mantém o valor original como texto.
+        // zerava esses códigos. Mantém texto quando alfanumérico e número quando puramente numérico.
         $codigo_animal = corrigir_utf8($reg_itens->tbl_ite_pesagem_codigo_animal);
+        if (is_numeric($codigo_animal)) {
+            $codigo_animal = intval($codigo_animal);
+        }
         $peso = intval($reg_itens->tbl_ite_pesagem_peso);
         $sexo = corrigir_utf8($reg_itens->tbl_ite_pesagem_sexo);
         $apartacao = corrigir_utf8($reg_itens->tbl_ite_pesagem_criterio_apartacao);
