@@ -11,30 +11,34 @@ permanecer em inglês.
 
 ---
 
-## Premissa obrigatória nº 2: Branch correta por tipo de projeto
+## Premissa obrigatória nº 2: Uma branch só — `master`, sempre, incluindo `api/`
 
-Este repositório (`sistema-web`) contém o código do **sistema web** em PHP.
-Todo commit de arquivo do sistema web deve ser feito **exclusivamente na
-branch `master`**.
+Este repositório (`sistema-web`) contém o código do **sistema web** em PHP
+**e também** a pasta `api/`, que é o backend consumido pelo aplicativo
+mobile Flutter (`boivirtual/aplicativo-mobile`, pasta local
+`C:\Users\George\Desktop\boivirtual`). **Todo commit de arquivo deste
+repositório — sistema web OU `api/` — deve ser feito exclusivamente na
+branch `master`.** Não existe mais uma branch separada para `api/`.
 
-A branch `offline-pesagem` deste mesmo repositório pertence ao
-**aplicativo mobile Flutter** (funcionalidade de pesagem offline) e deve
-conter apenas arquivos da pasta `api/` relacionados ao app. O ideal é que
-esse trabalho fique em um repositório próprio `aplicativo-mobile`, mas por
-enquanto ele convive neste mesmo repositório — por isso o cuidado abaixo é
-obrigatório.
+**Histórico:** até 2026-09-02 existia uma branch `offline-pesagem` neste
+repositório, pensada só para os arquivos de `api/` relacionados ao app.
+Isso causou confusão de verdade: o deploy manual (ver regra abaixo) sempre
+publica o que está no `master`, então o trabalho feito só na
+`offline-pesagem` (idempotência por `uuid_app` em `PesagemDao.php`, o
+endpoint `api/rest/animal/list_fazenda_completo.php`, entre outros) nunca
+chegou a ir pro ar de verdade, mesmo já pronto e testado — o servidor
+seguia rodando a versão antiga do `master`, sem essas correções. Por isso
+essa premissa mudou: `api/` volta a viver só no `master`, junto com o
+resto. A branch `offline-pesagem` não deve mais receber commits nem ser
+usada como referência.
 
-**Antes de editar ou commitar qualquer arquivo fora da pasta `api/`, é
-obrigatório rodar `git branch --show-current` e garantir que a branch ativa
-é `master`.** Se estiver em `offline-pesagem` (ou qualquer outra branch),
-troque para `master` ANTES de tocar em qualquer arquivo do sistema web —
-nunca commite arquivos do sistema web estando em `offline-pesagem`.
-
-Isso vale em qualquer sessão, inclusive se houver mais de uma sessão aberta
-ao mesmo tempo nesta pasta: como todas compartilham o mesmo diretório de
-trabalho do git, se uma sessão trocar de branch, isso afeta imediatamente
-as demais. Por isso a verificação da branch deve ser feita a cada tarefa,
-não apenas uma vez no início da sessão.
+**Importante sobre o deploy**: o George **não usa git para publicar no
+servidor de teste** (`agrolandes.com.br/teste_reproducao`) — o envio é
+manual, direto desta pasta local pro servidor via FileZilla (arrastando os
+arquivos que estão em disco agora). Por isso é essencial que **esta pasta
+esteja sempre com a branch `master` ativa e atualizada** — qualquer código
+numa branch diferente simplesmente nunca vai pro ar, não importa o quanto
+esteja pronto.
 
 ---
 
