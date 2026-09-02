@@ -572,15 +572,11 @@
 
         // Exibe Raça Touro/Semen
         if ($raca_touro_semen_id!='' && $tipoCobertura == "I") {
-            $sql = mysqli_query($conector, "SELECT * FROM tabela_racas 
-                WHERE tab_codigo_raca = $raca_touro_semen_id AND 
-                      tab_registro_lixeira_raca = 0");
-            $reg_raca = mysqli_fetch_object($sql);
-            $desc_raca_touro_semen = $reg_raca->tab_descricao_raca;
-        }  
+            $desc_raca_touro_semen = isset($lipc_racas[$raca_touro_semen_id]) ? $lipc_racas[$raca_touro_semen_id] : null;
+        }
         else {
             $desc_raca_touro_semen = '';
-        }               
+        }
 
         echo "<td width='8%'><label id='racaTouro$ordem'>$desc_raca_touro_semen</label>
         <input type='hidden' id='raca_touro$ordem' value='$raca_touro_semen_id'></td>"; 
