@@ -272,7 +272,7 @@ foreach ($femeas_rows as $reg_animal) {
         }
 
         if ($num_rows_coberturas > 0) {
-            while($reg_cobertura = mysqli_fetch_object($tbl_cobertura)){
+            foreach ($cob_rows as $reg_cobertura){
                 $cobertura_id=$reg_cobertura->tbl_cobertura_id;
                 $numero_item=$reg_cobertura->tbl_ite_cobertura_numero_item;
                 $cobertura_ordem = $cobertura_id . $numero_item;
