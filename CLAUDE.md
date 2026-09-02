@@ -65,15 +65,15 @@ git push origin master
 Nunca deixe alterações sem fazer o push. Cada sessão de trabalho deve
 terminar com o repositório GitHub atualizado.
 
-**Importante:** todo o trabalho deste projeto acontece na branch `master`
-(é ela que está atualizada e é usada para as releases). A branch `main`
+**Importante:** todo o trabalho deste projeto — sistema web e `api/` —
+acontece na branch `master` (é ela que está atualizada, é usada para as
+releases, e é o que o George publica manualmente por FTP). A branch `main`
 existe no repositório remoto mas está desatualizada e não deve receber
-commits nem pushes — deixe-a como está. Veja também a **Premissa
-obrigatória nº 2** acima sobre a branch `offline-pesagem`: existe um hook
-automático que roda `git commit` + `git push origin master` a cada
-edição/criação de arquivo, mas ele commita na branch que estiver ativa no
-momento — por isso é essencial confirmar que a branch ativa é `master`
-antes de editar qualquer arquivo do sistema web.
+commits nem pushes — deixe-a como está. Existe um hook automático que roda
+`git commit` + `git push origin master` a cada edição/criação de arquivo,
+mas ele commita na branch que estiver ativa no momento — por isso ainda
+vale confirmar com `git branch --show-current` que a branch ativa é
+`master` antes de editar qualquer arquivo (sistema web ou `api/`).
 
 ---
 
