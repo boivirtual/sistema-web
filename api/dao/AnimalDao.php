@@ -282,6 +282,72 @@ class AnimalDao{
         return $a; 
     }      
 
+    // Exportação em massa dos animais ativos de uma fazenda, para popular o cache
+    // local do app (autocomplete + ficha funcionando offline). Retorna um array
+    // associativo enxuto (não os objetos Animal completos) porque pode envolver
+    // milhares de linhas por fazenda; usa as mesmas chaves de AnimalService::
+    // getAnimalInfo() para facilitar o reaproveitamento do parsing no app.
+    public function getAnimaisAtivosPorFazendaExport($local) {
+        $local = (int)$local;
+
+        $sql = "SELECT
+                    a.tbl_animal_codigo_id AS id,
+                    a.tbl_animal_codigo_alfa AS codigo_alfa,
+                    a.tbl_animal_codigo_numerico AS codigo_numerico,
+                    a.tbl_animal_sexo AS sexo,
+                    a.tbl_animal_data_nascimento AS nascimento,
+                    r.tab_descricao_raca AS raca,
+                    pel.tab_descricao_pelagem AS pelagem,
+                    a.tbl_animal_codigo_mae AS id_mae,
+                    mae.tbl_animal_codigo_alfa AS mae_alfa,
+                    mae.tbl_animal_codigo_numerico AS mae_num,
+                    a.tbl_animal_ultimo_peso AS ultimo_peso,
+                    a.tbl_animal_data_ultimo AS data_ultimo,
+                    a.tbl_animal_peso_desmama AS peso_desmama
+                FROM tbl_animais a
+                LEFT JOIN tabela_racas r ON a.tbl_animal_codigo_raca = r.tab_codigo_raca
+                LEFT JOIN tabela_pelagens pel ON a.tbl_animal_codigo_pelagem = pel.tab_codigo_pelagem
+                LEFT JOIN tbl_animais mae ON a.tbl_animal_codigo_mae = mae.tbl_animal_codigo_id
+                WHERE a.tbl_animal_lixeira = 0
+                  AND a.tbl_animal_ativo = 'S'
+                  AND a.tbl_animal_codigo_fazenda = $local
+                ORDER BY a.tbl_animal_codigo_numerico ASC";
+
+        mysqli_set_charset($this->con, "utf8");
+        $r = mysqli_query($this->con, $sql);
+
+        $lista = [];
+        if ($r) {
+            while ($dados = mysqli_fetch_assoc($r)) {
+                $codigo = $dados['codigo_alfa'] !== '' ? $dados['codigo_alfa'] . '-' . $dados['codigo_numerico'] : $dados['codigo_numerico'];
+
+                $brincoMae = 'Não inf.';
+                if (!empty($dados['mae_num'])) {
+                    $prefixo = !empty($dados['mae_alfa']) ? $dados['mae_alfa'] . '-' : '';
+                    $numeroLimpo = ltrim($dados['mae_num'], '0');
+                    if ($numeroLimpo === '') $numeroLimpo = '0';
+                    $brincoMae = $prefixo . $numeroLimpo;
+                }
+
+                $lista[] = [
+                    'id' => $dados['id'],
+                    'codigo' => $codigo,
+                    'sexo' => $dados['sexo'],
+                    'nascimento' => $dados['nascimento'],
+                    'raca' => $dados['raca'],
+                    'pelagem' => $dados['pelagem'],
+                    'idMae' => $dados['id_mae'],
+                    'brincoMae' => $brincoMae,
+                    'ultimoPeso' => $dados['ultimo_peso'],
+                    'DataUltimo' => $dados['data_ultimo'],
+                    'pesoDesmama' => $dados['peso_desmama'],
+                ];
+            }
+        }
+
+        return $lista;
+    }
+
     // ESSA É PARA OS DETALHES DO ANIMAL (Quando você clica no animal escolhido)
     public function getAnimalById($id, $local){
         $sql = "SELECT a.*, 

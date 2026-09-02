@@ -24,7 +24,9 @@ class PesagemService {
             $p->setCriteriosApartacao('');
         }
 
-        return $dao->salvarSomentePesagem($p);
+        $uuidApp = $json['uuid_app'] ?? null;
+
+        return $dao->salvarSomentePesagem($p, $uuidApp);
     }
 
     public function updatePesagemCabecalho($dados)
@@ -84,6 +86,9 @@ class PesagemService {
         $i->setPesoMedio($json['item']['peso']);
         $i->setArrobaMedio($json['item']['peso'] / 30);
 
-        return $dao->salvarPesagemEItem($p, $i);
+        $pesagemUuid = $json['uuid_app'] ?? null;
+        $itemUuid = $json['item']['uuid_app'] ?? null;
+
+        return $dao->salvarPesagemEItem($p, $i, $pesagemUuid, $itemUuid);
     }
 }

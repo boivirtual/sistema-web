@@ -36,9 +36,26 @@ class PesagemDao {
         return 0;
     }
 
-    public function salvarSomentePesagem($pesagem) {
+    // $uuidApp: identificador gerado no app (client_uuid), usado para tornar a
+    // criação idempotente em reenvios (ex: sincronização offline que perdeu a
+    // resposta de sucesso e reenviou a mesma criação).
+    public function salvarSomentePesagem($pesagem, $uuidApp = null) {
+        $uuidApp = $uuidApp !== null ? trim((string)$uuidApp) : '';
+
+        if ($uuidApp !== '') {
+            $uuidEscapado = $this->escapar($uuidApp);
+            $sqlExistente = "SELECT tbl_pesagem_id FROM tbl_pesagem
+                              WHERE tbl_pesagem_uuid_app = '{$uuidEscapado}' LIMIT 1";
+            $resExistente = mysqli_query($this->con, $sqlExistente);
+            if ($resExistente && ($rowExistente = mysqli_fetch_assoc($resExistente))) {
+                return (int)$rowExistente['tbl_pesagem_id'];
+            }
+        }
+
         mysqli_begin_transaction($this->con);
         try {
+            $uuidSql = $uuidApp !== '' ? "'" . $this->escapar($uuidApp) . "'" : "NULL";
+
             $sqlP = "INSERT INTO tbl_pesagem (
                 tbl_pesagem_controle,
                 tbl_pesagem_data,
@@ -58,7 +75,8 @@ class PesagemDao {
                 tbl_pesagem_peso_arroba,
                 tbl_pesagem_peso_medio_kg,
                 tbl_pesagem_peso_medio_arroba,
-                tbl_pesagem_criterios_apartacao
+                tbl_pesagem_criterios_apartacao,
+                tbl_pesagem_uuid_app
             ) VALUES (
                 'I',
                 '{$pesagem->getData()}',
@@ -78,7 +96,8 @@ class PesagemDao {
                 0,
                 0,
                 0,
-                '{$pesagem->getCriteriosApartacao()}'
+                '{$pesagem->getCriteriosApartacao()}',
+                {$uuidSql}
             )";
 
             if (!mysqli_query($this->con, $sqlP)) {
@@ -215,49 +234,75 @@ class PesagemDao {
         }
     }
 
-    public function salvarPesagemEItem($pesagem, $item) {
+    // $pesagemUuid/$itemUuid: identificadores gerados no app para tornar a criação
+    // do cabeçalho (quando $pesagem->getId()==0) e do item idempotentes em
+    // reenvios da fila de sincronização offline.
+    // Retorna ['pesagem_id' => int, 'numero_item' => int] em vez de int puro, para
+    // que o app saiba o número real do item sem precisar de uma chamada extra
+    // (necessário para editar/excluir o item depois, inclusive offline).
+    public function salvarPesagemEItem($pesagem, $item, $pesagemUuid = null, $itemUuid = null) {
+        $pesagemUuid = $pesagemUuid !== null ? trim((string)$pesagemUuid) : '';
+        $itemUuid = $itemUuid !== null ? trim((string)$itemUuid) : '';
+
         mysqli_begin_transaction($this->con);
         try {
             $idPesagem = (int)$pesagem->getId();
 
             if ($idPesagem == 0) {
-                $sqlP = "INSERT INTO tbl_pesagem (
-                    tbl_pesagem_controle,
-                    tbl_pesagem_data,
-                    tbl_pesagem_codigo_local, 
-                    tbl_pesagem_codigo_epoca,
-                    tbl_pesagem_lote,
-                    tbl_pesagem_filtros,
-                    tbl_pesagem_finalizada,
-                    tbl_pesagem_incluido_em,
-                    tbl_pesagem_incluido_por,
-                    tbl_pesagem_lixeira,
-                    tbl_pesagem_tipo_registro,
-                    tbl_pesagem_origem,
-                    tbl_pesagem_qtd_animais_a_pesar,
-                    tbl_pesagem_criterios_apartacao
-                ) VALUES (
-                    'I',
-                    '{$pesagem->getData()}',
-                    '{$pesagem->getLocal()}',
-                    '{$pesagem->getEpoca()}',
-                    '{$pesagem->getLote()}',
-                    '{$pesagem->getFiltro()}',
-                    'N',
-                    NOW(),
-                    '{$pesagem->getIncluidoPor()}',
-                    0,
-                    'ONLINE',
-                    'APP',
-                    '{$pesagem->getQuantidadeAnimais()}',
-                    '{$pesagem->getCriteriosApartacao()}'
-                )";
-
-                if (!mysqli_query($this->con, $sqlP)) {
-                    throw new Exception("Erro ao inserir cabeçalho da pesagem: " . mysqli_error($this->con));
+                // Reenvio idempotente: se esse uuid de pesagem já foi criado antes, reaproveita o id.
+                if ($pesagemUuid !== '') {
+                    $uuidEscapado = $this->escapar($pesagemUuid);
+                    $sqlExistente = "SELECT tbl_pesagem_id FROM tbl_pesagem
+                                      WHERE tbl_pesagem_uuid_app = '{$uuidEscapado}' LIMIT 1";
+                    $resExistente = mysqli_query($this->con, $sqlExistente);
+                    if ($resExistente && ($rowExistente = mysqli_fetch_assoc($resExistente))) {
+                        $idPesagem = (int)$rowExistente['tbl_pesagem_id'];
+                    }
                 }
 
-                $idPesagem = mysqli_insert_id($this->con);
+                if ($idPesagem == 0) {
+                    $uuidPesagemSql = $pesagemUuid !== '' ? "'" . $this->escapar($pesagemUuid) . "'" : "NULL";
+
+                    $sqlP = "INSERT INTO tbl_pesagem (
+                        tbl_pesagem_controle,
+                        tbl_pesagem_data,
+                        tbl_pesagem_codigo_local,
+                        tbl_pesagem_codigo_epoca,
+                        tbl_pesagem_lote,
+                        tbl_pesagem_filtros,
+                        tbl_pesagem_finalizada,
+                        tbl_pesagem_incluido_em,
+                        tbl_pesagem_incluido_por,
+                        tbl_pesagem_lixeira,
+                        tbl_pesagem_tipo_registro,
+                        tbl_pesagem_origem,
+                        tbl_pesagem_qtd_animais_a_pesar,
+                        tbl_pesagem_criterios_apartacao,
+                        tbl_pesagem_uuid_app
+                    ) VALUES (
+                        'I',
+                        '{$pesagem->getData()}',
+                        '{$pesagem->getLocal()}',
+                        '{$pesagem->getEpoca()}',
+                        '{$pesagem->getLote()}',
+                        '{$pesagem->getFiltro()}',
+                        'N',
+                        NOW(),
+                        '{$pesagem->getIncluidoPor()}',
+                        0,
+                        'ONLINE',
+                        'APP',
+                        '{$pesagem->getQuantidadeAnimais()}',
+                        '{$pesagem->getCriteriosApartacao()}',
+                        {$uuidPesagemSql}
+                    )";
+
+                    if (!mysqli_query($this->con, $sqlP)) {
+                        throw new Exception("Erro ao inserir cabeçalho da pesagem: " . mysqli_error($this->con));
+                    }
+
+                    $idPesagem = mysqli_insert_id($this->con);
+                }
             } else {
                 if (!$this->pesagemPermiteAcessoApp($idPesagem)) {
                     throw new Exception("Pesagem não encontrada ou não pertence ao aplicativo.");
@@ -272,7 +317,32 @@ class PesagemDao {
                 }
             }
 
+            // Reenvio idempotente do item: se esse uuid já foi gravado, devolve o número existente sem duplicar.
+            if ($itemUuid !== '') {
+                $itemUuidEscapado = $this->escapar($itemUuid);
+                $sqlItemExistente = "SELECT tbl_ite_pesagem_numero_item FROM tbl_item_pesagem
+                                      WHERE tbl_ite_pesagem_numero_id = $idPesagem
+                                        AND tbl_ite_pesagem_uuid_app = '{$itemUuidEscapado}'
+                                      LIMIT 1";
+                $resItemExistente = mysqli_query($this->con, $sqlItemExistente);
+                if ($resItemExistente && ($rowItemExistente = mysqli_fetch_assoc($resItemExistente))) {
+                    mysqli_commit($this->con);
+                    return [
+                        'pesagem_id' => $idPesagem,
+                        'numero_item' => (int)$rowItemExistente['tbl_ite_pesagem_numero_item'],
+                    ];
+                }
+            }
+
             $categoriaId = $this->buscarCategoriaPorNascimento($item->getNascimento());
+
+            // Lock na linha da pesagem antes de calcular o próximo número do item,
+            // para serializar inserções concorrentes na mesma pesagem (evita
+            // corrida entre reenvios/itens enviados quase ao mesmo tempo).
+            $sqlLock = "SELECT tbl_pesagem_id FROM tbl_pesagem WHERE tbl_pesagem_id = $idPesagem FOR UPDATE";
+            if (!mysqli_query($this->con, $sqlLock)) {
+                throw new Exception("Erro ao travar pesagem para inserção do item: " . mysqli_error($this->con));
+            }
 
             $sqlMax = "SELECT COALESCE(MAX(tbl_ite_pesagem_numero_item), 0) + 1 as prox
                        FROM tbl_item_pesagem
@@ -285,6 +355,8 @@ class PesagemDao {
 
             $rowMax = mysqli_fetch_assoc($resMax);
             $proxItem = (int)($rowMax['prox'] ?? 1);
+
+            $itemUuidSql = $itemUuid !== '' ? "'" . $this->escapar($itemUuid) . "'" : "NULL";
 
             $sqlI = "INSERT INTO tbl_item_pesagem (
                 tbl_ite_pesagem_numero_id,
@@ -307,7 +379,8 @@ class PesagemDao {
                 tbl_ite_pesagem_mens_repetido,
                 tbl_ite_pesagem_id_repetido,
                 tbl_ite_pesagem_criterio_apartacao,
-                tbl_ite_pesagem_ultimo_peso
+                tbl_ite_pesagem_ultimo_peso,
+                tbl_ite_pesagem_uuid_app
             ) VALUES (
                 $idPesagem,
                 $proxItem,
@@ -329,7 +402,8 @@ class PesagemDao {
                 '{$item->getMensItemRepetido()}',
                 '{$item->getIdPesagemItemRepetido()}',
                 '{$item->getCriterioApartacao()}',
-                '{$item->getUltimoPeso()}'
+                '{$item->getUltimoPeso()}',
+                {$itemUuidSql}
             )";
 
         if (!mysqli_query($this->con, $sqlI)) {
@@ -343,7 +417,10 @@ class PesagemDao {
         // recalcula os repetidos já fora da transação principal
         $this->recalcularItensRepetidosPorAnimal($item->getIdAnimal());
 
-        return $idPesagem;
+        return [
+            'pesagem_id' => $idPesagem,
+            'numero_item' => $proxItem,
+        ];
 
         } catch (Exception $e) {
             mysqli_rollback($this->con);
