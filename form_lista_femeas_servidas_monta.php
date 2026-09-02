@@ -69,7 +69,106 @@ $tbl_animais = mysqli_query($conector, "SELECT * FROM tbl_animais
     WHERE tbl_animal_sexo = 'F'
     ORDER BY tbl_animal_codigo_numerico ASC");
 
+// ===================================================================
+// PRÉ-CARGA EM LOTE — o laço percorre TODAS as fêmeas e antes fazia 4
+// consultas por fêmea (cobertura, raça, nº partos, nº abortos). Agora
+// tudo vem de mapas montados uma única vez. Nenhuma regra/saída muda.
+// ===================================================================
+$femeas_rows = array();
 while ($reg_animal = mysqli_fetch_object($tbl_animais)) {
+    $femeas_rows[] = $reg_animal;
+}
+mysqli_free_result($tbl_animais);
+
+// Raças (todas as ativas)
+$flsm_racas = array();
+$rs = mysqli_query($conector, "SELECT tab_codigo_raca, tab_descricao_raca FROM tabela_racas
+    WHERE tab_registro_lixeira_raca = 0");
+while ($r = mysqli_fetch_object($rs)) {
+    $flsm_racas[$r->tab_codigo_raca] = $r->tab_descricao_raca;
+}
+
+// Nº de partos (filhos) por mãe
+$flsm_partos = array();
+$rs = mysqli_query($conector, "SELECT tbl_animal_codigo_mae, COUNT(*) AS c
+    FROM tbl_animais GROUP BY tbl_animal_codigo_mae");
+while ($r = mysqli_fetch_object($rs)) {
+    $flsm_partos[$r->tbl_animal_codigo_mae] = (int)$r->c;
+}
+
+// Nº de abortos/absorção (entrada_saida='A') por mãe
+$flsm_abortos = array();
+$rs = mysqli_query($conector, "select tbl_mov_estoque_codigo_mae, COUNT(*) AS c
+    from tbl_movimentacao_estoque
+    where tbl_mov_estoque_entrada_saida='A'
+    group by tbl_mov_estoque_codigo_mae");
+while ($r = mysqli_fetch_object($rs)) {
+    $flsm_abortos[$r->tbl_mov_estoque_codigo_mae] = (int)$r->c;
+}
+
+// Itens de cobertura Monta que atendem ao filtro — MESMAS condições da consulta
+// original, porém sem o "codigo_id_animal = X" (buscamos todos de uma vez) e
+// agrupados por fêmea. $diagnostico aqui ainda é o valor recebido via POST.
+if ($opcao_monta=='I') {
+    $sql_flsm = "SELECT * FROM tbl_item_cobertura
+        INNER JOIN tbl_cobertura
+                ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
+        WHERE tbl_cobertura_lixeira=0 AND
+              tbl_cobertura_codigo_local = '$codigo_local' AND
+              tbl_ite_cobertura_previsao_parto is null AND
+              tbl_cobertura_controle = 'M' AND
+              (tbl_ite_cobertura_resultado_diagnostico='' OR
+               tbl_ite_cobertura_resultado_diagnostico is null) AND
+              (tbl_ite_cobertura_nascido='' OR
+               tbl_ite_cobertura_nascido is null)" . $wsituacao;
+}
+else {
+    if ($diagnostico=='P') {
+        if ($periodo_de!='') {
+            $sql_flsm = "SELECT * FROM tbl_item_cobertura
+                INNER JOIN tbl_cobertura
+                        ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
+                WHERE tbl_cobertura_lixeira=0 AND
+                      tbl_cobertura_codigo_local = '$codigo_local' AND
+                      tbl_cobertura_controle = 'M' AND
+                      tbl_ite_cobertura_data_prenhes>='$periodo_de' AND
+                      tbl_ite_cobertura_data_prenhes<='$periodo_ate' AND
+                      tbl_ite_cobertura_resultado_diagnostico='P'" .
+                      $wsituacao;
+        }
+        else {
+            $sql_flsm = "SELECT * FROM tbl_item_cobertura
+                INNER JOIN tbl_cobertura
+                        ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
+                WHERE tbl_cobertura_lixeira=0 AND
+                      tbl_cobertura_codigo_local = '$codigo_local' AND
+                      tbl_cobertura_controle = 'M' AND
+                      tbl_ite_cobertura_resultado_diagnostico='P' AND
+                      tbl_ite_cobertura_previsao_parto>='$previsao_parto_de' AND
+                      tbl_ite_cobertura_previsao_parto<='$previsao_parto_ate'" .
+                      $wsituacao;
+        }
+    }
+    else {
+        $sql_flsm = "SELECT * FROM tbl_item_cobertura
+            INNER JOIN tbl_cobertura
+                    ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
+            WHERE tbl_cobertura_lixeira=0 AND
+                  tbl_cobertura_codigo_local = '$codigo_local' AND
+                  tbl_cobertura_controle = 'M' AND
+                  DATE(tbl_ite_cobertura_negativo_em)>='$periodo_de' AND
+                  DATE(tbl_ite_cobertura_negativo_em)<='$periodo_ate' AND
+                  tbl_ite_cobertura_resultado_diagnostico='N'";
+    }
+}
+
+$flsm_cob = array();
+$rs = mysqli_query($conector, $sql_flsm);
+while ($r = mysqli_fetch_object($rs)) {
+    $flsm_cob[$r->tbl_ite_cobertura_codigo_id_animal][] = $r;
+}
+
+foreach ($femeas_rows as $reg_animal) {
     $codigo_id = $reg_animal->tbl_animal_codigo_id;
     $codigo_alfa = $reg_animal->tbl_animal_codigo_alfa;
     $codigo_numerico = intval($reg_animal->tbl_animal_codigo_numerico);
