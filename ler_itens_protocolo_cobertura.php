@@ -471,32 +471,16 @@
         $inseminador = $reg_itensCobertura->tbl_ite_cobertura_nome_inseminador;
         $destino = $reg_itensCobertura->tbl_ite_cobertura_destino;
 
-        $sql = "SELECT * FROM tbl_animais WHERE tbl_animal_codigo_id = $animal_id";
-        $res = mysqli_query($conector, $sql);
-        $reg_animal = mysqli_fetch_object($res);
+        $reg_animal = isset($lipc_animal[$animal_id]) ? $lipc_animal[$animal_id] : null;
 
         //$numero_coberturas = $reg_animal->tbl_animal_numero_coberturas;
         $raca_id = $reg_animal->tbl_animal_codigo_raca;
         $pai_id = $reg_animal->tbl_animal_codigo_pai;
 
         // VERIFICA O NUMERO DE COBERTURAS NA ESTACAO
+        $numero_coberturas = isset($lipc_cob_estacao[$animal_id]) ? $lipc_cob_estacao[$animal_id] : 0;
 
-        $tbl_cobertura = mysqli_query($conector, "select * from tbl_cobertura
-            inner join tbl_item_cobertura 
-                    on tbl_ite_cobertura_numero_id = tbl_cobertura_id
-            where tbl_cobertura_lixeira=0 and 
-                  tbl_cobertura_codigo_local = '$local_cobertura' and 
-                  tbl_cobertura_codigo_estacao_monta = '$estacao_monta' and 
-                  tbl_ite_cobertura_codigo_id_animal='$animal_id' and 
-                  tbl_ite_cobertura_dia_1='S'");
-
-        $numero_coberturas = mysqli_num_rows($tbl_cobertura);
-
-        $sql = "SELECT * FROM tabela_racas WHERE tab_codigo_raca = $raca_id AND tab_registro_lixeira_raca = 0";
-        $res = mysqli_query($conector, $sql);
-        $reg_raca = mysqli_fetch_object($res);
-
-        $raca = $reg_raca->tab_descricao_raca;
+        $raca = isset($lipc_racas[$raca_id]) ? $lipc_racas[$raca_id] : null;
 
         echo "<td align='left' width='8%'>$matriz</td>";
         echo "<td width='8%'>$raca</td>";
