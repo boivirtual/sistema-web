@@ -2,6 +2,17 @@
     include "valida_sessao.inc";
     include "conecta_mysql.inc";
 
+    // Monta lista de valores para cláusula IN (...) já escapando cada item
+    if (!function_exists('flc_in_list')) {
+        function flc_in_list($conector, $valores) {
+            $itens = array();
+            foreach ($valores as $v) {
+                $itens[] = "'" . mysqli_real_escape_string($conector, $v) . "'";
+            }
+            return implode(',', $itens);
+        }
+    }
+
     $fazenda = $_POST["local"];
     $estacao = $_POST["estacao"];
 
