@@ -516,15 +516,13 @@
 
                 <optgroup label='SEMEM'>";
 
-                $semem = mysqli_query($conector, "select * from tbl_semem where tbl_semem_lixeira=0 and tbl_semem_ativo='S' order by tbl_semem_nome asc"); 
-                    
-                while($reg = mysqli_fetch_object($semem)) { 
+                foreach ($lipc_semem_lista as $reg) {
                     echo "<option value='$reg->tbl_semem_codigo_id'";
 
-                    if ($reg->tbl_semem_codigo_id==$touro_semem) { 
+                    if ($reg->tbl_semem_codigo_id==$touro_semem) {
                         $raca_touro_semen_id = $reg->tbl_semem_codigo_raca;
-                        echo "selected"; 
-                    } 
+                        echo "selected";
+                    }
 
                     echo ">";
                     echo "$reg->tbl_semem_nome";
@@ -535,14 +533,7 @@
 
                 echo "<optgroup label='TOUROS'>";
 
-                $touro = mysqli_query($conector, "select * from tbl_animais 
-                    where tbl_animal_lixeira=0 and 
-                        tbl_animal_sexo='M' and 
-                        tbl_animal_reprodutor='S' and
-                        tbl_animal_ativo = 'S' 
-                    order by ISNULL(tbl_animal_nome) asc, tbl_animal_nome asc, tbl_animal_codigo_numerico asc"); 
-                            
-                while($reg = mysqli_fetch_object($touro)) { 
+                foreach ($lipc_touro_lista as $reg) {
                     echo "<option value='$reg->tbl_animal_codigo_id'";
 
                     if ($reg->tbl_animal_codigo_id==$touro_semem) { 
