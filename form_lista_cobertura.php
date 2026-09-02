@@ -161,7 +161,84 @@
 
     $query = mysqli_query($conector, $sql);
 
-    while($reg_cobertura = mysqli_fetch_object($query)){
+    // ===================================================================
+    // PRÉ-CARGA EM LOTE — as 4 consultas que rodavam uma vez por cobertura
+    // dentro do while passam a ser feitas uma única vez. Nenhuma regra de
+    // negócio ou saída HTML muda.
+    // ===================================================================
+    $flc_coberturas_rows = array();
+    $flc_protocolo_ids = array();
+    $flc_cobertura_ids = array();
+    while ($reg_cobertura = mysqli_fetch_object($query)) {
+        $flc_coberturas_rows[] = $reg_cobertura;
+        if ($reg_cobertura->tbl_cobertura_protocoloiatf !== null && $reg_cobertura->tbl_cobertura_protocoloiatf !== '') {
+            $flc_protocolo_ids[$reg_cobertura->tbl_cobertura_protocoloiatf] = true;
+        }
+        if ($reg_cobertura->tbl_cobertura_id !== null) {
+            $flc_cobertura_ids[$reg_cobertura->tbl_cobertura_id] = true;
+        }
+    }
+
+    $flc_protocolo   = array(); // protocolo (não-lixeira) por id
+    $flc_pc          = array(); // tbl_protocolo_cobertura por cobertura_id
+    $flc_dias        = array(); // arrayDias por protocolo_id
+    $flc_dias_idx    = array();
+    $flc_tem_dia2    = array(); // cobertura_id => tem algum item com dia_2='S'
+
+    if (!empty($flc_protocolo_ids)) {
+        $in_prot = flc_in_list($conector, array_keys($flc_protocolo_ids));
+
+        $q = mysqli_query($conector, "SELECT tbl_protocoloiatf_id, tbl_protocoloiatf_descricao,
+                tbl_protocoloiatf_tipo
+            FROM tbl_protocoloiatf
+            WHERE tbl_protocoloiatf_id IN ($in_prot) AND tbl_protocoloiatf_lixeira = 0");
+        while ($rr = mysqli_fetch_object($q)) {
+            if (!isset($flc_protocolo[$rr->tbl_protocoloiatf_id])) {
+                $flc_protocolo[$rr->tbl_protocoloiatf_id] = $rr;
+            }
+        }
+
+        $q = mysqli_query($conector, "SELECT tbl_ite_protocoloiatf_protocolo_id,
+                tbl_ite_protocoloiatf_descricao
+            FROM tbl_item_protocoloiatf
+            WHERE tbl_ite_protocoloiatf_lixeira = 0 AND
+                  tbl_ite_protocoloiatf_protocolo_id IN ($in_prot)
+            ORDER BY tbl_ite_protocoloiatf_id ASC");
+        while ($rr = mysqli_fetch_object($q)) {
+            $pid = $rr->tbl_ite_protocoloiatf_protocolo_id;
+            if (!isset($flc_dias[$pid])) {
+                $flc_dias[$pid] = array(0 => 0, 1 => 0, 2 => 0, 3 => 0, 4 => 0);
+                $flc_dias_idx[$pid] = 0;
+            }
+            $flc_dias[$pid][$flc_dias_idx[$pid]] = substr($rr->tbl_ite_protocoloiatf_descricao, 3);
+            $flc_dias_idx[$pid]++;
+        }
+    }
+
+    if (!empty($flc_cobertura_ids)) {
+        $in_cob = flc_in_list($conector, array_keys($flc_cobertura_ids));
+
+        $q = mysqli_query($conector, "SELECT tbl_protocolo_cobertura_codigo_id,
+                tbl_protocolo_cobertura_data
+            FROM tbl_protocolo_cobertura
+            WHERE tbl_protocolo_cobertura_codigo_id IN ($in_cob)");
+        while ($rr = mysqli_fetch_object($q)) {
+            if (!isset($flc_pc[$rr->tbl_protocolo_cobertura_codigo_id])) {
+                $flc_pc[$rr->tbl_protocolo_cobertura_codigo_id] = $rr;
+            }
+        }
+
+        $q = mysqli_query($conector, "SELECT tbl_ite_cobertura_numero_id,
+                MAX(tbl_ite_cobertura_dia_2='S') AS tem
+            FROM tbl_item_cobertura
+            WHERE tbl_ite_cobertura_numero_id IN ($in_cob)
+            GROUP BY tbl_ite_cobertura_numero_id");
+        while ($rr = mysqli_fetch_object($q)) {
+            $flc_tem_dia2[$rr->tbl_ite_cobertura_numero_id] = $rr->tem;
+        }
+    }
+
+    foreach ($flc_coberturas_rows as $reg_cobertura){
         $cobertura_id = $reg_cobertura->tbl_cobertura_id;
         $cobertura_data = date('d/m/Y', strtotime($reg_cobertura->tbl_cobertura_data));
         $cobertura_grupo = $reg_cobertura->tbl_cobertura_codigo_grupo;
