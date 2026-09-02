@@ -190,65 +190,8 @@ foreach ($femeas_rows as $reg_animal) {
     // Cartão: MELHORIA NA REPRODUÇÃO (PARA DEPOIS DA ESTAÇÃO 24/2025)
     // Cheklist: AJUSTE REUNIAO 16/06/2025
 
-    if ($opcao_monta=='I') {
-        $sql =  "SELECT * FROM tbl_item_cobertura 
-            INNER JOIN tbl_cobertura
-                    ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
-            WHERE tbl_cobertura_lixeira=0 AND 
-                  tbl_ite_cobertura_codigo_id_animal = '$codigo_id' AND 
-                  tbl_cobertura_codigo_local = '$codigo_local' AND 
-                  tbl_ite_cobertura_previsao_parto is null AND
-                  tbl_cobertura_controle = 'M' AND 
-                  (tbl_ite_cobertura_resultado_diagnostico='' OR 
-                   tbl_ite_cobertura_resultado_diagnostico is null) AND 
-                  (tbl_ite_cobertura_nascido='' OR 
-                   tbl_ite_cobertura_nascido is null)" . $wsituacao; 
-    }
-    else {
-        if ($diagnostico=='P') {
-            if ($periodo_de!='') {
-                $sql =  "SELECT * FROM tbl_item_cobertura 
-                    INNER JOIN tbl_cobertura
-                            ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
-                    WHERE tbl_cobertura_lixeira=0 AND
-                          tbl_ite_cobertura_codigo_id_animal = '$codigo_id' AND 
-                          tbl_cobertura_codigo_local = '$codigo_local' AND 
-                          tbl_cobertura_controle = 'M' AND
-                          tbl_ite_cobertura_data_prenhes>='$periodo_de' AND
-                          tbl_ite_cobertura_data_prenhes<='$periodo_ate' AND 
-                          tbl_ite_cobertura_resultado_diagnostico='P'" . 
-                          $wsituacao; 
-            }
-            else {
-                $sql =  "SELECT * FROM tbl_item_cobertura 
-                    INNER JOIN tbl_cobertura
-                            ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
-                    WHERE tbl_cobertura_lixeira=0 AND
-                          tbl_ite_cobertura_codigo_id_animal = '$codigo_id' AND 
-                          tbl_cobertura_codigo_local = '$codigo_local' AND 
-                          tbl_cobertura_controle = 'M' AND
-                          tbl_ite_cobertura_resultado_diagnostico='P' AND 
-                          tbl_ite_cobertura_previsao_parto>='$previsao_parto_de' AND 
-                          tbl_ite_cobertura_previsao_parto<='$previsao_parto_ate'" . 
-                          $wsituacao; 
-            }
-        }
-        else {
-            $sql =  "SELECT * FROM tbl_item_cobertura 
-                INNER JOIN tbl_cobertura
-                        ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
-                WHERE tbl_cobertura_lixeira=0 AND 
-                      tbl_ite_cobertura_codigo_id_animal = '$codigo_id' AND 
-                      tbl_cobertura_codigo_local = '$codigo_local' AND 
-                      tbl_cobertura_controle = 'M' AND 
-                      DATE(tbl_ite_cobertura_negativo_em)>='$periodo_de' AND
-                      DATE(tbl_ite_cobertura_negativo_em)<='$periodo_ate' AND 
-                      tbl_ite_cobertura_resultado_diagnostico='N'"; 
-        }
-    }
-
-    $tbl_cobertura = mysqli_query($conector, $sql);
-    $num_rows_coberturas = mysqli_num_rows($tbl_cobertura);
+    $cob_rows = isset($flsm_cob[$codigo_id]) ? $flsm_cob[$codigo_id] : array();
+    $num_rows_coberturas = count($cob_rows);
 
         if ($tem_thead == 'N'){
             echo '<section class="panel-group lista_contas">
