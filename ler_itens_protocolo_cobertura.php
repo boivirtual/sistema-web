@@ -1,6 +1,17 @@
 <?php
     include "conecta_mysql.inc";
 
+    // Monta lista de valores para cláusula IN (...) já escapando cada item
+    if (!function_exists('lipc_in_list')) {
+        function lipc_in_list($conector, $valores) {
+            $itens = array();
+            foreach ($valores as $v) {
+                $itens[] = "'" . mysqli_real_escape_string($conector, $v) . "'";
+            }
+            return implode(',', $itens);
+        }
+    }
+
     $protocolo_id = $_POST["protocolo_id"];
     $cobertura_id = $_POST["cobertura_id"];
     $tipoCobertura = 'I';
