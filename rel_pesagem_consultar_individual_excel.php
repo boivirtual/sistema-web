@@ -220,7 +220,7 @@ $tbl_itens = mysqli_query($conector, "SELECT * FROM tbl_item_pesagem
     INNER JOIN tbl_animais
             ON tbl_animal_codigo_id = tbl_ite_pesagem_codigo_id_animal
     WHERE tbl_ite_pesagem_numero_id='$pesagem_id'
-    ORDER BY tbl_animal_codigo_numerico ASC");
+    ORDER BY tbl_ite_pesagem_numero_item ASC");
 
 $num_rows = mysqli_num_rows($tbl_itens);
 
