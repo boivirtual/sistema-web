@@ -496,28 +496,11 @@ foreach ($registros_cobertura as $reg_cobertura) {
              $idade = 0;
         }
 
-        // 6.5. Verificação da Estação Atual (AINDA É UMA CONSULTA PONTUAL)
+        // 6.5. Verificação da Estação Atual (do cache em lote)
         $num_rows_coberturas_atual = 0;
 
         if ($diagnostico == "N") {
-            // Esta consulta pode ser mantida, mas seria melhor buscar todas de uma vez no cache.
-            // Para simplicidade, mantive a lógica original, mas o impacto é menor pois só ocorre para 'N'.
-            $sql_cobertura_atual = "SELECT 1 FROM tbl_item_cobertura
-                INNER JOIN tbl_cobertura ON tbl_ite_cobertura_numero_id = tbl_cobertura_id
-                WHERE tbl_cobertura_lixeira=0 AND
-                      tbl_ite_cobertura_codigo_id_animal = ? AND
-                      tbl_cobertura_codigo_local = ? AND
-                      tbl_cobertura_controle = 'C' AND
-                      tbl_cobertura_codigo_estacao_monta = ?
-                ORDER BY tbl_cobertura_id DESC LIMIT 1";
-
-            if ($stmt_atual = mysqli_prepare($conector, $sql_cobertura_atual)) {
-                mysqli_stmt_bind_param($stmt_atual, "ssi", $codigo_id, $codigo_local, $id_estacao_atual);
-                mysqli_stmt_execute($stmt_atual);
-                mysqli_stmt_store_result($stmt_atual);
-                $num_rows_coberturas_atual = mysqli_stmt_num_rows($stmt_atual);
-                mysqli_stmt_close($stmt_atual);
-            }
+            $num_rows_coberturas_atual = $coberturas_atual_cache[(int)$codigo_id] ?? 0;
         }
 
         // Formato para exibição
