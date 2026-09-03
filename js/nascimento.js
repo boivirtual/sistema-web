@@ -311,6 +311,7 @@ $(document).ready(function(){
     });
 
     $('#tabela_nascimento_lote').DataTable({
+        "responsive": true,
         "paging":   true,
         "ordering": true,
         "info":     true,
