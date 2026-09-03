@@ -473,16 +473,7 @@
                             $desc_sexo = $sexo;
                         }
 
-                        $tab_raca = mysqli_query($conector, "select * from tabela_racas where tab_codigo_raca='$codigo_raca'");
-                        $num_rows_raca = mysqli_num_rows($tab_raca);
-
-                        if ($num_rows_raca!=0){
-                            $reg = mysqli_fetch_object($tab_raca);
-                            $descricao_raca = $reg->tab_descricao_raca;
-                        }
-                        else {
-                            $descricao_raca = '';
-                        }
+                        $descricao_raca = nasc_desc_raca($conector, $codigo_raca);
 
                         $tab_cor = mysqli_query($conector, "select * from tabela_pelagens where tab_codigo_pelagem ='$codigo_cor'");
                         $num_rows_cor = mysqli_num_rows($tab_cor);
@@ -547,16 +538,7 @@
                             $desc_sexo = $sexo;
                         }
                                 
-                        $tab_raca = mysqli_query($conector, "select * from tabela_racas where tab_codigo_raca='$codigo_raca'");
-                        $num_rows_raca = mysqli_num_rows($tab_raca);
-
-                        if ($num_rows_raca!=0){
-                            $reg = mysqli_fetch_object($tab_raca);
-                            $descricao_raca = $reg->tab_descricao_raca;
-                        }
-                        else {
-                            $descricao_raca = '';
-                        }
+                        $descricao_raca = nasc_desc_raca($conector, $codigo_raca);
 
                         $tab_cor = mysqli_query($conector, "select * from tabela_pelagens where tab_codigo_pelagem ='$codigo_cor'");
                         $num_rows_cor = mysqli_num_rows($tab_cor);
