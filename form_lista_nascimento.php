@@ -489,21 +489,17 @@
                             $mae_raca='';
                         }
 
-                        $tab_pai = mysqli_query($conector, "select * from tbl_semem where tbl_semem_codigo_id='$pai'");
-                        $num_rows_pai = mysqli_num_rows($tab_pai);
+                        $reg_semem_pai = nasc_semem($conector, $pai);
 
-                        if ($num_rows_pai!=0){
-                            $reg = mysqli_fetch_object($tab_pai);
-                            $descricao_pai = $reg->tbl_semem_nome;
-                            $pai = $reg->tbl_semem_codigo_id;
+                        if ($reg_semem_pai !== null){
+                            $descricao_pai = $reg_semem_pai->tbl_semem_nome;
+                            $pai = $reg_semem_pai->tbl_semem_codigo_id;
                         }
                         else {
-                            $tab_pai = mysqli_query($conector, "select * from tbl_animais where tbl_animal_codigo_id='$pai'");
-                            $num_rows_pai = mysqli_num_rows($tab_pai);
+                            $reg_animal_pai = nasc_animal($conector, $pai);
 
-                            if ($num_rows_pai!=0){
-                                $reg = mysqli_fetch_object($tab_pai);
-                                $descricao_pai = $reg->tbl_animal_codigo_alfa. ' ' . $reg->tbl_animal_codigo_numerico;
+                            if ($reg_animal_pai !== null){
+                                $descricao_pai = $reg_animal_pai->tbl_animal_codigo_alfa. ' ' . $reg_animal_pai->tbl_animal_codigo_numerico;
                             }
                             else {
                                 $descricao_pai = '';
