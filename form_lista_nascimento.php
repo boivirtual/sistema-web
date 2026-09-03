@@ -1044,7 +1044,12 @@
         $total_absorcao = 0;
         $total_aborto = 0;
 
-        while ($reg_nasc = mysqli_fetch_object($rs)){
+        // Buffer + pré-carga em lote de todos os dados auxiliares
+        $movs = array();
+        while ($reg_nasc = mysqli_fetch_object($rs)) { $movs[] = $reg_nasc; }
+        $GLOBALS['NASC_M'] = nasc_preload($conector, $movs);
+
+        foreach ($movs as $reg_nasc){
             $codigo_fazenda = $reg_nasc->tbl_mov_estoque_local;
 
             foreach ($array_locais_usuario as $value) {
@@ -1060,7 +1065,7 @@
                     $codigo_pasto = $reg_nasc->tbl_mov_estoque_codigo_pasto;
                     $peso = $reg_nasc->tbl_mov_estoque_primeiro_peso;
                     $tipo_movimentacao = $reg_nasc->tbl_mov_estoque_tipo_movimentacao;
-                    $cobertura_id = $reg_nasc->tbl_mov_estoque_cobertura_numero_id; 
+                    $cobertura_id = $reg_nasc->tbl_mov_estoque_cobertura_numero_id;
                     $item_cobertura = $reg_nasc->tbl_mov_estoque_cobertura_numero_item;
                     $monta_natural = $reg_nasc->tbl_mov_estoque_cobertura_monta_natural;
 
