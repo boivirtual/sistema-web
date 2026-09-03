@@ -1,21 +1,27 @@
 <?php
     function verificar_estacao($conector, $cobertura_id, $array_estacao){
-        $sql = "SELECT * FROM tbl_cobertura
-            INNER JOIN tbl_parametro_estacao_monta
-                    ON tbl_par_estacao_id = tbl_cobertura_codigo_estacao_monta  
-            WHERE tbl_cobertura_lixeira=0 AND 
-                  tbl_cobertura_id = '$cobertura_id'"; 
+        // Cache do nome da estação por cobertura (a consulta só depende de $cobertura_id)
+        static $cache_nome = [];
 
-        $tbl_cobertura = mysqli_query($conector, $sql);
-        $num_rows = mysqli_num_rows($tbl_cobertura);
+        if (!array_key_exists($cobertura_id, $cache_nome)) {
+            $sql = "SELECT tbl_par_estacao_nome FROM tbl_cobertura
+                INNER JOIN tbl_parametro_estacao_monta
+                        ON tbl_par_estacao_id = tbl_cobertura_codigo_estacao_monta
+                WHERE tbl_cobertura_lixeira=0 AND
+                      tbl_cobertura_id = '" . mysqli_real_escape_string($conector, $cobertura_id) . "'";
+
+            $tbl_cobertura = mysqli_query($conector, $sql);
+            $reg_cobertura = mysqli_fetch_object($tbl_cobertura);
+            $cache_nome[$cobertura_id] = $reg_cobertura ? $reg_cobertura->tbl_par_estacao_nome : null;
+        }
+
         $tem_cobertura = 'N';
 
-        if ($num_rows!=0) {
-            $reg_cobertura = mysqli_fetch_object($tbl_cobertura);
-            $nome_estacao = $reg_cobertura->tbl_par_estacao_nome;
+        if ($cache_nome[$cobertura_id] !== null) {
+            $nome_estacao = $cache_nome[$cobertura_id];
             $quantidade_itens = count($array_estacao);
 
-            for ($i=0; $i < $quantidade_itens; $i++) { 
+            for ($i=0; $i < $quantidade_itens; $i++) {
                 if ($array_estacao[$i]==$nome_estacao) {
                     $tem_cobertura = 'S';
                 }
@@ -26,6 +32,142 @@
     }
 
     include "conecta_mysql.inc";
+
+    // ===================================================================
+    // Helpers memoizados — cada um reproduz EXATAMENTE a consulta que
+    // antes rodava uma vez por linha do laço; o resultado é guardado em
+    // cache por chave, então IDs repetidos (fazenda, raça, pasto, mãe,
+    // protocolo, etc.) não vão mais ao banco várias vezes.
+    // Nenhuma regra de negócio ou saída HTML é alterada.
+    // ===================================================================
+    function nasc_esc($conector, $v) {
+        return mysqli_real_escape_string($conector, $v);
+    }
+
+    function nasc_desc_local($conector, $id) {
+        static $c = [];
+        if (!array_key_exists($id, $c)) {
+            $r = mysqli_query($conector, "select tbl_pessoa_nome from tbl_pessoa where tbl_pessoa_id='" . nasc_esc($conector, $id) . "'");
+            $row = mysqli_fetch_object($r);
+            $c[$id] = $row ? $row->tbl_pessoa_nome : '';
+        }
+        return $c[$id];
+    }
+
+    function nasc_desc_pasto($conector, $id) {
+        static $c = [];
+        if (!array_key_exists($id, $c)) {
+            $r = mysqli_query($conector, "select tbl_pasto_descricao from tbl_pasto where tbl_pasto_id ='" . nasc_esc($conector, $id) . "'");
+            $row = mysqli_fetch_object($r);
+            $c[$id] = $row ? $row->tbl_pasto_descricao : '';
+        }
+        return $c[$id];
+    }
+
+    function nasc_animal($conector, $id) {
+        static $c = [];
+        if (!array_key_exists($id, $c)) {
+            $r = mysqli_query($conector, "select * from tbl_animais where tbl_animal_codigo_id='" . nasc_esc($conector, $id) . "'");
+            $c[$id] = mysqli_fetch_object($r) ?: null;
+        }
+        return $c[$id];
+    }
+
+    function nasc_desc_estacao($conector, $id) {
+        static $c = [];
+        if (!array_key_exists($id, $c)) {
+            $r = mysqli_query($conector, "select tbl_par_estacao_nome from tbl_parametro_estacao_monta where tbl_par_estacao_id='" . nasc_esc($conector, $id) . "'");
+            $row = mysqli_fetch_object($r);
+            $c[$id] = $row ? $row->tbl_par_estacao_nome : '';
+        }
+        return $c[$id];
+    }
+
+    function nasc_desc_raca($conector, $id) {
+        static $c = [];
+        if (!array_key_exists($id, $c)) {
+            $r = mysqli_query($conector, "select tab_descricao_raca from tabela_racas where tab_codigo_raca='" . nasc_esc($conector, $id) . "'");
+            $row = mysqli_fetch_object($r);
+            $c[$id] = $row ? $row->tab_descricao_raca : '';
+        }
+        return $c[$id];
+    }
+
+    function nasc_desc_cor($conector, $id) {
+        static $c = [];
+        if (!array_key_exists($id, $c)) {
+            $r = mysqli_query($conector, "select tab_descricao_pelagem from tabela_pelagens where tab_codigo_pelagem ='" . nasc_esc($conector, $id) . "'");
+            $row = mysqli_fetch_object($r);
+            $c[$id] = $row ? $row->tab_descricao_pelagem : '';
+        }
+        return $c[$id];
+    }
+
+    function nasc_mae($conector, $id) {
+        static $c = [];
+        if (!array_key_exists($id, $c)) {
+            $r = mysqli_query($conector, "select * from tbl_animais
+                inner join tabela_racas
+                        on tab_codigo_raca=tbl_animal_codigo_raca
+                where tbl_animal_codigo_id='" . nasc_esc($conector, $id) . "'");
+            $c[$id] = mysqli_fetch_object($r) ?: null;
+        }
+        return $c[$id];
+    }
+
+    function nasc_semem($conector, $id) {
+        static $c = [];
+        if (!array_key_exists($id, $c)) {
+            $r = mysqli_query($conector, "select * from tbl_semem where tbl_semem_codigo_id='" . nasc_esc($conector, $id) . "'");
+            $c[$id] = mysqli_fetch_object($r) ?: null;
+        }
+        return $c[$id];
+    }
+
+    function nasc_itens_cobertura($conector, $cobertura_id, $item) {
+        static $c = [];
+        $k = $cobertura_id . '|' . $item;
+        if (!array_key_exists($k, $c)) {
+            $r = mysqli_query($conector, "SELECT * FROM tbl_item_cobertura
+                INNER JOIN tbl_cobertura
+                        ON tbl_cobertura_id = tbl_ite_cobertura_numero_id
+                     WHERE tbl_cobertura_lixeira=0 AND
+                           tbl_ite_cobertura_numero_id='" . nasc_esc($conector, $cobertura_id) . "' AND
+                           tbl_ite_cobertura_numero_item='" . nasc_esc($conector, $item) . "'");
+            $linhas = [];
+            while ($row = mysqli_fetch_object($r)) {
+                $linhas[] = $row;
+            }
+            $c[$k] = $linhas;
+        }
+        return $c[$k];
+    }
+
+    function nasc_protocolo_cobertura($conector, $cobertura_id) {
+        static $c = [];
+        if (!array_key_exists($cobertura_id, $c)) {
+            $r = mysqli_query($conector, "SELECT tbl_protocolo_cobertura_data FROM tbl_protocolo_cobertura
+                WHERE tbl_protocolo_cobertura_codigo_id = '" . nasc_esc($conector, $cobertura_id) . "'");
+            $c[$cobertura_id] = mysqli_fetch_object($r) ?: null;
+        }
+        return $c[$cobertura_id];
+    }
+
+    function nasc_itens_protocolo($conector, $protocolo_id) {
+        static $c = [];
+        if (!array_key_exists($protocolo_id, $c)) {
+            $r = mysqli_query($conector, "SELECT tbl_ite_protocoloiatf_descricao FROM tbl_item_protocoloiatf
+                WHERE tbl_ite_protocoloiatf_lixeira = 0 AND
+                      tbl_ite_protocoloiatf_protocolo_id = '" . nasc_esc($conector, $protocolo_id) . "'
+                ORDER BY tbl_ite_protocoloiatf_id ASC");
+            $linhas = [];
+            while ($row = mysqli_fetch_object($r)) {
+                $linhas[] = $row;
+            }
+            $c[$protocolo_id] = $linhas;
+        }
+        return $c[$protocolo_id];
+    }
 
     $wlocal = "";
     $wlocal_cobertura='';
