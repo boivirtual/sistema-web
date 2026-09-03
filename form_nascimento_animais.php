@@ -143,9 +143,6 @@
                 on tab_codigo_raca=tbl_semem_codigo_raca
         where tbl_semem_lixeira=0"); 
 
-    $mae = mysqli_query($conector, "select * from tbl_animais where tbl_animal_lixeira=0  and tbl_animal_sexo='F'
-    	order by tbl_animal_codigo_numerico"); 
-
     $raca = mysqli_query($conector, "select * from tabela_racas where tab_registro_lixeira_raca=0");
     
     $pelagem = mysqli_query($conector, "select * from tabela_pelagens where tab_registro_lixeira_pelagem=0"); 
