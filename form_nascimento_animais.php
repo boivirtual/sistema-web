@@ -132,9 +132,7 @@
 
     $local_filtro = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0"); 
 
-    $local = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0");
-
-    $pai = mysqli_query($conector, "select * from tbl_animais 
+    $pai = mysqli_query($conector, "select * from tbl_animais
         inner join tabela_racas
                 on tab_codigo_raca=tbl_animal_codigo_raca
                 where tbl_animal_lixeira=0 and tbl_animal_sexo='M'
