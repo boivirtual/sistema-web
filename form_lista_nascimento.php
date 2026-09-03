@@ -312,16 +312,28 @@
 
         $protos = array();
         if (!empty($cob)) {
-            $in = nasc_in($conector, array_keys($cob));
-            $q = mysqli_query($conector, "SELECT * FROM tbl_item_cobertura
+            // Só os itens (cobertura, numero_item) que realmente aparecem — usa a PK
+            // composta (numero_id, numero_item). Colunas só as usadas (nada de SELECT *).
+            $pares = array();
+            foreach ($cob_item as $par) {
+                $pares[] = "('" . mysqli_real_escape_string($conector, $par[0]) . "','" .
+                                  mysqli_real_escape_string($conector, $par[1]) . "')";
+            }
+            $inpares = implode(',', $pares);
+            $q = mysqli_query($conector, "SELECT tbl_ite_cobertura_numero_id, tbl_ite_cobertura_numero_item,
+                    tbl_ite_cobertura_data_prenhes, tbl_cobertura_codigo_estacao_monta,
+                    tbl_cobertura_protocoloiatf, tbl_cobertura_controle
+                FROM tbl_item_cobertura
                 INNER JOIN tbl_cobertura
                         ON tbl_cobertura_id = tbl_ite_cobertura_numero_id
-                WHERE tbl_cobertura_lixeira=0 AND tbl_ite_cobertura_numero_id IN ($in)");
+                WHERE tbl_cobertura_lixeira=0 AND
+                      (tbl_ite_cobertura_numero_id, tbl_ite_cobertura_numero_item) IN ($inpares)");
             while ($r = mysqli_fetch_object($q)) {
                 $M['itens_cob'][$r->tbl_ite_cobertura_numero_id][] = $r;
                 if ($r->tbl_cobertura_protocoloiatf !== null && $r->tbl_cobertura_protocoloiatf !== '') $protos[$r->tbl_cobertura_protocoloiatf] = true;
             }
 
+            $in = nasc_in($conector, array_keys($cob));
             $q = mysqli_query($conector, "SELECT tbl_protocolo_cobertura_codigo_id, tbl_protocolo_cobertura_data
                 FROM tbl_protocolo_cobertura WHERE tbl_protocolo_cobertura_codigo_id IN ($in)");
             while ($r = mysqli_fetch_object($q)) {
