@@ -1,5 +1,12 @@
 <?php
     function verificar_estacao($conector, $cobertura_id, $array_estacao){
+        // Caminho rápido: usa o conjunto pré-carregado de coberturas cujo nome de
+        // estação está entre os selecionados. Esse conjunto é montado com
+        // exatamente o mesmo JOIN/filtro usado abaixo, então o resultado é idêntico.
+        if (isset($GLOBALS['nasc_cobertura_estacao_ok'])) {
+            return isset($GLOBALS['nasc_cobertura_estacao_ok'][$cobertura_id]) ? 'S' : 'N';
+        }
+
         // Cache do nome da estação por cobertura (a consulta só depende de $cobertura_id)
         static $cache_nome = [];
 
