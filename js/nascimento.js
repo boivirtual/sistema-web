@@ -271,11 +271,11 @@ $(document).ready(function(){
     });
 
     $('#tabela_nascimento').DataTable({
-        "responsive": true,
-        "paging":   false,
+        "paging":   true,
         "ordering": true,
         "info":     true,
         "pageLength": 100,
+        "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "Todos"]],
         "order": [[ 2, "desc" ], [ 0, 'desc' ],[ 1, "desc" ]],
         "language": {
         "sSearch": "Busca:",
@@ -283,6 +283,8 @@ $(document).ready(function(){
         "info": "Total Registros: _END_ ",
         "infoEmpty": "Nenhum registro disponível",
         "infoFiltered": "(filtrado de _MAX_ registros no total)",
+        "lengthMenu": "Mostrar _MENU_ registros",
+        "paginate": { "first": "Primeira", "last": "Última", "next": "Próxima", "previous": "Anterior" }
         },
 
         "aoColumns": [
@@ -301,18 +303,18 @@ $(document).ready(function(){
             null
         ],
 
-        "dom": "<'row'<'col-lg-6 col-md-6 col-sm-6'i><'col-lg-6 col-md-6 col-sm-6'f>>",
+        "dom": "<'row'<'col-sm-6'l><'col-sm-6'f>>t<'row'<'col-sm-5'i><'col-sm-7'p>>",
         initComplete: function() {
             $('table.dataTable').css("width", "100%");
           }
     });
 
     $('#tabela_nascimento_lote').DataTable({
-        "responsive": true,
-        "paging":   false,
+        "paging":   true,
         "ordering": true,
         "info":     true,
         "pageLength": 100,
+        "lengthMenu": [[50, 100, 200, -1], [50, 100, 200, "Todos"]],
         "order": [ 0, 'desc' ],
         "language": {
         "sSearch": "Busca:",
@@ -320,6 +322,8 @@ $(document).ready(function(){
         "info": "Total Registros: _END_ ",
         "infoEmpty": "Nenhum registro disponível",
         "infoFiltered": "(filtrado de _MAX_ registros no total)",
+        "lengthMenu": "Mostrar _MENU_ registros",
+        "paginate": { "first": "Primeira", "last": "Última", "next": "Próxima", "previous": "Anterior" }
         },
 
         "aoColumns": [
@@ -333,7 +337,7 @@ $(document).ready(function(){
             null
         ],
 
-        "dom": "<'row'<'col-lg-6 col-md-6 col-sm-6'i><'col-lg-6 col-md-6 col-sm-6'f>>",
+        "dom": "<'row'<'col-sm-6'l><'col-sm-6'f>>t<'row'<'col-sm-5'i><'col-sm-7'p>>",
         initComplete: function() {
             $('table.dataTable').css("width", "100%");
           }
