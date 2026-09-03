@@ -855,12 +855,20 @@
                 ORDER BY tbl_mov_estoque_data_emissao ASC"; 
                 }
         else {
-            $sql = "SELECT * FROM tbl_movimentacao_estoque 
+            $sql = "SELECT * FROM tbl_movimentacao_estoque
                 WHERE " . $wtipo  . $wlocal .
-                " ORDER BY tbl_mov_estoque_data_emissao ASC"; 
+                " ORDER BY tbl_mov_estoque_data_emissao ASC";
         }
 
-        $rs = mysqli_query($conector, $sql); 
+        // Restringe a consulta às coberturas da(s) estação(ões) escolhida(s)
+        // (mesmo conjunto que verificar_estacao() considera 'S').
+        $sql = str_replace(
+            "ORDER BY tbl_mov_estoque_data_emissao ASC",
+            $wcobertura_estacao . " ORDER BY tbl_mov_estoque_data_emissao ASC",
+            $sql
+        );
+
+        $rs = mysqli_query($conector, $sql);
         $num_rows_estoque = mysqli_num_rows($rs);
         $total_nascimento = 0;
         $total_natimorto = 0;
