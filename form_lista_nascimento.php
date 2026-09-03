@@ -447,33 +447,13 @@
                         $ocorrencia = 'N';
                     }
 
-                    $tab_fazenda = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_id='$codigo_fazenda'");
-                    $num_rows = mysqli_num_rows($tab_fazenda);
+                    $desc_local = nasc_desc_local($conector, $codigo_fazenda);
 
-                    if ($num_rows!=0){
-                        $reg = mysqli_fetch_object($tab_fazenda);
-                        $desc_local = $reg->tbl_pessoa_nome;
-                    }
-                    else {
-                        $desc_local = '';
-                    }
+                    $desc_pasto = nasc_desc_pasto($conector, $codigo_pasto);
 
-                    $tab_pasto = mysqli_query($conector, "select * from tbl_pasto where tbl_pasto_id ='$codigo_pasto'");
-                    $num_rows = mysqli_num_rows($tab_pasto);
+                    $reg_animal = nasc_animal($conector, $codigo);
 
-                    if ($num_rows!=0){
-                        $reg = mysqli_fetch_object($tab_pasto);
-                        $desc_pasto = $reg->tbl_pasto_descricao;
-                    }
-                    else {
-                        $desc_pasto = '';
-                    }
-
-                    $tab_animal = mysqli_query($conector, "select * from tbl_animais where tbl_animal_codigo_id='$codigo'");
-                    $num_rows = mysqli_num_rows($tab_animal);
-
-                    if ($num_rows!=0){
-                        $reg_animal = mysqli_fetch_object($tab_animal);
+                    if ($reg_animal !== null){
                         $codigo_alfa = $reg_animal->tbl_animal_codigo_alfa;
                         $codigo_numerico = $reg_animal->tbl_animal_codigo_numerico;
                         $codigo_raca = $reg_animal->tbl_animal_codigo_raca;
