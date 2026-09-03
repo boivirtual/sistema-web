@@ -475,16 +475,7 @@
 
                         $descricao_raca = nasc_desc_raca($conector, $codigo_raca);
 
-                        $tab_cor = mysqli_query($conector, "select * from tabela_pelagens where tab_codigo_pelagem ='$codigo_cor'");
-                        $num_rows_cor = mysqli_num_rows($tab_cor);
-
-                        if ($num_rows_cor!=0){
-                            $reg = mysqli_fetch_object($tab_cor);
-                            $descricao_cor = $reg->tab_descricao_pelagem;
-                        }
-                        else {
-                            $descricao_cor = '';
-                        }
+                        $descricao_cor = nasc_desc_cor($conector, $codigo_cor);
 
                         $tab_mae = mysqli_query($conector, "select * from tbl_animais 
                                     inner join tabela_racas
@@ -540,16 +531,7 @@
                                 
                         $descricao_raca = nasc_desc_raca($conector, $codigo_raca);
 
-                        $tab_cor = mysqli_query($conector, "select * from tabela_pelagens where tab_codigo_pelagem ='$codigo_cor'");
-                        $num_rows_cor = mysqli_num_rows($tab_cor);
-
-                        if ($num_rows_cor!=0){
-                            $reg = mysqli_fetch_object($tab_cor);
-                            $descricao_cor = $reg->tab_descricao_pelagem;
-                        }
-                        else {
-                            $descricao_cor = '';
-                        }
+                        $descricao_cor = nasc_desc_cor($conector, $codigo_cor);
 
                         $tab_mae = mysqli_query($conector, "select * from tbl_animais 
                                     inner join tabela_racas
