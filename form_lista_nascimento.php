@@ -1448,12 +1448,13 @@
 
     <script>
     $(document).ready(function(){
-      $('[data-toggle="tooltip"]').tooltip();   
+      // Tooltip delegado: cria só no hover, sem inicializar centenas de uma vez
+      $('#tabela_nascimento').tooltip({ selector: '[data-toggle="tooltip"]', container: 'body' });
     });
     </script>
 
 </body>
-</html> 
+</html>
 
 
                 
