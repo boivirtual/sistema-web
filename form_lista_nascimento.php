@@ -985,16 +985,9 @@
                         }
 
                         if ($cobertura_id!=0) {
-                            $sql = mysqli_query($conector, "SELECT * FROM tbl_protocolo_cobertura 
-                                WHERE tbl_protocolo_cobertura_codigo_id = '$cobertura_id'");
-                            $reg_protocolo_cobertura = mysqli_fetch_object($sql);
+                            $reg_protocolo_cobertura = nasc_protocolo_cobertura($conector, $cobertura_id);
 
-                            $sql =  mysqli_query($conector,"SELECT * FROM tbl_item_protocoloiatf 
-                                WHERE tbl_ite_protocoloiatf_lixeira = 0 AND 
-                                      tbl_ite_protocoloiatf_protocolo_id = '$protocolo_id' 
-                                ORDER BY tbl_ite_protocoloiatf_id ASC");
-                                
-                            while($reg_itens = mysqli_fetch_object($sql)){
+                            foreach (nasc_itens_protocolo($conector, $protocolo_id) as $reg_itens){
                                 $dias = substr($reg_itens->tbl_ite_protocoloiatf_descricao, 3);
                                 $data_servico = date("Y-m-d", strtotime($reg_protocolo_cobertura->tbl_protocolo_cobertura_data . "+{$dias} days"));
                             }
