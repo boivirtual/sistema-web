@@ -617,14 +617,19 @@
             " ORDER BY tbl_mov_estoque_data_emissao ASC"; 
         }
 
-        $rs = mysqli_query($conector, $sql); 
+        $rs = mysqli_query($conector, $sql);
         $num_rows_estoque = mysqli_num_rows($rs);
         $total_nascimento = 0;
         $total_natimorto = 0;
         $total_absorcao = 0;
         $total_aborto = 0;
 
-        while ($reg_nasc = mysqli_fetch_object($rs)){
+        // Buffer + pré-carga em lote de todos os dados auxiliares
+        $movs = array();
+        while ($reg_nasc = mysqli_fetch_object($rs)) { $movs[] = $reg_nasc; }
+        $GLOBALS['NASC_M'] = nasc_preload($conector, $movs);
+
+        foreach ($movs as $reg_nasc){
             $codigo_fazenda = $reg_nasc->tbl_mov_estoque_local;
 
             foreach ($array_locais_usuario as $value) {
