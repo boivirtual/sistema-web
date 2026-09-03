@@ -265,53 +265,17 @@
                                 $ocorrencia = 'N';
                             }
 
-                            $tab_fazenda = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_id='$codigo_fazenda'");
-                            $num_rows = mysqli_num_rows($tab_fazenda);
+                            $desc_local = nascl_desc_local($conector, $codigo_fazenda);
 
-                            if ($num_rows!=0){
-                                $reg = mysqli_fetch_object($tab_fazenda);
-                                $desc_local = $reg->tbl_pessoa_nome;
-                            }
-                            else {
-                                $desc_local = '';
-                            }
-
-                            $tab_pasto = mysqli_query($conector, "select * from tbl_pasto where tbl_pasto_id ='$codigo_pasto'");
-                            $num_rows = mysqli_num_rows($tab_pasto);
-
-                            if ($num_rows!=0){
-                                $reg = mysqli_fetch_object($tab_pasto);
-                                $desc_pasto = $reg->tbl_pasto_descricao;
-                            }
-                            else {
-                                $desc_pasto = '';
-                            }
+                            $desc_pasto = nascl_desc_pasto($conector, $codigo_pasto);
 
                             $codigo_raca = $reg_nasc->tbl_mov_estoque_codigo_raca;
                             $codigo_pelagem = $reg_nasc->tbl_mov_estoque_codigo_pelagem;
                             $sexo = $reg_nasc->tbl_mov_estoque_sexo;
-                            
-                            $tab_raca = mysqli_query($conector, "select * from tabela_racas where tab_codigo_raca='$codigo_raca'");
-                                $num_rows_raca = mysqli_num_rows($tab_raca);
 
-                            if ($num_rows_raca!=0){
-                                $reg = mysqli_fetch_object($tab_raca);
-                                $descricao_raca = $reg->tab_descricao_raca;
-                            }
-                            else {
-                                $descricao_raca = '';
-                            }
+                            $descricao_raca = nascl_desc_raca($conector, $codigo_raca);
 
-                            $tab_pelagem = mysqli_query($conector, "select * from tabela_pelagens where tab_codigo_pelagem ='$codigo_pelagem'");
-                            $num_rows_pelagem = mysqli_num_rows($tab_pelagem);
-
-                            if ($num_rows_pelagem!=0){
-                                $reg = mysqli_fetch_object($tab_pelagem);
-                                $descricao_pelagem = $reg->tab_descricao_pelagem;
-                            }
-                            else {
-                                $descricao_pelagem = '';
-                            }
+                            $descricao_pelagem = nascl_desc_pelagem($conector, $codigo_pelagem);
 
                             $codigo_alfa='';
                             $codigo_numerico=0;
