@@ -553,17 +553,12 @@
                     }
         
                     // Calcula dias de Gestação para Nascimento, Aborto, Natimorto - 09/01/2024
-                    $tbl_item_cobertura = mysqli_query($conector,"SELECT * FROM tbl_item_cobertura 
-                    INNER JOIN tbl_cobertura
-                            ON tbl_cobertura_id = tbl_ite_cobertura_numero_id
-                         WHERE tbl_cobertura_lixeira=0 AND 
-                               tbl_ite_cobertura_numero_id='$cobertura_id' AND 
-                               tbl_ite_cobertura_numero_item='$item_cobertura'"); 
- 
-                    $num_rows = mysqli_num_rows($tbl_item_cobertura);
+                    $itens_cob = nasc_itens_cobertura($conector, $cobertura_id, $item_cobertura);
+
+                    $num_rows = count($itens_cob);
 
                     if ($num_rows!=0) {
-                        while ($reg_item = mysqli_fetch_object($tbl_item_cobertura)) {
+                        foreach ($itens_cob as $reg_item) {
                             //$cobertura_id = $reg_item->tbl_ite_cobertura_numero_id;
                             //$item_cobertura = $reg_item->tbl_ite_cobertura_numero_item;
                             $estacao_monta_id = $reg_item->tbl_cobertura_codigo_estacao_monta;
