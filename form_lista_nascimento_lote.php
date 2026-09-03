@@ -1,6 +1,49 @@
 <?php
     include "conecta_mysql.inc";
 
+    // Helpers memoizados — reproduzem exatamente as consultas que rodavam
+    // uma vez por linha; IDs repetidos deixam de ir ao banco várias vezes.
+    // Nenhuma regra de negócio ou saída HTML é alterada.
+    function nascl_desc_local($conector, $id) {
+        static $c = [];
+        if (!array_key_exists($id, $c)) {
+            $r = mysqli_query($conector, "select tbl_pessoa_nome from tbl_pessoa where tbl_pessoa_id='" . mysqli_real_escape_string($conector, $id) . "'");
+            $row = mysqli_fetch_object($r);
+            $c[$id] = $row ? $row->tbl_pessoa_nome : '';
+        }
+        return $c[$id];
+    }
+
+    function nascl_desc_pasto($conector, $id) {
+        static $c = [];
+        if (!array_key_exists($id, $c)) {
+            $r = mysqli_query($conector, "select tbl_pasto_descricao from tbl_pasto where tbl_pasto_id ='" . mysqli_real_escape_string($conector, $id) . "'");
+            $row = mysqli_fetch_object($r);
+            $c[$id] = $row ? $row->tbl_pasto_descricao : '';
+        }
+        return $c[$id];
+    }
+
+    function nascl_desc_raca($conector, $id) {
+        static $c = [];
+        if (!array_key_exists($id, $c)) {
+            $r = mysqli_query($conector, "select tab_descricao_raca from tabela_racas where tab_codigo_raca='" . mysqli_real_escape_string($conector, $id) . "'");
+            $row = mysqli_fetch_object($r);
+            $c[$id] = $row ? $row->tab_descricao_raca : '';
+        }
+        return $c[$id];
+    }
+
+    function nascl_desc_pelagem($conector, $id) {
+        static $c = [];
+        if (!array_key_exists($id, $c)) {
+            $r = mysqli_query($conector, "select tab_descricao_pelagem from tabela_pelagens where tab_codigo_pelagem ='" . mysqli_real_escape_string($conector, $id) . "'");
+            $row = mysqli_fetch_object($r);
+            $c[$id] = $row ? $row->tab_descricao_pelagem : '';
+        }
+        return $c[$id];
+    }
+
     $wlocal = "";
     if (isset($_POST['local'])) {
         $local = $_POST['local'];
