@@ -271,6 +271,7 @@ $(document).ready(function(){
     });
 
     $('#tabela_nascimento').DataTable({
+        "responsive": true,
         "paging":   true,
         "ordering": true,
         "info":     true,
