@@ -887,16 +887,11 @@
 
                             $descricao_cor = nasc_desc_cor($conector, $codigo_cor);
 
-                            $tab_mae = mysqli_query($conector, "select * from tbl_animais 
-                                        inner join tabela_racas
-                                                on tab_codigo_raca=tbl_animal_codigo_raca
-                                        where tbl_animal_codigo_id='$mae'");
-                            $num_rows_mae = mysqli_num_rows($tab_mae);
+                            $reg_mae_j = nasc_mae($conector, $mae);
 
-                            if ($num_rows_mae!=0){
-                                $reg = mysqli_fetch_object($tab_mae);
-                                $descricao_mae = $reg->tbl_animal_codigo_alfa. ' ' . $reg->tbl_animal_codigo_numerico;
-                                $mae_raca = $reg->tbl_animal_codigo_alfa. ' ' . $reg->tbl_animal_codigo_numerico . ' - ' . $reg->tab_descricao_raca;
+                            if ($reg_mae_j !== null){
+                                $descricao_mae = $reg_mae_j->tbl_animal_codigo_alfa. ' ' . $reg_mae_j->tbl_animal_codigo_numerico;
+                                $mae_raca = $reg_mae_j->tbl_animal_codigo_alfa. ' ' . $reg_mae_j->tbl_animal_codigo_numerico . ' - ' . $reg_mae_j->tab_descricao_raca;
                             }
                             else {
                                 $descricao_mae = '';
@@ -943,16 +938,11 @@
 
                             $descricao_cor = nasc_desc_cor($conector, $codigo_cor);
 
-                            $tab_mae = mysqli_query($conector, "select * from tbl_animais 
-                                        inner join tabela_racas
-                                                on tab_codigo_raca=tbl_animal_codigo_raca
-                                        where tbl_animal_codigo_id='$mae'");
-                            $num_rows_mae = mysqli_num_rows($tab_mae);
+                            $reg_mae_j = nasc_mae($conector, $mae);
 
-                            if ($num_rows_mae!=0){
-                                $reg = mysqli_fetch_object($tab_mae);
-                                $descricao_mae = $reg->tbl_animal_codigo_alfa. ' ' . $reg->tbl_animal_codigo_numerico;
-                                $mae_raca = $reg->tbl_animal_codigo_alfa. ' ' . $reg->tbl_animal_codigo_numerico . ' - ' . $reg->tab_descricao_raca;
+                            if ($reg_mae_j !== null){
+                                $descricao_mae = $reg_mae_j->tbl_animal_codigo_alfa. ' ' . $reg_mae_j->tbl_animal_codigo_numerico;
+                                $mae_raca = $reg_mae_j->tbl_animal_codigo_alfa. ' ' . $reg_mae_j->tbl_animal_codigo_numerico . ' - ' . $reg_mae_j->tab_descricao_raca;
                             }
                             else {
                                 $descricao_mae = '';
