@@ -234,6 +234,51 @@
     }
     // Fim array estacao
 
+    // ===================================================================
+    // PRÉ-CARGA (lote) para a listagem POR ESTAÇÃO DE MONTA.
+    // Antes: a consulta principal trazia TODO o histórico de nascimentos das
+    // fazendas (sem filtro de data/estação) e, para cada linha, rodava uma
+    // consulta em verificar_estacao() só para descobrir se a cobertura era
+    // da estação escolhida. Agora: um único SELECT levanta todas as coberturas
+    // cujo nome de estação está entre os selecionados; esse conjunto vira
+    // (a) um filtro direto na consulta principal e (b) o mapa usado por
+    // verificar_estacao(). Mesmo resultado, sem o N+1.
+    // ===================================================================
+    $GLOBALS['nasc_cobertura_estacao_ok'] = null;
+    $wcobertura_estacao = '';
+
+    if ($westacao != '') {
+        $GLOBALS['nasc_cobertura_estacao_ok'] = array();
+
+        if (!empty($array_estacao)) {
+            $nomes_in = array();
+            foreach ($array_estacao as $ne) {
+                $nomes_in[] = "'" . mysqli_real_escape_string($conector, $ne) . "'";
+            }
+            $nomes_in = implode(',', $nomes_in);
+
+            $q = mysqli_query($conector, "SELECT tbl_cobertura_id
+                FROM tbl_cobertura
+                INNER JOIN tbl_parametro_estacao_monta
+                        ON tbl_par_estacao_id = tbl_cobertura_codigo_estacao_monta
+                WHERE tbl_cobertura_lixeira=0 AND tbl_par_estacao_nome IN ($nomes_in)");
+            while ($r = mysqli_fetch_object($q)) {
+                $GLOBALS['nasc_cobertura_estacao_ok'][$r->tbl_cobertura_id] = true;
+            }
+        }
+
+        if (!empty($GLOBALS['nasc_cobertura_estacao_ok'])) {
+            $lista_cob = array();
+            foreach (array_keys($GLOBALS['nasc_cobertura_estacao_ok']) as $cid) {
+                $lista_cob[] = "'" . mysqli_real_escape_string($conector, $cid) . "'";
+            }
+            $wcobertura_estacao = " AND tbl_mov_estoque_cobertura_numero_id IN (" . implode(',', $lista_cob) . ")";
+        }
+        else {
+            $wcobertura_estacao = " AND 1=0";
+        }
+    }
+
     $wtipo = "";
     if (isset($_POST['tipo'])) {
         $tipo = $_POST['tipo'];
