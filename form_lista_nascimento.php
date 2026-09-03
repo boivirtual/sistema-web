@@ -238,11 +238,16 @@
         );
 
         $faz = array(); $pas = array(); $ani = array(); $cob = array(); $maes = array();
+        $cob_item = array(); // pares exatos (cobertura_id, numero_item) que aparecem nos movs
         foreach ($movs as $m) {
             if ($m->tbl_mov_estoque_local !== null && $m->tbl_mov_estoque_local !== '') $faz[$m->tbl_mov_estoque_local] = true;
             if ($m->tbl_mov_estoque_codigo_pasto !== null && $m->tbl_mov_estoque_codigo_pasto !== '') $pas[$m->tbl_mov_estoque_codigo_pasto] = true;
             if ($m->tbl_mov_estoque_codigo_id_animal !== null && $m->tbl_mov_estoque_codigo_id_animal !== '') $ani[$m->tbl_mov_estoque_codigo_id_animal] = true;
-            if ($m->tbl_mov_estoque_cobertura_numero_id !== null && $m->tbl_mov_estoque_cobertura_numero_id !== '') $cob[$m->tbl_mov_estoque_cobertura_numero_id] = true;
+            if ($m->tbl_mov_estoque_cobertura_numero_id !== null && $m->tbl_mov_estoque_cobertura_numero_id !== '') {
+                $cob[$m->tbl_mov_estoque_cobertura_numero_id] = true;
+                $cob_item[$m->tbl_mov_estoque_cobertura_numero_id . '|' . $m->tbl_mov_estoque_cobertura_numero_item] =
+                    array($m->tbl_mov_estoque_cobertura_numero_id, $m->tbl_mov_estoque_cobertura_numero_item);
+            }
             if ($m->tbl_mov_estoque_codigo_mae !== null && $m->tbl_mov_estoque_codigo_mae !== '') $maes[$m->tbl_mov_estoque_codigo_mae] = true;
         }
 
