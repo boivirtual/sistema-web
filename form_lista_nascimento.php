@@ -874,16 +874,7 @@
                             $situacao = $reg_animal->tbl_animal_situacao;
                             $estacao_monta = $reg_animal->tbl_animal_estacao_monta_nascimento;
 
-                            $tab_estacao = mysqli_query($conector, "select * from tbl_parametro_estacao_monta where tbl_par_estacao_id='$estacao_monta'");
-                            $num_rows_estacao = mysqli_num_rows($tab_estacao);
-
-                            if ($num_rows_estacao!=0){
-                                $reg = mysqli_fetch_object($tab_estacao);
-                                $descricao_estacao = $reg->tbl_par_estacao_nome;
-                            }
-                            else {
-                                $descricao_estacao = '';
-                            }
+                            $descricao_estacao = nasc_desc_estacao($conector, $estacao_monta);
 
                             if ($sexo=='N') {
                                 $desc_sexo = '';
