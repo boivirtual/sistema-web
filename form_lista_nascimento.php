@@ -41,17 +41,30 @@
     include "conecta_mysql.inc";
 
     // ===================================================================
-    // Helpers memoizados — cada um reproduz EXATAMENTE a consulta que
-    // antes rodava uma vez por linha do laço; o resultado é guardado em
-    // cache por chave, então IDs repetidos (fazenda, raça, pasto, mãe,
-    // protocolo, etc.) não vão mais ao banco várias vezes.
-    // Nenhuma regra de negócio ou saída HTML é alterada.
+    // Acesso aos dados auxiliares da listagem.
+    // 1º) Se a pré-carga em lote (nasc_preload) já rodou, os helpers só
+    //     consultam os mapas em memória -> ZERO consultas dentro do laço.
+    // 2º) Caso contrário, caem no caminho memoizado (1 consulta por chave).
+    // Em ambos os casos a consulta e a semântica são as MESMAS do código
+    // original; nenhuma regra ou saída HTML muda.
     // ===================================================================
     function nasc_esc($conector, $v) {
         return mysqli_real_escape_string($conector, $v);
     }
 
+    // Monta lista para IN (...) escapando cada item
+    function nasc_in($conector, $valores) {
+        $itens = array();
+        foreach ($valores as $v) {
+            $itens[] = "'" . mysqli_real_escape_string($conector, $v) . "'";
+        }
+        return implode(',', $itens);
+    }
+
     function nasc_desc_local($conector, $id) {
+        if (isset($GLOBALS['NASC_M'])) {
+            return isset($GLOBALS['NASC_M']['pessoa'][$id]) ? $GLOBALS['NASC_M']['pessoa'][$id] : '';
+        }
         static $c = [];
         if (!array_key_exists($id, $c)) {
             $r = mysqli_query($conector, "select tbl_pessoa_nome from tbl_pessoa where tbl_pessoa_id='" . nasc_esc($conector, $id) . "'");
@@ -62,6 +75,9 @@
     }
 
     function nasc_desc_pasto($conector, $id) {
+        if (isset($GLOBALS['NASC_M'])) {
+            return isset($GLOBALS['NASC_M']['pasto'][$id]) ? $GLOBALS['NASC_M']['pasto'][$id] : '';
+        }
         static $c = [];
         if (!array_key_exists($id, $c)) {
             $r = mysqli_query($conector, "select tbl_pasto_descricao from tbl_pasto where tbl_pasto_id ='" . nasc_esc($conector, $id) . "'");
@@ -72,6 +88,9 @@
     }
 
     function nasc_animal($conector, $id) {
+        if (isset($GLOBALS['NASC_M'])) {
+            return isset($GLOBALS['NASC_M']['animal'][$id]) ? $GLOBALS['NASC_M']['animal'][$id] : null;
+        }
         static $c = [];
         if (!array_key_exists($id, $c)) {
             $r = mysqli_query($conector, "select * from tbl_animais where tbl_animal_codigo_id='" . nasc_esc($conector, $id) . "'");
@@ -81,6 +100,9 @@
     }
 
     function nasc_desc_estacao($conector, $id) {
+        if (isset($GLOBALS['NASC_M'])) {
+            return isset($GLOBALS['NASC_M']['estacao'][$id]) ? $GLOBALS['NASC_M']['estacao'][$id] : '';
+        }
         static $c = [];
         if (!array_key_exists($id, $c)) {
             $r = mysqli_query($conector, "select tbl_par_estacao_nome from tbl_parametro_estacao_monta where tbl_par_estacao_id='" . nasc_esc($conector, $id) . "'");
@@ -91,6 +113,9 @@
     }
 
     function nasc_desc_raca($conector, $id) {
+        if (isset($GLOBALS['NASC_M'])) {
+            return isset($GLOBALS['NASC_M']['raca'][$id]) ? $GLOBALS['NASC_M']['raca'][$id] : '';
+        }
         static $c = [];
         if (!array_key_exists($id, $c)) {
             $r = mysqli_query($conector, "select tab_descricao_raca from tabela_racas where tab_codigo_raca='" . nasc_esc($conector, $id) . "'");
@@ -101,6 +126,9 @@
     }
 
     function nasc_desc_cor($conector, $id) {
+        if (isset($GLOBALS['NASC_M'])) {
+            return isset($GLOBALS['NASC_M']['pelagem'][$id]) ? $GLOBALS['NASC_M']['pelagem'][$id] : '';
+        }
         static $c = [];
         if (!array_key_exists($id, $c)) {
             $r = mysqli_query($conector, "select tab_descricao_pelagem from tabela_pelagens where tab_codigo_pelagem ='" . nasc_esc($conector, $id) . "'");
@@ -111,6 +139,9 @@
     }
 
     function nasc_mae($conector, $id) {
+        if (isset($GLOBALS['NASC_M'])) {
+            return isset($GLOBALS['NASC_M']['mae'][$id]) ? $GLOBALS['NASC_M']['mae'][$id] : null;
+        }
         static $c = [];
         if (!array_key_exists($id, $c)) {
             $r = mysqli_query($conector, "select * from tbl_animais
@@ -123,6 +154,9 @@
     }
 
     function nasc_semem($conector, $id) {
+        if (isset($GLOBALS['NASC_M'])) {
+            return isset($GLOBALS['NASC_M']['semem'][$id]) ? $GLOBALS['NASC_M']['semem'][$id] : null;
+        }
         static $c = [];
         if (!array_key_exists($id, $c)) {
             $r = mysqli_query($conector, "select * from tbl_semem where tbl_semem_codigo_id='" . nasc_esc($conector, $id) . "'");
@@ -132,6 +166,16 @@
     }
 
     function nasc_itens_cobertura($conector, $cobertura_id, $item) {
+        if (isset($GLOBALS['NASC_M'])) {
+            $todos = isset($GLOBALS['NASC_M']['itens_cob'][$cobertura_id]) ? $GLOBALS['NASC_M']['itens_cob'][$cobertura_id] : array();
+            $out = array();
+            foreach ($todos as $row) {
+                if ($row->tbl_ite_cobertura_numero_item == $item) {
+                    $out[] = $row;
+                }
+            }
+            return $out;
+        }
         static $c = [];
         $k = $cobertura_id . '|' . $item;
         if (!array_key_exists($k, $c)) {
@@ -151,6 +195,9 @@
     }
 
     function nasc_protocolo_cobertura($conector, $cobertura_id) {
+        if (isset($GLOBALS['NASC_M'])) {
+            return isset($GLOBALS['NASC_M']['protocolo_cob'][$cobertura_id]) ? $GLOBALS['NASC_M']['protocolo_cob'][$cobertura_id] : null;
+        }
         static $c = [];
         if (!array_key_exists($cobertura_id, $c)) {
             $r = mysqli_query($conector, "SELECT tbl_protocolo_cobertura_data FROM tbl_protocolo_cobertura
@@ -161,6 +208,9 @@
     }
 
     function nasc_itens_protocolo($conector, $protocolo_id) {
+        if (isset($GLOBALS['NASC_M'])) {
+            return isset($GLOBALS['NASC_M']['itens_protocolo'][$protocolo_id]) ? $GLOBALS['NASC_M']['itens_protocolo'][$protocolo_id] : array();
+        }
         static $c = [];
         if (!array_key_exists($protocolo_id, $c)) {
             $r = mysqli_query($conector, "SELECT tbl_ite_protocoloiatf_descricao FROM tbl_item_protocoloiatf
@@ -174,6 +224,120 @@
             $c[$protocolo_id] = $linhas;
         }
         return $c[$protocolo_id];
+    }
+
+    // Pré-carga em lote: recebe as linhas de tbl_movimentacao_estoque já
+    // buscadas e monta todos os mapas auxiliares com pouquíssimas consultas
+    // IN (...). Depois disso os helpers acima só leem memória.
+    function nasc_preload($conector, $movs) {
+        $M = array(
+            'pessoa' => array(), 'pasto' => array(), 'animal' => array(),
+            'estacao' => array(), 'raca' => array(), 'pelagem' => array(),
+            'mae' => array(), 'semem' => array(), 'itens_cob' => array(),
+            'protocolo_cob' => array(), 'itens_protocolo' => array()
+        );
+
+        $faz = array(); $pas = array(); $ani = array(); $cob = array(); $maes = array();
+        foreach ($movs as $m) {
+            if ($m->tbl_mov_estoque_local !== null && $m->tbl_mov_estoque_local !== '') $faz[$m->tbl_mov_estoque_local] = true;
+            if ($m->tbl_mov_estoque_codigo_pasto !== null && $m->tbl_mov_estoque_codigo_pasto !== '') $pas[$m->tbl_mov_estoque_codigo_pasto] = true;
+            if ($m->tbl_mov_estoque_codigo_id_animal !== null && $m->tbl_mov_estoque_codigo_id_animal !== '') $ani[$m->tbl_mov_estoque_codigo_id_animal] = true;
+            if ($m->tbl_mov_estoque_cobertura_numero_id !== null && $m->tbl_mov_estoque_cobertura_numero_id !== '') $cob[$m->tbl_mov_estoque_cobertura_numero_id] = true;
+            if ($m->tbl_mov_estoque_codigo_mae !== null && $m->tbl_mov_estoque_codigo_mae !== '') $maes[$m->tbl_mov_estoque_codigo_mae] = true;
+        }
+
+        // Tabelas pequenas: carrega inteiras (o original consultava sem filtro de lixeira)
+        $q = mysqli_query($conector, "SELECT tab_codigo_raca, tab_descricao_raca FROM tabela_racas");
+        while ($r = mysqli_fetch_object($q)) $M['raca'][$r->tab_codigo_raca] = $r->tab_descricao_raca;
+
+        $q = mysqli_query($conector, "SELECT tab_codigo_pelagem, tab_descricao_pelagem FROM tabela_pelagens");
+        while ($r = mysqli_fetch_object($q)) $M['pelagem'][$r->tab_codigo_pelagem] = $r->tab_descricao_pelagem;
+
+        $q = mysqli_query($conector, "SELECT tbl_par_estacao_id, tbl_par_estacao_nome FROM tbl_parametro_estacao_monta");
+        while ($r = mysqli_fetch_object($q)) $M['estacao'][$r->tbl_par_estacao_id] = $r->tbl_par_estacao_nome;
+
+        if (!empty($faz)) {
+            $in = nasc_in($conector, array_keys($faz));
+            $q = mysqli_query($conector, "SELECT tbl_pessoa_id, tbl_pessoa_nome FROM tbl_pessoa WHERE tbl_pessoa_id IN ($in)");
+            while ($r = mysqli_fetch_object($q)) $M['pessoa'][$r->tbl_pessoa_id] = $r->tbl_pessoa_nome;
+        }
+
+        if (!empty($pas)) {
+            $in = nasc_in($conector, array_keys($pas));
+            $q = mysqli_query($conector, "SELECT tbl_pasto_id, tbl_pasto_descricao FROM tbl_pasto WHERE tbl_pasto_id IN ($in)");
+            while ($r = mysqli_fetch_object($q)) $M['pasto'][$r->tbl_pasto_id] = $r->tbl_pasto_descricao;
+        }
+
+        $pais = array();
+        if (!empty($ani)) {
+            $in = nasc_in($conector, array_keys($ani));
+            $q = mysqli_query($conector, "SELECT tbl_animal_codigo_id, tbl_animal_codigo_alfa, tbl_animal_codigo_numerico,
+                    tbl_animal_codigo_raca, tbl_animal_codigo_pelagem, tbl_animal_sexo, tbl_animal_codigo_mae,
+                    tbl_animal_codigo_pai, tbl_animal_situacao, tbl_animal_estacao_monta_nascimento
+                FROM tbl_animais WHERE tbl_animal_codigo_id IN ($in)");
+            while ($r = mysqli_fetch_object($q)) {
+                $M['animal'][$r->tbl_animal_codigo_id] = $r;
+                if ($r->tbl_animal_codigo_mae !== null && $r->tbl_animal_codigo_mae !== '') $maes[$r->tbl_animal_codigo_mae] = true;
+                if ($r->tbl_animal_codigo_pai !== null && $r->tbl_animal_codigo_pai !== '') $pais[$r->tbl_animal_codigo_pai] = true;
+            }
+        }
+
+        if (!empty($pais)) {
+            $in = nasc_in($conector, array_keys($pais));
+            // pai como touro (fallback) — mesmo mapa 'animal', sem sobrescrever bezerro já carregado
+            $q = mysqli_query($conector, "SELECT tbl_animal_codigo_id, tbl_animal_codigo_alfa, tbl_animal_codigo_numerico
+                FROM tbl_animais WHERE tbl_animal_codigo_id IN ($in)");
+            while ($r = mysqli_fetch_object($q)) {
+                if (!isset($M['animal'][$r->tbl_animal_codigo_id])) $M['animal'][$r->tbl_animal_codigo_id] = $r;
+            }
+            // pai como sêmen
+            $q = mysqli_query($conector, "SELECT tbl_semem_codigo_id, tbl_semem_nome FROM tbl_semem WHERE tbl_semem_codigo_id IN ($in)");
+            while ($r = mysqli_fetch_object($q)) $M['semem'][$r->tbl_semem_codigo_id] = $r;
+        }
+
+        if (!empty($maes)) {
+            $in = nasc_in($conector, array_keys($maes));
+            $q = mysqli_query($conector, "SELECT tbl_animal_codigo_id, tbl_animal_codigo_alfa, tbl_animal_codigo_numerico,
+                    tab_descricao_raca
+                FROM tbl_animais
+                INNER JOIN tabela_racas ON tab_codigo_raca=tbl_animal_codigo_raca
+                WHERE tbl_animal_codigo_id IN ($in)");
+            while ($r = mysqli_fetch_object($q)) $M['mae'][$r->tbl_animal_codigo_id] = $r;
+        }
+
+        $protos = array();
+        if (!empty($cob)) {
+            $in = nasc_in($conector, array_keys($cob));
+            $q = mysqli_query($conector, "SELECT * FROM tbl_item_cobertura
+                INNER JOIN tbl_cobertura
+                        ON tbl_cobertura_id = tbl_ite_cobertura_numero_id
+                WHERE tbl_cobertura_lixeira=0 AND tbl_ite_cobertura_numero_id IN ($in)");
+            while ($r = mysqli_fetch_object($q)) {
+                $M['itens_cob'][$r->tbl_ite_cobertura_numero_id][] = $r;
+                if ($r->tbl_cobertura_protocoloiatf !== null && $r->tbl_cobertura_protocoloiatf !== '') $protos[$r->tbl_cobertura_protocoloiatf] = true;
+            }
+
+            $q = mysqli_query($conector, "SELECT tbl_protocolo_cobertura_codigo_id, tbl_protocolo_cobertura_data
+                FROM tbl_protocolo_cobertura WHERE tbl_protocolo_cobertura_codigo_id IN ($in)");
+            while ($r = mysqli_fetch_object($q)) {
+                if (!isset($M['protocolo_cob'][$r->tbl_protocolo_cobertura_codigo_id])) {
+                    $M['protocolo_cob'][$r->tbl_protocolo_cobertura_codigo_id] = $r;
+                }
+            }
+        }
+
+        if (!empty($protos)) {
+            $in = nasc_in($conector, array_keys($protos));
+            $q = mysqli_query($conector, "SELECT tbl_ite_protocoloiatf_protocolo_id, tbl_ite_protocoloiatf_descricao
+                FROM tbl_item_protocoloiatf
+                WHERE tbl_ite_protocoloiatf_lixeira = 0 AND tbl_ite_protocoloiatf_protocolo_id IN ($in)
+                ORDER BY tbl_ite_protocoloiatf_id ASC");
+            while ($r = mysqli_fetch_object($q)) {
+                $M['itens_protocolo'][$r->tbl_ite_protocoloiatf_protocolo_id][] = $r;
+            }
+        }
+
+        return $M;
     }
 
     $wlocal = "";
