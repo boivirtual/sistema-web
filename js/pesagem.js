@@ -3569,12 +3569,13 @@ function excluirItemEdicao() {
         $("#qtd_pesado").val(qtd_pesado);
 
         somar_totais();
-        gravar_pesagem(2); 
+        window._acaoPesagem = "excluir_item"; // libera o servidor a reduzir 1 item
+        gravar_pesagem(2);
         return;
     }
 }
 
-// REPOSICIONA A TABELA APOS A EXCLUSAO 
+// REPOSICIONA A TABELA APOS A EXCLUSAO
 function reposicionarLinhaPesagemAgora() {
     if (deveReposicionarLinhaPesagem && indiceLinhaRetornoPesagem >= 0) {
         var linhas = $("#tabela_itens tbody tr").filter(function () {
