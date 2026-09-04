@@ -144,14 +144,18 @@
 			exit;
 		}
 
-		// (B) esta rotina nao reduz a quantidade de itens (exclusao usa acao=excluir_item)
-		$reducao_permitida_lote = ($acao_item_lote === 'excluir_item' && $qtd_recebida_lote >= $qtd_atual_lote - 1);
-		if ($qtd_atual_lote > 0 && $qtd_recebida_lote < $qtd_atual_lote && !$reducao_permitida_lote) {
+		// (B) piso de seguranca: a lista de itens do lote nao pode encolher varios de
+		// uma vez. Editar/remover 1 categoria e' normal; cair de N para poucos so' com
+		// POST truncado. Exclusao explicita manda acao=excluir_item.
+		$reducao_permitida_lote = ($acao_item_lote === 'excluir_item')
+			? ($qtd_recebida_lote >= $qtd_atual_lote - 1)
+			: ($qtd_recebida_lote >= $qtd_atual_lote - 1);
+		if ($qtd_atual_lote > 1 && !$reducao_permitida_lote) {
 			error_log("gravar_pesagem_lote: ABORTADO pesagem {$numero_pesagem_id} - "
-				. "recebidos {$qtd_recebida_lote}, tabela tem {$qtd_atual_lote}, sem intencao de exclusao. Nada foi alterado.");
+				. "recebidos {$qtd_recebida_lote}, tabela tem {$qtd_atual_lote}. Provavel POST incompleto. Nada foi alterado.");
 			header('Content-type: application/json');
 			echo json_encode(array('error' => true, 'message' =>
-				"A lista recebida ({$qtd_recebida_lote}) tem menos itens do que a pesagem ja tem "
+				"A lista recebida ({$qtd_recebida_lote}) tem bem menos itens do que a pesagem ja tem "
 				. "gravados ({$qtd_atual_lote}). Gravacao cancelada para nao perder dados. Recarregue a tela."));
 			mysqli_close($conector);
 			exit;
