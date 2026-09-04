@@ -248,10 +248,10 @@
 						tbl_ite_pesagem_ultimo_peso
 
 			        ) VALUES (
-			            '$numero_pesagem_id',
+			            '" . escapar($numero_pesagem_id, $conector) . "',
 			            '$numero_item',
-			            '$data_pesagem',
-			            '$codigo_id',
+			            '" . escapar($data_pesagem, $conector) . "',
+			            '$codigo_id_sql',
 			            '$codigo_animal',
 			            '$peso',
 			            '$sexo',
@@ -269,18 +269,38 @@
 			    )";
 
 			    $resultado = mysqli_query($conector,$sql);
+			    if (!$resultado) { break; }
 			}
 
 	    	$erro_mysql = mysqli_error($conector);
 
 			if (!$resultado){
+				mysqli_rollback($conector);
 			   	header('Content-type: application/json');
 			   	echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro na gravação dos itens.' . $erro_mysql));
 				mysqli_close($conector);
 				exit;
-			} 
+			}
 
 		}
+
+		// confere a contagem final antes de confirmar; so entao efetiva tudo
+		$rs_conf = mysqli_query($conector, "SELECT COUNT(*) AS c FROM tbl_item_pesagem
+			WHERE tbl_ite_pesagem_numero_id='" . escapar($numero_pesagem_id, $conector) . "'");
+		$qtd_final = ($rs_conf && ($reg_f = mysqli_fetch_assoc($rs_conf))) ? (int) $reg_f['c'] : -1;
+
+		if ($qtd_final !== $quantidade_itens) {
+			mysqli_rollback($conector);
+			error_log("gravar_pesagem_individual: ROLLBACK pesagem {$numero_pesagem_id} - "
+				. "contagem final {$qtd_final} diferente de {$quantidade_itens}. Nada foi alterado.");
+			header('Content-type: application/json');
+			echo json_encode(array('error' => true, 'message' =>
+				'Erro ao gravar os itens; nada foi alterado. Recarregue a tela e tente de novo.'));
+			mysqli_close($conector);
+			exit;
+		}
+
+		mysqli_commit($conector);
 
 	    // Cria um array com todos os itens da pesagem não finalizada para poder depois verificar quais os itens repetidos e marcar de vermelhor no program form_pesagem_animais_editar_online
 
