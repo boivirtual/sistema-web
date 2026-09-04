@@ -1637,6 +1637,12 @@ function gravar_pesagem_lote() {
 
     $("#array_itens_pesagem_lote").val(grupo_itens);
 
+    // o servidor confere essa contagem para nao apagar itens por POST truncado
+    $("#qtd_esperada_pesagem_lote").remove();
+    $("#form_gravar_pesagem").append(
+        '<input type="hidden" id="qtd_esperada_pesagem_lote" name="qtd_esperada" value="' +
+        array_tabela_itens.length + '">');
+
     var dados = $("#form_gravar_pesagem").serialize();
 
     _gravarPesagemLoteEmAndamento = true;
@@ -1645,6 +1651,7 @@ function gravar_pesagem_lote() {
         type: "POST",
         url: "gravar_pesagem_lote.php",
         data: dados,
+        timeout: 60000,
         success: function (data) {
             _gravarPesagemLoteEmAndamento = false;
 
@@ -1660,6 +1667,10 @@ function gravar_pesagem_lote() {
         },
         error: function () {
             _gravarPesagemLoteEmAndamento = false;
+            $("#mensagem_erro .modal-body").html(
+                "Falha de conexao ao gravar a pesagem. A gravacao pode nao ter sido concluida. " +
+                "Recarregue a pagina e confira os itens antes de tentar de novo.");
+            $("#mensagem_erro").modal();
         },
     });
 }
