@@ -133,50 +133,73 @@ class ChuvaDao{
         }
     }
 
+    private function escapar($valor){
+        return mysqli_real_escape_string($this->con, (string) $valor);
+    }
+
+    /// DELETE + INSERT (mesma semântica do sistema web: um registro por
+    /// data/local, o mais recente sobrescreve) dentro de uma transação, para
+    /// nunca deixar a data sem nenhum registro se o INSERT falhar depois do
+    /// DELETE — mesma preocupação já aplicada em PesagemDao. Todos os valores
+    /// passam por escapar()/casting antes de entrar no SQL (antes iam direto
+    /// do POST pra query, permitindo SQL injection).
     public function createChuva($chuva){
-        $data = date("Y-m-d H:i:s");
+        $data = $this->escapar((string) $chuva["data_chuva"]);
+        $local = (int) $chuva["codigo_local_chuva"];
+        $volume = is_numeric($chuva["volume_chuva"]) ? (float) $chuva["volume_chuva"] : 0;
+        $usuario = $this->escapar((string) ($chuva["user"] ?? ''));
+        $agora = date("Y-m-d H:i:s");
 
-        $sql = ("DELETE FROM tbl_chuva WHERE tbl_chuva_data='{$chuva["data_chuva"]}' AND tbl_chuva_local='{$chuva["codigo_local_chuva"]}'");
-        mysqli_query($this->con, $sql);
+        mysqli_begin_transaction($this->con);
+        try {
+            $sqlDel = "DELETE FROM tbl_chuva WHERE tbl_chuva_data = '{$data}' AND tbl_chuva_local = {$local}";
+            if (!mysqli_query($this->con, $sqlDel)) {
+                throw new Exception(mysqli_error($this->con));
+            }
 
-        $sql = "INSERT INTO tbl_chuva (
-	    	tbl_chuva_data,
-	    	tbl_chuva_local,
-			tbl_chuva_volume_chuva,    	
-			tbl_chuva_observacao,
-			tbl_chuva_incluido_em,
-			tbl_chuva_incluido_por,
-			tbl_chuva_alterado_em,
-			tbl_chuva_alterado_por,
-			tbl_chuva_lixeira,
-			tbl_chuva_lixeira_em,
-			tbl_chuva_lixeira_por
-	        ) VALUES (
-	        '{$chuva["data_chuva"]}',
-	        '{$chuva["codigo_local_chuva"]}',
-			'{$chuva["volume_chuva"]}',
-			null,
-			'$data',
-			'{$chuva["user"]}',
-			null,
-			null,
-			0,
-			null,
-			null
-		)";
+            $sqlIns = "INSERT INTO tbl_chuva (
+                tbl_chuva_data,
+                tbl_chuva_local,
+                tbl_chuva_volume_chuva,
+                tbl_chuva_observacao,
+                tbl_chuva_incluido_em,
+                tbl_chuva_incluido_por,
+                tbl_chuva_alterado_em,
+                tbl_chuva_alterado_por,
+                tbl_chuva_lixeira,
+                tbl_chuva_lixeira_em,
+                tbl_chuva_lixeira_por
+            ) VALUES (
+                '{$data}',
+                {$local},
+                {$volume},
+                NULL,
+                '{$agora}',
+                '{$usuario}',
+                NULL,
+                NULL,
+                0,
+                NULL,
+                NULL
+            )";
+            if (!mysqli_query($this->con, $sqlIns)) {
+                throw new Exception(mysqli_error($this->con));
+            }
 
-        mysqli_query($this->con, $sql);
-        $msg = mysqli_error($this->con);
-        if($msg){
+            mysqli_commit($this->con);
+        } catch (Exception $e) {
+            mysqli_rollback($this->con);
             return [
                 "error" => true,
-                "message" => "Ocorreu um erro ao gravar o registro! {$msg}"
-            ];
-        }else{
-            return [
-                "error" => false,
-                "message" => "Volume registrado com sucesso!"
+                "message" => "Ocorreu um erro ao gravar o registro! " . $e->getMessage()
             ];
         }
+
+        return [
+            "error" => false,
+            "message" => "Volume registrado com sucesso!",
+            "data" => $data,
+            "local" => $local
+        ];
     }
 }
