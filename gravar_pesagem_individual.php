@@ -76,12 +76,12 @@
 		$qtd_esperada = isset($_POST['qtd_esperada']) ? (int) $_POST['qtd_esperada'] : -1;
 		$acao_item    = isset($_POST['acao']) ? $_POST['acao'] : '';
 
-		// lista limpa: ignora entradas vazias ou com codigo 0
+		// lista limpa: ignora entradas sem codigo do animal (mesmo criterio do pesagem.js)
 		$itens_limpos = array();
 		foreach (explode("<|>", (string) $array_itens) as $linha_item) {
 			$campos_item = explode("|", $linha_item);
 			$cod0 = isset($campos_item[0]) ? trim($campos_item[0]) : '';
-			if ($cod0 !== '' && $cod0 !== '0') {
+			if ($cod0 !== '') {
 				$itens_limpos[] = $linha_item;
 			}
 		}
