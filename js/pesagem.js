@@ -208,8 +208,10 @@ function bloquearGravacaoPesagemOnline(mensagem) {
 }
 
 function liberarGravacaoPesagemOnline() {
+    // libera Pesar / gravacao. NAO reabilita ".finalizar" — esse botao segue a
+    // regra de animais repetidos, tratada separadamente no monta_lista_editar_online.
     window.listaOnlineOk = true;
-    _botoesGravacaoPesagemOnline().prop("disabled", false);
+    $("#selecionar_pasagem button[onclick*='continuar_pesagem']").prop("disabled", false);
 }
 
 function monta_lista_editar_online() {
