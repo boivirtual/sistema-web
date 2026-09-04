@@ -5382,6 +5382,19 @@ var _gravarPesagemEmAndamento = false;
 function gravar_pesagem(opcao) {
     if (_gravarPesagemEmAndamento) return;
 
+    // trava anti-perda: na edicao on-line, so grava se a lista carregou inteira
+    if ($("#editar_online").val() === "S" && window.listaOnlineOk !== true) {
+        $("#mensagem_erro .modal-body").html(
+            "A lista de animais ainda nao carregou por completo. " +
+            "Recarregue a pagina e aguarde a lista aparecer inteira antes de gravar.");
+        $("#mensagem_erro").modal();
+        return;
+    }
+
+    // intencao da gravacao: 'excluir_item' libera reduzir 1 item; senao a lista nao pode encolher
+    var acaoGravacao = window._acaoPesagem || "";
+    window._acaoPesagem = "";
+
     var array_tabela_itens = [];
     var grupo_itens = "";
 
