@@ -185,12 +185,55 @@ window.addEventListener("load", function (event) {
 });
 
 // EDITAR
+
+// Trava de seguranca (ajuste 2026-09-04 - ver card do Trello "Pesagem on-line -
+// edicao de item apaga os demais itens quando a conexao falha"). Enquanto a lista
+// de itens nao tiver carregado inteira, nenhuma gravacao pode acontecer, senao o
+// servidor apaga tudo e regrava so o que esta na tela.
+window.listaOnlineOk = false;
+
+function bloquearGravacaoPesagemOnline(mensagem) {
+    window.listaOnlineOk = false;
+    $(".finalizar, .botoes_final .btn-success, .botoes_final .btn-primary").prop("disabled", true);
+    if (mensagem) {
+        $("#mensagem_erro .modal-body").html(mensagem);
+        $("#mensagem_erro").modal();
+    }
+}
+
+function liberarGravacaoPesagemOnline() {
+    window.listaOnlineOk = true;
+    $(".botoes_final .btn-success, .botoes_final .btn-primary").prop("disabled", false);
+}
+
 function monta_lista_editar_online() {
     var numero_pesagem_id = $("#numero_pesagem_id").val();
 
+    window.listaOnlineOk = false;
+
     $.post("ler_pesagem_online.php", { pesagem_id: numero_pesagem_id,}, function (valor) {
         var php = valor.split("<|>");
+
+        // resposta veio truncada (queda de conexao no meio do download da lista)?
+        if (php.length < 21 || typeof php[8] === "undefined") {
+            bloquearGravacaoPesagemOnline(
+                "A lista de animais nao carregou por completo (falha de conexao). " +
+                "Recarregue a pagina antes de editar ou gravar, para nao perder itens.");
+            return;
+        }
+
         var php_array_itens = php[8].split("<!>");
+
+        // algum item chegou cortado?
+        for (var _k = 0; _k < php_array_itens.length; _k++) {
+            if (php_array_itens[_k] === "") continue;
+            if (php_array_itens[_k].split("|").length < 26) {
+                bloquearGravacaoPesagemOnline(
+                    "A lista de animais chegou incompleta (falha de conexao). " +
+                    "Recarregue a pagina antes de editar ou gravar, para nao perder itens.");
+                return;
+            }
+        }
 
         $(".descricao_filtro").text(php[0]);
         $(".descricao_filtro").val(php[0]);
