@@ -5444,6 +5444,16 @@ function gravar_pesagem(opcao) {
     grupo_itens = array_tabela_itens.join("<|>");
 
     $("#array_itens").val(grupo_itens);
+
+    // o servidor confere esses dois para nao apagar itens por POST truncado
+    $("#qtd_esperada_pesagem").remove();
+    $("#acao_pesagem").remove();
+    $("#form_gravar_pesagem").append(
+        '<input type="hidden" id="qtd_esperada_pesagem" name="qtd_esperada" value="' +
+        array_tabela_itens.length + '">');
+    $("#form_gravar_pesagem").append(
+        '<input type="hidden" id="acao_pesagem" name="acao" value="' + acaoGravacao + '">');
+
     var dados = $("#form_gravar_pesagem").serialize();
 
     _gravarPesagemEmAndamento = true;
@@ -5452,6 +5462,7 @@ function gravar_pesagem(opcao) {
         type: "POST",
         url: "gravar_pesagem_individual.php",
         data: dados,
+        timeout: 60000,
         success: function (data) {
             _gravarPesagemEmAndamento = false;
             if (data.error) {
@@ -5471,6 +5482,10 @@ function gravar_pesagem(opcao) {
         },
         error: function () {
             _gravarPesagemEmAndamento = false;
+            $("#mensagem_erro .modal-body").html(
+                "Falha de conexao ao gravar a pesagem. A gravacao pode nao ter sido concluida. " +
+                "Recarregue a pagina e confira os itens antes de tentar de novo.");
+            $("#mensagem_erro").modal();
         },
     });
 }
