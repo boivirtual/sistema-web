@@ -64,36 +64,97 @@
 
 	if ($numero_pesagem_id && $tipo_gravacao==2) {
 
+		// ------------------------------------------------------------------
+		// Blindagem contra perda de itens (ajuste 2026-09-04)
+		// Ver card do Trello "Pesagem on-line - edicao de item apaga os demais
+		// itens quando a conexao falha". A rotina abaixo faz DELETE de todos os
+		// itens + reinsercao a partir da lista enviada pelo navegador; se essa
+		// lista chegar curta (POST truncado por queda de conexao, ou a tela
+		// ainda nao terminou de carregar) os itens que faltarem sao perdidos.
+		// ------------------------------------------------------------------
+
+		$qtd_esperada = isset($_POST['qtd_esperada']) ? (int) $_POST['qtd_esperada'] : -1;
+		$acao_item    = isset($_POST['acao']) ? $_POST['acao'] : '';
+
+		// lista limpa: ignora entradas vazias ou com codigo 0
+		$itens_limpos = array();
+		foreach (explode("<|>", (string) $array_itens) as $linha_item) {
+			$campos_item = explode("|", $linha_item);
+			$cod0 = isset($campos_item[0]) ? trim($campos_item[0]) : '';
+			if ($cod0 !== '' && $cod0 !== '0') {
+				$itens_limpos[] = $linha_item;
+			}
+		}
+		$qtd_recebida = count($itens_limpos);
+
+		// quantos itens a pesagem tem hoje no banco
+		$rs_contagem = mysqli_query($conector, "SELECT COUNT(*) AS c FROM tbl_item_pesagem
+			WHERE tbl_ite_pesagem_numero_id='" . escapar($numero_pesagem_id, $conector) . "'");
+		$qtd_atual = ($rs_contagem && ($reg_c = mysqli_fetch_assoc($rs_contagem))) ? (int) $reg_c['c'] : 0;
+
+		// (A) o navegador informa quantas linhas mandou; tem que bater com o que chegou
+		if ($qtd_esperada < 0 || $qtd_recebida !== $qtd_esperada) {
+			error_log("gravar_pesagem_individual: ABORTADO pesagem {$numero_pesagem_id} - "
+				. "esperava {$qtd_esperada} item(ns), chegaram {$qtd_recebida} (POST incompleto). Nada foi alterado.");
+			header('Content-type: application/json');
+			echo json_encode(array('error' => true, 'message' =>
+				'A gravacao chegou incompleta ao servidor (provavel falha de conexao). '
+				. 'Nada foi alterado. Recarregue a tela e tente de novo.'));
+			mysqli_close($conector);
+			exit;
+		}
+
+		// (B) esta rotina nunca reduz mais de 1 item; excluir 1 item manda acao=excluir_item
+		$reducao_permitida = ($acao_item === 'excluir_item' && $qtd_recebida === $qtd_atual - 1);
+		if ($qtd_atual > 0 && $qtd_recebida < $qtd_atual && !$reducao_permitida) {
+			error_log("gravar_pesagem_individual: ABORTADO pesagem {$numero_pesagem_id} - "
+				. "recebidos {$qtd_recebida}, tabela tem {$qtd_atual}, sem intencao de exclusao. Nada foi alterado.");
+			header('Content-type: application/json');
+			echo json_encode(array('error' => true, 'message' =>
+				"A lista recebida ({$qtd_recebida}) tem menos animais do que a pesagem ja tem "
+				. "gravados ({$qtd_atual}). Gravacao cancelada para nao perder dados. Recarregue a tela."));
+			mysqli_close($conector);
+			exit;
+		}
+
+		// daqui pra frente usa a lista limpa e validada
+		$matriz_itens = $itens_limpos;
+		$quantidade_itens = $qtd_recebida;
+
+		mysqli_begin_transaction($conector);
+
 	    $sql = "UPDATE tbl_pesagem SET
-			tbl_pesagem_codigo_local='$local',
-			tbl_pesagem_codigo_epoca='$epoca_pesagem',
-			tbl_pesagem_lote='$descricao_lote',
-			tbl_pesagem_qtd_animais_a_pesar='$total_a_pesar',
-			tbl_pesagem_qtd_animais_pesados='$total_pesados',
-			tbl_pesagem_peso_kg='$peso_total_kg',
-			tbl_pesagem_peso_arroba='$peso_total_arroba',
-			tbl_pesagem_peso_medio_kg='$peso_medio_kg',
-			tbl_pesagem_peso_medio_arroba='$peso_medio_arroba',
-			tbl_pesagem_filtros='$descricao_filtro',
-			tbl_pesagem_alterado_em='$data_sistema',
-			tbl_pesagem_alterado_por='$nomeusuario'
-	    WHERE tbl_pesagem_id='$numero_pesagem_id'";
+			tbl_pesagem_codigo_local='" . escapar($local, $conector) . "',
+			tbl_pesagem_codigo_epoca='" . escapar($epoca_pesagem, $conector) . "',
+			tbl_pesagem_lote='" . escapar($descricao_lote, $conector) . "',
+			tbl_pesagem_qtd_animais_a_pesar='" . escapar($total_a_pesar, $conector) . "',
+			tbl_pesagem_qtd_animais_pesados='" . escapar($total_pesados, $conector) . "',
+			tbl_pesagem_peso_kg='" . escapar($peso_total_kg, $conector) . "',
+			tbl_pesagem_peso_arroba='" . escapar($peso_total_arroba, $conector) . "',
+			tbl_pesagem_peso_medio_kg='" . escapar($peso_medio_kg, $conector) . "',
+			tbl_pesagem_peso_medio_arroba='" . escapar($peso_medio_arroba, $conector) . "',
+			tbl_pesagem_filtros='" . escapar($descricao_filtro, $conector) . "',
+			tbl_pesagem_alterado_em='" . escapar($data_sistema, $conector) . "',
+			tbl_pesagem_alterado_por='" . escapar($nomeusuario, $conector) . "'
+	    WHERE tbl_pesagem_id='" . escapar($numero_pesagem_id, $conector) . "'";
 
 	    $resultado = mysqli_query($conector,$sql);
 	    $resposta = array('success' => true, 'message' => 'Pesagem incluída com sucesso.' , 'numero_doc' => $numero_pesagem_id);
 		$erro_mysql = mysqli_error($conector);
 
 		if (!$resultado){
+			mysqli_rollback($conector);
 	    	header('Content-type: application/json');
 	    	echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro ao registrar a pesagem ' . $erro_mysql));
 	    	exit;
-		} 
+		}
 
-		$sql = ("DELETE FROM tbl_item_pesagem WHERE tbl_ite_pesagem_numero_id='$numero_pesagem_id'");
+		$sql = ("DELETE FROM tbl_item_pesagem WHERE tbl_ite_pesagem_numero_id='" . escapar($numero_pesagem_id, $conector) . "'");
 		$resultado = mysqli_query($conector,$sql);
 		$erro_mysql = mysqli_error($conector);
 
 		if (!$resultado){
+			mysqli_rollback($conector);
 	    	header('Content-type: application/json');
 	    	echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro na exclusão dos itens.' . $erro_mysql));
 			mysqli_close($conector);
@@ -105,29 +166,28 @@
 	    		$tabela_itens = $matriz_itens[$i];
 	    		$itens = explode("|", $tabela_itens);
 
-				$codigo_animal = ltrim($itens[0]);
-				$codigo_animal = rtrim($codigo_animal);
-				$peso = $itens[1];
-				$sexo = $itens[2];
-				$nascimento = $itens[3];
-				$raca = $itens[4];
-				$pelagem = $itens[5];
-				$mae = $itens[6];
-				$observacao = ltrim($itens[7]);
-				$observacao = rtrim($observacao);
-				$apartacao = $itens[9];
-				$mens_repetido = $itens[10];
-				$id_repetido = $itens[11];
-				$ultimo_peso = $itens[12];
+				$codigo_animal = escapar(trim((string)$itens[0]), $conector);
+				$peso = escapar($itens[1], $conector);
+				$sexo = escapar($itens[2], $conector);
+				$nascimento = escapar($itens[3], $conector);
+				$raca = escapar($itens[4], $conector);
+				$pelagem = escapar($itens[5], $conector);
+				$mae = escapar($itens[6], $conector);
+				$observacao = escapar(trim((string)$itens[7]), $conector);
+				$apartacao = escapar($itens[9], $conector);
+				$mens_repetido = escapar($itens[10], $conector);
+				$id_repetido = escapar($itens[11], $conector);
+				$ultimo_peso = escapar($itens[12], $conector);
 
 				$codigo_id = trim((string)$itens[8]);
+				$codigo_id_sql = escapar($codigo_id, $conector);
 
 				if ($codigo_id !== '') {
     				$animaisParaRecalcular[$codigo_id] = $codigo_id;
 				}
 
-	            $tbl_animal = mysqli_query($conector, "select * from tbl_animais 
-	            	where tbl_animal_codigo_id='$codigo_id'");
+	            $tbl_animal = mysqli_query($conector, "select * from tbl_animais
+	            	where tbl_animal_codigo_id='$codigo_id_sql'");
 	            $num_rows = mysqli_num_rows($tbl_animal);
 
 	            if ($num_rows!=0){
