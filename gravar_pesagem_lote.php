@@ -255,17 +255,37 @@
 					'$grupo_destino'
 		    )";
 		    $resultado = mysqli_query($conector,$sql);
-		}    
+		    if (!$resultado) { break; }
+		}
 
 		$erro_mysql = mysqli_error($conector);
 
 		if (!$resultado){
+			mysqli_rollback($conector);
 		  	header('Content-type: application/json');
 		   	echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro na gravação dos itens.' . $erro_mysql));
 			mysqli_close($conector);
 			exit;
-		} 
-		
+		}
+
+		// confere a contagem antes de efetivar
+		$rs_conf = mysqli_query($conector, "SELECT COUNT(*) AS c FROM tbl_item_pesagem
+			WHERE tbl_ite_pesagem_numero_id='" . mysqli_real_escape_string($conector, $numero_pesagem_id) . "'");
+		$qtd_final_lote = ($rs_conf && ($reg_f = mysqli_fetch_assoc($rs_conf))) ? (int) $reg_f['c'] : -1;
+
+		if ($qtd_final_lote !== $quantidade_itens) {
+			mysqli_rollback($conector);
+			error_log("gravar_pesagem_lote: ROLLBACK pesagem {$numero_pesagem_id} - "
+				. "contagem final {$qtd_final_lote} diferente de {$quantidade_itens}. Nada foi alterado.");
+			header('Content-type: application/json');
+			echo json_encode(array('error' => true, 'message' =>
+				'Erro ao gravar os itens; nada foi alterado. Recarregue a tela e tente de novo.'));
+			mysqli_close($conector);
+			exit;
+		}
+
+		mysqli_commit($conector);
+
 	    $resposta = array('success' => true, 'message' => 'Pesagem Incluida com sucesso.', 'numero_doc' => $numero_pesagem_id);
 		$erro_mysql = mysqli_error($conector);
 
