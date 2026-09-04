@@ -380,7 +380,7 @@
 		foreach (explode("<|>", (string) $array_itens) as $linha_item) {
 			$campos_item = explode("|", $linha_item);
 			$cod0 = isset($campos_item[0]) ? trim($campos_item[0]) : '';
-			if ($cod0 !== '' && $cod0 !== '0') {
+			if ($cod0 !== '') {
 				$itens_limpos[] = $linha_item;
 			}
 		}
