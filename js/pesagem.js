@@ -401,7 +401,26 @@ function monta_lista_editar_online() {
             deveReposicionarLinhaPesagem = false;
             indiceLinhaRetornoPesagem = -1;
         }
+
+        // conferencia final: nº de linhas renderizadas x animais pesados no cabecalho.
+        // Se renderizou menos, a lista veio incompleta -> trava a gravacao.
+        var linhasRenderizadas = $("#tabela_itens tbody tr").length;
+        var pesadosCabecalho = parseInt(php[3], 10) || 0;
+
+        if (linhasRenderizadas < pesadosCabecalho) {
+            bloquearGravacaoPesagemOnline(
+                "A lista carregou " + linhasRenderizadas + " animal(is), mas a pesagem tem " +
+                pesadosCabecalho + " pesado(s). Recarregue a pagina antes de editar ou gravar.");
+            return;
+        }
+
+        liberarGravacaoPesagemOnline();
     })
+    .fail(function () {
+        bloquearGravacaoPesagemOnline(
+            "Falha ao carregar a lista de animais (conexao). " +
+            "Recarregue a pagina antes de editar ou gravar, para nao perder itens.");
+    });
 }
 
 function ler_busca() {
