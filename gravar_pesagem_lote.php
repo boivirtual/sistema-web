@@ -112,6 +112,56 @@
 
 	if ($numero_pesagem_id && $tipo_gravacao==2) {
 
+		// ------------------------------------------------------------------
+		// Blindagem contra perda de itens (ajuste 2026-09-04) - mesmo problema
+		// do card do Trello "Pesagem on-line - edicao de item apaga os demais
+		// itens quando a conexao falha", aqui na pesagem em lote.
+		// ------------------------------------------------------------------
+		$qtd_esperada_lote = isset($_POST['qtd_esperada']) ? (int) $_POST['qtd_esperada'] : -1;
+		$acao_item_lote    = isset($_POST['acao']) ? $_POST['acao'] : '';
+
+		$itens_limpos_lote = array();
+		foreach (explode("<|>", (string) $array_itens) as $linha_item) {
+			if (trim($linha_item) !== '') {
+				$itens_limpos_lote[] = $linha_item;
+			}
+		}
+		$qtd_recebida_lote = count($itens_limpos_lote);
+
+		$rs_contagem = mysqli_query($conector, "SELECT COUNT(*) AS c FROM tbl_item_pesagem
+			WHERE tbl_ite_pesagem_numero_id='" . mysqli_real_escape_string($conector, $numero_pesagem_id) . "'");
+		$qtd_atual_lote = ($rs_contagem && ($reg_c = mysqli_fetch_assoc($rs_contagem))) ? (int) $reg_c['c'] : 0;
+
+		// (A) se o navegador informou a contagem, tem que bater (detecta POST truncado)
+		if ($qtd_esperada_lote >= 0 && $qtd_recebida_lote !== $qtd_esperada_lote) {
+			error_log("gravar_pesagem_lote: ABORTADO pesagem {$numero_pesagem_id} - "
+				. "esperava {$qtd_esperada_lote}, chegaram {$qtd_recebida_lote} (POST incompleto). Nada foi alterado.");
+			header('Content-type: application/json');
+			echo json_encode(array('error' => true, 'message' =>
+				'A gravacao chegou incompleta ao servidor (provavel falha de conexao). '
+				. 'Nada foi alterado. Recarregue a tela e tente de novo.'));
+			mysqli_close($conector);
+			exit;
+		}
+
+		// (B) esta rotina nao reduz a quantidade de itens (exclusao usa acao=excluir_item)
+		$reducao_permitida_lote = ($acao_item_lote === 'excluir_item' && $qtd_recebida_lote >= $qtd_atual_lote - 1);
+		if ($qtd_atual_lote > 0 && $qtd_recebida_lote < $qtd_atual_lote && !$reducao_permitida_lote) {
+			error_log("gravar_pesagem_lote: ABORTADO pesagem {$numero_pesagem_id} - "
+				. "recebidos {$qtd_recebida_lote}, tabela tem {$qtd_atual_lote}, sem intencao de exclusao. Nada foi alterado.");
+			header('Content-type: application/json');
+			echo json_encode(array('error' => true, 'message' =>
+				"A lista recebida ({$qtd_recebida_lote}) tem menos itens do que a pesagem ja tem "
+				. "gravados ({$qtd_atual_lote}). Gravacao cancelada para nao perder dados. Recarregue a tela."));
+			mysqli_close($conector);
+			exit;
+		}
+
+		$matriz_itens = $itens_limpos_lote;
+		$quantidade_itens = $qtd_recebida_lote;
+
+		mysqli_begin_transaction($conector);
+
 	    $sql = "UPDATE tbl_pesagem SET
 			tbl_pesagem_codigo_local='$loca_pesagem',
 			tbl_pesagem_codigo_epoca='$epoca_pesagem',
@@ -132,16 +182,18 @@
 		$erro_mysql = mysqli_error($conector);
 
 		if (!$resultado){
+			mysqli_rollback($conector);
 	    	header('Content-type: application/json');
 	    	echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro ao registrar a pesagem ' . $erro_mysql));
 	    	exit;
-		} 
+		}
 
 		$sql = ("DELETE FROM tbl_item_pesagem WHERE tbl_ite_pesagem_numero_id='$numero_pesagem_id'");
 		$resultado = mysqli_query($conector,$sql);
 		$erro_mysql = mysqli_error($conector);
 
 		if (!$resultado){
+			mysqli_rollback($conector);
 	    	header('Content-type: application/json');
 	    	echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro na exclusão dos itens.' . $erro_mysql));
 			mysqli_close($conector);
@@ -152,18 +204,17 @@
     		$tabela_itens = $matriz_itens[$i];
 
     		$itens = explode("|", $tabela_itens);
-			$categoria = ltrim($itens[0]);
-			$categoria = rtrim($categoria);
-			$peso = $itens[1];
-			$sexo = $itens[2];
-			$peso_medio = $itens[3];
-			$arroba = $itens[4];
-			$arroba_media = $itens[5];
-			$qtd_animais = $itens[6];
-			$grupo_destino = $itens[7];
+			$categoria = mysqli_real_escape_string($conector, trim((string)$itens[0]));
+			$peso = mysqli_real_escape_string($conector, $itens[1]);
+			$sexo = mysqli_real_escape_string($conector, $itens[2]);
+			$peso_medio = mysqli_real_escape_string($conector, $itens[3]);
+			$arroba = mysqli_real_escape_string($conector, $itens[4]);
+			$arroba_media = mysqli_real_escape_string($conector, $itens[5]);
+			$qtd_animais = mysqli_real_escape_string($conector, $itens[6]);
+			$grupo_destino = mysqli_real_escape_string($conector, $itens[7]);
 
 			$numero_item = $i + 1;
-			
+
 		    $sql = "INSERT INTO tbl_item_pesagem (
 		            tbl_ite_pesagem_numero_id,
 		            tbl_ite_pesagem_numero_item,
