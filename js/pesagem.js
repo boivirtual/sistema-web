@@ -5408,7 +5408,17 @@ function gravar_pesagem(opcao) {
     var array_tabela_itens = [];
     var grupo_itens = "";
 
-    $("#tabela_itens tbody tr").each(function () {
+    // pega TODAS as linhas da tabela, mesmo com filtro de busca ativo
+    // (senao $("#tabela_itens tbody tr") devolve so as linhas filtradas e o
+    //  servidor apagaria as demais)
+    var _linhasPesagem;
+    if ($.fn.DataTable.isDataTable('#tabela_itens')) {
+        _linhasPesagem = $($('#tabela_itens').DataTable().rows().nodes());
+    } else {
+        _linhasPesagem = $("#tabela_itens tbody tr");
+    }
+
+    _linhasPesagem.each(function () {
 
         var codigo = $(this).find(".id_animal").html();
 
