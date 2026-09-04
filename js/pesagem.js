@@ -192,9 +192,15 @@ window.addEventListener("load", function (event) {
 // servidor apaga tudo e regrava so o que esta na tela.
 window.listaOnlineOk = false;
 
+function _botoesGravacaoPesagemOnline() {
+    return $("#selecionar_pasagem button[onclick*='continuar_pesagem'], " +
+             "#selecionar_pasagem button[onclick*='terminar_pesagem'], " +
+             "#selecionar_pasagem .finalizar");
+}
+
 function bloquearGravacaoPesagemOnline(mensagem) {
     window.listaOnlineOk = false;
-    $(".finalizar, .botoes_final .btn-success, .botoes_final .btn-primary").prop("disabled", true);
+    _botoesGravacaoPesagemOnline().prop("disabled", true);
     if (mensagem) {
         $("#mensagem_erro .modal-body").html(mensagem);
         $("#mensagem_erro").modal();
@@ -203,7 +209,7 @@ function bloquearGravacaoPesagemOnline(mensagem) {
 
 function liberarGravacaoPesagemOnline() {
     window.listaOnlineOk = true;
-    $(".botoes_final .btn-success, .botoes_final .btn-primary").prop("disabled", false);
+    _botoesGravacaoPesagemOnline().prop("disabled", false);
 }
 
 function monta_lista_editar_online() {
