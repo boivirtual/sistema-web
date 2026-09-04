@@ -3535,7 +3535,8 @@ function excluir_item() {
         $("#qtd_pesado").val(qtd_pesado);
 
         somar_totais();
-        gravar_pesagem(1); 
+        window._acaoPesagem = "excluir_item"; // libera o servidor a reduzir 1 item
+        gravar_pesagem(1);
         return;
     }
 }
