@@ -371,6 +371,35 @@
 	}
 
     if ($tipo_gravacao==1){
+
+		// Blindagem contra POST truncado na criacao (ajuste 2026-09-04) - ver card do Trello.
+		// Aqui nao ha DELETE, mas evita criar a pesagem ja com itens faltando.
+		$qtd_esperada = isset($_POST['qtd_esperada']) ? (int) $_POST['qtd_esperada'] : -1;
+
+		$itens_limpos = array();
+		foreach (explode("<|>", (string) $array_itens) as $linha_item) {
+			$campos_item = explode("|", $linha_item);
+			$cod0 = isset($campos_item[0]) ? trim($campos_item[0]) : '';
+			if ($cod0 !== '' && $cod0 !== '0') {
+				$itens_limpos[] = $linha_item;
+			}
+		}
+		$qtd_recebida = count($itens_limpos);
+
+		if ($qtd_esperada < 0 || $qtd_recebida !== $qtd_esperada) {
+			error_log("gravar_pesagem_individual (criacao): ABORTADO - esperava {$qtd_esperada} item(ns), "
+				. "chegaram {$qtd_recebida} (POST incompleto). Pesagem nao foi criada.");
+			header('Content-type: application/json');
+			echo json_encode(array('error' => true, 'message' =>
+				'A gravacao chegou incompleta ao servidor (provavel falha de conexao). '
+				. 'A pesagem nao foi criada. Recarregue a tela e tente de novo.'));
+			mysqli_close($conector);
+			exit;
+		}
+
+		$matriz_itens = $itens_limpos;
+		$quantidade_itens = $qtd_recebida;
+
 	    $sql = "INSERT INTO tbl_pesagem (
 	    	tbl_pesagem_controle,
 	    	tbl_pesagem_data,
