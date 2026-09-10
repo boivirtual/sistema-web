@@ -55,9 +55,9 @@ $_SESSION['local_nutricao']        = $local_filtro;
 $_SESSION['data_inicial_nutricao'] = $data_inicial;
 $_SESSION['data_final_nutricao']   = $data_final;
 $_SESSION['tipo_rel_nutricao']     = $tipo_periodo_lote;
-$_SESSION['lote_nutricao']         = $lote_filtro;
-$_SESSION['pasto_nutricao']        = $_REQUEST["pasto"];
-$_SESSION['produto_nutricao']      = $_REQUEST["produto"];
+$_SESSION['rel_nutricao_lote']     = $lote_filtro;
+$_SESSION['rel_nutricao_pasto']    = $_REQUEST["pasto"];
+$_SESSION['rel_nutricao_produto']  = $_REQUEST["produto"];
 
 if ($tipo_periodo_lote=='P') {
     $lote= array();
