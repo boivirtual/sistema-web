@@ -1,10 +1,43 @@
 /**NUTRIÇÃO*/
 var controle_estoque = $("#controle_estoque").val();
 
+// Reaplica uma seleção salva (lista de ids separada por vírgula) em um select
+// depois que ele foi populado por AJAX. Usado para o botão "Voltar" do relatório
+// de Consumo de Nutrição reabrir a tela com os mesmos filtros.
+function restaurar_selecao_filtro(seletor, valorCsv, multiplo) {
+    if (valorCsv == null) {
+        return;
+    }
+
+    var ids = String(valorCsv).split(',').filter(function (v) {
+        v = v.trim();
+        return v !== '' && v !== '000000000' && v !== '00000000';
+    });
+
+    if (ids.length === 0) {
+        return;
+    }
+
+    var $el = $(seletor);
+
+    if ($el.length === 0) {
+        return;
+    }
+
+    if ($el.hasClass('selectpicker')) {
+        $el.selectpicker('val', multiplo ? ids : ids[0]);
+    } else {
+        $el.val(multiplo ? ids : ids[0]);
+    }
+
+    $el.trigger('changed.bs.select');
+}
+
 window.addEventListener("load", function(event) {
     $.post("lista_produto.php", {}, function(valor){
         $("select[name=codigo_produto]").html(valor);
-        $('.selectpicker').selectpicker('refresh');            
+        $('.selectpicker').selectpicker('refresh');
+        restaurar_selecao_filtro('#codigo_produto', $('#restaura_produto').val(), true);
     });
 
     var expande_tela = $("#expande_tela").val();
