@@ -50,7 +50,20 @@
             color: #007aff;
             background: transparent;
             font-size: 13px;
-            font-weight: 500;        
+            font-weight: 500;
+        }
+
+        /* 3. Corrige o último item do select ficar cortado/inacessível quando a
+           barra "Limpar Seleção" aparece. O bootstrap-select calcula a altura
+           da lista sem considerar essa barra (que é mostrada/escondida por JS),
+           então o menu recorta os últimos itens. Aqui fixamos alturas próprias
+           para a lista rolável, com folga suficiente para a barra de ações. */
+        .bootstrap-select > .dropdown-menu {
+            min-height: 0 !important;
+            max-height: 340px !important;
+        }
+        .bootstrap-select > .dropdown-menu > .inner {
+            max-height: 258px !important;
         }
     </style>
 </head>
