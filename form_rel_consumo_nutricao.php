@@ -124,9 +124,9 @@
     }
 
     $local_nutricao= $_SESSION['local_nutricao'];
-    $array_produto = isset($_SESSION['produto_nutricao']) ? $_SESSION['produto_nutricao'] : '';
-    $array_lote    = isset($_SESSION['lote_nutricao'])    ? $_SESSION['lote_nutricao']    : '';
-    $array_pasto   = isset($_SESSION['pasto_nutricao'])   ? $_SESSION['pasto_nutricao']   : '';
+    $array_produto = isset($_SESSION['rel_nutricao_produto']) ? $_SESSION['rel_nutricao_produto'] : '';
+    $array_lote    = isset($_SESSION['rel_nutricao_lote'])    ? $_SESSION['rel_nutricao_lote']    : '';
+    $array_pasto   = isset($_SESSION['rel_nutricao_pasto'])   ? $_SESSION['rel_nutricao_pasto']   : '';
     $controle_estoque = $_SESSION['controle_estoque'];
 
     $codigo_usuario = $_SESSION['id_usuario'];
