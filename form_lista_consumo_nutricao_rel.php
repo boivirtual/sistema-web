@@ -908,11 +908,12 @@
         return [$quantidade_dias];
     }
 
-    function monta_produto($conector, $local_filtro, $id_lote, $data_inicial, $data_final){
+    function monta_produto($conector, $local_filtro, $id_lote, $data_inicial, $data_final, $wproduto=''){
 
-        // Considera apenas os produtos usados dentro do período filtrado.
-        // Sem esse filtro a coluna "Tipo de Nutrição" mostrava todos os
-        // produtos do histórico do lote, mesmo os de fora do período.
+        // Considera apenas os produtos usados dentro do período filtrado e,
+        // quando informado, restritos ao filtro de Produto. Sem esses filtros
+        // a coluna "Tipo de Nutrição" mostrava todos os produtos do histórico
+        // do lote, mesmo os de fora do período ou fora do filtro.
         $wperiodo = '';
         if ($data_inicial!='' || $data_final!='') {
             $wperiodo = " AND tbl_nutricao_data >= '$data_inicial' AND tbl_nutricao_data <= '$data_final'";
@@ -924,7 +925,7 @@
 
             WHERE tbl_nutricao_lixeira=0 AND
                   tbl_nutricao_codigo_local='$local_filtro' AND
-                  tbl_nutricao_id_lote = '$id_lote'" . $wperiodo . "
+                  tbl_nutricao_id_lote = '$id_lote'" . $wperiodo . $wproduto . "
             GROUP BY tbl_produto_descricao
             ORDER BY tbl_produto_descricao ASC");
 
