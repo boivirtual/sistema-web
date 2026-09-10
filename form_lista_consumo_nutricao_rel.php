@@ -19,6 +19,12 @@
 
     $lote_filtro = $_REQUEST["lote"];
 
+    // Guarda os filtros de lote/pasto/produto para o botão "Voltar" reabrir a
+    // tela de filtros exatamente como estava (vale para Por Período e Por Lote).
+    $_SESSION['lote_nutricao']    = $lote_filtro;
+    $_SESSION['pasto_nutricao']   = $_REQUEST["pasto"];
+    $_SESSION['produto_nutricao'] = $_REQUEST["produto"];
+
     if ($tipo_periodo_lote=='P') {
         $lote= array();
         $matriz_itens = explode(",", $lote_filtro);
