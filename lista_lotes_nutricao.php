@@ -22,8 +22,7 @@ $sql = "SELECT * FROM tbl_nutricao
           tbl_nutricao_lixeira=0 " . $wperiodo .
     " ORDER BY tbl_nutricao_id_lote ASC";        
 
-    // ORDER BY tbl_nutricao_lote_pasto DESC, tbl_nutricao_id DESC";        
-print_r($sql);
+    // ORDER BY tbl_nutricao_lote_pasto DESC, tbl_nutricao_id DESC";
 
 $qr = mysqli_query($conector, $sql);
 
