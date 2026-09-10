@@ -279,8 +279,8 @@
 
                         $consumo_edi = number_format($media_consumo, 0, ",", ".");
 
-                        $descricao_produto = 
-                        monta_produto($conector, $local_filtro, $lote_anterior, $data_inicial, $data_final);
+                        $descricao_produto =
+                        monta_produto($conector, $local_filtro, $lote_anterior, $data_inicial, $data_final, $wproduto);
 
 
                         if (strpos($lote_anterior, '/') === false) {
