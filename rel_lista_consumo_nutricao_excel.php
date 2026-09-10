@@ -50,6 +50,15 @@ $origem_relatorio=$_REQUEST['tipo_relatorio'];
 
 $lote_filtro = $_REQUEST["lote"];
 
+// Guarda os filtros para o botão "Voltar" da tela reabrir tudo como estava.
+$_SESSION['local_nutricao']        = $local_filtro;
+$_SESSION['data_inicial_nutricao'] = $data_inicial;
+$_SESSION['data_final_nutricao']   = $data_final;
+$_SESSION['tipo_rel_nutricao']     = $tipo_periodo_lote;
+$_SESSION['lote_nutricao']         = $lote_filtro;
+$_SESSION['pasto_nutricao']        = $_REQUEST["pasto"];
+$_SESSION['produto_nutricao']      = $_REQUEST["produto"];
+
 if ($tipo_periodo_lote=='P') {
     $lote= array();
     $matriz_itens = explode(",", $lote_filtro);
