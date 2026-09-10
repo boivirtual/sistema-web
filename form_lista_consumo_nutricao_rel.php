@@ -21,9 +21,10 @@
 
     // Guarda os filtros de lote/pasto/produto para o botão "Voltar" reabrir a
     // tela de filtros exatamente como estava (vale para Por Período e Por Lote).
-    $_SESSION['lote_nutricao']    = $lote_filtro;
-    $_SESSION['pasto_nutricao']   = $_REQUEST["pasto"];
-    $_SESSION['produto_nutricao'] = $_REQUEST["produto"];
+    // Chaves dedicadas ao relatório para não conflitar com o cadastro de nutrição.
+    $_SESSION['rel_nutricao_lote']    = $lote_filtro;
+    $_SESSION['rel_nutricao_pasto']   = $_REQUEST["pasto"];
+    $_SESSION['rel_nutricao_produto'] = $_REQUEST["produto"];
 
     if ($tipo_periodo_lote=='P') {
         $lote= array();
