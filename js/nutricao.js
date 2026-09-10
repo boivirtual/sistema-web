@@ -469,14 +469,21 @@ $(document).ready(function() {
         // -----------------------------------------------------------
         function atualizarVisibilidadeActionsBox() {
             // Pega o array de valores selecionados
-            const selecoes = $selectElement.val(); 
-            
+            const selecoes = $selectElement.val();
+
             // Se há seleções, mostra a barra de ações; caso contrário, esconde.
             if (selecoes && selecoes.length > 0) {
-                $actionsBox.show(); 
+                $actionsBox.show();
             } else {
-                $actionsBox.hide(); 
+                $actionsBox.hide();
             }
+
+            // O bootstrap-select calcula a altura da área de rolagem do menu
+            // medindo a .bs-actionsbox. Como aqui ela é mostrada/escondida
+            // manualmente (display:none), a medição fica desatualizada e o
+            // último item da lista fica cortado / inacessível. Forçar o
+            // recálculo do tamanho do menu resolve sem fechar o dropdown.
+            $selectElement.selectpicker('setSize', true);
         }
         
         // 5. Executa na inicialização (Estado inicial do formulário)
