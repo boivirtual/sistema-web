@@ -189,6 +189,11 @@
                         <div class="row col-md-12 filtro_exibido" id="consulta_contas">
                             <input type="hidden" id="tipo_relatorio" <?php echo "value='".$tipo_relatorio."'";?>>
 
+                            <!-- Filtros salvos na sessão para restaurar a seleção ao voltar -->
+                            <input type="hidden" id="restaura_lote"    value="<?php echo htmlspecialchars($array_lote, ENT_QUOTES); ?>">
+                            <input type="hidden" id="restaura_pasto"   value="<?php echo htmlspecialchars($array_pasto, ENT_QUOTES); ?>">
+                            <input type="hidden" id="restaura_produto" value="<?php echo htmlspecialchars($array_produto, ENT_QUOTES); ?>">
+
                             <form method="GET" action="#" enctype="multipart/form-data" >
                             
                                 <div class="tab-panel ">
