@@ -67,14 +67,21 @@ window.addEventListener("load", function(event) {
     if (local!='' && local!=0) {
         $.post("lista_lotes_nutricao.php", {local:local, data_inicial:data_inicial, data_final:data_final, tipo_rel:tipo_periodo_lote}, function(valor){
             $("select[name=descricao_lote]").html(valor);
-            $('.selectpicker').selectpicker('refresh');            
+            $('.selectpicker').selectpicker('refresh');
 
             $("select[name=um_lote]").html(valor);
+
+            if (tipo_periodo_lote == 'P') {
+                restaurar_selecao_filtro('#descricao_lote', $('#restaura_lote').val(), true);
+            } else {
+                restaurar_selecao_filtro('#um_lote', $('#restaura_lote').val(), false);
+            }
         });
 
         $.post("lista_pasto_nutricao.php", {local:local}, function(valor){
             $("select[name=codigo_pasto]").html(valor);
-            $('.selectpicker').selectpicker('refresh');            
+            $('.selectpicker').selectpicker('refresh');
+            restaurar_selecao_filtro('#codigo_pasto', $('#restaura_pasto').val(), true);
         });
 
         if (tipo_periodo_lote=='P') {
