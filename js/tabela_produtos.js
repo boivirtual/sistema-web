@@ -238,47 +238,7 @@ function gravar_produtos() {
 
     var tipo_gravacao = $("#tipo_gravacao").val();
 
-    if (tipo_gravacao==2) {
-        if (window.confirm("Atenção! Ao confirmar enviar esse registro para lixeira, não será possível recupera-lo pelo sistema. Confirmar assim mesmo?")) {
-            var dados = $('#form_gravar_produto').serialize();
-            $.ajax({
-                type: "POST",
-                url: 'gravar_produtos.php',
-                data: dados,
-                success: function(data){
-                    if (data.error) {
-                        $("#mensagem_erro").modal();
-                        $("#mensagem_erro .modal-body").html(data.message);
-                    }
-                    else if (data.success){
-                        $("#mensagem_retorno_edicao").modal();
-                        $("#mensagem_retorno_edicao .modal-body").html(data.message);
-                    }
-                }
-            });
-        }
-    }
-    else if (tipo_gravacao==3) {
-        if (window.confirm("Confirma remover esse registro da lixeira?")) {
-            var dados = $('#form_gravar_produto').serialize();
-            $.ajax({
-                type: "POST",
-                url: 'gravar_produtos.php',
-                data: dados,
-                success: function(data){
-                    if (data.error) {
-                        $("#mensagem_erro").modal();
-                        $("#mensagem_erro .modal-body").html(data.message);
-                    }
-                    else if (data.success){
-                        $("#mensagem_retorno_edicao").modal();
-                        $("#mensagem_retorno_edicao .modal-body").html(data.message);
-                    }
-                }
-            });
-        }
-    }
-    else {
+    {
         var dados = $('#form_gravar_produto').serialize();
 
         $(".confirma_gravar").attr("disabled", true);
