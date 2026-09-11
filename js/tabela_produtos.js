@@ -190,7 +190,8 @@ function editar_animal(array_animal) {
     $('#unidade_anterior').val(array_produtos[5]);
 
     $("#div_ativo").show();
-    $("#ativo").prop('checked', array_produtos[12]=='S');
+    $("#ativoS").prop('checked', array_produtos[12]=='S');
+    $("#ativoN").prop('checked', array_produtos[12]=='N');
 
     var und_entrada_estoque = $('#apresentacao').find(":selected").text();
     $('.apresentacao_estoque').html(und_entrada_estoque);
