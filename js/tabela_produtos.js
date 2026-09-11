@@ -81,6 +81,9 @@ function incluir_novo() {
     $("#qtd_uni").val('');
     $("#observacao").val('');
 
+    $("#div_ativo").hide();
+    $("#ativo").prop('checked', true);
+
     $("#array_codigo_fazenda").val('');
     $("#array_estoque_atual").val('');
 
