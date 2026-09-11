@@ -253,8 +253,6 @@
               <li id="opc807d"><a style="color:#666666" href="#">Plano de Contas</a></li>
               <li id="opc808"><a class="" href="form_tabela_centro_custos.php">Centro de Custos</a></li>
               <li id="opc808d"><a style="color:#666666" href="#">Centro de Custos</a></li>
-              <li id="opc816"><a class="" href="form_tabela_grupo_produtos.php">Grupos de Produtos</a></li>
-              <li id="opc816d"><a style="color:#666666" href="#">Grupos de Produtos</a></li>
               <!--<li id="opc818"><a class="" href="form_tabela_via_uso_produtos.php">Via de Uso de Produtos</a></li>-->
               <li id="opc818"><a class="" href="form_cadastro_busca.php">Ajuda</a></li>
               <li id="opc818d"><a style="color:#666666" href="#">Ajuda</a></li>
