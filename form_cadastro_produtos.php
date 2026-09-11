@@ -172,11 +172,15 @@
                                                 </select>
                                             </div>
 
-                                            <div class="form-group col-md-6 text-right" id="div_ativo" style="display: none;">
-                                                <label class="control-label">&nbsp;</label>
-                                                <div class="checkbox" style="display: inline-block; margin-top: 0;">
-                                                    <label><input type="checkbox" id="ativo" name="ativo" value="S"> Produto Ativo</label>
-                                                </div>
+                                            <div class="form-group col-md-3 ativo" id="div_ativo" style="display: none;">
+                                                <label class="control-label">Produto Ativo</label>
+                                                <div class="clearfix"></div>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="ativo" id="ativoS" value="S"> Sim
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="ativo" id="ativoN" value="N"> Não
+                                                </label>
                                             </div>
                                         </div>
 
