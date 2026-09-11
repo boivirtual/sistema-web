@@ -174,39 +174,28 @@
                         $descricao_complementar,
                         $codigo_padrao,
                         $array_fazendas,
-                        $array_estoque_atual
-                    );   
-                                    
+                        $array_estoque_atual,
+                        $ativo
+                    );
+
                     $string_array = implode('|', $array_animal);
 
+                    $estilo = ($ativo=='S') ? '' : " style='color: #ccc;'";
+                    $desc_ativo = ($ativo=='S') ? 'Ativo' : 'Inativo';
+
                     echo "<tr>";
-
-                    if ($lixeira==0) {
-                        echo "<td width='10%'>".$desc_modalidade."</td>";
-                        echo "<td width='10%'>".$descricao_produto."</td>";
-                        echo "<td width='10%'>".$apresentacao."</td>";
-                        echo "<td width='10%'>".$total_estoque_apr_edi." ".$desc_apresentacao."</td>";
-                        echo "<td width='10%'>".$total_estoque_edi." ".$simbolo_unidade."</td>";
-                        echo "<td width='10%'>";    
-                        echo "<div class='btn-group'>";
-                        echo "<a class='btn' href='#'><i class='icon_pencil' data-toggle='tooltip' data-placement='left' title='Editar esse registro' onClick='editar_animal(\"{$string_array}\");";
-                        echo "' ></i></a>"; 
-
-                        echo "<a class='btn' href='#'><i class='icon_trash_alt' data-toggle='tooltip' data-placement='left' title='Enviar para lixeira' onClick='enviar_lixeira(\"{$string_array}\",2)' ></i></a>"; 
-                        echo "</div>";
-                        echo "</td>";
-                    }
-                    else {
-                        echo "<td width='10%' style='color: #ccc;'>".$desc_modalidade."</td>";
-                        echo "<td width='10%' style='color: #ccc;'>".$descricao_produto."</td>";
-                        echo "<td width='10%' style='color: #ccc;'>".$apresentacao."</td>";
-                        echo "<td width='10%' style='color: #ccc;'>".$total_estoque_edi." ".$simbolo_unidade."</td>";
-                        echo "<td width='10%' style='color: #ccc;'>";    
-                        echo "<div class='btn-group'>";
-                        echo "<a class='btn' href='#'><i class='icon_refresh' data-toggle='tooltip' data-placement='left' title='Remover da lixeira' onClick='enviar_lixeira(\"{$string_array}\",3)' ></i></a>"; 
-                        echo "</div>";
-                        echo "</td>";
-                    }
+                    echo "<td width='10%'$estilo>".$desc_modalidade."</td>";
+                    echo "<td width='10%'$estilo>".$descricao_produto."</td>";
+                    echo "<td width='10%'$estilo>".$apresentacao."</td>";
+                    echo "<td width='10%'$estilo>".$total_estoque_apr_edi." ".$desc_apresentacao."</td>";
+                    echo "<td width='10%'$estilo>".$total_estoque_edi." ".$simbolo_unidade."</td>";
+                    echo "<td width='10%'$estilo>".$desc_ativo."</td>";
+                    echo "<td width='10%'>";
+                    echo "<div class='btn-group'>";
+                    echo "<a class='btn' href='#'><i class='icon_pencil' data-toggle='tooltip' data-placement='left' title='Editar esse registro' onClick='editar_animal(\"{$string_array}\");";
+                    echo "' ></i></a>";
+                    echo "</div>";
+                    echo "</td>";
                     echo "</tr>";
                 } 
                 mysqli_close($conector);
