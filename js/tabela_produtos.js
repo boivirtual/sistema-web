@@ -82,7 +82,7 @@ function incluir_novo() {
     $("#observacao").val('');
 
     $("#div_ativo").hide();
-    $("#ativo").prop('checked', true);
+    $("#ativoS").prop('checked', true);
 
     $("#array_codigo_fazenda").val('');
     $("#array_estoque_atual").val('');
