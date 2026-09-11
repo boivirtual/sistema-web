@@ -68,8 +68,8 @@
                     $codigo_apresentacao = $reg_produto->tbl_produto_apresentacao;
                     $qtd_apresentacao = $reg_produto->tbl_produto_qtd_unidade; 
                     $codigo_unidade = $reg_produto->tbl_produto_unidade; 
-                    $obs = $reg_produto->tbl_produto_observacao; 
-                    $lixeira = $reg_produto->tbl_produto_lixeira; 
+                    $obs = $reg_produto->tbl_produto_observacao;
+                    $ativo = $reg_produto->tbl_produto_ativo;
                     $descricao_complementar = $reg_produto->tbl_produto_complemento_descricao;
                     $codigo_padrao = $reg_produto->tbl_produto_codigo_generico;
 
