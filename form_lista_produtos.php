@@ -209,6 +209,7 @@
                     <th> Apresentação</th>
                     <th> Estoque Total Apresentação</th>
                     <th> Estoque Total Unidade</th>
+                    <th> Ativo</th>
                     <th><i class="icon_cogs"></i> Ações</th>
                 </tr>
             </thead>';
