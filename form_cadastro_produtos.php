@@ -151,13 +151,6 @@
                                         </div>
 
                                         <div class="row">
-                                            <div class="form-group col-md-2" id="div_ativo" style="display: none;">
-                                                <label class="control-label">&nbsp;</label>
-                                                <div class="checkbox">
-                                                    <label><input type="checkbox" id="ativo" name="ativo" value="S"> Ativo</label>
-                                                </div>
-                                            </div>
-
                                             <div class="form-group col-md-6">
                                                 <label for="grupo" class="control-label"><span class="required">*</span> Modalidade</label>
                                                 <select class="form-control" id="grupo" name="grupo" required="">
@@ -177,6 +170,13 @@
                                                         }
                                                     ?>
                                                 </select>
+                                            </div>
+
+                                            <div class="form-group col-md-6 text-right" id="div_ativo" style="display: none;">
+                                                <label class="control-label">&nbsp;</label>
+                                                <div class="checkbox" style="margin-top: 0;">
+                                                    <label><input type="checkbox" id="ativo" name="ativo" value="S"> Ativo</label>
+                                                </div>
                                             </div>
                                         </div>
 
