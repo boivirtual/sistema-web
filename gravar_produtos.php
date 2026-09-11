@@ -99,51 +99,7 @@ if ($tipo_gravacao==0 || $tipo_gravacao==1) {
 @ session_start(); 
 $nomeusuario = $_SESSION['nome_usuario'];
 
-if ($tipo_gravacao==2){
-		$sql = "UPDATE tbl_produto SET 
-	                   tbl_produto_lixeira=1,
-	                   tbl_produto_lixeira_em='$data_sistema',
-	                   tbl_produto_lixeira_por='$nomeusuario'
-	                   WHERE tbl_produto_codigo_id='$codigo'";
-	    $resultado = mysqli_query($conector,$sql);
-	    $resposta = array('success' => true, 'message' => 'Registro enviado para lixeira com sucesso.');
-		$erro_mysql = mysqli_error($conector);
-
-		if (!$resultado){
-	    	header('Content-type: application/json');
-	    	echo json_encode(array('error' => $erro_mysql, 'message' => 'Ocorreu um erro ao enviar o registro para a lixeira' . $erro_mysql));
-		} 
-		else {
-		   	header('Content-type: application/json');
-		   	echo json_encode($resposta);
-		}
-
-		mysqli_close($conector);
-		exit;
-}
-else if ($tipo_gravacao==3){
-		$sql = "UPDATE tbl_produto SET 
-	                   tbl_produto_lixeira=0,
-	                   tbl_produto_lixeira_em=null,
-	                   tbl_produto_lixeira_por=null
-	                   WHERE tbl_produto_codigo_id='$codigo'";
-	    $resultado = mysqli_query($conector,$sql);
-	    $resposta = array('success' => true, 'message' => 'Registro removido da lixeira com sucesso.');
-		$erro_mysql = mysqli_error($conector);
-
-		if (!$resultado){
-	    	header('Content-type: application/json');
-	    	echo json_encode(array('error' => $erro_mysql, 'message' => 'Ocorreu um erro ao remover o registro da lixeira' . $erro_mysql));
-		} 
-		else {
-		   	header('Content-type: application/json');
-		   	echo json_encode($resposta);
-		}
-
-		mysqli_close($conector);
-		exit;
-}
-else if ($tipo_gravacao==1){
+if ($tipo_gravacao==1){
 	$sql = ("UPDATE tbl_produto SET
 				tbl_produto_codigo_generico='$codigo_padrao',
 				tbl_produto_complemento_descricao='$descricao_complementar',
@@ -153,6 +109,7 @@ else if ($tipo_gravacao==1){
 				tbl_produto_qtd_unidade='$qtd_uni',
 				tbl_produto_unidade='$unidade',
 				tbl_produto_observacao='$observacao',
+				tbl_produto_ativo='$ativo',
 				tbl_produto_alterado_em='$data_sistema',
 				tbl_produto_alterado_por='$nomeusuario'
 	 		WHERE tbl_produto_codigo_id='$codigo'");
