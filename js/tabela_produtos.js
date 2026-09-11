@@ -238,36 +238,34 @@ function gravar_produtos() {
 
     var tipo_gravacao = $("#tipo_gravacao").val();
 
-    {
-        var dados = $('#form_gravar_produto').serialize();
+    var dados = $('#form_gravar_produto').serialize();
 
-        $(".confirma_gravar").attr("disabled", true);
+    $(".confirma_gravar").attr("disabled", true);
 
-        $.ajax({
-            type: "POST",
-            url: 'gravar_produtos.php',
-            data: dados,
-            success: function(data){
-                if (data.error) {
+    $.ajax({
+        type: "POST",
+        url: 'gravar_produtos.php',
+        data: dados,
+        success: function(data){
+            if (data.error) {
+                $(".confirma_gravar").attr("disabled", false);
+                $("#mensagem_erro").modal();
+                $("#mensagem_erro .modal-body").html(data.message);
+            }
+            else if (data.success){
+                if (tipo_gravacao==1) {
                     $(".confirma_gravar").attr("disabled", false);
-                    $("#mensagem_erro").modal();
-                    $("#mensagem_erro .modal-body").html(data.message);
+                    $("#mensagem_retorno_edicao").modal();
+                    $("#mensagem_retorno_edicao .modal-body").html(data.message);
                 }
-                else if (data.success){
-                    if (tipo_gravacao==1) {
-                        $(".confirma_gravar").attr("disabled", false);
-                        $("#mensagem_retorno_edicao").modal();
-                        $("#mensagem_retorno_edicao .modal-body").html(data.message);
-                    }
-                    else {
-                        $(".confirma_gravar").attr("disabled", false);
-                        $("#mensagem_retorno").modal();
-                        $("#mensagem_retorno .modal-body").html(data.message);
-                    }
+                else {
+                    $(".confirma_gravar").attr("disabled", false);
+                    $("#mensagem_retorno").modal();
+                    $("#mensagem_retorno .modal-body").html(data.message);
                 }
             }
-        });
-    }
+        }
+    });
 }
 
 function digita_valor(){
