@@ -158,8 +158,9 @@ else{
 			tbl_produto_alterado_por,
 			tbl_produto_lixeira,
 			tbl_produto_lixeira_em,
-			tbl_produto_lixeira_por
-	        ) 
+			tbl_produto_lixeira_por,
+			tbl_produto_ativo
+	        )
 		    VALUES (
 		    		'$codigo_padrao',
 		    		'$descricao_complementar',
@@ -177,7 +178,8 @@ else{
 	                null,
 	                0,
 	                null,
-	                null
+	                null,
+	                'S'
 	        )";
 
 	$resultado = mysqli_query($conector,$sql);
