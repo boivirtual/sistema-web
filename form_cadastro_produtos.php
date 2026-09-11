@@ -175,7 +175,7 @@
                                             <div class="form-group col-md-6 text-right" id="div_ativo" style="display: none;">
                                                 <label class="control-label">&nbsp;</label>
                                                 <div class="checkbox" style="display: inline-block; margin-top: 0;">
-                                                    <label style="padding-left: 20px;"><input type="checkbox" id="ativo" name="ativo" value="S"> Ativo</label>
+                                                    <label><input type="checkbox" id="ativo" name="ativo" value="S"> Ativo</label>
                                                 </div>
                                             </div>
                                         </div>
