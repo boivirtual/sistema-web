@@ -151,13 +151,20 @@
                                         </div>
 
                                         <div class="row">
+                                            <div class="form-group col-md-2" id="div_ativo" style="display: none;">
+                                                <label class="control-label">&nbsp;</label>
+                                                <div class="checkbox">
+                                                    <label><input type="checkbox" id="ativo" name="ativo" value="S"> Ativo</label>
+                                                </div>
+                                            </div>
+
                                             <div class="form-group col-md-6">
                                                 <label for="grupo" class="control-label"><span class="required">*</span> Modalidade</label>
                                                 <select class="form-control" id="grupo" name="grupo" required="">
                                                     <?php
-                                                        $sql = "select * FROM tbl_modalidade_produto where tbl_modalidade_lixeira=0";  
+                                                        $sql = "select * FROM tbl_modalidade_produto where tbl_modalidade_lixeira=0";
                                                         $qr = mysqli_query($conector, $sql);
-                                                    
+
                                                         if(mysqli_num_rows($qr) == 0){
                                                             echo  '<option value="">'.htmlentities('Sem modalidades cadastradas').'</option>';
                                                         }
