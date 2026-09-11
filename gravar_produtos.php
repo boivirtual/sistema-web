@@ -9,7 +9,7 @@ $descricao_complementar = $_POST['descricao_complementar'];
 $apresentacao = $_POST['apresentacao'];
 $unidade = $_POST['unidade'];
 $observacao = $_POST['observacao'];
-$ativo = isset($_POST['ativo']) && $_POST['ativo']=='S' ? 'S' : 'N';
+$ativo = isset($_POST['ativo']) && $_POST['ativo']=='N' ? 'N' : 'S';
 $data_sistema = date("Y-m-d H:i:s");
 
 if ($codigo_padrao=='000' && $descricao_complementar=='') {
