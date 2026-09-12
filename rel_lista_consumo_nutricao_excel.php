@@ -989,6 +989,22 @@ function verificar_dias_anteriores($conector, $local_filtro, $lote_anterior, $da
     return $tem_dia_anterior;
 }
 
+// Substitui verificar_dias_anteriores() dentro do grid diário: em vez de uma
+// consulta a cada dia vazio da linha (até 31 por linha, multiplicado por lote e,
+// no relatório Por Período com "Agrupar Produtos" = Não, por produto), calcula
+// uma vez por lote a data mais antiga de nutrição e compara em memória — "existe
+// dia anterior a X" equivale a "a data mais antiga é anterior a X".
+function buscar_primeira_data_nutricao($conector, $local_filtro, $lote_id) {
+    $sql = mysqli_query($conector, "SELECT MIN(tbl_nutricao_data) AS primeira_data FROM tbl_nutricao
+        WHERE tbl_nutricao_lixeira = 0 AND
+              tbl_nutricao_codigo_local = '$local_filtro' AND
+              tbl_nutricao_id_lote = '$lote_id'");
+
+    $reg = mysqli_fetch_object($sql);
+
+    return ($reg && $reg->primeira_data!==null) ? $reg->primeira_data : null;
+}
+
 function calcular_dias($conector, $local_filtro, $id_lote, $data_inicial, $data_final, $tipo_periodo_lote){
     $data_hoje = date("Y-m-d");
 
