@@ -10,6 +10,8 @@ $qr = mysqli_query($conector, $sql);
 $num_rows = mysqli_num_rows($qr);
 
 if ($num_rows != 0){
+	echo '<option value=" ">'.htmlentities('...').'</option>';
+
    	while($ln = mysqli_fetch_assoc($qr)){
    		$id = $ln['pro_generico_codigo'];
         $nome = $ln['pro_generico_descricao'];
