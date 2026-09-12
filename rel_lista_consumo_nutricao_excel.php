@@ -633,7 +633,8 @@ else {
                     $qtd_produto_edi = number_format($qtd_produto_anterior, 2, ",", ".");
                     $qtd_por_cabeca_grama_edi = number_format($qtd_por_cabeca_grama_anterior, 2, ",", ".").' g';
 
-                    $quantidade_dias = calcular_dias($conector, $local_filtro, $id_lote, $data_inicial, $data_final, $tipo_periodo_lote);
+                    // Mesmo lote do relatório inteiro: já calculado antes do loop.
+                    $quantidade_dias = $quantidade_dias_lote;
 
                     $total_consumo_cabeca_dia+=$qtd_por_cabeca_grama_anterior;
 
