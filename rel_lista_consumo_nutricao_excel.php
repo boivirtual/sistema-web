@@ -485,11 +485,31 @@ if ($tipo_periodo_lote=='P') {
             nutricao_excel_imprime_lote($spreadsheet, $linha, $array_coluna, $conector, $local_filtro, $lote_anterior, $qtd_animais_anterior, $wpasto, $pasto_filtro, $data_inicial, $data_final, $tipo_periodo_lote, $wproduto, $agrupar_produtos, $total_nutricao_dia, $valor, $encerramento, $dados_produto);
     }
     // imprime os lotes que estão sem nutricao
+    //
+    // Antes disso rodava, para CADA pasto com lote do local (dezenas em
+    // fazendas maiores), uma consulta pra saber se teve nutrição no período e
+    // outra pra contar os animais. Pré-carregando os dois de uma vez (2
+    // consultas fixas) em vez de até 2 por pasto.
+    $lotes_com_nutricao_periodo = array();
+    $sql_lotes_com_nutricao = mysqli_query($conector, "SELECT DISTINCT tbl_nutricao_id_lote FROM tbl_nutricao
+        WHERE tbl_nutricao_lixeira=0 AND tbl_nutricao_codigo_local='$local_filtro'" . $wperiodo);
+
+    while ($reg_ln = mysqli_fetch_object($sql_lotes_com_nutricao)) {
+        $lotes_com_nutricao_periodo[$reg_ln->tbl_nutricao_id_lote] = true;
+    }
+
+    $qtd_animais_por_pasto = array();
+    $sql_animais_pasto = mysqli_query($conector, "SELECT tbl_animal_pasto_id, COUNT(*) AS qtd FROM tbl_animal_pasto GROUP BY tbl_animal_pasto_id");
+
+    while ($reg_ap = mysqli_fetch_object($sql_animais_pasto)) {
+        $qtd_animais_por_pasto[$reg_ap->tbl_animal_pasto_id] = $reg_ap->qtd;
+    }
+
     $sql = "SELECT * from tbl_pasto
-        WHERE tbl_pasto_lixeira=0 AND 
-            tbl_pasto_codigo_local='$local_filtro' AND 
+        WHERE tbl_pasto_lixeira=0 AND
+            tbl_pasto_codigo_local='$local_filtro' AND
             (tbl_pasto_id_lote!='' OR tbl_pasto_id_lote IS NOT NULL)
-        ORDER BY tbl_pasto_id_lote ASC, tbl_pasto_ano_lote ASC"; 
+        ORDER BY tbl_pasto_id_lote ASC, tbl_pasto_ano_lote ASC";
 
     $tbl_pasto = mysqli_query($conector, $sql);
 
@@ -500,23 +520,12 @@ if ($tipo_periodo_lote=='P') {
             $pasto_id = $reg_pasto->tbl_pasto_id;
             $lote_id = $reg_pasto->tbl_pasto_id_lote.$reg_pasto->tbl_pasto_ano_lote;
 
-            $sql = "SELECT * from tbl_nutricao
-                WHERE tbl_nutricao_id_lote='$lote_id' AND 
-                      tbl_nutricao_lixeira=0 AND 
-                      tbl_nutricao_codigo_local='$local_filtro'" . $wperiodo; 
-
-            $tbl_nutricao = mysqli_query($conector, $sql);
-            $num_rows_nutricao = mysqli_num_rows($tbl_nutricao);
-
-            if ($num_rows_nutricao==0) {
+            if (!isset($lotes_com_nutricao_periodo[$lote_id])) {
                 $descricao_lote = $reg_pasto->tbl_pasto_descricao_lote;
                 $descricao_pasto = $reg_pasto->tbl_pasto_descricao;
                 $lote_edi = $reg_pasto->tbl_pasto_id_lote.'/'.$reg_pasto->tbl_pasto_ano_lote;
-                    
-                $sql = mysqli_query($conector, "SELECT * from tbl_animal_pasto
-                    WHERE tbl_animal_pasto_id='$pasto_id'"); 
 
-                $num_rows_animais = mysqli_num_rows($sql);
+                $num_rows_animais = isset($qtd_animais_por_pasto[$pasto_id]) ? $qtd_animais_por_pasto[$pasto_id] : 0;
 
                 $linha++;
 
