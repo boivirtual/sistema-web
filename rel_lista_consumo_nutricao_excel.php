@@ -397,6 +397,7 @@ if ($tipo_periodo_lote=='P') {
 
     $lote_anterior = 0;
     $total_nutricao_dia = 0;
+    $dados_produto = array();
 
     if ($num_rows_nutricao!=0) {
             while ($reg_nutricao = mysqli_fetch_object($tbl_nutricao)) {
@@ -407,18 +408,13 @@ if ($tipo_periodo_lote=='P') {
                 $codigo_pasto = $reg_nutricao->tbl_nutricao_codigo_pasto;
                 $lote_id = $reg_nutricao->tbl_nutricao_id_lote;
 
+                $dia = substr($reg_nutricao->tbl_nutricao_data, 8, 2);
+                $dia_encerramento_row = ($reg_nutricao->tbl_nutricao_data_encerramento!='') ? substr($reg_nutricao->tbl_nutricao_data_encerramento, 8, 2) : '';
+
                 if ($lote_id!=$lote_anterior) {
                     if ($lote_anterior==0) {
                         $lote_anterior=$lote_id;
-                        //$descricao_pasto = utf8_encode($reg_nutricao->tbl_pasto_descricao);
                         $qtd_animais_anterior = intval($reg_nutricao->tbl_nutricao_qtd_animais);
-
-                        /*$descricao_lote = 
-                        strstr(utf8_encode($reg_nutricao->tbl_nutricao_lote_pasto), " L-", true);
-
-                        if ($descricao_lote=='') {
-                            $descricao_lote = utf8_encode($reg_nutricao->tbl_pasto_descricao_lote);
-                        }*/
 
                         $total_nutricao_dia = $consumo_cabeca_gramas;
 
@@ -428,171 +424,21 @@ if ($tipo_periodo_lote=='P') {
                             $encerramento[$i]='';
                         }
 
-                        $dia = substr($reg_nutricao->tbl_nutricao_data, 8, 2);
                         $valor[$dia] = $consumo_cabeca_gramas;
 
-                        if ($reg_nutricao->tbl_nutricao_data_encerramento!='') {
-                            $dia = substr($reg_nutricao->tbl_nutricao_data_encerramento, 8, 2);
-                            $encerramento[$dia]=$dia;
+                        if ($dia_encerramento_row!='') {
+                            $encerramento[$dia_encerramento_row]=$dia_encerramento_row;
                         }
-                    } 
+
+                        $dados_produto = array();
+                        nutricao_excel_acumular_produto($dados_produto, $codigo_produto, utf8_encode($reg_nutricao->tbl_produto_descricao), $consumo_cabeca_gramas, $dia, $dia_encerramento_row);
+                    }
                     else {
                         // Imprime lote
-
-                        $quantidade_dias = calcular_dias($conector, $local_filtro, $lote_anterior, $data_inicial, $data_final, $tipo_periodo_lote);
-
-                        $media_consumo = $total_nutricao_dia/$quantidade_dias[0];
-                        $consumo_edi = number_format($media_consumo, 0, ",", ".");
-
-                        $descricao_produto =
-                        monta_produto($conector, $local_filtro, $lote_anterior, $data_inicial, $data_final, $wproduto);
-
-
-                        if (strpos($lote_anterior, '/') === false) {
-                            $lote_anterior_edi = substr_replace($lote_anterior, '/', -4, 0);
-                        }
-
-                        $descricao_pasto_lote= pega_descricao_pasto($conector, $local_filtro, $lote_anterior, $wpasto, $pasto_filtro);
-
-                        $descricao_pasto = $descricao_pasto_lote[0];
-                        $descricao_lote = $descricao_pasto_lote[1];
-
-                        if ($descricao_pasto!='') {
-                            $linha++;
-
-                            $celulas = 'A'.$linha.':D'.$linha;
-                            $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
-                            $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
-
-                            $celulas = 'C'.$linha;
-                            $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
-                            $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
-
-                            $celulas = 'E'.$linha;
-                            $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
-                            $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
-
-                            $celulas = 'F'.$linha.':AK'.$linha;
-                            $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
-                            $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
-
-                            $celulas = 'AL'.$linha;
-                            $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
-                            $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
-
-                            $celulas = 'E' . $linha;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setWrapText(true);
-
-                            $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $linha, utf8_encode($descricao_lote));
-                            $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $linha, $lote_anterior_edi);
-                            $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $linha, $qtd_animais_anterior);
-                            $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(4, $linha, utf8_encode($descricao_pasto));
-                            $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(5, $linha, $descricao_produto);
-                            $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(37, $linha, $quantidade_dias[0]);
-                            $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(38, $linha, $consumo_edi.' g');
-
-                            $coluna = 5;
-                            $dia_encerramento = 99;
-
-                            $partesData = explode('-', $data_final);
-                            $dia_final = $partesData[2];
-
-                            for ($i=1; $i<=31; $i++){
-                                $coluna++;
-                                $index_coluna = $i;
-
-                                $i = str_pad($i, 2, "0", STR_PAD_LEFT);
-
-                                if ($encerramento[$i]!='') {
-                                    $dia_encerramento = $encerramento[$i];
-                                }
-
-                                if ($valor[$i]=='' && $i<=$dia_encerramento) {
-                                    $partesData = explode('-', $data_inicial);
-
-                                    $ano = $partesData[0];
-                                    $mes = $partesData[1];
-
-                                    $data_verificacao = $ano.'-'.$mes.'-'.$i;
-
-                                    $tem_dias_anteriores = verificar_dias_anteriores($conector, $local_filtro, $lote_anterior, $data_verificacao);
-
-                                    if ($tem_dias_anteriores=='N') {
-                                        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,$valor[$i]);
-
-                                        if ($i==$dia_encerramento) {
-                                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
-                                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
-
-                                            // marca de amarelo a coluna do id do lote
-                                            $celulas = 'B' . $linha; 
-                                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
-                                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
-                                        }
-                                    }
-                                    else {
-                                        if ($i<=$dia_final) {
-                                            $valor[$i]='*';
-                                        }
-
-                                        $celulas = $array_coluna[$index_coluna] . $linha;
-                                        $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setColor(new Color(Color::COLOR_GRAY));
-                                        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,$valor[$i]);
-
-                                        if ($i==$dia_encerramento) {
-                                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
-                                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
-
-                                            // marca de amarelo a coluna do id do lote
-                                            $celulas = 'B' . $linha; 
-                                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
-                                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
-                                        }
-                                    }
-                                }
-                                else if ($valor[$i]=='') {
-                                    //print_r('Passo 2 valor = espaco' . $valor[$i]);
-                                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,$valor[$i]);
-                                }
-                                else {
-                                    //print_r('Passo 3 ' . $valor[$i]);
-                                    $valor[$i] = round($valor[$i]);
-                                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,intval($valor[$i]));
-
-                                    if ($i==$dia_encerramento) {
-                                        $celulas = $array_coluna[$index_coluna] . $linha;
-
-                                        $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
-                                        $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
-
-                                        // marca de amarelo a coluna do id do lote
-                                        $celulas = 'B' . $linha; 
-                                        $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
-                                        $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
-                                    }
-                                }
-                            }
-                        }
+                        nutricao_excel_imprime_lote($spreadsheet, $linha, $array_coluna, $conector, $local_filtro, $lote_anterior, $qtd_animais_anterior, $wpasto, $pasto_filtro, $data_inicial, $data_final, $tipo_periodo_lote, $wproduto, $agrupar_produtos, $total_nutricao_dia, $valor, $encerramento, $dados_produto);
 
                         $lote_anterior=$lote_id;
-                        //$descricao_pasto = utf8_encode($reg_nutricao->tbl_pasto_descricao);
                         $qtd_animais_anterior = intval($reg_nutricao->tbl_nutricao_qtd_animais);
-                        /*$descricao_lote = 
-                        strstr(utf8_encode($reg_nutricao->tbl_nutricao_lote_pasto), " L-", true);
-
-                        if ($descricao_lote=='') {
-                            $descricao_lote = utf8_encode($reg_nutricao->tbl_pasto_descricao_lote);
-                        }*/
 
                         $total_nutricao_dia = $consumo_cabeca_gramas;
 
@@ -602,180 +448,36 @@ if ($tipo_periodo_lote=='P') {
                             $encerramento[$i]='';
                         }
 
-                        $dia = substr($reg_nutricao->tbl_nutricao_data, 8, 2);
                         $valor[$dia] = $consumo_cabeca_gramas;
 
-                        if ($reg_nutricao->tbl_nutricao_data_encerramento!='') {
-                            $dia = substr($reg_nutricao->tbl_nutricao_data_encerramento, 8, 2);
-                            $encerramento[$dia]=$dia;
+                        if ($dia_encerramento_row!='') {
+                            $encerramento[$dia_encerramento_row]=$dia_encerramento_row;
                         }
+
+                        $dados_produto = array();
+                        nutricao_excel_acumular_produto($dados_produto, $codigo_produto, utf8_encode($reg_nutricao->tbl_produto_descricao), $consumo_cabeca_gramas, $dia, $dia_encerramento_row);
                     }
                 }
                 else {
                     // faz contas aqui
                     $total_nutricao_dia+=$consumo_cabeca_gramas;
 
-                    $dia = substr($reg_nutricao->tbl_nutricao_data, 8, 2);
                     if ($valor[$dia]=='') {
                         $valor[$dia]=0;
                     }
-                    
+
                     $valor[$dia]+= $consumo_cabeca_gramas;
 
-                    if ($reg_nutricao->tbl_nutricao_data_encerramento!='') {
-                        $dia = substr($reg_nutricao->tbl_nutricao_data_encerramento, 8, 2);
-                        $encerramento[$dia]=$dia;
+                    if ($dia_encerramento_row!='') {
+                        $encerramento[$dia_encerramento_row]=$dia_encerramento_row;
                     }
+
+                    nutricao_excel_acumular_produto($dados_produto, $codigo_produto, utf8_encode($reg_nutricao->tbl_produto_descricao), $consumo_cabeca_gramas, $dia, $dia_encerramento_row);
                 }
             }
 
             // Imprime lote final do while
-
-            $quantidade_dias = calcular_dias($conector, $local_filtro, $lote_anterior, $data_inicial, $data_final, $tipo_periodo_lote);
-
-            //print_r($quantidade_dias);
-
-            $media_consumo =$total_nutricao_dia/$quantidade_dias[0];
-            $consumo_edi = number_format($media_consumo, 0, ",", ".");
-
-            $descricao_produto =
-            monta_produto($conector, $local_filtro, $lote_anterior,
-                $data_inicial, $data_final, $wproduto);
-
-            if (strpos($lote_anterior, '/') === false) {
-                $lote_anterior_edi = substr_replace($lote_anterior, '/', -4, 0);
-            }
-
-            $descricao_pasto_lote= pega_descricao_pasto($conector, $local_filtro, $lote_anterior, $wpasto, $pasto_filtro);
-
-            $descricao_pasto = $descricao_pasto_lote[0];
-            $descricao_lote = $descricao_pasto_lote[1];
-
-            if ($descricao_pasto!='') {
-                $linha++;
-
-                $celulas = 'A'.$linha.':D'.$linha;
-                $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT;
-                $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
-                $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
-                $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
-
-                $celulas = 'C'.$linha;
-                $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER;
-                $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
-                $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
-                $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
-
-                $celulas = 'E'.$linha;
-                $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT;
-                $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
-                $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
-                $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
-
-                $celulas = 'F'.$linha.':AK'.$linha;
-                $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER;
-                $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
-                $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
-                $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
-
-                $celulas = 'AL'.$linha;
-                $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT;
-                $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
-                $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
-                $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
-
-                $celulas = 'E' . $linha;
-                $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setWrapText(true);
-
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $linha, utf8_encode($descricao_lote));
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $linha, $lote_anterior_edi);
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $linha, $qtd_animais_anterior);
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(4, $linha, utf8_encode($descricao_pasto));
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(5, $linha, $descricao_produto);
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(37, $linha, $quantidade_dias[0]);
-                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(38, $linha, $consumo_edi.' g');
-
-                $coluna = 5;
-                $dia_encerramento = 99;
-
-                $partesData = explode('-', $data_final);
-                $dia_final = $partesData[2];
-
-                for ($i=1; $i<=31; $i++){
-                    $coluna++;
-                    $index_coluna = $i;
-
-                    $i = str_pad($i, 2, "0", STR_PAD_LEFT);
-
-                    if ($encerramento[$i]!='') {
-                        $dia_encerramento = $encerramento[$i];
-                    }
-
-                    if ($valor[$i]=='' && $i<=$dia_encerramento) {
-                        $partesData = explode('-', $data_inicial);
-
-                        $ano = $partesData[0];
-                        $mes = $partesData[1];
-
-                        $data_verificacao = $ano.'-'.$mes.'-'.$i;
-
-                        $tem_dias_anteriores = verificar_dias_anteriores($conector, $local_filtro, $lote_anterior, $data_verificacao);
-
-                        if ($tem_dias_anteriores=='N') {
-                            $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,$valor[$i]);
-
-                            if ($i==$dia_encerramento) {
-                                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
-                                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
-
-                                // marca de amarelo a coluna do id do lote
-                                $celulas = 'B' . $linha; 
-                                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
-                                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
-                            }
-                        }
-                        else {
-                            if ($i<=$dia_final) {
-                                $valor[$i]='*';
-                            }
-
-                            $celulas = $array_coluna[$index_coluna] . $linha;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setColor(new Color(Color::COLOR_GRAY));
-                            $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,$valor[$i]);
-
-                            if ($i==$dia_encerramento) {
-                                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
-                                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
-
-                                // marca de amarelo a coluna do id do lote
-                                $celulas = 'B' . $linha; 
-                                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
-                                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
-                            }
-                        }
-                    }
-                    else if ($valor[$i]=='') {
-                        //print_r('Passo 2 valor = espaco' . $valor[$i]);
-                        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,$valor[$i]);
-                    }
-                    else {
-                        //print_r('Passo 3 ' . $valor[$i]);
-                        $valor[$i] = round($valor[$i]);
-                        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,intval($valor[$i]));
-
-                        if ($i==$dia_encerramento) {
-                            $celulas = $array_coluna[$index_coluna] . $linha;
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
-
-                            // marca de amarelo a coluna do id do lote
-                            $celulas = 'B' . $linha; 
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
-                            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
-                        }
-                    }
-                }
-            }
+            nutricao_excel_imprime_lote($spreadsheet, $linha, $array_coluna, $conector, $local_filtro, $lote_anterior, $qtd_animais_anterior, $wpasto, $pasto_filtro, $data_inicial, $data_final, $tipo_periodo_lote, $wproduto, $agrupar_produtos, $total_nutricao_dia, $valor, $encerramento, $dados_produto);
     }
     // imprime os lotes que estão sem nutricao
     $sql = "SELECT * from tbl_pasto
