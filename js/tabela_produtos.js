@@ -48,7 +48,12 @@ $(document).ready(function(){
 
         $.post("lista_descricao_padrao.php", {modalidade:codigo_modalidade}, function(valor){
             $("select[name=descricao_padrao]").html(valor);
+            atualiza_cor_descricao_padrao();
         });
+    });
+
+    $('#descricao_padrao').change(function(){
+        atualiza_cor_descricao_padrao();
     });
 
     $('#apresentacao').change(function(){
