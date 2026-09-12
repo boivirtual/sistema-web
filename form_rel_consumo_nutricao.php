@@ -309,6 +309,20 @@
                                                     </select>
                                                 </div>
 
+                                                <div class="form-group col-md-2 agrupar_produtos_grupo" data-toggle="tooltip" data-placement="top" title="Sim soma os produtos numa única linha por lote. Não lista cada produto separadamente, com seu próprio consumo.">
+                                                    <label class="control-label">Agrupar Produtos</label>
+
+                                                    <div class="clearfix"></div>
+
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="agrupar_produtos" value="S"> Sim
+                                                    </label>
+
+                                                    <label class="radio-inline">
+                                                        <input type="radio" name="agrupar_produtos" value="N" checked> Não
+                                                    </label>
+                                                </div>
+
                                                 <div class="form-group col-md-1">
                                                     <label class="control-label">&nbsp;</label>
                                                     <button type="button" class="form-control btn btn-info pull-right" onclick="listar_consumo_nutricao(1)">Listar</button>
