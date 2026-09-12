@@ -412,6 +412,13 @@ $(window).on("load", function () {
         $("#opc822").hide();
         $("#opc822d").show();
     }
+    if (array_parametros[23] == 1) {
+        $("#opc823").show();
+        $("#opc823d").hide();
+    } else {
+        $("#opc823").hide();
+        $("#opc823d").show();
+    }
 
     if (array_relatorios[0] == 1) {
         $("#opc901").show();
