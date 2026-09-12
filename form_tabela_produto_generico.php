@@ -125,7 +125,7 @@
                                                 <label for="modalidade" class="control-label"><span class="required">*</span> Modalidade</label>
                                                 <select class="form-control selectpicker" data-live-search="true" name="modalidade" id="modalidade">
                                                     <?php
-                                                        $sql_modalidade = "select * from tbl_modalidade_produto where tbl_modalidade_lixeira=0 order by tbl_descricao_modalidade";
+                                                        $sql_modalidade = "select * from tbl_modalidade_produto where tbl_modalidade_lixeira=0 order by tbl_codigo_modalidade";
                                                         $rs_modalidade = mysqli_query($conector, $sql_modalidade);
 
                                                         while ($reg_modalidade = mysqli_fetch_object($rs_modalidade)){
