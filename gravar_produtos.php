@@ -12,7 +12,7 @@ $observacao = $_POST['observacao'];
 $ativo = isset($_POST['ativo']) && $_POST['ativo']=='N' ? 'N' : 'S';
 $data_sistema = date("Y-m-d H:i:s");
 
-if (($codigo_padrao=='000' || trim($codigo_padrao)=='') && $descricao_complementar=='') {
+if ($codigo_padrao=='000' && $descricao_complementar=='') {
 	header('Content-type: application/json');
 	echo json_encode(array('error' => true, 'message' => 'Informe a Complemento da Descrição.'));
 	exit;
