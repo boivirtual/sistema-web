@@ -163,6 +163,7 @@ $('#modal_editar').on('show.bs.modal', function (event) {
     if (array_parametro[20]==1){modal.find("#opc820").attr("checked",true)} else {modal.find("#opc820").attr("checked",false)}
     if (array_parametro[21]==1){modal.find("#opc821").attr("checked",true)} else {modal.find("#opc821").attr("checked",false)}
     if (array_parametro[22]==1){modal.find("#opc822").attr("checked",true)} else {modal.find("#opc822").attr("checked",false)}
+    if (array_parametro[23]==1){modal.find("#opc823").attr("checked",true)} else {modal.find("#opc823").attr("checked",false)}
 
     if (array_relatorios[0]==1){modal.find("#opc901").attr("checked",true)} else {modal.find("#opc901").attr("checked",false)}
     if (array_relatorios[1]==1){modal.find("#opc902").attr("checked",true)} else {modal.find("#opc902").attr("checked",false)}
