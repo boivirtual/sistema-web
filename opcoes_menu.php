@@ -235,6 +235,8 @@
               <li id="opc803d"><a style="color:#666666" href="#">Mapa/Pastos</a></li>
               <li id="opc809"><a class="" href="form_tabela_tipo_documento.php">Tipos de Documentos</a></li>
               <li id="opc809d"><a style="color:#666666" href="#">Tipos de Documentos</a></li>
+              <li id="opc816"><a class="" href="form_tabela_produto_generico.php">Descrição Padrão de Produtos</a></li>
+              <li id="opc816d"><a style="color:#666666" href="#">Descrição Padrão de Produtos</a></li>
               <li id="opc817"><a class="" href="form_tabela_unidade_produtos.php">Unidade de Produtos</a></li>
               <li id="opc817d"><a style="color:#666666" href="#">Unidade de Produtos</a></li>
               <li id="opc822"><a class="" href="form_tabela_atividade_padrao.php">Atividade Padrão</a></li>
