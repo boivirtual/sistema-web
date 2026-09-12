@@ -251,6 +251,7 @@
 
         $lote_anterior = 0;
         $total_nutricao_dia = 0;
+        $soma_por_produto = array();
 
         if ($num_rows_nutricao!=0) {
             while ($reg_nutricao = mysqli_fetch_object($tbl_nutricao)) {
@@ -266,14 +267,10 @@
                         $lote_anterior=$lote_id;
                         $qtd_animais_anterior = $reg_nutricao->tbl_nutricao_qtd_animais;
 
-                        //$descricao_lote = 
-                        //strstr($reg_nutricao->tbl_nutricao_lote_pasto, " L-", true);
-
-                        //if ($descricao_lote=='') {
-                           // $descricao_lote = $reg_nutricao->tbl_pasto_descricao_lote;
-                        //}
-
                         $total_nutricao_dia = $consumo_cabeca_gramas;
+
+                        $soma_por_produto = array();
+                        acumular_consumo_por_produto($soma_por_produto, $codigo_produto, $reg_nutricao->tbl_produto_descricao, $consumo_cabeca_gramas);
 
                         for ($i=1; $i<=31; $i++){
                             $i = str_pad($i, 2, "0", STR_PAD_LEFT);
@@ -282,52 +279,18 @@
 
                         $dia = substr($reg_nutricao->tbl_nutricao_data, 8, 2);
                         $valor[$dia] = $consumo_cabeca_gramas;
-                    } 
+                    }
                     else {
                         // Imprime lote
-                        $quantidade_dias = calcular_dias($conector, $local_filtro, $lote_anterior, $data_inicial, $data_final, $tipo_periodo_lote);
-
-                        $media_consumo = $total_nutricao_dia/$quantidade_dias[0];
-
-                        $consumo_edi = number_format($media_consumo, 0, ",", ".");
-
-                        $descricao_produto =
-                        monta_produto($conector, $local_filtro, $lote_anterior, $data_inicial, $data_final, $wproduto);
-
-
-                        if (strpos($lote_anterior, '/') === false) {
-                            $lote_anterior = substr_replace($lote_anterior, '/', -4, 0);
-                        }
-
-                        $descricao_pasto_lote= pega_descricao_pasto($conector, $local_filtro, $lote_anterior, $wpasto, $pasto_filtro);
-
-                        $descricao_pasto = $descricao_pasto_lote[0];
-                        $descricao_lote = $descricao_pasto_lote[1];
-
-                        if ($descricao_pasto!='') {
-                            echo '<tr>';
-                            echo '<td width="16%">'.$descricao_lote.'</td>';
-                            echo '<td width="10%">'.$lote_anterior.'</td>';
-                            echo '<td width="8%">'.$qtd_animais_anterior.'</td>';
-                            echo '<td width="20%">'.$descricao_pasto.'</td>';
-                            echo '<td width="30%">'.$descricao_produto.'</td>';
-                            echo '<td width="8%" align="center">'.$quantidade_dias[0].'</td>';
-                            echo '<td width="8%" style="text-align: right;">'.$consumo_edi.' g</td>';
-                            echo '</tr>';                        
-                        }
+                        imprime_linha_consumo_periodo($conector, $local_filtro, $lote_anterior, $qtd_animais_anterior, $wpasto, $pasto_filtro, $data_inicial, $data_final, $tipo_periodo_lote, $wproduto, $agrupar_produtos, $total_nutricao_dia, $soma_por_produto);
 
                         $lote_anterior=$lote_id;
-                        //$descricao_pasto_atual = $reg_nutricao->tbl_pasto_descricao;
                         $qtd_animais_anterior = $reg_nutricao->tbl_nutricao_qtd_animais;
 
-                        /*$descricao_lote = 
-                        strstr($reg_nutricao->tbl_nutricao_lote_pasto, " L-", true);
-
-                        if ($descricao_lote=='') {
-                            $descricao_lote = $reg_nutricao->tbl_pasto_descricao_lote;
-                        }*/
-
                         $total_nutricao_dia = $consumo_cabeca_gramas;
+
+                        $soma_por_produto = array();
+                        acumular_consumo_por_produto($soma_por_produto, $codigo_produto, $reg_nutricao->tbl_produto_descricao, $consumo_cabeca_gramas);
 
                         for ($i=1; $i<=31; $i++){
                             $i = str_pad($i, 2, "0", STR_PAD_LEFT);
@@ -343,6 +306,8 @@
                     // faz contas aqui
                     $total_nutricao_dia+=$consumo_cabeca_gramas;
 
+                    acumular_consumo_por_produto($soma_por_produto, $codigo_produto, $reg_nutricao->tbl_produto_descricao, $consumo_cabeca_gramas);
+
                     $dia = substr($reg_nutricao->tbl_nutricao_data, 8, 2);
                     if ($valor[$dia]=='') {
                         $valor[$dia]=0;
@@ -353,39 +318,7 @@
             }
 
             // Imprime lote final do while
-
-            $quantidade_dias = calcular_dias($conector, $local_filtro, $lote_anterior, $data_inicial, $data_final, $tipo_periodo_lote);
-
-            //print_r($quantidade_dias);
-
-            $media_consumo =$total_nutricao_dia/$quantidade_dias[0];
-
-            $consumo_edi = number_format($media_consumo, 0, ",", ".");
-
-            $descricao_produto =
-            monta_produto($conector, $local_filtro, $lote_anterior,
-                $data_inicial, $data_final, $wproduto);
-
-            if (strpos($lote_anterior, '/') === false) {
-                $lote_anterior = substr_replace($lote_anterior, '/', -4, 0);
-            }
-
-            $descricao_pasto_lote= pega_descricao_pasto($conector, $local_filtro, $lote_anterior, $wpasto, $pasto_filtro);
-
-            $descricao_pasto = $descricao_pasto_lote[0];
-            $descricao_lote = $descricao_pasto_lote[1];
-
-            if ($descricao_pasto!='') {
-                echo '<tr>';
-                echo '<td width="16%">'.$descricao_lote.'</td>';
-                echo '<td width="10%">'.$lote_anterior.'</td>';
-                echo '<td width="8%">'.$qtd_animais_anterior.'</td>';
-                echo '<td width="20%">'.$descricao_pasto.'</td>';
-                echo '<td width="30%">'.$descricao_produto.'</td>';
-                echo '<td width="8%" align="center">'.$quantidade_dias[0].'</td>';
-                echo '<td width="8%" style="text-align: right;">'.$consumo_edi.' g</td>';
-                echo '</tr>';                        
-            }
+            imprime_linha_consumo_periodo($conector, $local_filtro, $lote_anterior, $qtd_animais_anterior, $wpasto, $pasto_filtro, $data_inicial, $data_final, $tipo_periodo_lote, $wproduto, $agrupar_produtos, $total_nutricao_dia, $soma_por_produto);
         }
 
         // imprime os lotes que estão sem nutricao
