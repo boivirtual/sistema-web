@@ -1238,26 +1238,28 @@ function listar_consumo_nutricao(opcao){
     $("#aguardar").modal();
     
     if (opcao=='1') {
-        location.href='form_lista_consumo_nutricao_rel.php?descricao_filtro=' + descricao_filtro + 
-        '&tipo_relatorio=' + tipo_relatorio + 
-        '&local=' + local + 
-        '&data_inicial=' + data_inicial + 
-        '&data_final=' + data_final + 
-        '&lote=' + array_lote + 
-        '&pasto=' + array_pasto + 
-        '&produto=' + array_produto + 
-        '&tipo_periodo_lote=' + tipo_periodo_lote;
+        location.href='form_lista_consumo_nutricao_rel.php?descricao_filtro=' + descricao_filtro +
+        '&tipo_relatorio=' + tipo_relatorio +
+        '&local=' + local +
+        '&data_inicial=' + data_inicial +
+        '&data_final=' + data_final +
+        '&lote=' + array_lote +
+        '&pasto=' + array_pasto +
+        '&produto=' + array_produto +
+        '&tipo_periodo_lote=' + tipo_periodo_lote +
+        '&agrupar_produtos=' + agrupar_produtos;
     }
     else {
-        location.href='rel_lista_consumo_nutricao_excel.php?descricao_filtro=' + descricao_filtro + 
-        '&tipo_relatorio=' + tipo_relatorio + 
-        '&local=' + local + 
-        '&data_inicial=' + data_inicial + 
-        '&data_final=' + data_final + 
-        '&lote=' + array_lote + 
-        '&pasto=' + array_pasto + 
-        '&produto=' + array_produto + 
-        '&tipo_periodo_lote=' + tipo_periodo_lote;
+        location.href='rel_lista_consumo_nutricao_excel.php?descricao_filtro=' + descricao_filtro +
+        '&tipo_relatorio=' + tipo_relatorio +
+        '&local=' + local +
+        '&data_inicial=' + data_inicial +
+        '&data_final=' + data_final +
+        '&lote=' + array_lote +
+        '&pasto=' + array_pasto +
+        '&produto=' + array_produto +
+        '&tipo_periodo_lote=' + tipo_periodo_lote +
+        '&agrupar_produtos=' + agrupar_produtos;
 
         tout = setTimeout('limpar_tela()', 5000);
     }
