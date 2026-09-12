@@ -519,7 +519,7 @@
 
                                         <div class="form-group col-md-12">
                                             <label class="checkbox-inline">
-                                            <input type="checkbox" id="opc816" name="opc816" value=""> Grupos de Produtos
+                                            <input type="checkbox" id="opc816" name="opc816" value=""> Descrição Padrão de Produtos
                                             </label>
                                         </div>
 
