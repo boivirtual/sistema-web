@@ -1134,25 +1134,9 @@ function nutricao_excel_acumular_produto(&$dados_produto, $codigo_produto, $desc
 function nutricao_excel_imprime_lote($spreadsheet, &$linha, $array_coluna, $conector, $local_filtro, $lote_id, $qtd_animais, $wpasto, $pasto_filtro, $data_inicial, $data_final, $tipo_periodo_lote, $wproduto, $agrupar_produtos, $total_nutricao_dia, $valor, $encerramento, $dados_produto) {
     $quantidade_dias = calcular_dias($conector, $local_filtro, $lote_id, $data_inicial, $data_final, $tipo_periodo_lote);
 
-    if ($agrupar_produtos=='N') {
-        uasort($dados_produto, function($a, $b) {
-            return strcmp($a['descricao'], $b['descricao']);
-        });
-
-        foreach ($dados_produto as $dados) {
-            nutricao_excel_escrever_linha($spreadsheet, $linha, $array_coluna, $conector, $local_filtro, $lote_id, $qtd_animais, $wpasto, $pasto_filtro, $data_inicial, $data_final, $dados['descricao'], $quantidade_dias, $dados['total'], $dados['valor'], $dados['encerramento']);
-        }
-    }
-    else {
-        $descricao_produto = monta_produto($conector, $local_filtro, $lote_id, $data_inicial, $data_final, $wproduto);
-        nutricao_excel_escrever_linha($spreadsheet, $linha, $array_coluna, $conector, $local_filtro, $lote_id, $qtd_animais, $wpasto, $pasto_filtro, $data_inicial, $data_final, $descricao_produto, $quantidade_dias, $total_nutricao_dia, $valor, $encerramento);
-    }
-}
-
-// Escreve uma única linha do grid do Excel (metadados + 31 dias + Nº Dias +
-// Consumo/Cab/Dia). Extraído do bloco de impressão original para poder ser
-// chamado uma vez (Agrupar Produtos = Sim) ou uma vez por produto (= Não).
-function nutricao_excel_escrever_linha($spreadsheet, &$linha, $array_coluna, $conector, $local_filtro, $lote_id, $qtd_animais, $wpasto, $pasto_filtro, $data_inicial, $data_final, $descricao_produto, $quantidade_dias, $consumo_total_grama, $valor, $encerramento) {
+    // pega_descricao_pasto() e a data mais antiga de nutrição do lote (usada só
+    // para preencher dias vazios no grid) não dependem do produto: calculadas
+    // uma vez por lote aqui em vez de uma vez por produto/dia dentro do grid.
     $descricao_pasto_lote = pega_descricao_pasto($conector, $local_filtro, $lote_id, $wpasto, $pasto_filtro);
 
     $descricao_pasto = $descricao_pasto_lote[0];
@@ -1167,6 +1151,27 @@ function nutricao_excel_escrever_linha($spreadsheet, &$linha, $array_coluna, $co
         $lote_edi = substr_replace($lote_edi, '/', -4, 0);
     }
 
+    $primeira_data_lote = buscar_primeira_data_nutricao($conector, $local_filtro, $lote_id);
+
+    if ($agrupar_produtos=='N') {
+        uasort($dados_produto, function($a, $b) {
+            return strcmp($a['descricao'], $b['descricao']);
+        });
+
+        foreach ($dados_produto as $dados) {
+            nutricao_excel_escrever_linha($spreadsheet, $linha, $array_coluna, $descricao_lote, $descricao_pasto, $lote_edi, $qtd_animais, $data_inicial, $data_final, $dados['descricao'], $quantidade_dias, $dados['total'], $dados['valor'], $dados['encerramento'], $primeira_data_lote);
+        }
+    }
+    else {
+        $descricao_produto = monta_produto($conector, $local_filtro, $lote_id, $data_inicial, $data_final, $wproduto);
+        nutricao_excel_escrever_linha($spreadsheet, $linha, $array_coluna, $descricao_lote, $descricao_pasto, $lote_edi, $qtd_animais, $data_inicial, $data_final, $descricao_produto, $quantidade_dias, $total_nutricao_dia, $valor, $encerramento, $primeira_data_lote);
+    }
+}
+
+// Escreve uma única linha do grid do Excel (metadados + 31 dias + Nº Dias +
+// Consumo/Cab/Dia). Extraído do bloco de impressão original para poder ser
+// chamado uma vez (Agrupar Produtos = Sim) ou uma vez por produto (= Não).
+function nutricao_excel_escrever_linha($spreadsheet, &$linha, $array_coluna, $descricao_lote, $descricao_pasto, $lote_edi, $qtd_animais, $data_inicial, $data_final, $descricao_produto, $quantidade_dias, $consumo_total_grama, $valor, $encerramento, $primeira_data_lote) {
     $media_consumo = $quantidade_dias[0]>0 ? $consumo_total_grama/$quantidade_dias[0] : 0;
     $consumo_edi = number_format($media_consumo, 0, ",", ".");
 
