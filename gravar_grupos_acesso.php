@@ -74,6 +74,7 @@ if(isset($_POST['opc819'])) { $array_parametros[19] = 1; } else { $array_paramet
 if(isset($_POST['opc820'])) { $array_parametros[20] = 1; } else { $array_parametros[20] = 0; }
 if(isset($_POST['opc821'])) { $array_parametros[21] = 1; } else { $array_parametros[21] = 0; }
 if(isset($_POST['opc822'])) { $array_parametros[22] = 1; } else { $array_parametros[22] = 0; }
+if(isset($_POST['opc823'])) { $array_parametros[23] = 1; } else { $array_parametros[23] = 0; }
 $grupo_array_parametros = implode("!",$array_parametros);
 
 $array_relatorios = array();
