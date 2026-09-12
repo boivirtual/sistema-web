@@ -892,6 +892,85 @@
         return $descricao_produto = substr($descricao_produto, 0, -1);
     }
 
+    // Acumula, por produto, a soma de gramas/cabeça dentro do lote/período atual.
+    // Usado pelo relatório Por Período quando "Agrupar Produtos" = Não, para listar
+    // cada produto em uma linha separada em vez de somar tudo junto.
+    function acumular_consumo_por_produto(&$soma_por_produto, $codigo_produto, $descricao_produto, $consumo_cabeca_gramas) {
+        if (!isset($soma_por_produto[$codigo_produto])) {
+            $soma_por_produto[$codigo_produto] = array(
+                'descricao' => $descricao_produto,
+                'soma'      => 0,
+            );
+        }
+
+        $soma_por_produto[$codigo_produto]['soma'] += $consumo_cabeca_gramas;
+    }
+
+    // Imprime a(s) linha(s) de um lote no relatório Por Período. Com "Agrupar
+    // Produtos" = Sim, imprime uma única linha somando todos os produtos (como
+    // sempre foi). Com "Não", imprime uma linha por produto, cada uma com seu
+    // próprio consumo médio (mesmo Nº de Dias do lote, que independe do produto).
+    function imprime_linha_consumo_periodo($conector, $local_filtro, $lote_id, $qtd_animais, $wpasto, $pasto_filtro, $data_inicial, $data_final, $tipo_periodo_lote, $wproduto, $agrupar_produtos, $total_nutricao_dia, $soma_por_produto) {
+        $quantidade_dias = calcular_dias($conector, $local_filtro, $lote_id, $data_inicial, $data_final, $tipo_periodo_lote);
+
+        // monta_produto() espera o id do lote sem barra (formato salvo em
+        // tbl_nutricao), por isso é chamada antes de montar $lote_edi.
+        $descricao_produto_agrupado = '';
+        if ($agrupar_produtos!='N') {
+            $descricao_produto_agrupado =
+                monta_produto($conector, $local_filtro, $lote_id, $data_inicial, $data_final, $wproduto);
+        }
+
+        $lote_edi = $lote_id;
+        if (strpos($lote_edi, '/') === false) {
+            $lote_edi = substr_replace($lote_edi, '/', -4, 0);
+        }
+
+        $descricao_pasto_lote = pega_descricao_pasto($conector, $local_filtro, $lote_edi, $wpasto, $pasto_filtro);
+
+        $descricao_pasto = $descricao_pasto_lote[0];
+        $descricao_lote = $descricao_pasto_lote[1];
+
+        if ($descricao_pasto=='') {
+            return;
+        }
+
+        if ($agrupar_produtos=='N') {
+            uasort($soma_por_produto, function($a, $b) {
+                return strcmp($a['descricao'], $b['descricao']);
+            });
+
+            foreach ($soma_por_produto as $dados_produto) {
+                $media_consumo = $dados_produto['soma'] / $quantidade_dias[0];
+                $consumo_edi = number_format($media_consumo, 0, ",", ".");
+
+                echo '<tr>';
+                echo '<td width="16%">'.$descricao_lote.'</td>';
+                echo '<td width="10%">'.$lote_edi.'</td>';
+                echo '<td width="8%">'.$qtd_animais.'</td>';
+                echo '<td width="20%">'.$descricao_pasto.'</td>';
+                echo '<td width="30%">'.$dados_produto['descricao'].'</td>';
+                echo '<td width="8%" align="center">'.$quantidade_dias[0].'</td>';
+                echo '<td width="8%" style="text-align: right;">'.$consumo_edi.' g</td>';
+                echo '</tr>';
+            }
+        }
+        else {
+            $media_consumo = $total_nutricao_dia / $quantidade_dias[0];
+            $consumo_edi = number_format($media_consumo, 0, ",", ".");
+
+            echo '<tr>';
+            echo '<td width="16%">'.$descricao_lote.'</td>';
+            echo '<td width="10%">'.$lote_edi.'</td>';
+            echo '<td width="8%">'.$qtd_animais.'</td>';
+            echo '<td width="20%">'.$descricao_pasto.'</td>';
+            echo '<td width="30%">'.$descricao_produto_agrupado.'</td>';
+            echo '<td width="8%" align="center">'.$quantidade_dias[0].'</td>';
+            echo '<td width="8%" style="text-align: right;">'.$consumo_edi.' g</td>';
+            echo '</tr>';
+        }
+    }
+
     function calcular_consumo($conector, $codigo_nutricao_id, $codigo_local, $id_lote, $data_nutricao, $qtd_animais, $qtd_produto ){
         $dias = 0;
         $consumo = 0;
