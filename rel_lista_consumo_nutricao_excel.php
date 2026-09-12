@@ -1352,4 +1352,71 @@ function calcular_consumo($conector, $codigo_nutricao_id, $codigo_local, $id_lot
     return [$dias, $consumo, $codigo_score];
 }
 
+// Mesmo cálculo de calcular_consumo(), mas lendo de um histórico já carregado em
+// memória (via carregar_historico_lote()) em vez de consultar o banco a cada
+// linha. No relatório Por Lote o lote é sempre o mesmo, então esse histórico é
+// buscado uma única vez antes do loop.
+function calcular_consumo_cache($historico_lote, $data_nutricao, $qtd_animais, $qtd_produto){
+    $dias = 0;
+    $consumo = 0;
+    $codigo_score = 0;
+
+    foreach ($historico_lote as $reg_hist) {
+        if ($reg_hist['data'] > $data_nutricao) {
+            $data_posterior = $reg_hist['data'];
+            $codigo_score = $reg_hist['score'];
+
+            $firstDate  = new DateTime($data_nutricao);
+            $secondDate = new DateTime($data_posterior);
+            $intvl = $firstDate->diff($secondDate);
+            $dias = $intvl->days;
+
+            if ($dias==0) {
+                $dias = 1;
+            }
+
+            $consumo = ($qtd_produto/$qtd_animais/$dias)*1000;
+            break;
+        }
+    }
+
+    return [$dias, $consumo, $codigo_score];
+}
+
+// Carrega de uma vez todo o histórico de nutrição do lote (sem filtro de
+// período/pasto/produto — mesmo critério que calcular_dias()/calcular_consumo()
+// sempre precisaram), para servir de cache e evitar uma consulta por linha/grupo.
+function carregar_historico_lote($conector, $local_filtro, $id_lote) {
+    $historico = array();
+
+    $sql = mysqli_query($conector, "SELECT tbl_nutricao_data, tbl_nutricao_codigo_score_cocho FROM tbl_nutricao
+        WHERE tbl_nutricao_lixeira = 0 AND
+              tbl_nutricao_codigo_local = '$local_filtro' AND
+              tbl_nutricao_id_lote = '$id_lote'
+        ORDER BY tbl_nutricao_data ASC");
+
+    while ($reg = mysqli_fetch_object($sql)) {
+        $historico[] = array(
+            'data'  => $reg->tbl_nutricao_data,
+            'score' => $reg->tbl_nutricao_codigo_score_cocho,
+        );
+    }
+
+    return $historico;
+}
+
+// Carrega tbl_score_cocho inteira uma única vez (tabela pequena de domínio),
+// em vez de um SELECT por linha para descobrir a descrição do score.
+function carregar_scores_cocho($conector) {
+    $scores = array();
+
+    $sql = mysqli_query($conector, "SELECT tbl_score_id, tbl_score_descricao FROM tbl_score_cocho");
+
+    while ($reg = mysqli_fetch_object($sql)) {
+        $scores[$reg->tbl_score_id] = $reg->tbl_score_descricao;
+    }
+
+    return $scores;
+}
+
 ?>
