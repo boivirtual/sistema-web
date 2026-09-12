@@ -356,9 +356,14 @@ ul.sidebar-menu li ul.sub li:last-child {
 
 ul.sidebar-menu li ul.sub li a {
   font-size: 12px;
-  padding: 0 0 0 32px;
-  line-height: 35px;
-  height: 35px;
+  padding: 9px 12px 9px 32px;
+  line-height: 16px;
+  min-height: 35px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  white-space: normal;
+  word-wrap: break-word;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
   -o-transition: all 0.3s ease;
