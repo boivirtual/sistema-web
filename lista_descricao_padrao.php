@@ -15,7 +15,7 @@ if ($num_rows != 0){
    	while($ln = mysqli_fetch_assoc($qr)){
    		$id = $ln['pro_generico_codigo'];
         $nome = $ln['pro_generico_descricao'];
-	    echo '<option value="'.$id.'">' .$nome. '</option>';
+	    echo '<option value="'.$id.'" style="color: #333;">' .$nome. '</option>';
    	}
 }
 else {
