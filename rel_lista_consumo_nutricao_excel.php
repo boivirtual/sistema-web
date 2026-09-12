@@ -1242,7 +1242,7 @@ function nutricao_excel_escrever_linha($spreadsheet, &$linha, $array_coluna, $de
 
             $data_verificacao = $ano.'-'.$mes.'-'.$i;
 
-            $tem_dias_anteriores = verificar_dias_anteriores($conector, $local_filtro, $lote_id, $data_verificacao);
+            $tem_dias_anteriores = ($primeira_data_lote!==null && $primeira_data_lote<$data_verificacao) ? 'S' : 'N';
 
             if ($tem_dias_anteriores=='N') {
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,$valor[$i]);
