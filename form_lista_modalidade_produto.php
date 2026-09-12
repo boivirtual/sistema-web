@@ -10,7 +10,7 @@
     echo '<table class="table table-striped table-advance table-hover" id="tabela_modalidade_produto">';
 
             echo '<tbody>';
-                $sql = "SELECT * FROM tbl_modalidade_produto WHERE tbl_modalidade_lixeira=0 ORDER BY tbl_descricao_modalidade";
+                $sql = "SELECT * FROM tbl_modalidade_produto WHERE tbl_modalidade_lixeira=0 ORDER BY tbl_codigo_modalidade";
                 $rs = mysqli_query($conector, $sql);
 
                 while($reg_modalidade = mysqli_fetch_object($rs)){
