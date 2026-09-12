@@ -12,6 +12,11 @@
     $descricao_filtro= $_REQUEST["descricao_filtro"];
     $origem_relatorio=$_REQUEST['tipo_relatorio'];
 
+    // Agrupar Produtos: só se aplica ao relatório Por Período. "Não" (padrão)
+    // lista cada produto em uma linha separada, sem somar valores entre eles.
+    $agrupar_produtos = (isset($_REQUEST['agrupar_produtos']) && $_REQUEST['agrupar_produtos']=='S') ? 'S' : 'N';
+    $_SESSION['rel_nutricao_agrupar'] = $agrupar_produtos;
+
     $_SESSION['local_nutricao']=$local_filtro;
     $_SESSION['data_inicial_nutricao']=$data_inicial; 
     $_SESSION['data_final_nutricao']=$data_final; 
