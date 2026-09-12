@@ -1207,18 +1207,27 @@ function listar_consumo_nutricao(opcao){
         periodo = '';
     }
 
+    var agrupar_produtos = $("input[name='agrupar_produtos']:checked").val();
+
+    if (agrupar_produtos == undefined) {
+        agrupar_produtos = 'N';
+    }
+
     if (tipo_periodo_lote=='P') {
         var tipo_rel_filtro = '->Tipo Relatório: Por Período';
+        var agrupar_produtos_filtro = '->Agrupar Produtos: ' + (agrupar_produtos=='S' ? 'Sim' : 'Não');
     }
     else {
         var tipo_rel_filtro = '->Tipo Relatório: Por Lote';
+        var agrupar_produtos_filtro = '';
     }
     var descricao_filtro =
         codigo_local_filtro +
-        periodo + 
+        periodo +
         descricao_lote_filtro +
-        codigo_pasto_filtro + 
+        codigo_pasto_filtro +
         codigo_produto_filtro +
+        agrupar_produtos_filtro +
         tipo_rel_filtro;
 
     $("#filtro_aplicado").html('Filtros: ' + descricao_filtro);
