@@ -127,6 +127,7 @@
     $array_produto = isset($_SESSION['rel_nutricao_produto']) ? $_SESSION['rel_nutricao_produto'] : '';
     $array_lote    = isset($_SESSION['rel_nutricao_lote'])    ? $_SESSION['rel_nutricao_lote']    : '';
     $array_pasto   = isset($_SESSION['rel_nutricao_pasto'])   ? $_SESSION['rel_nutricao_pasto']   : '';
+    $agrupar_produtos = isset($_SESSION['rel_nutricao_agrupar']) ? $_SESSION['rel_nutricao_agrupar'] : 'N';
     $controle_estoque = $_SESSION['controle_estoque'];
 
     $codigo_usuario = $_SESSION['id_usuario'];
