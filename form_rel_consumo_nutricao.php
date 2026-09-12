@@ -310,16 +310,16 @@
                                                     </select>
                                                 </div>
 
-                                                <div class="form-group col-md-2 agrupar_produtos_grupo" data-toggle="tooltip" data-placement="top" title="Sim soma os produtos numa única linha por lote. Não lista cada produto separadamente, com seu próprio consumo.">
+                                                <div class="form-group col-md-3 agrupar_produtos_grupo" data-toggle="tooltip" data-placement="top" title="Sim soma os produtos numa única linha por lote. Não lista cada produto separadamente, com seu próprio consumo.">
                                                     <label class="control-label">Agrupar Produtos</label>
 
                                                     <div class="clearfix"></div>
 
-                                                    <label class="radio-inline">
+                                                    <label class="radio-inline radio-inline-compacta">
                                                         <input type="radio" name="agrupar_produtos" value="S" <?php if ($agrupar_produtos=='S') { echo 'checked'; } ?>> Sim
                                                     </label>
 
-                                                    <label class="radio-inline">
+                                                    <label class="radio-inline radio-inline-compacta">
                                                         <input type="radio" name="agrupar_produtos" value="N" <?php if ($agrupar_produtos!='S') { echo 'checked'; } ?>> Não
                                                     </label>
                                                 </div>
