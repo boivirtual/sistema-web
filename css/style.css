@@ -359,8 +359,6 @@ ul.sidebar-menu li ul.sub li a {
   padding: 9px 12px 9px 32px;
   line-height: 16px;
   min-height: 35px;
-  display: flex;
-  align-items: center;
   box-sizing: border-box;
   white-space: normal;
   word-wrap: break-word;
