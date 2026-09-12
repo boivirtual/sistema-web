@@ -35,6 +35,13 @@
             vertical-align: middle;
         }
 
+        /* "Agrupar Produtos": Sim/Não são bem mais curtos que os outros radio-inline
+           da tela, então usam uma largura mínima menor para não quebrar linha
+           dentro da coluna do filtro. */
+        .radio-inline-compacta {
+            min-width: 55px;
+        }
+
         /* 1. Alinha o container de texto à direita */
         .bootstrap-select .bs-actionsbox {
             text-align: right; 
