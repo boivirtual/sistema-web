@@ -938,7 +938,7 @@
 
                                         <div class="form-group col-md-12">
                                             <label class="checkbox-inline">
-                                            <input type="checkbox" id="opc816" name="opc816" value="" onclick=" destrava_alteracao()"> Grupos de Produtos
+                                            <input type="checkbox" id="opc816" name="opc816" value="" onclick=" destrava_alteracao()"> Descrição Padrão de Produtos
                                             </label>
                                         </div>
 
