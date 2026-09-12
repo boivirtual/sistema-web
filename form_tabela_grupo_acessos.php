@@ -965,6 +965,12 @@
                                             <input type="checkbox" id="opc819" name="opc819" value="" onclick=" destrava_alteracao()"> Forma Pagamento
                                             </label>
                                         </div>
+
+                                        <div class="form-group col-md-12">
+                                            <label class="checkbox-inline">
+                                            <input type="checkbox" id="opc823" name="opc823" value="" onclick=" destrava_alteracao()"> Modalidade dos Produtos
+                                            </label>
+                                        </div>
                                     </div>
                                 </section>
 
