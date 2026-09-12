@@ -1403,6 +1403,205 @@ function monta_produto($conector, $local_filtro, $id_lote, $data_inicial, $data_
     return $descricao_produto = substr($descricao_produto, 0, -1);
 }
 
+// Acumula, por produto, o total e os valores diários (mesmo formato de $valor/
+// $encerramento usado no lote inteiro) dentro do lote/período atual. Usado pelo
+// relatório Por Período quando "Agrupar Produtos" = Não, para gerar uma linha
+// por produto em vez de somar tudo junto.
+function nutricao_excel_acumular_produto(&$dados_produto, $codigo_produto, $descricao_produto_utf8, $consumo_cabeca_gramas, $dia, $dia_encerramento) {
+    if (!isset($dados_produto[$codigo_produto])) {
+        $dados_produto[$codigo_produto] = array(
+            'descricao'    => $descricao_produto_utf8,
+            'total'        => 0,
+            'valor'        => array(),
+            'encerramento' => array(),
+        );
+
+        for ($i=1; $i<=31; $i++){
+            $ii = str_pad($i, 2, "0", STR_PAD_LEFT);
+            $dados_produto[$codigo_produto]['valor'][$ii] = '';
+            $dados_produto[$codigo_produto]['encerramento'][$ii] = '';
+        }
+    }
+
+    $dados_produto[$codigo_produto]['total'] += $consumo_cabeca_gramas;
+
+    if ($dados_produto[$codigo_produto]['valor'][$dia]=='') {
+        $dados_produto[$codigo_produto]['valor'][$dia] = 0;
+    }
+    $dados_produto[$codigo_produto]['valor'][$dia] += $consumo_cabeca_gramas;
+
+    if ($dia_encerramento!='') {
+        $dados_produto[$codigo_produto]['encerramento'][$dia_encerramento] = $dia_encerramento;
+    }
+}
+
+// Imprime a(s) linha(s) de um lote no Excel do relatório Por Período. Com
+// "Agrupar Produtos" = Sim, imprime uma única linha somando todos os produtos
+// (como sempre foi). Com "Não", imprime uma linha por produto, cada uma com seu
+// próprio grid diário e consumo médio (mesmo Nº de Dias do lote, que independe
+// do produto).
+function nutricao_excel_imprime_lote($spreadsheet, &$linha, $array_coluna, $conector, $local_filtro, $lote_id, $qtd_animais, $wpasto, $pasto_filtro, $data_inicial, $data_final, $tipo_periodo_lote, $wproduto, $agrupar_produtos, $total_nutricao_dia, $valor, $encerramento, $dados_produto) {
+    $quantidade_dias = calcular_dias($conector, $local_filtro, $lote_id, $data_inicial, $data_final, $tipo_periodo_lote);
+
+    if ($agrupar_produtos=='N') {
+        uasort($dados_produto, function($a, $b) {
+            return strcmp($a['descricao'], $b['descricao']);
+        });
+
+        foreach ($dados_produto as $dados) {
+            nutricao_excel_escrever_linha($spreadsheet, $linha, $array_coluna, $conector, $local_filtro, $lote_id, $qtd_animais, $wpasto, $pasto_filtro, $data_inicial, $data_final, $dados['descricao'], $quantidade_dias, $dados['total'], $dados['valor'], $dados['encerramento']);
+        }
+    }
+    else {
+        $descricao_produto = monta_produto($conector, $local_filtro, $lote_id, $data_inicial, $data_final, $wproduto);
+        nutricao_excel_escrever_linha($spreadsheet, $linha, $array_coluna, $conector, $local_filtro, $lote_id, $qtd_animais, $wpasto, $pasto_filtro, $data_inicial, $data_final, $descricao_produto, $quantidade_dias, $total_nutricao_dia, $valor, $encerramento);
+    }
+}
+
+// Escreve uma única linha do grid do Excel (metadados + 31 dias + Nº Dias +
+// Consumo/Cab/Dia). Extraído do bloco de impressão original para poder ser
+// chamado uma vez (Agrupar Produtos = Sim) ou uma vez por produto (= Não).
+function nutricao_excel_escrever_linha($spreadsheet, &$linha, $array_coluna, $conector, $local_filtro, $lote_id, $qtd_animais, $wpasto, $pasto_filtro, $data_inicial, $data_final, $descricao_produto, $quantidade_dias, $consumo_total_grama, $valor, $encerramento) {
+    $descricao_pasto_lote = pega_descricao_pasto($conector, $local_filtro, $lote_id, $wpasto, $pasto_filtro);
+
+    $descricao_pasto = $descricao_pasto_lote[0];
+    $descricao_lote = $descricao_pasto_lote[1];
+
+    if ($descricao_pasto=='') {
+        return;
+    }
+
+    $lote_edi = $lote_id;
+    if (strpos($lote_edi, '/') === false) {
+        $lote_edi = substr_replace($lote_edi, '/', -4, 0);
+    }
+
+    $media_consumo = $quantidade_dias[0]>0 ? $consumo_total_grama/$quantidade_dias[0] : 0;
+    $consumo_edi = number_format($media_consumo, 0, ",", ".");
+
+    $linha++;
+
+    $celulas = 'A'.$linha.':D'.$linha;
+    $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
+    $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
+
+    $celulas = 'C'.$linha;
+    $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
+    $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
+
+    $celulas = 'E'.$linha;
+    $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
+    $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
+
+    $celulas = 'F'.$linha.':AK'.$linha;
+    $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
+    $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
+
+    $celulas = 'AL'.$linha;
+    $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
+    $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
+
+    $celulas = 'E' . $linha;
+    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setWrapText(true);
+
+    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $linha, utf8_encode($descricao_lote));
+    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $linha, $lote_edi);
+    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $linha, $qtd_animais);
+    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(4, $linha, utf8_encode($descricao_pasto));
+    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(5, $linha, $descricao_produto);
+    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(37, $linha, $quantidade_dias[0]);
+    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(38, $linha, $consumo_edi.' g');
+
+    $coluna = 5;
+    $dia_encerramento = 99;
+
+    $partesData = explode('-', $data_final);
+    $dia_final = $partesData[2];
+
+    for ($i=1; $i<=31; $i++){
+        $coluna++;
+        $index_coluna = $i;
+
+        $i = str_pad($i, 2, "0", STR_PAD_LEFT);
+
+        if ($encerramento[$i]!='') {
+            $dia_encerramento = $encerramento[$i];
+        }
+
+        if ($valor[$i]=='' && $i<=$dia_encerramento) {
+            $partesData = explode('-', $data_inicial);
+
+            $ano = $partesData[0];
+            $mes = $partesData[1];
+
+            $data_verificacao = $ano.'-'.$mes.'-'.$i;
+
+            $tem_dias_anteriores = verificar_dias_anteriores($conector, $local_filtro, $lote_id, $data_verificacao);
+
+            if ($tem_dias_anteriores=='N') {
+                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,$valor[$i]);
+
+                if ($i==$dia_encerramento) {
+                    $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
+                    $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
+
+                    // marca de amarelo a coluna do id do lote
+                    $celulas = 'B' . $linha;
+                    $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
+                    $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
+                }
+            }
+            else {
+                if ($i<=$dia_final) {
+                    $valor[$i]='*';
+                }
+
+                $celulas = $array_coluna[$index_coluna] . $linha;
+                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setColor(new Color(Color::COLOR_GRAY));
+                $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,$valor[$i]);
+
+                if ($i==$dia_encerramento) {
+                    $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
+                    $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
+
+                    // marca de amarelo a coluna do id do lote
+                    $celulas = 'B' . $linha;
+                    $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
+                    $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
+                }
+            }
+        }
+        else if ($valor[$i]=='') {
+            $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,$valor[$i]);
+        }
+        else {
+            $valor[$i] = round($valor[$i]);
+            $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($coluna, $linha,intval($valor[$i]));
+
+            if ($i==$dia_encerramento) {
+                $celulas = $array_coluna[$index_coluna] . $linha;
+                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
+                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
+
+                // marca de amarelo a coluna do id do lote
+                $celulas = 'B' . $linha;
+                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
+                $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('f5e105');
+            }
+        }
+    }
+}
+
 function calcular_consumo($conector, $codigo_nutricao_id, $codigo_local, $id_lote, $data_nutricao, $qtd_animais, $qtd_produto ){
     $dias = 0;
     $consumo = 0;
