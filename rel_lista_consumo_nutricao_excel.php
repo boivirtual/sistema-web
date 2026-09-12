@@ -557,16 +557,25 @@ else {
         $total_consumo_cabeca_dia=0;
         $total_dias=0;
 
+        // O relatório Por Lote sempre trata um único lote ($lote_filtro). Antes,
+        // calcular_dias() rodava de novo a cada grupo de data (sempre com o
+        // mesmo resultado) e calcular_consumo()/tbl_score_cocho rodavam uma
+        // consulta por linha. Carregando tudo uma única vez aqui, isso vira
+        // 3 consultas fixas em vez de dezenas/centenas.
+        $historico_lote_l = carregar_historico_lote($conector, $local_filtro, $lote_filtro);
+        $scores_cocho = carregar_scores_cocho($conector);
+        $quantidade_dias_lote = calcular_dias($conector, $local_filtro, $lote_filtro, $data_inicial, $data_final, $tipo_periodo_lote);
+
         $sql = "SELECT * FROM tbl_nutricao
-            INNER JOIN tbl_pasto 
+            INNER JOIN tbl_pasto
                     ON tbl_pasto_id = tbl_nutricao_codigo_pasto
             INNER JOIN tbl_produto
-                    ON tbl_nutricao_codigo_produto = tbl_produto_codigo_id 
-            WHERE tbl_nutricao_lixeira=0 AND 
+                    ON tbl_nutricao_codigo_produto = tbl_produto_codigo_id
+            WHERE tbl_nutricao_lixeira=0 AND
                   tbl_nutricao_codigo_local='$local_filtro'" . $wperiodo . $wlote . $wpasto . $wproduto .
             "ORDER BY tbl_nutricao_data DESC";
 
-        $rs = mysqli_query($conector, $sql); 
+        $rs = mysqli_query($conector, $sql);
 
         while ($reg_nut = mysqli_fetch_object($rs)){
             $codigo_nutricao_id = $reg_nut->tbl_nutricao_id;
