@@ -316,11 +316,11 @@
                                                     <div class="clearfix"></div>
 
                                                     <label class="radio-inline">
-                                                        <input type="radio" name="agrupar_produtos" value="S"> Sim
+                                                        <input type="radio" name="agrupar_produtos" value="S" <?php if ($agrupar_produtos=='S') { echo 'checked'; } ?>> Sim
                                                     </label>
 
                                                     <label class="radio-inline">
-                                                        <input type="radio" name="agrupar_produtos" value="N" checked> Não
+                                                        <input type="radio" name="agrupar_produtos" value="N" <?php if ($agrupar_produtos!='S') { echo 'checked'; } ?>> Não
                                                     </label>
                                                 </div>
 
