@@ -19,7 +19,7 @@ if ($num_rows != 0){
    	}
 }
 else {
-	echo '<option value="000">'.htmlentities('...').'</option>';
+	echo '<option value="000" style="color: #999;">'.htmlentities('Sem Descrição Padrão').'</option>';
 
 }
 
