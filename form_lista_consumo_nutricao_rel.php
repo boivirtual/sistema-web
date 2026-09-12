@@ -209,6 +209,9 @@
                                                 <input type="hidden" id="tipo_periodo_lote"
                                                 <?php echo "value='".$tipo_periodo_lote."'";?>>
 
+                                                <input type="hidden" id="agrupar_produtos"
+                                                <?php echo "value='".$agrupar_produtos."'";?>>
+
 
 <?php
     echo '
