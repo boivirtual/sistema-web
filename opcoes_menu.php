@@ -256,6 +256,8 @@
               <li id="opc808"><a class="" href="form_tabela_centro_custos.php">Centro de Custos</a></li>
               <li id="opc808d"><a style="color:#666666" href="#">Centro de Custos</a></li>
               <!--<li id="opc818"><a class="" href="form_tabela_via_uso_produtos.php">Via de Uso de Produtos</a></li>-->
+              <li id="opc823"><a class="" href="form_tabela_modalidade_produto.php">Modalidade dos Produtos</a></li>
+              <li id="opc823d"><a style="color:#666666" href="#">Modalidade dos Produtos</a></li>
               <li id="opc818"><a class="" href="form_cadastro_busca.php">Ajuda</a></li>
               <li id="opc818d"><a style="color:#666666" href="#">Ajuda</a></li>
 
