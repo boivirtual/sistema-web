@@ -227,6 +227,7 @@ function editar_animal(array_animal) {
         $("select[name=descricao_padrao]").html(valor);
 
         $("#descricao_padrao").val(array_produtos[9]);
+        atualiza_cor_descricao_padrao();
     });
 }
 
