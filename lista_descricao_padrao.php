@@ -10,7 +10,7 @@ $qr = mysqli_query($conector, $sql);
 $num_rows = mysqli_num_rows($qr);
 
 if ($num_rows != 0){
-	echo '<option value=" ">'.htmlentities('...').'</option>';
+	echo '<option value=" " style="color: #999;">'.htmlentities('Sem Descrição Padrão').'</option>';
 
    	while($ln = mysqli_fetch_assoc($qr)){
    		$id = $ln['pro_generico_codigo'];
