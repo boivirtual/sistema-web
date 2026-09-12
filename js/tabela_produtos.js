@@ -72,6 +72,15 @@ function sair_inclusao() {
     location.href='form_cadastro_produtos.php';
 }
 
+function atualiza_cor_descricao_padrao() {
+    if ($('#descricao_padrao').val()=='000') {
+        $('#descricao_padrao').css('color', '#ccc');
+    }
+    else {
+        $('#descricao_padrao').css('color', '');
+    }
+}
+
 function consultar() {
 	$.post("form_lista_produtos.php", {}, function(valor){
         $("div[id=lista_produtos]").html(valor); 
