@@ -15,7 +15,7 @@
                         LEFT JOIN tbl_modalidade_produto
                            ON tbl_modalidade_produto.tbl_codigo_modalidade = tabela_produto_generico.pro_codigo_modalidade
                         WHERE tabela_produto_generico.pro_generico_registro_lixeira=0
-                        ORDER BY tabela_produto_generico.pro_generico_descricao";
+                        ORDER BY tabela_produto_generico.pro_generico_codigo";
                 $rs = mysqli_query($conector, $sql);
 
                 while($reg_produto_generico = mysqli_fetch_object($rs)){
