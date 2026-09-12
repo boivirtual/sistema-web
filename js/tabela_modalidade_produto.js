@@ -13,7 +13,7 @@ $(document).ready(function(){
     $('#tabela_modalidade_produto').DataTable({
         "responsive": true,
         "paging":   false,
-        "ordering": true,
+        "ordering": false,
         "info":     true,
         "language": {
         "sSearch": "Busca:",
