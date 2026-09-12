@@ -617,22 +617,13 @@ else {
                         $dias_consumo_anterior = $dias_consumo;
                     }
                     else {
-                        $calculos = calcular_consumo($conector, $codigo_nutricao_id, $codigo_local, $id_lote, $data_nutricao, $qtd_animais, $qtd_produto);
+                        $calculos = calcular_consumo_cache($historico_lote_l, $data_nutricao, $qtd_animais, $qtd_produto);
 
                         $dias_consumo_anterior = $calculos[0];
                         $consumo_cabeca_dia_anterior = $calculos[1];
                         $codigo_score = $calculos[2];
 
-                        $tbl_score = mysqli_query($conector, "select * from tbl_score_cocho where tbl_score_id='$codigo_score'");
-                        $num_rows = mysqli_num_rows($tbl_score);
-
-                        if ($num_rows!=0){
-                            $reg = mysqli_fetch_object($tbl_score);
-                            $desc_score_anterior = $reg->tbl_score_descricao;
-                        }
-                        else {
-                            $desc_score_anterior = '';
-                        }
+                        $desc_score_anterior = isset($scores_cocho[$codigo_score]) ? $scores_cocho[$codigo_score] : '';
                     }
                 }
                 else {
@@ -722,22 +713,13 @@ else {
                         $dias_consumo_anterior = $dias_consumo;
                     }
                     else {
-                        $calculos = calcular_consumo($conector, $codigo_nutricao_id, $codigo_local, $id_lote, $data_nutricao, $qtd_animais, $qtd_produto);
+                        $calculos = calcular_consumo_cache($historico_lote_l, $data_nutricao, $qtd_animais, $qtd_produto);
 
                         $dias_consumo_anterior = $calculos[0];
                         $consumo_cabeca_dia_anterior = $calculos[1];
                         $codigo_score = $calculos[2];
 
-                        $tbl_score = mysqli_query($conector, "select * from tbl_score_cocho where tbl_score_id='$codigo_score'");
-                        $num_rows = mysqli_num_rows($tbl_score);
-
-                        if ($num_rows!=0){
-                            $reg = mysqli_fetch_object($tbl_score);
-                            $desc_score_anterior = $reg->tbl_score_descricao;
-                        }
-                        else {
-                            $desc_score_anterior = '';
-                        }
+                        $desc_score_anterior = isset($scores_cocho[$codigo_score]) ? $scores_cocho[$codigo_score] : '';
                     }
                 }
             }
