@@ -131,6 +131,7 @@ function incluir_novo() {
 
     $.post("lista_descricao_padrao.php", {modalidade:codigo_modalidade}, function(valor){
         $("select[name=descricao_padrao]").html(valor);
+        atualiza_cor_descricao_padrao();
     });
 }
 
