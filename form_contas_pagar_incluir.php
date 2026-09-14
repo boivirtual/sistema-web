@@ -1567,6 +1567,13 @@ $data_sistema = date("Y-m-d");
                 return erro('Informe o Valor.', $('#vlr_primeira_parcela'));
             }
 
+            // Rateio habilitado mas a distribuição ainda não foi confirmada (rateio_json
+            // vazio) — sem isso o backend não tem como saber que há rateio e cai na
+            // validação de Local/CC/Conta, resultando numa mensagem confusa para o usuário.
+            if ($('#habilitar_rateio').is(':checked') && !$('#rateio_json').val()) {
+                return erro('Você habilitou o Rateio mas ainda não confirmou a distribuição. Clique em "Confirmar Rateio" antes de continuar.');
+            }
+
             if (!$('#habilitar_rateio').is(':checked')) {
                 var local = $('#codigo_fazenda').val();
                 if (!local || (Array.isArray(local) && local.length === 0)) {
