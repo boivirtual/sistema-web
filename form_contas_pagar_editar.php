@@ -165,19 +165,29 @@
     $rateio_total_contas   = 0;
 
     if ($tem_rateio) {
-        $nd_esc_rat  = mysqli_real_escape_string($conector, $numero_ctp);
-        $for_esc_rat = intval($codigo_fornecedor);
-        $rs_prim_rat = mysqli_query($conector,
-            "SELECT MIN(c2.ctp_id) AS primeiro_id
-             FROM contas_pagar c1
-             JOIN contas_pagar c2
-               ON c2.ctp_numero_doc        = c1.ctp_numero_doc
-              AND c2.ctp_codigo_fornecedor = c1.ctp_codigo_fornecedor
-              AND c2.ctp_codigo_fazenda IS NULL
-             WHERE c1.ctp_id = '$chave_ctp'");
-        $row_prim_rat     = $rs_prim_rat ? mysqli_fetch_object($rs_prim_rat) : null;
-        $primeiro_ctp_rat = ($row_prim_rat && $row_prim_rat->primeiro_id)
-                          ? (int)$row_prim_rat->primeiro_id : (int)$chave_ctp;
+        if (!empty($grupo_repeticao_ctp)) {
+            // Repetição: cada ocorrência tem sua PRÓPRIA cópia do rateio (ver
+            // salvar_rateio() em gravar_contas_pagar.php) — ao contrário do
+            // parcelamento real, não existe "1ª ocorrência dona do rateio do
+            // grupo". Agrupar por numero_doc+fornecedor aqui pegaria o rateio de
+            // outra ocorrência (ou até de outra série do mesmo fornecedor).
+            $primeiro_ctp_rat = (int) $chave_ctp;
+        } else {
+            $nd_esc_rat  = mysqli_real_escape_string($conector, $numero_ctp);
+            $for_esc_rat = intval($codigo_fornecedor);
+            $rs_prim_rat = mysqli_query($conector,
+                "SELECT MIN(c2.ctp_id) AS primeiro_id
+                 FROM contas_pagar c1
+                 JOIN contas_pagar c2
+                   ON c2.ctp_numero_doc        = c1.ctp_numero_doc
+                  AND c2.ctp_codigo_fornecedor = c1.ctp_codigo_fornecedor
+                  AND c2.ctp_codigo_fazenda IS NULL
+                 WHERE c1.ctp_id = '$chave_ctp'
+                   AND (c2.ctp_grupo_repeticao IS NULL OR c2.ctp_grupo_repeticao = '')");
+            $row_prim_rat     = $rs_prim_rat ? mysqli_fetch_object($rs_prim_rat) : null;
+            $primeiro_ctp_rat = ($row_prim_rat && $row_prim_rat->primeiro_id)
+                              ? (int)$row_prim_rat->primeiro_id : (int)$chave_ctp;
+        }
 
         $rs_locais_rat = mysqli_query($conector,
             "SELECT rc_nome_local FROM tbl_ctp_rateio
