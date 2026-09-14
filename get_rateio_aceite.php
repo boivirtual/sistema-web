@@ -14,15 +14,11 @@ $row_base = $rs_base ? mysqli_fetch_object($rs_base) : null;
 $grupo_repeticao = $row_base ? ($row_base->ctp_grupo_repeticao ?? '') : '';
 
 if (!empty($grupo_repeticao)) {
-    // Repetição: ctp_numero_doc fica vazio em todas as ocorrências — usar apenas o
-    // número faria o primeiro-ctp-id e o total conflitarem com outras séries do
-    // mesmo fornecedor. O rateio é salvo uma única vez na 1ª ocorrência do grupo,
-    // e o total exibido é apenas o valor desta parcela.
-    $gr_esc = mysqli_real_escape_string($conector, $grupo_repeticao);
-    $rs_prim = mysqli_query($conector,
-        "SELECT MIN(ctp_id) AS primeiro_id FROM contas_pagar WHERE ctp_grupo_repeticao = '$gr_esc'");
-    $row_prim     = mysqli_fetch_object($rs_prim);
-    $primeiro_ctp = ($row_prim && $row_prim->primeiro_id) ? (int)$row_prim->primeiro_id : $ctp_id;
+    // Repetição: cada ocorrência grava sua PRÓPRIA cópia do rateio (ver salvar_rateio()
+    // em gravar_contas_pagar.php) — ao contrário do parcelamento real, aqui não existe
+    // "1ª ocorrência dona do rateio do grupo". Usa o próprio ctp_id, e o total exibido
+    // é apenas o valor desta parcela.
+    $primeiro_ctp = $ctp_id;
     $numero_doc   = '';
     $total_doc    = (float)$row_base->ctp_valor_parcela + (float)$row_base->ctp_valor_juros
                    + (float)$row_base->ctp_outro_valor  - (float)$row_base->ctp_valor_desconto;
