@@ -1211,9 +1211,21 @@ ob_start(function($buffer) {
 			mysqli_close($conector);
 			exit;
 		}
-		
+
+		// Conta com rateio e parcela única: se o valor mudou, refaz os valores do
+		// rateio em cima dos mesmos percentuais já gravados
+		$rateio_recalculado = false;
+		if ($rateio_existente_ed && $qtd_parcela_atual <= 1 && (float) $vlr_parcela_antigo != (float) $vlr_parcela) {
+			$rateio_recalculado = recalcular_valores_rateio($ctp_id_esc, (float) $vlr_parcela, $conector);
+		}
+
+		$mensagem_sucesso = 'Conta alterada com sucesso.';
+		if ($rateio_recalculado) {
+			$mensagem_sucesso .= ' O rateio foi recalculado automaticamente para o novo valor.';
+		}
+
 		header('Content-type: application/json');
-    	echo json_encode(array('success' => true, 'message' => 'Conta alterada com sucesso.'));
+    	echo json_encode(array('success' => true, 'message' => $mensagem_sucesso));
 		mysqli_close($conector);
 		exit;
     }
