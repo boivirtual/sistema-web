@@ -1257,13 +1257,14 @@ ob_start(function($buffer) {
 		}
 
 		// Conta com rateio: se o valor da parcela mudou, refaz os valores do rateio
-		// em cima dos mesmos percentuais já gravados. Parcela única recalcula sobre
-		// o próprio valor; conta parcelada recalcula sobre o novo total do documento
-		// (soma de todas as parcelas), já que o rateio representa o total, não uma
-		// parcela isolada.
+		// em cima dos mesmos percentuais já gravados. Parcela única e ocorrência de
+		// repetição recalculam sobre o próprio valor (cada uma tem sua própria cópia
+		// do rateio); conta parcelada (parcelamento real) recalcula sobre o novo
+		// total do documento (soma de todas as parcelas), já que nesse caso o rateio
+		// fica gravado uma única vez e representa o total, não uma parcela isolada.
 		$rateio_recalculado = false;
 		if ($rateio_existente_ed && (float) $vlr_parcela_antigo != (float) $vlr_parcela) {
-			if ($qtd_parcela_atual <= 1) {
+			if ($qtd_parcela_atual <= 1 || $eh_ocorrencia_repeticao) {
 				$rateio_recalculado = recalcular_valores_rateio($ctp_id_esc, (float) $vlr_parcela, $conector);
 			} else {
 				$rateio_recalculado = recalcular_rateio_documento($ctp_id_esc, (float) $vlr_parcela, $numero_doc_antigo, $codigo_fornecedor_antigo, $conector);
