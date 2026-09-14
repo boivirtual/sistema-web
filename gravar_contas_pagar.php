@@ -157,6 +157,40 @@ ob_start(function($buffer) {
     }
 
     /**
+     * Recalcula o rateio de uma conta PARCELADA (2+ parcelas) quando o valor de
+     * uma das parcelas é alterado. O rateio é gravado uma única vez, vinculado à
+     * primeira parcela do documento, e representa o total de todas as parcelas —
+     * por isso é preciso somar todas as parcelas-irmãs (mesmo ctp_numero_doc +
+     * ctp_codigo_fornecedor, com ctp_codigo_fazenda IS NULL) usando o novo valor
+     * no lugar do valor antigo da parcela editada, achar a primeira parcela do
+     * grupo (onde o rateio está gravado) e recalcular em cima do novo total.
+     * Retorna true se havia rateio e foi recalculado, false caso contrário.
+     */
+    function recalcular_rateio_documento($ctp_id_editado, $novo_valor_parcela, $numero_doc, $codigo_fornecedor, $conector) {
+        $numero_doc_esc        = mysqli_real_escape_string($conector, $numero_doc);
+        $codigo_fornecedor_esc = mysqli_real_escape_string($conector, $codigo_fornecedor);
+
+        $rs = mysqli_query($conector, "SELECT ctp_id, ctp_valor_parcela FROM contas_pagar
+                                        WHERE ctp_numero_doc = '$numero_doc_esc'
+                                          AND ctp_codigo_fornecedor = '$codigo_fornecedor_esc'
+                                          AND ctp_codigo_fazenda IS NULL");
+        if (!$rs || mysqli_num_rows($rs) === 0) return false;
+
+        $primeiro_ctp_id = null;
+        $novo_total      = 0.00;
+        while ($row = mysqli_fetch_object($rs)) {
+            $id_linha    = (int) $row->ctp_id;
+            $valor_linha = ($id_linha === (int) $ctp_id_editado) ? $novo_valor_parcela : (float) $row->ctp_valor_parcela;
+            $novo_total += $valor_linha;
+            if ($primeiro_ctp_id === null || $id_linha < $primeiro_ctp_id) {
+                $primeiro_ctp_id = $id_linha;
+            }
+        }
+
+        return recalcular_valores_rateio($primeiro_ctp_id, round($novo_total, 2), $conector);
+    }
+
+    /**
      * Processa arquivos e links de anexo, gravando em tbl_ctp_anexos.
      * Links usam anexo_arquivo = URL e anexo_tamanho = 0.
      * Retorna array com erros (vazio = sucesso).
