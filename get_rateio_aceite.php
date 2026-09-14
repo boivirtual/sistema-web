@@ -22,7 +22,9 @@ if (!empty($grupo_repeticao)) {
     // "1ª ocorrência dona do rateio do grupo". Usa o próprio ctp_id, e o total exibido
     // é apenas o valor desta parcela (qtd_parcelas = 1 para fins de rótulo).
     $primeiro_ctp   = $ctp_id;
-    $numero_doc     = $DOC_SEM_NUMERO;
+    // A ocorrência pode já ter recebido um número de documento próprio (ex: ao ser
+    // paga) — nesse caso ele deve aparecer, mesmo sendo uma ocorrência de repetição.
+    $numero_doc     = !empty($row_base->ctp_numero_doc) ? htmlspecialchars($row_base->ctp_numero_doc) : $DOC_SEM_NUMERO;
     $qtd_parcelas   = 1;
     $total_doc      = (float)$row_base->ctp_valor_parcela + (float)$row_base->ctp_valor_juros
                      + (float)$row_base->ctp_outro_valor  - (float)$row_base->ctp_valor_desconto;
