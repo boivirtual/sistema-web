@@ -85,6 +85,78 @@ ob_start(function($buffer) {
     }
 
     /**
+     * Recalcula os valores do rateio (tbl_ctp_rateio) de uma conta com parcela única,
+     * mantendo os percentuais já gravados e aplicando-os sobre o novo valor total.
+     * A diferença de arredondamento é ajustada na última linha, para a soma bater
+     * exatamente com o novo total. Retorna true se havia rateio e foi recalculado,
+     * false se a conta não tem rateio.
+     */
+    function recalcular_valores_rateio($ctp_id, $novo_total, $conector) {
+        $rs = mysqli_query($conector, "SELECT rc_id, rc_codigo_local, rc_codigo_cc, rc_codigo_conta,
+                                               rc_perc_local, rc_perc_cc, rc_perc_conta
+                                        FROM tbl_ctp_rateio
+                                        WHERE rc_ctp_id = '$ctp_id'
+                                        ORDER BY rc_id ASC");
+        if (!$rs || mysqli_num_rows($rs) === 0) return false;
+
+        $linhas = [];
+        while ($row = mysqli_fetch_object($rs)) { $linhas[] = $row; }
+        $qtd = count($linhas);
+
+        // Valor de cada linha pelo nível mais profundo preenchido (conta > cc > local),
+        // usando o percentual já gravado — mesma convenção do editor manual de rateio.
+        $soma_folhas = 0.00;
+        foreach ($linhas as $row) {
+            if (!empty($row->rc_codigo_conta)) {
+                $row->folha_perc = (float) $row->rc_perc_conta;
+            } elseif (!empty($row->rc_codigo_cc)) {
+                $row->folha_perc = (float) $row->rc_perc_cc;
+            } else {
+                $row->folha_perc = (float) $row->rc_perc_local;
+            }
+            $row->folha_valor = round(($row->folha_perc / 100) * $novo_total, 2);
+            $soma_folhas += $row->folha_valor;
+        }
+
+        // Ajusta a diferença de arredondamento na última linha
+        $diferenca = round($novo_total - $soma_folhas, 2);
+        if ($diferenca != 0) {
+            $linhas[$qtd - 1]->folha_valor = round($linhas[$qtd - 1]->folha_valor + $diferenca, 2);
+        }
+
+        // Agrega por local e por local+CC, para os totais em rc_valor_local/rc_valor_cc
+        // ficarem consistentes com a soma das linhas-filha (mesma lógica do rateio_editor.js)
+        $totais_local = [];
+        $totais_cc    = [];
+        foreach ($linhas as $row) {
+            $totais_local[$row->rc_codigo_local] = ($totais_local[$row->rc_codigo_local] ?? 0) + $row->folha_valor;
+            if (!empty($row->rc_codigo_cc)) {
+                $chave_cc = $row->rc_codigo_local . '|' . $row->rc_codigo_cc;
+                $totais_cc[$chave_cc] = ($totais_cc[$chave_cc] ?? 0) + $row->folha_valor;
+            }
+        }
+
+        foreach ($linhas as $row) {
+            $novo_valor_local = round($totais_local[$row->rc_codigo_local], 2);
+            $sets = ["rc_valor_local = '$novo_valor_local'"];
+
+            if (!empty($row->rc_codigo_cc)) {
+                $chave_cc      = $row->rc_codigo_local . '|' . $row->rc_codigo_cc;
+                $novo_valor_cc = round($totais_cc[$chave_cc], 2);
+                $sets[] = "rc_valor_cc = '$novo_valor_cc'";
+            }
+
+            if (!empty($row->rc_codigo_conta)) {
+                $sets[] = "rc_valor_conta = '$row->folha_valor'";
+            }
+
+            mysqli_query($conector, "UPDATE tbl_ctp_rateio SET " . implode(', ', $sets) . " WHERE rc_id = '$row->rc_id'");
+        }
+
+        return true;
+    }
+
+    /**
      * Processa arquivos e links de anexo, gravando em tbl_ctp_anexos.
      * Links usam anexo_arquivo = URL e anexo_tamanho = 0.
      * Retorna array com erros (vazio = sucesso).
