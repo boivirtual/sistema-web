@@ -1249,11 +1249,18 @@ ob_start(function($buffer) {
 			exit;
 		}
 
-		// Conta com rateio e parcela única: se o valor mudou, refaz os valores do
-		// rateio em cima dos mesmos percentuais já gravados
+		// Conta com rateio: se o valor da parcela mudou, refaz os valores do rateio
+		// em cima dos mesmos percentuais já gravados. Parcela única recalcula sobre
+		// o próprio valor; conta parcelada recalcula sobre o novo total do documento
+		// (soma de todas as parcelas), já que o rateio representa o total, não uma
+		// parcela isolada.
 		$rateio_recalculado = false;
-		if ($rateio_existente_ed && $qtd_parcela_atual <= 1 && (float) $vlr_parcela_antigo != (float) $vlr_parcela) {
-			$rateio_recalculado = recalcular_valores_rateio($ctp_id_esc, (float) $vlr_parcela, $conector);
+		if ($rateio_existente_ed && (float) $vlr_parcela_antigo != (float) $vlr_parcela) {
+			if ($qtd_parcela_atual <= 1) {
+				$rateio_recalculado = recalcular_valores_rateio($ctp_id_esc, (float) $vlr_parcela, $conector);
+			} else {
+				$rateio_recalculado = recalcular_rateio_documento($ctp_id_esc, (float) $vlr_parcela, $numero_doc_antigo, $codigo_fornecedor_antigo, $conector);
+			}
 		}
 
 		$mensagem_sucesso = 'Conta alterada com sucesso.';
