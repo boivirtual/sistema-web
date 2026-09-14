@@ -170,10 +170,14 @@ ob_start(function($buffer) {
         $numero_doc_esc        = mysqli_real_escape_string($conector, $numero_doc);
         $codigo_fornecedor_esc = mysqli_real_escape_string($conector, $codigo_fornecedor);
 
+        // Exclui ocorrências de "Repetir Lançamento" (ctp_grupo_repeticao preenchido) —
+        // elas têm rateio próprio e nunca devem entrar nessa soma, mesmo que por
+        // coincidência compartilhem ctp_numero_doc/ctp_codigo_fornecedor com este documento
         $rs = mysqli_query($conector, "SELECT ctp_id, ctp_valor_parcela FROM contas_pagar
                                         WHERE ctp_numero_doc = '$numero_doc_esc'
                                           AND ctp_codigo_fornecedor = '$codigo_fornecedor_esc'
-                                          AND ctp_codigo_fazenda IS NULL");
+                                          AND ctp_codigo_fazenda IS NULL
+                                          AND (ctp_grupo_repeticao IS NULL OR ctp_grupo_repeticao = '')");
         if (!$rs || mysqli_num_rows($rs) === 0) return false;
 
         $primeiro_ctp_id = null;
