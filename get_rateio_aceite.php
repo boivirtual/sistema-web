@@ -95,9 +95,8 @@ if (!$rs_det || mysqli_num_rows($rs_det) == 0) {
     exit;
 }
 
-if ($numero_doc !== '') {
-    echo '<p style="font-size:13px;font-weight:600;margin-bottom:10px;">Documento N&ordm;: ' . $numero_doc . '&nbsp;&nbsp;|&nbsp;&nbsp;Valor Total: R$ ' . number_format($total_doc, 2, ',', '.') . '</p>';
-}
+$rotulo_total = ($qtd_parcelas >= 2) ? 'Valor Total (Todas as Parcelas)' : 'Valor Total';
+echo '<p style="font-size:13px;font-weight:600;margin-bottom:10px;">Documento N&ordm;: ' . $numero_doc . '&nbsp;&nbsp;|&nbsp;&nbsp;' . $rotulo_total . ': R$ ' . number_format($total_doc, 2, ',', '.') . '</p>';
 
 echo '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
 echo '<tr style="border-bottom:1px solid #ccc;">';
