@@ -13,15 +13,19 @@ $rs_base  = mysqli_query($conector,
 $row_base = $rs_base ? mysqli_fetch_object($rs_base) : null;
 $grupo_repeticao = $row_base ? ($row_base->ctp_grupo_repeticao ?? '') : '';
 
+// Documento em branco (sem número informado) é exibido como "000000", igual à listagem
+$DOC_SEM_NUMERO = '000000';
+
 if (!empty($grupo_repeticao)) {
     // Repetição: cada ocorrência grava sua PRÓPRIA cópia do rateio (ver salvar_rateio()
     // em gravar_contas_pagar.php) — ao contrário do parcelamento real, aqui não existe
     // "1ª ocorrência dona do rateio do grupo". Usa o próprio ctp_id, e o total exibido
-    // é apenas o valor desta parcela.
-    $primeiro_ctp = $ctp_id;
-    $numero_doc   = '';
-    $total_doc    = (float)$row_base->ctp_valor_parcela + (float)$row_base->ctp_valor_juros
-                   + (float)$row_base->ctp_outro_valor  - (float)$row_base->ctp_valor_desconto;
+    // é apenas o valor desta parcela (qtd_parcelas = 1 para fins de rótulo).
+    $primeiro_ctp   = $ctp_id;
+    $numero_doc     = $DOC_SEM_NUMERO;
+    $qtd_parcelas   = 1;
+    $total_doc      = (float)$row_base->ctp_valor_parcela + (float)$row_base->ctp_valor_juros
+                     + (float)$row_base->ctp_outro_valor  - (float)$row_base->ctp_valor_desconto;
 } elseif ($row_base && !empty($row_base->ctp_numero_doc)) {
     // Localiza o primeiro ctp_id do documento (onde o rateio foi salvo), o número e o fornecedor
     $rs_prim = mysqli_query($conector,
@@ -36,18 +40,20 @@ if (!empty($grupo_repeticao)) {
     $primeiro_ctp   = ($row_prim && $row_prim->primeiro_id) ? (int)$row_prim->primeiro_id : $ctp_id;
     $numero_doc_raw = ($row_prim && $row_prim->ctp_numero_doc) ? $row_prim->ctp_numero_doc : '';
     $codigo_for     = ($row_prim && $row_prim->ctp_codigo_fornecedor) ? (int)$row_prim->ctp_codigo_fornecedor : 0;
-    $numero_doc     = $numero_doc_raw !== '' ? htmlspecialchars($numero_doc_raw) : '';
+    $numero_doc     = $numero_doc_raw !== '' ? htmlspecialchars($numero_doc_raw) : $DOC_SEM_NUMERO;
 
-    // Total do documento — COALESCE evita NULL em campos opcionais (juros, desconto, outros)
+    // Total e qtd de parcelas do documento — COALESCE evita NULL em campos opcionais
     $num_doc_esc = mysqli_real_escape_string($conector, $numero_doc_raw);
     $rs_total = mysqli_query($conector,
-        "SELECT SUM(COALESCE(ctp_valor_parcela, 0) + COALESCE(ctp_valor_juros, 0) + COALESCE(ctp_outro_valor, 0) - COALESCE(ctp_valor_desconto, 0)) AS total_doc
+        "SELECT COUNT(*) AS qtd,
+                SUM(COALESCE(ctp_valor_parcela, 0) + COALESCE(ctp_valor_juros, 0) + COALESCE(ctp_outro_valor, 0) - COALESCE(ctp_valor_desconto, 0)) AS total_doc
          FROM contas_pagar
          WHERE ctp_numero_doc = '$num_doc_esc'
            AND ctp_codigo_fornecedor = '$codigo_for'
            AND ctp_codigo_fazenda IS NULL");
-    $row_total = mysqli_fetch_object($rs_total);
-    $total_doc = $row_total ? (float)$row_total->total_doc : 0;
+    $row_total    = mysqli_fetch_object($rs_total);
+    $total_doc    = $row_total ? (float)$row_total->total_doc : 0;
+    $qtd_parcelas = $row_total ? (int)$row_total->qtd : 1;
 } else {
     // Parcelamento sem número de documento: numero_doc vazio pode colidir com outros
     // lançamentos do mesmo fornecedor. Agrupa por fornecedor + ctp_incluido_em idêntico
@@ -61,16 +67,18 @@ if (!empty($grupo_repeticao)) {
            AND ctp_codigo_fazenda IS NULL");
     $row_prim     = mysqli_fetch_object($rs_prim);
     $primeiro_ctp = ($row_prim && $row_prim->primeiro_id) ? (int)$row_prim->primeiro_id : $ctp_id;
-    $numero_doc   = '';
+    $numero_doc   = $DOC_SEM_NUMERO;
 
     $rs_total = mysqli_query($conector,
-        "SELECT SUM(COALESCE(ctp_valor_parcela, 0) + COALESCE(ctp_valor_juros, 0) + COALESCE(ctp_outro_valor, 0) - COALESCE(ctp_valor_desconto, 0)) AS total_doc
+        "SELECT COUNT(*) AS qtd,
+                SUM(COALESCE(ctp_valor_parcela, 0) + COALESCE(ctp_valor_juros, 0) + COALESCE(ctp_outro_valor, 0) - COALESCE(ctp_valor_desconto, 0)) AS total_doc
          FROM contas_pagar
          WHERE ctp_codigo_fornecedor = '$for_esc'
            AND ctp_incluido_em = '$inc_esc'
            AND ctp_codigo_fazenda IS NULL");
-    $row_total = mysqli_fetch_object($rs_total);
-    $total_doc = $row_total ? (float)$row_total->total_doc : 0;
+    $row_total    = mysqli_fetch_object($rs_total);
+    $total_doc    = $row_total ? (float)$row_total->total_doc : 0;
+    $qtd_parcelas = $row_total ? (int)$row_total->qtd : 1;
 }
 
 $rs_det = mysqli_query($conector,
