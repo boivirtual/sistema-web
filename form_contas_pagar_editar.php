@@ -834,7 +834,7 @@ while ($reg_conta_pag = mysqli_fetch_object($conta_pagamento)) {
 	            		</div>
 	            		<div class="modal-body"></div>
 	            		<div class="modal-footer">
-	                		<button data-dismiss="modal" class="btn btn-default" type="button" onclick="location.reload();">Fechar</button>
+	                		<button data-dismiss="modal" class="btn btn-default" type="button">Fechar</button>
 	              		</div>
 	            	</div>
 	        	</div>
