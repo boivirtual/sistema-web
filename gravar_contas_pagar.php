@@ -166,26 +166,34 @@ ob_start(function($buffer) {
      * grupo (onde o rateio está gravado) e recalcular em cima do novo total.
      * Retorna true se havia rateio e foi recalculado, false caso contrário.
      */
-    function recalcular_rateio_documento($ctp_id_editado, $novo_valor_parcela, $numero_doc, $codigo_fornecedor, $conector) {
+    function recalcular_rateio_documento($ctp_id_editado, $novo_total_parcela, $numero_doc, $codigo_fornecedor, $conector) {
         $numero_doc_esc        = mysqli_real_escape_string($conector, $numero_doc);
         $codigo_fornecedor_esc = mysqli_real_escape_string($conector, $codigo_fornecedor);
 
         // Exclui ocorrências de "Repetir Lançamento" (ctp_grupo_repeticao preenchido) —
         // elas têm rateio próprio e nunca devem entrar nessa soma, mesmo que por
         // coincidência compartilhem ctp_numero_doc/ctp_codigo_fornecedor com este documento
-        $rs = mysqli_query($conector, "SELECT ctp_id, ctp_valor_parcela FROM contas_pagar
+        $rs = mysqli_query($conector, "SELECT ctp_id, ctp_valor_parcela, ctp_valor_juros, ctp_valor_desconto, ctp_outro_valor
+                                        FROM contas_pagar
                                         WHERE ctp_numero_doc = '$numero_doc_esc'
                                           AND ctp_codigo_fornecedor = '$codigo_fornecedor_esc'
                                           AND ctp_codigo_fazenda IS NULL
                                           AND (ctp_grupo_repeticao IS NULL OR ctp_grupo_repeticao = '')");
         if (!$rs || mysqli_num_rows($rs) === 0) return false;
 
+        // $novo_total_parcela já é o total desta parcela (parcela + juros + outros -
+        // desconto) com os valores novos — mesma fórmula usada em get_rateio_aceite.php
         $primeiro_ctp_id = null;
         $novo_total      = 0.00;
         while ($row = mysqli_fetch_object($rs)) {
-            $id_linha    = (int) $row->ctp_id;
-            $valor_linha = ($id_linha === (int) $ctp_id_editado) ? $novo_valor_parcela : (float) $row->ctp_valor_parcela;
-            $novo_total += $valor_linha;
+            $id_linha = (int) $row->ctp_id;
+            if ($id_linha === (int) $ctp_id_editado) {
+                $total_linha = $novo_total_parcela;
+            } else {
+                $total_linha = (float) $row->ctp_valor_parcela + (float) $row->ctp_valor_juros
+                             + (float) $row->ctp_outro_valor  - (float) $row->ctp_valor_desconto;
+            }
+            $novo_total += $total_linha;
             if ($primeiro_ctp_id === null || $id_linha < $primeiro_ctp_id) {
                 $primeiro_ctp_id = $id_linha;
             }
