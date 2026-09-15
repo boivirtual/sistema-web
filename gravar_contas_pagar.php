@@ -1281,7 +1281,7 @@ ob_start(function($buffer) {
 		}
 
 		header('Content-type: application/json');
-    	echo json_encode(array('success' => true, 'message' => $mensagem_sucesso));
+    	echo json_encode(array('success' => true, 'message' => $mensagem_sucesso, 'rateio_recalculado' => $rateio_recalculado, 'ctp_id' => $ctp_id_esc));
 		mysqli_close($conector);
 		exit;
     }
