@@ -1645,10 +1645,13 @@ function ler_notas($conector, $data_sistema,$tipo_data,$data_inicial,$data_final
 
             // rc_valor_conta representa o valor do documento inteiro (soma de todas as
             // parcelas), não desta parcela. Calcula a proporção de cada local sobre o
-            // total do rateio dessa conta (sem filtro de local/CC) e aplica essa
-            // proporção ao valor desta parcela específica.
+            // total do rateio de TODO o documento (todas as contas contábeis, sem
+            // filtro de local/CC/conta) e aplica essa proporção ao valor desta parcela
+            // específica — dividir só pela soma desta conta (em vez do documento
+            // inteiro) dava o valor certo apenas quando o rateio tinha uma única conta
+            // contábil; com 2+ contas, o valor ficava igual ao total bruto da conta.
             $rs_soma_rateio = mysqli_query($conector, "SELECT SUM(rc_valor_conta) AS soma
-                FROM tbl_ctp_rateio WHERE rc_ctp_id='$ctp_id_rateio_nota' AND rc_codigo_conta='$conta_inicio'");
+                FROM tbl_ctp_rateio WHERE rc_ctp_id='$ctp_id_rateio_nota' AND rc_codigo_conta IS NOT NULL AND rc_codigo_conta != ''");
             $row_soma_rateio = mysqli_fetch_object($rs_soma_rateio);
             $soma_rateio_conta = $row_soma_rateio ? (float)$row_soma_rateio->soma : 0;
 
