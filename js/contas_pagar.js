@@ -688,6 +688,26 @@ $(document).ready(function(){
         $('.filtro_exibido').hide();
     });
 
+    // Exibe a mensagem de sucesso da edição; se o rateio foi recalculado, ao fechar
+    // essa mensagem abre a Distribuição do Rateio (toggleRateio) para o usuário
+    // ver/editar antes de recarregar a página — senão recarrega direto, como sempre.
+    function _sucessoEdicaoCtpPagar(data) {
+        $("#mensagem_retorno").modal();
+        $("#mensagem_retorno .modal-body").html(data.message || 'Conta alterada com sucesso.');
+
+        $("#mensagem_retorno").off('hidden.bs.modal.ctpEditar').one('hidden.bs.modal.ctpEditar', function () {
+            if (data.rateio_recalculado && data.ctp_id && typeof toggleRateio === 'function') {
+                $(document).off('hidden.bs.modal.ctpEditar', '#modal_rateio_ctp_dyn')
+                           .one('hidden.bs.modal.ctpEditar', '#modal_rateio_ctp_dyn', function () {
+                    location.reload();
+                });
+                toggleRateio(data.ctp_id);
+            } else {
+                location.reload();
+            }
+        });
+    }
+
     // grava ctp na edição
     $('.confirma_gravar_ctp').click(function(){
         $("#errors").html('');
@@ -708,8 +728,7 @@ $(document).ready(function(){
                     $("#mensagem_erro").modal();
                     $("#mensagem_erro .modal-body").html(data.message || 'Erro ao salvar.');
                 } else {
-                    $("#mensagem_retorno").modal();
-                    $("#mensagem_retorno .modal-body").html(data.message || 'Conta alterada com sucesso.');
+                    _sucessoEdicaoCtpPagar(data);
                 }
             },
             error: function(xhr) {
@@ -719,8 +738,7 @@ $(document).ready(function(){
                     var pos  = text.indexOf('{');
                     var resp = pos >= 0 ? JSON.parse(text.substring(pos)) : null;
                     if (resp && resp.success) {
-                        $("#mensagem_retorno").modal();
-                        $("#mensagem_retorno .modal-body").html(resp.message || 'Conta alterada com sucesso.');
+                        _sucessoEdicaoCtpPagar(resp);
                         return;
                     }
                     if (resp && resp.error) {
