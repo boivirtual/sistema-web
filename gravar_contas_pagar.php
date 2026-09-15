@@ -1175,9 +1175,12 @@ ob_start(function($buffer) {
 		// conta parcelada, achar as parcelas-irmãs pela identidade que o registro
 		// tinha até agora
 		$ctp_id_esc = (int) $ctp_id;
-		$rs_atual   = mysqli_query($conector, "SELECT ctp_valor_parcela, ctp_qtd_parcelas, ctp_numero_doc, ctp_codigo_fornecedor, ctp_grupo_repeticao FROM contas_pagar WHERE ctp_id='$ctp_id_esc'");
+		$rs_atual   = mysqli_query($conector, "SELECT ctp_valor_parcela, ctp_valor_juros, ctp_valor_desconto, ctp_outro_valor, ctp_qtd_parcelas, ctp_numero_doc, ctp_codigo_fornecedor, ctp_grupo_repeticao FROM contas_pagar WHERE ctp_id='$ctp_id_esc'");
 		$reg_atual  = $rs_atual ? mysqli_fetch_object($rs_atual) : null;
 		$vlr_parcela_antigo       = $reg_atual ? (float) $reg_atual->ctp_valor_parcela      : 0.00;
+		$vlr_juros_antigo         = $reg_atual ? (float) $reg_atual->ctp_valor_juros        : 0.00;
+		$vlr_desconto_antigo      = $reg_atual ? (float) $reg_atual->ctp_valor_desconto     : 0.00;
+		$vlr_acrescimo_antigo     = $reg_atual ? (float) $reg_atual->ctp_outro_valor        : 0.00;
 		$qtd_parcela_atual        = $reg_atual ? (int)   $reg_atual->ctp_qtd_parcelas       : 1;
 		$numero_doc_antigo        = $reg_atual ? $reg_atual->ctp_numero_doc                 : '';
 		$codigo_fornecedor_antigo = $reg_atual ? $reg_atual->ctp_codigo_fornecedor          : '';
