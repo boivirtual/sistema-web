@@ -1216,12 +1216,12 @@ function listar_consumo_nutricao(opcao){
 
     if (tipo_periodo_lote=='P') {
         var tipo_rel_filtro = '->Tipo Relatório: Por Período';
-        var agrupar_produtos_filtro = '->Agrupar Produtos: ' + (agrupar_produtos=='S' ? 'Sim' : 'Não');
     }
     else {
         var tipo_rel_filtro = '->Tipo Relatório: Por Lote';
-        var agrupar_produtos_filtro = '';
     }
+
+    var agrupar_produtos_filtro = '->Agrupar Produtos: ' + (agrupar_produtos=='S' ? 'Sim' : 'Não');
     var descricao_filtro =
         codigo_local_filtro +
         periodo +
