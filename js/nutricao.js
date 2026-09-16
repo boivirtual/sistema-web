@@ -89,14 +89,12 @@ window.addEventListener("load", function(event) {
             $('.um_lote').hide();
             $('.label_data_inicial').html('* Data Inicial');
             $('.label_data_final').html('* Data Final');
-            $('.agrupar_produtos_grupo').show();
         }
         else {
             $('.descricao_lote').hide();
             $('.um_lote').show();
             $('.label_data_inicial').html('Data Inicial');
             $('.label_data_final').html('Data Final');
-            $('.agrupar_produtos_grupo').hide();
         }
     }
 
@@ -796,14 +794,12 @@ $(document).ready(function(){
             $('.um_lote').hide();
             $('.label_data_inicial').html('* Data Inicial');
             $('.label_data_final').html('* Data Final');
-            $('.agrupar_produtos_grupo').show();
         }
         else {
             $('.descricao_lote').hide();
             $('.um_lote').show();
             $('.label_data_inicial').html('Data Inicial');
             $('.label_data_final').html('Data Final');
-            $('.agrupar_produtos_grupo').hide();
         }
 
         $('input[name="agrupar_produtos"][value="N"]').prop('checked', true);
