@@ -203,9 +203,9 @@
             INNER JOIN tbl_pessoa
                     ON tbl_pessoa_id = tbl_cobertura_codigo_local
             WHERE tbl_cobertura_lixeira=0 AND 
-                  tbl_cobertura_controle = 'M' AND 
-                  tbl_ite_cobertura_data_prenhes>='$periodo_de' AND
-                  tbl_ite_cobertura_data_prenhes<='$periodo_ate' AND 
+                  tbl_cobertura_controle = 'M' AND
+                  tbl_ite_cobertura_previsao_parto>='$periodo_de' AND
+                  tbl_ite_cobertura_previsao_parto<='$periodo_ate' AND
                   tbl_cobertura_encerrada='S'" . $wlocal . 
             "ORDER BY tbl_cobertura_codigo_local ASC,
                       tbl_ite_cobertura_codigo_id_animal ASC"); 
