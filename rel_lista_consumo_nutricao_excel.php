@@ -612,7 +612,10 @@ else {
 
             $qtd_por_cabeca_grama = ($qtd_produto / $qtd_animais)*1000;
 
-            if ($data_nutricao!=$data_anterior) {
+            // Com "Agrupar Produtos" = Não, cada produto vira sua própria linha
+            // mesmo quando a data é igual à anterior — nunca cai no ramo de
+            // acúmulo (senão) abaixo, que é o que soma/concatena produtos.
+            if ($agrupar_produtos=='N' || $data_nutricao!=$data_anterior) {
                 if ($data_anterior==0) {
                     $data_anterior=$data_nutricao;
                     $qtd_animais_anterior = $qtd_animais;
@@ -626,7 +629,7 @@ else {
 
                     if ($encerrada=='S') {
                         $desc_score_anterior = 'Nutrição encerrada';
-                        $consumo_cabeca_dia_anterior = $consumo_cabeca_dia; 
+                        $consumo_cabeca_dia_anterior = $consumo_cabeca_dia;
                         $dias_consumo_anterior = $dias_consumo;
                     }
                     else {
@@ -640,6 +643,7 @@ else {
                     }
                 }
                 else {
+                    $data_bruta_impressa = $data_anterior;
                     $data_anterior = new DateTime($data_anterior);
                     $data_nutricao_edi = $data_anterior->format('d/m/Y');
 
@@ -653,11 +657,16 @@ else {
 
                     if ($dias_consumo_anterior==0) {
                         $consumo_cabeca = '';
-                        $total_dias+=$quantidade_dias[0];
                     }
                     else {
                         $consumo_cabeca = number_format($consumo_cabeca_dia_anterior, 0, ",", ".") .' g em ' . $dias_consumo_anterior . ' dia(s)';
-                        $total_dias+=$dias_consumo_anterior;
+                    }
+
+                    // Só soma uma vez por data (ver comentário na inicialização
+                    // de $data_dias_contabilizados).
+                    if ($data_bruta_impressa !== $data_dias_contabilizados) {
+                        $total_dias += ($dias_consumo_anterior==0) ? $quantidade_dias[0] : $dias_consumo_anterior;
+                        $data_dias_contabilizados = $data_bruta_impressa;
                     }
 
                     $desc_produto_anterior = substr($desc_produto_anterior, 0, -1);
