@@ -565,6 +565,10 @@ else {
         $codigo_score_anterior = 0;
         $total_consumo_cabeca_dia=0;
         $total_dias=0;
+        // Guarda a última data (bruta) já somada em $total_dias, pra não contar
+        // o mesmo dia duas vezes quando "Agrupar Produtos" = Não gera mais de
+        // uma linha (um produto cada) pra uma mesma data.
+        $data_dias_contabilizados = null;
 
         // O relatório Por Lote sempre trata um único lote ($lote_filtro). Antes,
         // calcular_dias() rodava de novo a cada grupo de data (sempre com o
