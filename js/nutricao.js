@@ -668,11 +668,22 @@ $(document).ready(function(){
             tipo_periodo_lote='P';
         }
 
+        // Guarda o(s) lote(s) já escolhidos antes de recarregar a lista (o
+        // período muda quais lotes aparecem, mas não deve derrubar em silêncio
+        // uma seleção que ainda é válida na lista nova).
+        var lote_selecionado_antes = (tipo_periodo_lote=='P') ? $('#descricao_lote').val() : $('#um_lote').val();
+
         $.post("lista_lotes_nutricao.php", {local:local, data_inicial:data_inicial, data_final:data_final, tipo_rel:tipo_periodo_lote}, function(valor){
             $("select[name=descricao_lote]").html(valor);
-            $('.selectpicker').selectpicker('refresh');            
+            $('.selectpicker').selectpicker('refresh');
 
             $("select[name=um_lote]").html(valor);
+
+            if (tipo_periodo_lote=='P') {
+                restaurar_selecao_filtro('#descricao_lote', (lote_selecionado_antes || []).join(','), true);
+            } else {
+                restaurar_selecao_filtro('#um_lote', lote_selecionado_antes, false);
+            }
         });
     });
 
@@ -686,11 +697,21 @@ $(document).ready(function(){
             tipo_periodo_lote='P';
         }
 
+        // Guarda o(s) lote(s) já escolhidos antes de recarregar a lista (ver
+        // comentário equivalente em #data_inicial acima).
+        var lote_selecionado_antes = (tipo_periodo_lote=='P') ? $('#descricao_lote').val() : $('#um_lote').val();
+
         $.post("lista_lotes_nutricao.php", {local:local, data_inicial:data_inicial, data_final:data_final, tipo_rel:tipo_periodo_lote}, function(valor){
             $("select[name=descricao_lote]").html(valor);
-            $('.selectpicker').selectpicker('refresh');            
+            $('.selectpicker').selectpicker('refresh');
 
             $("select[name=um_lote]").html(valor);
+
+            if (tipo_periodo_lote=='P') {
+                restaurar_selecao_filtro('#descricao_lote', (lote_selecionado_antes || []).join(','), true);
+            } else {
+                restaurar_selecao_filtro('#um_lote', lote_selecionado_antes, false);
+            }
         });
     });
 
