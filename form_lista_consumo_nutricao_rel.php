@@ -425,7 +425,10 @@
 
             $qtd_por_cabeca_grama = ($qtd_produto / $qtd_animais)*1000;
 
-            if ($data_nutricao!=$data_anterior) {
+            // Com "Agrupar Produtos" = Não, cada produto vira sua própria linha
+            // mesmo quando a data é igual à anterior — nunca cai no ramo de
+            // acúmulo (senão) abaixo, que é o que soma/concatena produtos.
+            if ($agrupar_produtos=='N' || $data_nutricao!=$data_anterior) {
                 if ($data_anterior==0) {
                     $data_anterior=$data_nutricao;
                     $qtd_animais_anterior = $qtd_animais;
