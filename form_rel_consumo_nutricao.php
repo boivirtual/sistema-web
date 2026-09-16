@@ -317,7 +317,7 @@
                                                     </select>
                                                 </div>
 
-                                                <div class="form-group col-md-3 agrupar_produtos_grupo" data-toggle="tooltip" data-placement="top" title="Sim soma os produtos numa única linha por lote. Não lista cada produto separadamente, com seu próprio consumo.">
+                                                <div class="form-group col-md-3 agrupar_produtos_grupo" data-toggle="tooltip" data-placement="top" title="Sim soma os produtos numa única linha. Não lista cada produto separadamente, com seu próprio consumo.">
                                                     <label class="control-label">Agrupar Produtos</label>
 
                                                     <div class="clearfix"></div>
