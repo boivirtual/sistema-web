@@ -688,6 +688,24 @@ $(document).ready(function(){
         $('.filtro_exibido').hide();
     });
 
+    // #mensagem_retorno é reaproveitado por vários fluxos desta tela (edição, baixa
+    // individual, estorno de baixa) — cada um só faz $("#mensagem_retorno").modal().
+    // O comportamento padrão ao fechá-la é recarregar a página (como sempre foi);
+    // _aposFecharMensagemRetorno permite a edição com rateio recalculado substituir
+    // esse próximo passo (abrir a Distribuição do Rateio antes) só para a sua própria
+    // chamada, sem quebrar os demais fluxos que não conhecem esse mecanismo.
+    var _aposFecharMensagemRetorno = null;
+
+    $('#mensagem_retorno').on('hidden.bs.modal', function () {
+        var proximoPasso = _aposFecharMensagemRetorno;
+        _aposFecharMensagemRetorno = null;
+        if (proximoPasso) {
+            proximoPasso();
+        } else {
+            location.reload();
+        }
+    });
+
     // Exibe a mensagem de sucesso da edição; se o rateio foi recalculado, ao fechar
     // essa mensagem abre a Distribuição do Rateio (toggleRateio) para o usuário
     // ver/editar antes de recarregar a página — senão recarrega direto, como sempre.
@@ -695,17 +713,17 @@ $(document).ready(function(){
         $("#mensagem_retorno").modal();
         $("#mensagem_retorno .modal-body").html(data.message || 'Conta alterada com sucesso.');
 
-        $("#mensagem_retorno").off('hidden.bs.modal.ctpEditar').one('hidden.bs.modal.ctpEditar', function () {
-            if (data.rateio_recalculado && data.ctp_id && typeof toggleRateio === 'function') {
+        if (data.rateio_recalculado && data.ctp_id && typeof toggleRateio === 'function') {
+            _aposFecharMensagemRetorno = function () {
                 $(document).off('hidden.bs.modal.ctpEditar', '#modal_rateio_ctp_dyn')
                            .one('hidden.bs.modal.ctpEditar', '#modal_rateio_ctp_dyn', function () {
                     location.reload();
                 });
                 toggleRateio(data.ctp_id);
-            } else {
-                location.reload();
-            }
-        });
+            };
+        } else {
+            _aposFecharMensagemRetorno = null;
+        }
     }
 
     // grava ctp na edição
