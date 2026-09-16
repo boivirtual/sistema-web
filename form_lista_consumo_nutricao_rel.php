@@ -387,13 +387,17 @@
         $codigo_score_anterior = 0;
         $total_consumo_cabeca_dia=0;
         $total_dias=0;
+        // Guarda a última data (bruta) já somada em $total_dias, pra não contar
+        // o mesmo dia duas vezes quando "Agrupar Produtos" = Não gera mais de
+        // uma linha (um produto cada) pra uma mesma data.
+        $data_dias_contabilizados = null;
 
         $sql = "SELECT * FROM tbl_nutricao
-            INNER JOIN tbl_pasto 
+            INNER JOIN tbl_pasto
                     ON tbl_pasto_id = tbl_nutricao_codigo_pasto
             INNER JOIN tbl_produto
-                    ON tbl_nutricao_codigo_produto = tbl_produto_codigo_id 
-            WHERE tbl_nutricao_lixeira=0 AND 
+                    ON tbl_nutricao_codigo_produto = tbl_produto_codigo_id
+            WHERE tbl_nutricao_lixeira=0 AND
                   tbl_nutricao_codigo_local='$local_filtro'" . $wperiodo . $wlote . $wpasto . $wproduto .
             "ORDER BY tbl_nutricao_data DESC";
 
