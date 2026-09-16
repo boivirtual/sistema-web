@@ -485,6 +485,7 @@
                     }
                 }
                 else {
+                    $data_bruta_impressa = $data_anterior;
                     $data_anterior = new DateTime($data_anterior);
                     $data_nutricao_edi = $data_anterior->format('d/m/Y');
 
@@ -497,11 +498,16 @@
 
                     if ($dias_consumo_anterior==0) {
                         $consumo_cabeca = '';
-                        $total_dias+=$quantidade_dias[0];
                     }
                     else {
                         $consumo_cabeca = number_format($consumo_cabeca_dia_anterior, 0, ",", ".") .' g em ' . $dias_consumo_anterior . ' dia(s)';
-                        $total_dias+=$dias_consumo_anterior;
+                    }
+
+                    // Só soma uma vez por data (ver comentário na inicialização
+                    // de $data_dias_contabilizados).
+                    if ($data_bruta_impressa !== $data_dias_contabilizados) {
+                        $total_dias += ($dias_consumo_anterior==0) ? $quantidade_dias[0] : $dias_consumo_anterior;
+                        $data_dias_contabilizados = $data_bruta_impressa;
                     }
 
                     $desc_produto_anterior = substr($desc_produto_anterior, 0, -1);
