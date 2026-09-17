@@ -5,6 +5,13 @@ const selectedConta = [];
 // Filtro ativo pelos cards de resumo (null = sem filtro = Total do Período)
 var ctpFiltroAtivo = null;
 
+// Controle do popup "Distribuição do Rateio" (toggleRateio, mais abaixo) — precisam
+// ser globais (não dentro do $(document).ready) porque o botão "Editar" desse popup
+// roda um onclick inline, em escopo global, e precisa ler/gravar essas mesmas flags.
+// Ver uso completo em _sucessoEdicaoCtpPagar/$(document).on('hidden.bs.modal', ...).
+var _ctpRateioReloadPendente = false;
+var _ctpRateioAbrindoEditor  = false;
+
 // Converte dd/mm/yyyy para objeto Date (sem problema de fuso horário)
 function ctpParseDate(str) {
     if (!str) return null;
