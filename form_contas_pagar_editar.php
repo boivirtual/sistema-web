@@ -868,12 +868,19 @@ while ($reg_conta_pag = mysqli_fetch_object($conta_pagamento)) {
 
 
 <?php include "modal_anexos.php"; ?>
+<?php include "modal_editar_rateio.php"; ?>
 
 <script>
   // Define de onde a edição foi chamada. Quando vale "aceite", o botão "Voltar"
   // retorna para form_contas_pagar_aceite.php; caso contrário mantém o
   // comportamento padrão (form_contas_pagar.php).
   var ctpEditarOrigem = '<?php echo (isset($_GET["origem"]) && $_GET["origem"] === "aceite") ? "aceite" : ""; ?>';
+
+  // Callback do Editor de Rateio (modal_editar_rateio.php) após salvar — reabre a
+  // Distribuição do Rateio (toggleRateio) com os valores atualizados, igual à listagem.
+  _eratCallbackPosSalvar = function (id) {
+      toggleRateio(id);
+  };
 </script>
 
 <?php
