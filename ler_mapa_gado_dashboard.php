@@ -127,12 +127,24 @@ foreach ($array_locais_usuario as $value) {
 					}
 				}
 
-				$total_fazenda[$codigo_fazenda]++;	
+				$total_fazenda[$codigo_fazenda]++;
 				$locacao=$total_fazenda[$codigo_fazenda]/$area_fazenda;
 				$cab_ha[$codigo_fazenda]=number_format($locacao,2,',','.');
 			}
+
+			$tbl_kg = mysqli_query($conector, "SELECT SUM(tbl_animal_ultimo_peso) AS kg_total FROM tbl_animais
+										WHERE tbl_animal_codigo_fazenda='$codigo_fazenda' AND
+										      tbl_animal_ativo='S' AND
+										      tbl_animal_lixeira=0");
+			$reg_kg = mysqli_fetch_object($tbl_kg);
+			$kg_total = $reg_kg->kg_total;
+
+			if ($kg_total!='' && $area_fazenda!='' && $area_fazenda!=0) {
+				$kgha = $kg_total/$area_fazenda;
+				$kg_ha[$codigo_fazenda]=number_format($kgha,2,',','.');
+			}
 		}
-	}	
+	}
 }
 
 $total_fazenda = implode("|", $total_fazenda);
