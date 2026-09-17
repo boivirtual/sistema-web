@@ -57,7 +57,7 @@ function toggleRateio(id) {
                 '</div>' +
                 '<div class="modal-body" style="overflow-x:auto;padding:12px 16px;">' + corpo + '</div>' +
                 '<div class="modal-footer">' +
-                '<button class="btn btn-primary" type="button" style="float:left;" onclick="$(\'#modal_rateio_ctp_dyn\').modal(\'hide\');abrirEditarRateio(' + id + ');">Editar</button>' +
+                '<button class="btn btn-primary" type="button" style="float:left;" onclick="_ctpRateioAbrindoEditor = true; $(\'#modal_rateio_ctp_dyn\').modal(\'hide\'); abrirEditarRateio(' + id + ');">Editar</button>' +
                 '<button class="btn btn-default" type="button" data-dismiss="modal">Fechar</button>' +
                 '</div>' +
                 '</div></div></div>';
