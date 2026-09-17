@@ -394,12 +394,12 @@ function consultar_fazenda() {
         html += '<tr>';
         html += '<th rowspan="2" style="text-align: left; vertical-align: middle; border-top: 1px solid transparent;">' + 'FAZENDA' + '</th>';
         html += '<th rowspan="2" style="text-align: center; vertical-align: middle; border-top: 1px solid transparent;">' + 'ÚLTIMA ATUALIZAÇAO' + '</th>';
-        html += '<th colspan="2" style="text-align: center; vertical-align: middle; border-top: 1px solid transparent;">' + 'LOTAÇÃO' + '</th>';
+        html += '<th colspan="2" style="text-align: center; vertical-align: middle; border-top: 1px solid transparent; border-bottom: 1px solid transparent;">' + 'LOTAÇÃO' + '</th>';
         html += '<th rowspan="2" style="text-align: center; vertical-align: middle; border-top: 1px solid transparent;">' + 'TOTAL ANIMAIS' + '</th>';
         html += '</tr>';
         html += '<tr>';
-        html += '<th style="text-align: center; vertical-align: middle;">' + 'Cab/Ha' + '</th>';
-        html += '<th style="text-align: center; vertical-align: middle;">' + 'Kg/Ha' + '</th>';
+        html += '<th style="text-align: center; vertical-align: middle; border-top: 1px solid transparent;">' + 'Cab/Ha' + '</th>';
+        html += '<th style="text-align: center; vertical-align: middle; border-top: 1px solid transparent;">' + 'Kg/Ha' + '</th>';
         html += '</tr>';
         html += '</thead>';
         html += '<tfoot>';
