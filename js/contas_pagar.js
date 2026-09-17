@@ -706,6 +706,30 @@ $(document).ready(function(){
         }
     });
 
+    // Controla o recarregamento da página depois que o usuário termina de ver/editar
+    // a Distribuição do Rateio (aberta automaticamente após uma edição com rateio
+    // recalculado). Fica "pendente" enquanto esse popup estiver em jogo — mesmo que
+    // ele feche e reabra (ex: depois de salvar no Editor de Rateio) — e só recarrega
+    // quando ele é fechado de vez pelo usuário (Fechar/X).
+    //
+    // O botão "Editar" desse popup também fecha o #modal_rateio_ctp_dyn (pra abrir o
+    // Editor de Rateio no lugar) — sem a flag abaixo, esse fechamento seria confundido
+    // com "usuário terminou", disparando o reload e derrubando o editor ~1s depois de
+    // abrir. _ctpRateioAbrindoEditor marca esse caso específico para ser ignorado.
+    var _ctpRateioReloadPendente = false;
+    var _ctpRateioAbrindoEditor  = false;
+
+    $(document).on('hidden.bs.modal', '#modal_rateio_ctp_dyn', function () {
+        if (_ctpRateioAbrindoEditor) {
+            _ctpRateioAbrindoEditor = false;
+            return;
+        }
+        if (_ctpRateioReloadPendente) {
+            _ctpRateioReloadPendente = false;
+            location.reload();
+        }
+    });
+
     // Exibe a mensagem de sucesso da edição; se o rateio foi recalculado, ao fechar
     // essa mensagem abre a Distribuição do Rateio (toggleRateio) para o usuário
     // ver/editar antes de recarregar a página — senão recarrega direto, como sempre.
@@ -715,10 +739,7 @@ $(document).ready(function(){
 
         if (data.rateio_recalculado && data.ctp_id && typeof toggleRateio === 'function') {
             _aposFecharMensagemRetorno = function () {
-                $(document).off('hidden.bs.modal.ctpEditar', '#modal_rateio_ctp_dyn')
-                           .one('hidden.bs.modal.ctpEditar', '#modal_rateio_ctp_dyn', function () {
-                    location.reload();
-                });
+                _ctpRateioReloadPendente = true;
                 toggleRateio(data.ctp_id);
             };
         } else {
