@@ -36,6 +36,7 @@ foreach ($array_locais_usuario as $value) {
     $desc_fazenda[$value]='';
     $ultima_data[$value]=0;
     $cab_ha[$value]=0;
+    $kg_ha[$value]=0;
 }
 
 // SOMA ANIMAIS POR FAZENDA
