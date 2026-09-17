@@ -881,7 +881,9 @@ while ($reg_conta_pag = mysqli_fetch_object($conta_pagamento)) {
   // Precisa ser atribuído só depois que rateio_editor.js carregar (via rodape.php,
   // abaixo) — esse arquivo declara "var _eratCallbackPosSalvar = null;" no topo, e
   // se essa atribuição rodasse antes dele, seria sobrescrita de volta para null.
-  $(document).ready(function () {
+  // Usa DOMContentLoaded (JS puro) em vez de $(document).ready porque o jQuery
+  // também só é carregado no rodapé — nesse ponto do documento "$" ainda não existe.
+  document.addEventListener('DOMContentLoaded', function () {
       _eratCallbackPosSalvar = function (id) {
           toggleRateio(id);
       };
