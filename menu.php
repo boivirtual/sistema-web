@@ -341,7 +341,7 @@ function tratarDescricaoVersao($texto) {
 
         .fontes_mapa_ha {
             font-size: 13px;
-            font-weight: 900;
+            font-weight: normal;
             color: #4169e1;
         }
 
