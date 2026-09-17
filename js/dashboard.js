@@ -385,20 +385,26 @@ function consultar_fazenda() {
         var total_fazenda = php[2].split("|");
         var ultima_data = php[3].split("|");
         var cab_ha = php[4].split("|");
+        var kg_ha = php[5].split("|");
         var numero_itens = fazenda_id.length;
 
         html = "";
         html += '<table class="table table-advance table-hover fontes_mapa" id="tabela_mapa" width="100%"';
         html += '<thead>';
         html += '<tr>';
-        html += '<th style="text-align: left; vertical-align: middle; border-top: 1px solid transparent;">' + 'FAZENDA' + '</th>';
-        html += '<th style="text-align: center; vertical-align: middle; border-top: 1px solid transparent;">' + 'ÚLTIMA ATUALIZAÇAO' + '</th>';
-        html += '<th style="text-align: center; vertical-align: middle; border-top: 1px solid transparent;">' + 'LOTAÇÃO (Cab/Ha)' + '</th>';
-        html += '<th style="text-align: center; vertical-align: middle; border-top: 1px solid transparent;">' + 'TOTAL ANIMAIS' + '</th>';
+        html += '<th rowspan="2" style="text-align: left; vertical-align: middle; border-top: 1px solid transparent;">' + 'FAZENDA' + '</th>';
+        html += '<th rowspan="2" style="text-align: center; vertical-align: middle; border-top: 1px solid transparent;">' + 'ÚLTIMA ATUALIZAÇAO' + '</th>';
+        html += '<th colspan="2" style="text-align: center; vertical-align: middle; border-top: 1px solid transparent;">' + 'LOTAÇÃO' + '</th>';
+        html += '<th rowspan="2" style="text-align: center; vertical-align: middle; border-top: 1px solid transparent;">' + 'TOTAL ANIMAIS' + '</th>';
+        html += '</tr>';
+        html += '<tr>';
+        html += '<th style="text-align: center; vertical-align: middle;">' + 'Cab/Ha' + '</th>';
+        html += '<th style="text-align: center; vertical-align: middle;">' + 'Kg/Ha' + '</th>';
         html += '</tr>';
         html += '</thead>';
         html += '<tfoot>';
         html += '<tr>';
+        html += '<th style="border-top: 1px solid transparent; border-bottom: 1px solid transparent;"></th>';
         html += '<th style="border-top: 1px solid transparent; border-bottom: 1px solid transparent;"></th>';
         html += '<th style="border-top: 1px solid transparent; border-bottom: 1px solid transparent;"></th>';
         html += '<th style="border-top: 1px solid transparent; border-bottom: 1px solid transparent;"></th>';
@@ -418,12 +424,14 @@ function consultar_fazenda() {
             var data_edi = dia+'/'+mes+'/'+ano+' '+hora;
             var total = total_fazenda[i];
             var cabha = cab_ha[i];
+            var kgha = kg_ha[i];
 
             if (descricao!='') {
                 html += '<tr id='+id+' style="cursor: pointer;" onclick="abrir_mapa_gados(this.id)">';
-                html += '<td width="40%" style="text-align: left; border-bottom: 1px solid #f0f3f5;">'+ descricao +'</td>';
-                html += '<td width="30%" style="text-align: center; border-bottom: 1px solid #f0f3f5;">'+ data_edi +'</td>';
-                html += '<td width="20%" style="text-align: right; border-bottom: 1px solid #f0f3f5;" class="fontes_mapa_ha">'+ cabha +'</td>';
+                html += '<td width="35%" style="text-align: left; border-bottom: 1px solid #f0f3f5;">'+ descricao +'</td>';
+                html += '<td width="25%" style="text-align: center; border-bottom: 1px solid #f0f3f5;">'+ data_edi +'</td>';
+                html += '<td width="15%" style="text-align: right; border-bottom: 1px solid #f0f3f5;" class="fontes_mapa_ha">'+ cabha +'</td>';
+                html += '<td width="15%" style="text-align: right; border-bottom: 1px solid #f0f3f5;" class="fontes_mapa_ha">'+ kgha +'</td>';
                 html += '<td width="10%" style="text-align: right; border-bottom: 1px solid #f0f3f5;" class="fontes_mapa_qtd">'+ total +'</td>';
                 html += '</tr>';
             }
