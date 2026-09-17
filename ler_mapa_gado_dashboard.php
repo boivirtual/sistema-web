@@ -139,7 +139,14 @@ foreach ($array_locais_usuario as $value) {
 				$cab_ha[$codigo_fazenda]=number_format($locacao,2,',','.');
 			}
 
-			$tbl_kg = mysqli_query($conector, "SELECT SUM(tbl_animal_ultimo_peso) AS kg_total FROM tbl_animais
+			$tbl_kg = mysqli_query($conector, "SELECT SUM(
+										        CASE
+										            WHEN tbl_animal_ultimo_peso IS NOT NULL AND tbl_animal_ultimo_peso<>0 THEN tbl_animal_ultimo_peso
+										            WHEN tbl_animal_peso_desmama IS NOT NULL AND tbl_animal_peso_desmama<>0 THEN tbl_animal_peso_desmama
+										            WHEN tbl_animal_primeiro_peso IS NOT NULL AND tbl_animal_primeiro_peso<>0 THEN tbl_animal_primeiro_peso
+										            ELSE 0
+										        END
+										    ) AS kg_total FROM tbl_animais
 										WHERE tbl_animal_codigo_fazenda='$codigo_fazenda' AND
 										      tbl_animal_ativo='S' AND
 										      tbl_animal_lixeira=0");
