@@ -723,9 +723,8 @@ $(document).ready(function(){
     // Editor de Rateio no lugar) — sem a flag abaixo, esse fechamento seria confundido
     // com "usuário terminou", disparando o reload e derrubando o editor ~1s depois de
     // abrir. _ctpRateioAbrindoEditor marca esse caso específico para ser ignorado.
-    var _ctpRateioReloadPendente = false;
-    var _ctpRateioAbrindoEditor  = false;
-
+    // (as duas flags são globais — ver topo do arquivo — porque o onclick inline do
+    // botão "Editar" roda fora deste closure)
     $(document).on('hidden.bs.modal', '#modal_rateio_ctp_dyn', function () {
         if (_ctpRateioAbrindoEditor) {
             _ctpRateioAbrindoEditor = false;
