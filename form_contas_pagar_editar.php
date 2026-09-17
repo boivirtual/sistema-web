@@ -878,9 +878,14 @@ while ($reg_conta_pag = mysqli_fetch_object($conta_pagamento)) {
 
   // Callback do Editor de Rateio (modal_editar_rateio.php) após salvar — reabre a
   // Distribuição do Rateio (toggleRateio) com os valores atualizados, igual à listagem.
-  _eratCallbackPosSalvar = function (id) {
-      toggleRateio(id);
-  };
+  // Precisa ser atribuído só depois que rateio_editor.js carregar (via rodape.php,
+  // abaixo) — esse arquivo declara "var _eratCallbackPosSalvar = null;" no topo, e
+  // se essa atribuição rodasse antes dele, seria sobrescrita de volta para null.
+  $(document).ready(function () {
+      _eratCallbackPosSalvar = function (id) {
+          toggleRateio(id);
+      };
+  });
 </script>
 
 <?php
