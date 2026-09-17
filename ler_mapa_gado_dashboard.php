@@ -152,13 +152,15 @@ $fazenda_id = implode("|", $fazenda_id);
 $desc_fazenda= implode("|", $desc_fazenda);
 $ultima_data= implode("|", $ultima_data);
 $cab_ha = implode("|", $cab_ha);
+$kg_ha = implode("|", $kg_ha);
 
 $valor[0]= $fazenda_id;
 $valor[1]= $desc_fazenda;
 $valor[2]= $total_fazenda;
 $valor[3]= $ultima_data;
 $valor[4]= $cab_ha;
+$valor[5]= $kg_ha;
 
-$str=$valor[0] . '<|>' . $valor[1] . '<|>' . $valor[2] . '<|>' . $valor[3] . '<|>' . $valor[4];
-echo $str; 
+$str=$valor[0] . '<|>' . $valor[1] . '<|>' . $valor[2] . '<|>' . $valor[3] . '<|>' . $valor[4] . '<|>' . $valor[5];
+echo $str;
 ?>
