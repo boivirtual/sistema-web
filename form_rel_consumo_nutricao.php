@@ -137,6 +137,21 @@
     $agrupar_produtos = isset($_SESSION['rel_nutricao_agrupar']) ? $_SESSION['rel_nutricao_agrupar'] : 'N';
     $controle_estoque = $_SESSION['controle_estoque'];
 
+    // Os filtros só são reaproveitados quando se volta da listagem (botão Voltar,
+    // que envia voltar=1). Ao entrar no programa pelo menu a tela abre limpa e
+    // como Por Período. As chaves da sessão não são apagadas porque local/datas
+    // são compartilhadas com o cadastro de nutrição.
+    if (!(isset($_REQUEST['voltar']) && $_REQUEST['voltar']=='1')) {
+        $tipo_rel         = 'P';
+        $data_inicial     = '';
+        $data_final       = '';
+        $local_nutricao   = '';
+        $array_produto    = '';
+        $array_lote       = '';
+        $array_pasto      = '';
+        $agrupar_produtos = 'N';
+    }
+
     $codigo_usuario = $_SESSION['id_usuario'];
 
     $tbl_usuario = "SELECT * FROM usuario WHERE id_usuario = '$codigo_usuario' AND 
