@@ -778,8 +778,17 @@ else {
                     $desc_score_anterior = isset($scores_cocho[$codigo_score]) ? $scores_cocho[$codigo_score] : '';
                 }
             }
-        } // Fim while 
+        } // Fim while
 
+    // Sem nenhum registro no filtro não há última linha para escrever (e
+    // $data_anterior continua 0, o que quebrava o DateTime e a média geral):
+    // mostra só o aviso.
+    if ($sem_registros) {
+        $linha++;
+        $spreadsheet->getActiveSheet()->mergeCells('A'.$linha.':H'.$linha);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $linha, 'Não existem registros para o filtro informado');
+    }
+    else {
         $data_bruta_impressa = $data_anterior;
         $data_anterior = new DateTime($data_anterior);
         $data_nutricao_edi = $data_anterior->format('d/m/Y');
