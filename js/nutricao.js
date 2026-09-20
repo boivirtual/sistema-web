@@ -83,7 +83,11 @@ window.addEventListener("load", function(event) {
             $('.selectpicker').selectpicker('refresh');
             restaurar_selecao_filtro('#codigo_pasto', $('#restaura_pasto').val(), true);
         });
+    }
 
+    // Ajusta o layout ao tipo marcado mesmo sem fazenda escolhida (antes ficava
+    // dentro do if acima e, sem fazenda, o rádio e os campos ficavam divergentes).
+    if ($('input[name="tipo_rel"]').length) {
         if (tipo_periodo_lote=='P') {
             $('.descricao_lote').show();
             $('.um_lote').hide();
