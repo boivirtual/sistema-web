@@ -375,12 +375,16 @@
                     echo '<td width="30%"></td>';
                     echo '<td width="8%" align="center"></td>';
                     echo '<td width="8%" style="text-align: right;"></td>';
-                    echo '</tr>';  
+                    echo '</tr>';
+
+                    $linhas_impressas_p++;
                 }
-            }                      
+            }
         }
+
+        $sem_registros = ($linhas_impressas_p==0);
     }
-    else { 
+    else {
     // Tipo de relatório por apenas 1 lote (pode ser por periodo tambem)
         echo '<table class="table table-striped table-advance table-hover" id="tabela_nutricao_lote" style="font-size: 12px">';
                           
