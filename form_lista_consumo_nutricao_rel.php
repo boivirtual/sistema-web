@@ -692,6 +692,7 @@
 
         $media_geral = $total_consumo_cabeca_dia/$total_dias;
         $media_geral_edi = number_format($media_geral, 0, ",", ".");
+        } // fim if (!$sem_registros)
     }
 
     mysqli_close($conector);
