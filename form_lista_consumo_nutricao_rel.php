@@ -634,8 +634,11 @@
                     }
                 }
             }
-        } // Fim while 
+        } // Fim while
 
+        // Sem nenhum registro no filtro não há última linha para imprimir (e
+        // $data_anterior continua 0, o que quebrava o DateTime e a média geral).
+        if (!$sem_registros) {
         $data_bruta_impressa = $data_anterior;
         $data_anterior = new DateTime($data_anterior);
         $data_nutricao_edi = $data_anterior->format('d/m/Y');
