@@ -751,6 +751,21 @@
     echo '</thead>';
     echo '</table>';
 
+    $html_tabela = ob_get_clean();
+
+    if ($sem_registros) {
+        echo '
+            <div class="alert alert-info" style="margin-top: 15px; text-align: center;">
+                Não existem registros para o filtro informado
+            </div>
+            <script type="text/javascript">
+                $("#aguardar").modal("hide");
+            </script>';
+    }
+    else {
+        echo $html_tabela;
+    }
+
     function pega_descricao_pasto($conector, $local_filtro, $lote_anterior, $wpasto, $pasto_filtro) {
         $partes = explode("/", $lote_anterior);
 
