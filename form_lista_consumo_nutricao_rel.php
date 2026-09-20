@@ -969,6 +969,10 @@
             return;
         }
 
+        // Conta as linhas impressas pra saber se o filtro trouxe algum registro.
+        global $linhas_impressas_p;
+        $linhas_impressas_p += ($agrupar_produtos=='N') ? count($soma_por_produto) : 1;
+
         if ($agrupar_produtos=='N') {
             uasort($soma_por_produto, function($a, $b) {
                 return strcmp($a['descricao'], $b['descricao']);
