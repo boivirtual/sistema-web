@@ -599,6 +599,8 @@ else {
 
         $rs = mysqli_query($conector, $sql);
 
+        $sem_registros = (mysqli_num_rows($rs)==0);
+
         while ($reg_nut = mysqli_fetch_object($rs)){
             $codigo_nutricao_id = $reg_nut->tbl_nutricao_id;
             $codigo_local = $reg_nut->tbl_nutricao_codigo_local;
