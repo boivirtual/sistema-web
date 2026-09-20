@@ -549,10 +549,19 @@ if ($tipo_periodo_lote=='P') {
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $linha, $num_rows_animais);
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(4, $linha, utf8_encode($descricao_pasto));
             }
-        }                      
+        }
+    }
+
+    // Nenhuma linha escrita (o grid começa na linha 6): avisa que não há registros.
+    $sem_registros = ($linha==5);
+
+    if ($sem_registros) {
+        $linha++;
+        $spreadsheet->getActiveSheet()->mergeCells('A'.$linha.':H'.$linha);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $linha, 'Não existem registros para o filtro informado');
     }
 }
-else { 
+else {
     // Tipo de relatório por apenas 1 lote (pode ser por periodo tambem)
     $linha=4;
         $data_anterior = 0;
