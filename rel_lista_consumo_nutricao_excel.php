@@ -897,7 +897,7 @@ if ($tipo_periodo_lote=='P') {
 
     $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $linha, "Sem Nutrição no período");
 }
-else {
+else if (!$sem_registros) {
     $celulas = 'F3';
     $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT;
     $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
