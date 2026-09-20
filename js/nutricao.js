@@ -1333,7 +1333,7 @@ function voltar_relatorios() {
 
 function voltar_filtro() {
     var tipo_relatorio = $("#tipo_relatorio").val();
-    location.href='form_rel_consumo_nutricao.php?tipo='+tipo_relatorio;
+    location.href='form_rel_consumo_nutricao.php?tipo='+tipo_relatorio+'&voltar=1';
 }
 
 
