@@ -232,7 +232,16 @@
             </div>
         </div>';
 
-    if ($tipo_periodo_lote=='P') { 
+    // Captura o HTML da tabela para, se o filtro não trouxer nenhum registro,
+    // trocar a tabela vazia pela mensagem "Não existem registros..." (antes, no
+    // Por Lote, a ausência de registros causava erro fatal e a página parava de
+    // carregar — inclusive os scripts dos botões Voltar e Excel).
+    $sem_registros = false;
+    $linhas_impressas_p = 0;
+    $media_geral_edi = '';
+    ob_start();
+
+    if ($tipo_periodo_lote=='P') {
         // Tipo de relatório por Periodo pode ser por varios lotes
         echo '<table class="table table-striped table-advance table-hover" id="tabela_nutricao_periodo" width="100%" style="font-size: 12px; align:center;">';
 
