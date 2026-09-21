@@ -303,6 +303,7 @@ if ($num_rows!=0) {
                 $spreadsheet->getActiveSheet()->getStyle('E'.$linha)->applyFromArray($styleArray);
                 $spreadsheet->getActiveSheet()->getStyle('F'.$linha)->applyFromArray($styleArray);
                 $spreadsheet->getActiveSheet()->getStyle('G'.$linha)->applyFromArray($styleArray);
+                $spreadsheet->getActiveSheet()->getStyle('H'.$linha)->applyFromArray($styleArray);
 
                 $celulas = 'A'.$linha.':G'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setSize(8);
@@ -455,6 +456,7 @@ if ($num_rows!=0) {
                 $spreadsheet->getActiveSheet()->getStyle('E'.$linha)->applyFromArray($styleArray);
                 $spreadsheet->getActiveSheet()->getStyle('F'.$linha)->applyFromArray($styleArray);
                 $spreadsheet->getActiveSheet()->getStyle('G'.$linha)->applyFromArray($styleArray);
+                $spreadsheet->getActiveSheet()->getStyle('H'.$linha)->applyFromArray($styleArray);
 
                 $celulas = 'A'.$linha.':G'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setSize(8);
