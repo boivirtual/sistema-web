@@ -347,6 +347,11 @@ if ($num_rows!=0) {
                 if ($total_femeas!=0) {
                     $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(7, $linha, $total_femeas);
                 }
+
+                if (isset($kg_ha_pasto[$codigo_pasto])) {
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(8, $linha, $kg_ha_pasto[$codigo_pasto]);
+                    $spreadsheet->getActiveSheet()->getStyle('H'.$linha)->getNumberFormat()->setFormatCode('#,##0');
+                }
             }
         }
     }
@@ -499,6 +504,11 @@ if ($num_rows!=0) {
 
                 if ($total_femeas!=0) {
                     $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(7, $linha, $total_femeas);
+                }
+
+                if (isset($kg_ha_pasto[$codigo_pasto])) {
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(8, $linha, $kg_ha_pasto[$codigo_pasto]);
+                    $spreadsheet->getActiveSheet()->getStyle('H'.$linha)->getNumberFormat()->setFormatCode('#,##0');
                 }
             }
         }
