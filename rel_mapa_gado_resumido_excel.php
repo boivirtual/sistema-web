@@ -118,8 +118,8 @@ $styleHorizontalDotted = [
     ],
 ];
 
-$spreadsheet->getActiveSheet()->getStyle('A3:G3')->getFill()->setFillType(Fill::FILL_SOLID);
-$spreadsheet->getActiveSheet()->getStyle('A3:G3')->getFill()->getStartColor()->setARGB('DCDCDC');
+$spreadsheet->getActiveSheet()->getStyle('A3:H3')->getFill()->setFillType(Fill::FILL_SOLID);
+$spreadsheet->getActiveSheet()->getStyle('A3:H3')->getFill()->getStartColor()->setARGB('DCDCDC');
 $spreadsheet->getActiveSheet()->getStyle('A4:G4')->getFill()->setFillType(Fill::FILL_SOLID);
 $spreadsheet->getActiveSheet()->getStyle('A4:G4')->getFill()->getStartColor()->setARGB('C0C0C0');
 $spreadsheet->getActiveSheet()->getStyle('A5:G5')->getFill()->setFillType(Fill::FILL_SOLID);
@@ -127,7 +127,7 @@ $spreadsheet->getActiveSheet()->getStyle('A5:G5')->getFill()->getStartColor()->s
 
 $spreadsheet->getActiveSheet()->getStyle('A1:H1')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('A2:H2')->applyFromArray($styleArray);
-$spreadsheet->getActiveSheet()->getStyle('A3:G3')->applyFromArray($styleArray);
+$spreadsheet->getActiveSheet()->getStyle('A3:H3')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('A4:G4')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('A5:G5')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('A2')->applyFromArray($styleArray);
