@@ -85,10 +85,10 @@ $spreadsheet->setActiveSheetIndex(0)
 	->setCellValue("B2", $descricao_filtro);
 
 $spreadsheet->getActiveSheet()->getStyle('B2')->getFont()->setColor(new Color(Color::COLOR_GRAY));
-$spreadsheet->getActiveSheet()->getStyle('A1:O1')->getFont()->setSize(8);
-$spreadsheet->getActiveSheet()->getStyle('A2:O2')->getFont()->setSize(8);
+$spreadsheet->getActiveSheet()->getStyle('A1:P1')->getFont()->setSize(8);
+$spreadsheet->getActiveSheet()->getStyle('A2:P2')->getFont()->setSize(8);
 $spreadsheet->getActiveSheet()->getStyle('A3:B3')->getFont()->setSize(8);
-$spreadsheet->getActiveSheet()->getStyle('A4:O4')->getFont()->setSize(8);
+$spreadsheet->getActiveSheet()->getStyle('A4:P4')->getFont()->setSize(8);
 $spreadsheet->getActiveSheet()->getStyle('A5:K5')->getFont()->setSize(8);
 
 $spreadsheet->getActiveSheet()->setShowGridlines(true);
