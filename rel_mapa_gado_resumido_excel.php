@@ -64,14 +64,15 @@ $spreadsheet->getActiveSheet()
 */
 
 $spreadsheet->getActiveSheet()->mergeCells('A1:E1');
-$spreadsheet->getActiveSheet()->mergeCells('F1:G1');
-$spreadsheet->getActiveSheet()->mergeCells('B2:G2');
-$spreadsheet->getActiveSheet()->mergeCells('B3:G3');
+$spreadsheet->getActiveSheet()->mergeCells('F1:H1');
+$spreadsheet->getActiveSheet()->mergeCells('B2:H2');
+$spreadsheet->getActiveSheet()->mergeCells('B3:H3');
 $spreadsheet->getActiveSheet()->mergeCells('A4:A5');
 $spreadsheet->getActiveSheet()->mergeCells('B4:B5');
 $spreadsheet->getActiveSheet()->mergeCells('F4:G4');
 $spreadsheet->getActiveSheet()->mergeCells('C4:C5');
 $spreadsheet->getActiveSheet()->mergeCells('D4:D5');
+$spreadsheet->getActiveSheet()->mergeCells('H4:H5');
 
 $spreadsheet->setActiveSheetIndex(0)
     ->setCellValue('A1', $nome_relatorio)
