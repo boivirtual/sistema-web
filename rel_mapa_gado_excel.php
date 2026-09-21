@@ -850,11 +850,11 @@ $celulas = 'B'.$linha.':P'.$linha;
 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setSize(8);
 
-$celulas = 'A'.$linha.':O'.$linha;
+$celulas = 'A'.$linha.':P'.$linha;
 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->setFillType(Fill::FILL_SOLID);
 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFill()->getStartColor()->setARGB('DCDCDC');
 
-$celulas = 'L'.$linha.':O'.$linha;
+$celulas = 'L'.$linha.':P'.$linha;
 $spreadsheet->getActiveSheet()->mergeCells($celulas);
 $spreadsheet->getActiveSheet()->getStyle($celulas)->applyFromArray($styleArray);
 
