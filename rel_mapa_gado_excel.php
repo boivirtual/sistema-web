@@ -428,7 +428,7 @@ if ($num_rows!=0) {
 
                 $celulas = 'B'.$linha.':P'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-                $celulas = 'O'.$linha;
+                $celulas = 'O'.$linha.':P'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 
                 $celulas = 'L'.$linha;
@@ -692,7 +692,7 @@ if ($num_rows!=0) {
                 $celulas = 'B'.$linha.':P'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-                $celulas = 'O'.$linha;
+                $celulas = 'O'.$linha.':P'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 
                 $celulas = 'L'.$linha;
