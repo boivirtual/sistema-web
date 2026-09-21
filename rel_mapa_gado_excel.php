@@ -139,6 +139,7 @@ $spreadsheet->getActiveSheet()->getStyle('L4')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('M4')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('N4')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('O4')->applyFromArray($styleArray);
+$spreadsheet->getActiveSheet()->getStyle('P4')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('A5')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('B5')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('C5')->applyFromArray($styleArray);
