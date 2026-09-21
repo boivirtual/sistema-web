@@ -598,6 +598,7 @@
                     echo '<td width="6%" align="center">'.$id_lote.'</td>';
                     echo '<td width="8%" align="center">'.$dias_pasto.'</td>';
                     echo '<td width="10%" class="text-center">'.$area.'</td>';
+                    echo '<td width="8%" class="text-center">'.(isset($kg_ha_pasto[$codigo_pasto]) ? number_format($kg_ha_pasto[$codigo_pasto], 0, ',', '.') : '').'</td>';
                     echo '</tr>';
                 }
             }
