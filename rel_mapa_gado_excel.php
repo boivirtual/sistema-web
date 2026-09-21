@@ -506,6 +506,11 @@ if ($num_rows!=0) {
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(14, $linha, $dias_pasto);
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(15, $linha, $area);
 
+                if (isset($kg_ha_pasto[$codigo_pasto])) {
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(16, $linha, $kg_ha_pasto[$codigo_pasto]);
+                    $spreadsheet->getActiveSheet()->getStyle('P'.$linha)->getNumberFormat()->setFormatCode('#,##0');
+                }
+
             }
         }
     }
@@ -766,6 +771,11 @@ if ($num_rows!=0) {
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(13, $linha, $id_lote);
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(14, $linha, $dias_pasto);
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(15, $linha, $area);
+
+                if (isset($kg_ha_pasto[$codigo_pasto])) {
+                    $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(16, $linha, $kg_ha_pasto[$codigo_pasto]);
+                    $spreadsheet->getActiveSheet()->getStyle('P'.$linha)->getNumberFormat()->setFormatCode('#,##0');
+                }
 
             }
         }
