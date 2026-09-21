@@ -63,9 +63,9 @@ $spreadsheet->getActiveSheet()
     ->setPaperSize(PageSetup::PAPERSIZE_A4);
 
 $spreadsheet->getActiveSheet()->mergeCells('A1:M1');
-$spreadsheet->getActiveSheet()->mergeCells('N1:O1');
-$spreadsheet->getActiveSheet()->mergeCells('B2:O2');
-$spreadsheet->getActiveSheet()->mergeCells('B3:O3');
+$spreadsheet->getActiveSheet()->mergeCells('N1:P1');
+$spreadsheet->getActiveSheet()->mergeCells('B2:P2');
+$spreadsheet->getActiveSheet()->mergeCells('B3:P3');
 $spreadsheet->getActiveSheet()->mergeCells('A4:A5');
 $spreadsheet->getActiveSheet()->mergeCells('C4:D4');
 $spreadsheet->getActiveSheet()->mergeCells('E4:F4');
