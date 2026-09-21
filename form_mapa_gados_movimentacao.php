@@ -205,10 +205,64 @@
         }
     }
         
+    // Lotação em Kg/Ha do pasto: qtd de animais do pasto por categoria x peso médio
+    // (arredondado) da categoria na fazenda, dividido pela área do pasto.
+    $lotacao_kg_ha = '';
+    $area_pasto = (float) $reg_pasto->tbl_pasto_area;
+
+    if ($total_animais_pasto > 0 && $area_pasto > 0) {
+        $peso_medio_categoria = [];
+
+        $rs_peso_medio = mysqli_query($conector, "SELECT c.tab_codigo_categoria_idade AS categoria,
+                   SUM(a.peso) / COUNT(*) AS peso_medio
+            FROM (SELECT GREATEST(TIMESTAMPDIFF(MONTH, COALESCE(tbl_animal_data_nascimento, CURDATE()), CURDATE()), 0) AS idade,
+                         CASE
+                             WHEN tbl_animal_ultimo_peso IS NOT NULL AND tbl_animal_ultimo_peso<>0 THEN tbl_animal_ultimo_peso
+                             WHEN tbl_animal_peso_desmama IS NOT NULL AND tbl_animal_peso_desmama<>0 THEN tbl_animal_peso_desmama
+                             WHEN tbl_animal_primeiro_peso IS NOT NULL AND tbl_animal_primeiro_peso<>0 THEN tbl_animal_primeiro_peso
+                             ELSE 0
+                         END AS peso
+                  FROM tbl_animais
+                  WHERE tbl_animal_codigo_fazenda='$local_id' AND
+                        tbl_animal_ativo='S' AND
+                        tbl_animal_lixeira=0) a
+            INNER JOIN tabela_categoria_idade c
+                    ON a.idade BETWEEN c.tab_categoria_idade_de AND c.tab_categoria_idade_ate AND
+                       c.tab_registro_lixeira_categoria_idade='0'
+            GROUP BY c.tab_codigo_categoria_idade");
+
+        while ($reg_peso_medio = mysqli_fetch_object($rs_peso_medio)) {
+            $peso_medio_categoria[$reg_peso_medio->categoria] = round($reg_peso_medio->peso_medio);
+        }
+
+        $rs_qtd_pasto = mysqli_query($conector, "SELECT c.tab_codigo_categoria_idade AS categoria,
+                   COUNT(*) AS qtd
+            FROM (SELECT GREATEST(TIMESTAMPDIFF(MONTH, COALESCE(tbl_animal_pasto_nascimento, CURDATE()), CURDATE()), 0) AS idade
+                  FROM tbl_animal_pasto
+                  WHERE tbl_animal_pasto_id='$pasto_id' AND
+                        tbl_animal_pasto_situacao='A') p
+            INNER JOIN tabela_categoria_idade c
+                    ON p.idade BETWEEN c.tab_categoria_idade_de AND c.tab_categoria_idade_ate AND
+                       c.tab_registro_lixeira_categoria_idade='0'
+            GROUP BY c.tab_codigo_categoria_idade");
+
+        $kg_total_pasto = 0;
+
+        while ($reg_qtd_pasto = mysqli_fetch_object($rs_qtd_pasto)) {
+            if (isset($peso_medio_categoria[$reg_qtd_pasto->categoria])) {
+                $kg_total_pasto += $peso_medio_categoria[$reg_qtd_pasto->categoria] * $reg_qtd_pasto->qtd;
+            }
+        }
+
+        if ($kg_total_pasto > 0) {
+            $lotacao_kg_ha = number_format($kg_total_pasto / $area_pasto, 2, ',', '.');
+        }
+    }
+
     $semem = mysqli_query($conector, "select * from tbl_semem
         inner join tabela_racas
                 on tab_codigo_raca=tbl_semem_codigo_raca
-             where tbl_semem_lixeira=0"); 
+             where tbl_semem_lixeira=0");
 
     $pai = mysqli_query($conector, "select * from tbl_animais 
         inner join tabela_racas
