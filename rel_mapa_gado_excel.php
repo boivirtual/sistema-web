@@ -155,6 +155,7 @@ $spreadsheet->getActiveSheet()->getStyle('L5')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('M5')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('N5')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('O5')->applyFromArray($styleArray);
+$spreadsheet->getActiveSheet()->getStyle('P5')->applyFromArray($styleArray);
 
 $spreadsheet->setActiveSheetIndex(0)
     ->setCellValue("A3","Total Animais")
