@@ -420,6 +420,7 @@ if ($num_rows!=0) {
                 $spreadsheet->getActiveSheet()->getStyle('M'.$linha)->applyFromArray($styleArray);
                 $spreadsheet->getActiveSheet()->getStyle('N'.$linha)->applyFromArray($styleArray);
                 $spreadsheet->getActiveSheet()->getStyle('O'.$linha)->applyFromArray($styleArray);
+                $spreadsheet->getActiveSheet()->getStyle('P'.$linha)->applyFromArray($styleArray);
 
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
                 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setSize(8);
@@ -682,6 +683,7 @@ if ($num_rows!=0) {
                 $spreadsheet->getActiveSheet()->getStyle('M'.$linha)->applyFromArray($styleArray);
                 $spreadsheet->getActiveSheet()->getStyle('N'.$linha)->applyFromArray($styleArray);
                 $spreadsheet->getActiveSheet()->getStyle('O'.$linha)->applyFromArray($styleArray);
+                $spreadsheet->getActiveSheet()->getStyle('P'.$linha)->applyFromArray($styleArray);
 
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
                 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setSize(8);
