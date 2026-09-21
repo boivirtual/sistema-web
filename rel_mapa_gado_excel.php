@@ -426,7 +426,7 @@ if ($num_rows!=0) {
                 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setSize(8);
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $linha, $descricao);
 
-                $celulas = 'B'.$linha.':O'.$linha;
+                $celulas = 'B'.$linha.':P'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
                 $celulas = 'O'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
@@ -689,7 +689,7 @@ if ($num_rows!=0) {
                 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setSize(8);
                 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $linha, $descricao);
 
-                $celulas = 'B'.$linha.':O'.$linha;
+                $celulas = 'B'.$linha.':P'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
                 $celulas = 'O'.$linha;
@@ -836,7 +836,7 @@ $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizon
 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setSize(8);
 $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $linha, 'Totais Animais');
 
-$celulas = 'B'.$linha.':O'.$linha;
+$celulas = 'B'.$linha.':P'.$linha;
 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setSize(8);
 
