@@ -188,6 +188,7 @@ $spreadsheet->getActiveSheet()->getStyle('D5:G5')->getAlignment()->setVertical($
 $spreadsheet->getActiveSheet()->getStyle('B3') ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
 $spreadsheet->getActiveSheet()->getStyle('D4')->getAlignment()->setWrapText(true);
+$spreadsheet->getActiveSheet()->getStyle('H4')->getAlignment()->setWrapText(true);
 
 $spreadsheet->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 $spreadsheet->getActiveSheet()->getStyle('F1') ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
