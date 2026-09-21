@@ -255,7 +255,7 @@
         }
 
         if ($kg_total_pasto > 0) {
-            $lotacao_kg_ha = number_format($kg_total_pasto / $area_pasto, 2, ',', '.');
+            $lotacao_kg_ha = number_format(round($kg_total_pasto / $area_pasto), 0, ',', '.');
         }
     }
 
