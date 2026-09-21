@@ -201,8 +201,11 @@ $linha=5;
 $total_animais = 0;
 $ultima_data = '0000-00-00';
 
+include_once __DIR__ . '/funcao_kg_ha_pasto.php';
+$kg_ha_pasto = calcular_kg_ha_pastos($conector, $local);
+
 $tbl_pasto= mysqli_query($conector, "SELECT * FROM tbl_pasto
-    WHERE tbl_pasto_codigo_local='$local' AND 
+    WHERE tbl_pasto_codigo_local='$local' AND
           tbl_pasto_modulo=999");
 
 $num_rows = mysqli_num_rows($tbl_pasto);
