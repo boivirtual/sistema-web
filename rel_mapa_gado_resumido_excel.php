@@ -81,7 +81,7 @@ $spreadsheet->setActiveSheetIndex(0)
 	->setCellValue("B2", $descricao_filtro);
 
 $spreadsheet->getActiveSheet()->getStyle('B2')->getFont()->setColor(new Color(Color::COLOR_GRAY));
-$spreadsheet->getActiveSheet()->getStyle('A1:G1')->getFont()->setSize(8);
+$spreadsheet->getActiveSheet()->getStyle('A1:H1')->getFont()->setSize(8);
 $spreadsheet->getActiveSheet()->getStyle('A2:G2')->getFont()->setSize(8);
 $spreadsheet->getActiveSheet()->getStyle('A3')->getFont()->setSize(8);
 $spreadsheet->getActiveSheet()->getStyle('B3')->getFont()->setSize(12);
@@ -125,7 +125,7 @@ $spreadsheet->getActiveSheet()->getStyle('A4:G4')->getFill()->getStartColor()->s
 $spreadsheet->getActiveSheet()->getStyle('A5:G5')->getFill()->setFillType(Fill::FILL_SOLID);
 $spreadsheet->getActiveSheet()->getStyle('A5:G5')->getFill()->getStartColor()->setARGB('C0C0C0');
 
-$spreadsheet->getActiveSheet()->getStyle('A1:G1')->applyFromArray($styleArray);
+$spreadsheet->getActiveSheet()->getStyle('A1:H1')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('A2:G2')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('A3:G3')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('A4:G4')->applyFromArray($styleArray);
