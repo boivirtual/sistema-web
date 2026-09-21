@@ -259,6 +259,7 @@
                     echo '<td width="6%" align="center">'.$total_bezerros.'</td>';
                     echo '<td width="8%" align="center">'.$total_machos.'</td>';
                     echo '<td width="8%" class="text-center">'.$total_femeas.'</td>';
+                    echo '<td width="8%" class="text-center">'.(isset($kg_ha_pasto[$codigo_pasto]) ? number_format($kg_ha_pasto[$codigo_pasto], 0, ',', '.') : '').'</td>';
                     echo '</tr>';
                 }
             }
@@ -378,6 +379,7 @@
                     echo '<td width="6%" align="center">'.$total_bezerros.'</td>';
                     echo '<td width="8%" align="center">'.$total_machos.'</td>';
                     echo '<td width="8%" class="text-center">'.$total_femeas.'</td>';
+                    echo '<td width="8%" class="text-center">'.(isset($kg_ha_pasto[$codigo_pasto]) ? number_format($kg_ha_pasto[$codigo_pasto], 0, ',', '.') : '').'</td>';
                     echo '</tr>';
                 }
             }
