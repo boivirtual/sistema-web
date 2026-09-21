@@ -508,7 +508,7 @@ if ($num_rows!=0) {
 }
 
 for ($row = 6; $row <= $linha; $row++) {
-    $celulas = 'A'.$row.':G'.$row;
+    $celulas = 'A'.$row.':H'.$row;
 
     $spreadsheet->getActiveSheet()->getStyle($celulas)->applyFromArray($styleHorizontalDotted);
 
