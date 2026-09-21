@@ -158,6 +158,7 @@ $spreadsheet->setActiveSheetIndex(0)
     ->setCellValue("D4","Dias de Permanência")
     ->setCellValue("E4","Bezerros")
     ->setCellValue("F4","Adultos")
+    ->setCellValue("H4","Kg/Ha")
     
     ->setCellValue("E5","Macho/Fêmea")
     ->setCellValue("F5","Macho")
