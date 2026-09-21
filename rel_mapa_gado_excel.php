@@ -207,12 +207,12 @@ $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
 $spreadsheet->getActiveSheet()->getStyle('A4')->getAlignment()->setVertical($align);
 
 $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER;
-$spreadsheet->getActiveSheet()->getStyle('K4:O4')->getAlignment()->setHorizontal($align);
+$spreadsheet->getActiveSheet()->getStyle('K4:P4')->getAlignment()->setHorizontal($align);
 
 $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
-$spreadsheet->getActiveSheet()->getStyle('K4:O4')->getAlignment()->setVertical($align);
+$spreadsheet->getActiveSheet()->getStyle('K4:P4')->getAlignment()->setVertical($align);
 
-$spreadsheet->getActiveSheet()->getStyle('K4:O4')->getAlignment()->setWrapText(true);
+$spreadsheet->getActiveSheet()->getStyle('K4:P4')->getAlignment()->setWrapText(true);
 
 $spreadsheet->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 $spreadsheet->getActiveSheet()->getStyle('N1') ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
