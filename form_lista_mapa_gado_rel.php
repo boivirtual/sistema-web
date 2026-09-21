@@ -662,7 +662,7 @@
     echo '<td width="5%" class="text-center">'.$total_cat_macho['005'].'</td>';
     echo '<td width="5%" class="text-center">'.$total_cat_femea['005'].'</td>';
     echo '<td width="5%" class="text-center">'.$total_animais.'</td>';
-    echo '<td colspan="4"></td>';
+    echo '<td colspan="5"></td>';
     echo '</tr>';
 
 ?>
