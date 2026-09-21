@@ -305,7 +305,7 @@ if ($num_rows!=0) {
                 $spreadsheet->getActiveSheet()->getStyle('G'.$linha)->applyFromArray($styleArray);
                 $spreadsheet->getActiveSheet()->getStyle('H'.$linha)->applyFromArray($styleArray);
 
-                $celulas = 'A'.$linha.':G'.$linha;
+                $celulas = 'A'.$linha.':H'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setSize(8);
 
                 $celulas = 'A'.$linha;
@@ -314,10 +314,10 @@ if ($num_rows!=0) {
                 $celulas = 'B'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-                $celulas = 'D'.$linha.':G'.$linha;
+                $celulas = 'D'.$linha.':H'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-                $celulas = 'A'.$linha.':G'.$linha;
+                $celulas = 'A'.$linha.':H'.$linha;
                 $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER;
                 $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
                 $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
@@ -458,7 +458,7 @@ if ($num_rows!=0) {
                 $spreadsheet->getActiveSheet()->getStyle('G'.$linha)->applyFromArray($styleArray);
                 $spreadsheet->getActiveSheet()->getStyle('H'.$linha)->applyFromArray($styleArray);
 
-                $celulas = 'A'.$linha.':G'.$linha;
+                $celulas = 'A'.$linha.':H'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setSize(8);
 
                 $celulas = 'A'.$linha;
@@ -467,10 +467,10 @@ if ($num_rows!=0) {
                 $celulas = 'B'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-                $celulas = 'D'.$linha.':G'.$linha;
+                $celulas = 'D'.$linha.':H'.$linha;
                 $spreadsheet->getActiveSheet()->getStyle($celulas) ->getAlignment() ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-                $celulas = 'A'.$linha.':G'.$linha;
+                $celulas = 'A'.$linha.':H'.$linha;
                 $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER;
                 $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal($align);
                 $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
@@ -527,7 +527,7 @@ $styleHorizontalDotted = [
     ],
 ];
 
-$celulas = 'A'.$linha.':G'.$linha;
+$celulas = 'A'.$linha.':H'.$linha;
 $spreadsheet->getActiveSheet()->getStyle($celulas)->applyFromArray($styleHorizontalDotted);
 
 $date = new DateTime( $ultima_data );
