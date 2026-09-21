@@ -171,7 +171,7 @@ $spreadsheet->setActiveSheetIndex(0)
     ->setCellValue("M4","Lote")
     ->setCellValue("N4","Dias de Permanência")
     ->setCellValue("O4","Área do Pasto (ha)")
-    ->setCellValue("P4","Kg/Ha")
+    ->setCellValue("P4","Lotação\nKg/Ha")
 
     ->setCellValue("B5","Macho/Fêmea")
     ->setCellValue("C5","Macho")
