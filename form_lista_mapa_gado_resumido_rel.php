@@ -397,6 +397,7 @@
         <th rowspan="2" style="vertical-align: middle;text-align:center;">Dias de Permanência</th>
         <th style="text-align: center;">Bezerros</th>
         <th colspan="2" style="text-align: center;">Adultos</th>
+        <th rowspan="2" style="vertical-align: middle;text-align:center;">Kg/Ha</th>
     </tr>
     <tr>
         <th style="text-align: center;">Macho/Fêmea</th>
