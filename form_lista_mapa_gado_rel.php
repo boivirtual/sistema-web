@@ -146,6 +146,9 @@
     $total_cat_M_F = 0;
     $ultima_data = '0000-00-00';
 
+    include_once "funcao_kg_ha_pasto.php";
+    $kg_ha_pasto = calcular_kg_ha_pastos($conector, $local);
+
     for ($i = 1; $i <=5; $i++) {
         $j = str_pad($i, 3, "0", STR_PAD_LEFT);
         $total_cat_macho[$j]=0;
