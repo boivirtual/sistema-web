@@ -684,6 +684,7 @@
         <th rowspan="2" style="vertical-align: middle;text-align:center;"> Lote</th>
         <th rowspan="2" style="vertical-align: middle;text-align:center;">Dias de Permanência</th>
         <th rowspan="2" style="vertical-align: middle;text-align:center;">Área Pasto (ha)</th>
+        <th rowspan="2" style="vertical-align: middle;text-align:center;">Kg/Ha</th>
     </tr>
     <tr>
         <th>Macho/Fêmea</th>
