@@ -76,6 +76,7 @@ $spreadsheet->getActiveSheet()->mergeCells('L4:L5');
 $spreadsheet->getActiveSheet()->mergeCells('N4:N5');
 $spreadsheet->getActiveSheet()->mergeCells('M4:M5');
 $spreadsheet->getActiveSheet()->mergeCells('O4:O5');
+$spreadsheet->getActiveSheet()->mergeCells('P4:P5');
 
 $spreadsheet->setActiveSheetIndex(0)
     ->setCellValue('A1', $nome_relatorio)
