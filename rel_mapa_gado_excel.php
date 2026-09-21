@@ -110,18 +110,18 @@ $styleArray = [
     ],
 ];
 
-$spreadsheet->getActiveSheet()->getStyle('A3:O3')->getFill()->setFillType(Fill::FILL_SOLID);
-$spreadsheet->getActiveSheet()->getStyle('A3:O3')->getFill()->getStartColor()->setARGB('DCDCDC');
-$spreadsheet->getActiveSheet()->getStyle('A4:O4')->getFill()->setFillType(Fill::FILL_SOLID);
-$spreadsheet->getActiveSheet()->getStyle('A4:O4')->getFill()->getStartColor()->setARGB('C0C0C0');
-$spreadsheet->getActiveSheet()->getStyle('A5:O5')->getFill()->setFillType(Fill::FILL_SOLID);
-$spreadsheet->getActiveSheet()->getStyle('A5:O5')->getFill()->getStartColor()->setARGB('C0C0C0');
+$spreadsheet->getActiveSheet()->getStyle('A3:P3')->getFill()->setFillType(Fill::FILL_SOLID);
+$spreadsheet->getActiveSheet()->getStyle('A3:P3')->getFill()->getStartColor()->setARGB('DCDCDC');
+$spreadsheet->getActiveSheet()->getStyle('A4:P4')->getFill()->setFillType(Fill::FILL_SOLID);
+$spreadsheet->getActiveSheet()->getStyle('A4:P4')->getFill()->getStartColor()->setARGB('C0C0C0');
+$spreadsheet->getActiveSheet()->getStyle('A5:P5')->getFill()->setFillType(Fill::FILL_SOLID);
+$spreadsheet->getActiveSheet()->getStyle('A5:P5')->getFill()->getStartColor()->setARGB('C0C0C0');
 
-$spreadsheet->getActiveSheet()->getStyle('A1:O1')->applyFromArray($styleArray);
-$spreadsheet->getActiveSheet()->getStyle('A2:O2')->applyFromArray($styleArray);
-$spreadsheet->getActiveSheet()->getStyle('A3:O3')->applyFromArray($styleArray);
-$spreadsheet->getActiveSheet()->getStyle('A4:O4')->applyFromArray($styleArray);
-$spreadsheet->getActiveSheet()->getStyle('A5:O5')->applyFromArray($styleArray);
+$spreadsheet->getActiveSheet()->getStyle('A1:P1')->applyFromArray($styleArray);
+$spreadsheet->getActiveSheet()->getStyle('A2:P2')->applyFromArray($styleArray);
+$spreadsheet->getActiveSheet()->getStyle('A3:P3')->applyFromArray($styleArray);
+$spreadsheet->getActiveSheet()->getStyle('A4:P4')->applyFromArray($styleArray);
+$spreadsheet->getActiveSheet()->getStyle('A5:P5')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('A2')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('A3')->applyFromArray($styleArray);
 $spreadsheet->getActiveSheet()->getStyle('A4')->applyFromArray($styleArray);
