@@ -1,0 +1,2140 @@
+﻿<?php
+// Captura todo output: warnings/notices do PHP ficam no buffer e são descartados
+// antes do JSON, garantindo resposta limpa para o AJAX.
+ob_start(function($buffer) {
+    $pos = strpos($buffer, '{');
+    return $pos !== false ? substr($buffer, $pos) : $buffer;
+});
+
+	 function sonumero($str) {
+		return preg_replace("/[^0-9]/", "", $str);
+	}
+
+    /**
+     * Salva rateio da conta (rateio_json) na tbl_ctp_rateio.
+     * $ctp_id = ID do registro principal em contas_pagar (1ª parcela ou único)
+     */
+    function salvar_rateio($ctp_id, $conector, $nomeusuario, $data_sistema) {
+        $json = isset($_POST['rateio_json']) ? trim($_POST['rateio_json']) : '';
+        if (empty($json) || $json === 'null' || $json === '[]') return;
+
+        $locais = json_decode($json, true);
+        if (!is_array($locais) || count($locais) === 0) return;
+
+        $usuario_esc = mysqli_real_escape_string($conector, $nomeusuario);
+
+        foreach ($locais as $loc) {
+            $rc_cod_local  = (int)($loc['id'] ?? 0);
+            $rc_nom_local  = mysqli_real_escape_string($conector, $loc['nome'] ?? '');
+            $rc_perc_local = (float)($loc['perc'] ?? 0);
+            $rc_val_local  = (float)($loc['valor'] ?? 0);
+
+            $ccs = $loc['ccs'] ?? [];
+            if (count($ccs) === 0) {
+                // local sem CCs — grava linha só com local
+                $sql = "INSERT INTO tbl_ctp_rateio
+                            (rc_ctp_id, rc_codigo_local, rc_nome_local, rc_perc_local, rc_valor_local,
+                             rc_incluido_em, rc_incluido_por)
+                        VALUES
+                            ('$ctp_id','$rc_cod_local','$rc_nom_local','$rc_perc_local','$rc_val_local',
+                             '$data_sistema','$usuario_esc')";
+                mysqli_query($conector, $sql);
+                continue;
+            }
+
+            foreach ($ccs as $cc) {
+                $rc_cod_cc  = mysqli_real_escape_string($conector, $cc['id'] ?? '');
+                $rc_nom_cc  = mysqli_real_escape_string($conector, $cc['nome'] ?? '');
+                $rc_perc_cc = (float)($cc['perc'] ?? 0);
+                $rc_val_cc  = (float)($cc['valor'] ?? 0);
+
+                $contas = $cc['contas'] ?? [];
+                if (count($contas) === 0) {
+                    $sql = "INSERT INTO tbl_ctp_rateio
+                                (rc_ctp_id, rc_codigo_local, rc_nome_local, rc_perc_local, rc_valor_local,
+                                 rc_codigo_cc, rc_nome_cc, rc_perc_cc, rc_valor_cc,
+                                 rc_incluido_em, rc_incluido_por)
+                            VALUES
+                                ('$ctp_id','$rc_cod_local','$rc_nom_local','$rc_perc_local','$rc_val_local',
+                                 '$rc_cod_cc','$rc_nom_cc','$rc_perc_cc','$rc_val_cc',
+                                 '$data_sistema','$usuario_esc')";
+                    mysqli_query($conector, $sql);
+                    continue;
+                }
+
+                foreach ($contas as $ct) {
+                    $rc_cod_conta  = mysqli_real_escape_string($conector, $ct['id'] ?? '');
+                    $rc_nom_conta  = mysqli_real_escape_string($conector, $ct['nome'] ?? '');
+                    $rc_perc_conta = (float)($ct['perc'] ?? 0);
+                    $rc_val_conta  = (float)($ct['valor'] ?? 0);
+
+                    $sql = "INSERT INTO tbl_ctp_rateio
+                                (rc_ctp_id, rc_codigo_local, rc_nome_local, rc_perc_local, rc_valor_local,
+                                 rc_codigo_cc, rc_nome_cc, rc_perc_cc, rc_valor_cc,
+                                 rc_codigo_conta, rc_nome_conta, rc_perc_conta, rc_valor_conta,
+                                 rc_incluido_em, rc_incluido_por)
+                            VALUES
+                                ('$ctp_id','$rc_cod_local','$rc_nom_local','$rc_perc_local','$rc_val_local',
+                                 '$rc_cod_cc','$rc_nom_cc','$rc_perc_cc','$rc_val_cc',
+                                 '$rc_cod_conta','$rc_nom_conta','$rc_perc_conta','$rc_val_conta',
+                                 '$data_sistema','$usuario_esc')";
+                    mysqli_query($conector, $sql);
+                }
+            }
+        }
+    }
+
+    /**
+     * Recalcula os valores do rateio (tbl_ctp_rateio) de uma conta com parcela única,
+     * mantendo os percentuais já gravados e aplicando-os sobre o novo valor total.
+     * A diferença de arredondamento é ajustada na última linha, para a soma bater
+     * exatamente com o novo total. Retorna true se havia rateio e foi recalculado,
+     * false se a conta não tem rateio.
+     */
+    function recalcular_valores_rateio($ctp_id, $novo_total, $conector) {
+        $rs = mysqli_query($conector, "SELECT rc_id, rc_codigo_local, rc_codigo_cc, rc_codigo_conta,
+                                               rc_perc_local, rc_perc_cc, rc_perc_conta
+                                        FROM tbl_ctp_rateio
+                                        WHERE rc_ctp_id = '$ctp_id'
+                                        ORDER BY rc_id ASC");
+        if (!$rs || mysqli_num_rows($rs) === 0) return false;
+
+        $linhas = [];
+        while ($row = mysqli_fetch_object($rs)) { $linhas[] = $row; }
+        $qtd = count($linhas);
+
+        // Valor de cada linha pelo nível mais profundo preenchido (conta > cc > local),
+        // usando o percentual já gravado — mesma convenção do editor manual de rateio.
+        $soma_folhas = 0.00;
+        foreach ($linhas as $row) {
+            if (!empty($row->rc_codigo_conta)) {
+                $row->folha_perc = (float) $row->rc_perc_conta;
+            } elseif (!empty($row->rc_codigo_cc)) {
+                $row->folha_perc = (float) $row->rc_perc_cc;
+            } else {
+                $row->folha_perc = (float) $row->rc_perc_local;
+            }
+            $row->folha_valor = round(($row->folha_perc / 100) * $novo_total, 2);
+            $soma_folhas += $row->folha_valor;
+        }
+
+        // Ajusta a diferença de arredondamento na última linha
+        $diferenca = round($novo_total - $soma_folhas, 2);
+        if ($diferenca != 0) {
+            $linhas[$qtd - 1]->folha_valor = round($linhas[$qtd - 1]->folha_valor + $diferenca, 2);
+        }
+
+        // Agrega por local e por local+CC, para os totais em rc_valor_local/rc_valor_cc
+        // ficarem consistentes com a soma das linhas-filha (mesma lógica do rateio_editor.js)
+        $totais_local = [];
+        $totais_cc    = [];
+        foreach ($linhas as $row) {
+            $totais_local[$row->rc_codigo_local] = ($totais_local[$row->rc_codigo_local] ?? 0) + $row->folha_valor;
+            if (!empty($row->rc_codigo_cc)) {
+                $chave_cc = $row->rc_codigo_local . '|' . $row->rc_codigo_cc;
+                $totais_cc[$chave_cc] = ($totais_cc[$chave_cc] ?? 0) + $row->folha_valor;
+            }
+        }
+
+        foreach ($linhas as $row) {
+            $novo_valor_local = round($totais_local[$row->rc_codigo_local], 2);
+            $sets = ["rc_valor_local = '$novo_valor_local'"];
+
+            if (!empty($row->rc_codigo_cc)) {
+                $chave_cc      = $row->rc_codigo_local . '|' . $row->rc_codigo_cc;
+                $novo_valor_cc = round($totais_cc[$chave_cc], 2);
+                $sets[] = "rc_valor_cc = '$novo_valor_cc'";
+            }
+
+            if (!empty($row->rc_codigo_conta)) {
+                $sets[] = "rc_valor_conta = '$row->folha_valor'";
+            }
+
+            mysqli_query($conector, "UPDATE tbl_ctp_rateio SET " . implode(', ', $sets) . " WHERE rc_id = '$row->rc_id'");
+        }
+
+        return true;
+    }
+
+    /**
+     * Recalcula o rateio de uma conta PARCELADA (2+ parcelas) quando o valor de
+     * uma das parcelas é alterado. O rateio é gravado uma única vez, vinculado à
+     * primeira parcela do documento, e representa o total de todas as parcelas —
+     * por isso é preciso somar todas as parcelas-irmãs (mesmo ctp_numero_doc +
+     * ctp_codigo_fornecedor, com ctp_codigo_fazenda IS NULL) usando o novo valor
+     * no lugar do valor antigo da parcela editada, achar a primeira parcela do
+     * grupo (onde o rateio está gravado) e recalcular em cima do novo total.
+     * Retorna true se havia rateio e foi recalculado, false caso contrário.
+     */
+    function recalcular_rateio_documento($ctp_id_editado, $novo_total_parcela, $numero_doc, $codigo_fornecedor, $conector) {
+        $numero_doc_esc        = mysqli_real_escape_string($conector, $numero_doc);
+        $codigo_fornecedor_esc = mysqli_real_escape_string($conector, $codigo_fornecedor);
+
+        // Exclui ocorrências de "Repetir Lançamento" (ctp_grupo_repeticao preenchido) —
+        // elas têm rateio próprio e nunca devem entrar nessa soma, mesmo que por
+        // coincidência compartilhem ctp_numero_doc/ctp_codigo_fornecedor com este documento
+        $rs = mysqli_query($conector, "SELECT ctp_id, ctp_valor_parcela, ctp_valor_juros, ctp_valor_desconto, ctp_outro_valor
+                                        FROM contas_pagar
+                                        WHERE ctp_numero_doc = '$numero_doc_esc'
+                                          AND ctp_codigo_fornecedor = '$codigo_fornecedor_esc'
+                                          AND ctp_codigo_fazenda IS NULL
+                                          AND (ctp_grupo_repeticao IS NULL OR ctp_grupo_repeticao = '')");
+        if (!$rs || mysqli_num_rows($rs) === 0) return false;
+
+        // $novo_total_parcela já é o total desta parcela (parcela + juros + outros -
+        // desconto) com os valores novos — mesma fórmula usada em get_rateio_aceite.php
+        $primeiro_ctp_id = null;
+        $novo_total      = 0.00;
+        while ($row = mysqli_fetch_object($rs)) {
+            $id_linha = (int) $row->ctp_id;
+            if ($id_linha === (int) $ctp_id_editado) {
+                $total_linha = $novo_total_parcela;
+            } else {
+                $total_linha = (float) $row->ctp_valor_parcela + (float) $row->ctp_valor_juros
+                             + (float) $row->ctp_outro_valor  - (float) $row->ctp_valor_desconto;
+            }
+            $novo_total += $total_linha;
+            if ($primeiro_ctp_id === null || $id_linha < $primeiro_ctp_id) {
+                $primeiro_ctp_id = $id_linha;
+            }
+        }
+
+        return recalcular_valores_rateio($primeiro_ctp_id, round($novo_total, 2), $conector);
+    }
+
+    /**
+     * Processa arquivos e links de anexo, gravando em tbl_ctp_anexos.
+     * Links usam anexo_arquivo = URL e anexo_tamanho = 0.
+     * Retorna array com erros (vazio = sucesso).
+     */
+    function salvar_anexos($ctp_id, $conector, $nomeusuario, $data_sistema) {
+        $erros       = [];
+        $usuario_esc = mysqli_real_escape_string($conector, $nomeusuario);
+
+        // ── Arquivos ──
+        if (!empty($_FILES['anexo']['name'][0])) {
+            $pasta = __DIR__ . '/uploads/ctp/';
+            if (!is_dir($pasta)) { mkdir($pasta, 0755, true); }
+
+            $total = count($_FILES['anexo']['name']);
+            for ($i = 0; $i < $total; $i++) {
+                if ($_FILES['anexo']['error'][$i] !== UPLOAD_ERR_OK) continue;
+                if (empty($_FILES['anexo']['name'][$i])) continue;
+
+                $nome_original = basename($_FILES['anexo']['name'][$i]);
+                $ext           = strtolower(pathinfo($nome_original, PATHINFO_EXTENSION));
+                $nome_arquivo  = uniqid('ctp_', true) . '.' . $ext;
+                $destino       = $pasta . $nome_arquivo;
+                $tamanho       = $_FILES['anexo']['size'][$i];
+
+                if (!move_uploaded_file($_FILES['anexo']['tmp_name'][$i], $destino)) {
+                    $erros[] = 'Erro ao mover arquivo: ' . $nome_original;
+                    continue;
+                }
+
+                $nome_esc = mysqli_real_escape_string($conector, $nome_original);
+                $arq_esc  = mysqli_real_escape_string($conector, $nome_arquivo);
+
+                $sql = "INSERT INTO tbl_ctp_anexos
+                            (anexo_ctp_id, anexo_nome, anexo_arquivo, anexo_tamanho, anexo_incluido_em, anexo_incluido_por)
+                        VALUES
+                            ('$ctp_id', '$nome_esc', '$arq_esc', '$tamanho', '$data_sistema', '$usuario_esc')";
+                if (!mysqli_query($conector, $sql)) {
+                    $erros[] = 'Erro BD anexo: ' . mysqli_error($conector);
+                }
+            }
+        }
+
+        // ── Links ──
+        $links_url  = isset($_POST['anexo_link_url'])  ? $_POST['anexo_link_url']  : [];
+        $links_desc = isset($_POST['anexo_link_desc']) ? $_POST['anexo_link_desc'] : [];
+        foreach ($links_url as $i => $url) {
+            $url = trim($url);
+            if (empty($url)) continue;
+            $desc = trim($links_desc[$i] ?? '');
+            if (empty($desc)) $desc = $url;
+
+            // Valida URL básica
+            if (!filter_var($url, FILTER_VALIDATE_URL)) {
+                $erros[] = 'URL inválida: ' . htmlspecialchars($url);
+                continue;
+            }
+
+            $url_esc  = mysqli_real_escape_string($conector, $url);
+            $desc_esc = mysqli_real_escape_string($conector, $desc);
+
+            $sql = "INSERT INTO tbl_ctp_anexos
+                        (anexo_ctp_id, anexo_nome, anexo_arquivo, anexo_tamanho, anexo_incluido_em, anexo_incluido_por)
+                    VALUES
+                        ('$ctp_id', '$desc_esc', '$url_esc', 0, '$data_sistema', '$usuario_esc')";
+            if (!mysqli_query($conector, $sql)) {
+                $erros[] = 'Erro BD link: ' . mysqli_error($conector);
+            }
+        }
+
+        return $erros;
+    }
+
+	$quantidade_prazos = 0;
+	$descricao_compra = $_POST['descricao_compra'];
+	$codigo_for= $_POST['codigo_cli_for'];
+	$nome_for= $_POST['nome_for'];
+	$codigo_conta = $_POST['codigo_conta'];
+	$tipo_operacao = $_POST['tipo_operacao'];
+	$codigo_c_custo = $_POST['codigo_cc'];
+
+    // Quando rateio está ativo, Local/Conta Contábil/CC não são obrigatórios
+    // (rateio_json: novo rateio sendo definido na inclusão; rateio_existente: rateio já gravado, mantido na edição)
+    $tem_rateio = (!empty($_POST['rateio_json']) && $_POST['rateio_json'] !== '[]' && $_POST['rateio_json'] !== 'null')
+        || (!empty($_POST['rateio_existente']) && $_POST['rateio_existente'] === '1');
+
+	if (!isset($_POST['codigo_fazenda'])) {
+		$codigo_local = '';
+	}
+	else {
+		$codigo_local = $_POST['codigo_fazenda'];
+	}
+
+	if ($tipo_operacao==1){
+		$numero_doc = $_POST['number_doc'];
+		$tipo_documento = $_POST['tipo_doc'];
+		$data_emissao = $_POST['data_emissao'];
+		$data_vencimento = $_POST['data_vencimento'];
+		$vlr_primeira_parcela = $_POST['vlr_primeira_parcela'];
+	    if(isset($_POST['pago'])) { $pago = 'S'; } else { $pago = 'N'; }
+		$data_pagamento = $_POST['data_pagamento'];
+		$vlr_pagamento = $_POST['vlr_pagamento'];
+		$vlr_juros = $_POST['vlr_juros'];
+		$vlr_desconto = $_POST['vlr_desconto'];
+		$codigo_forma_pag = $_POST['codigo_forma_rec'];
+		$codigo_forma_pag_parc = $_POST['codigo_forma_parc'];
+		$numero_cheque = $_POST['number_cheque'];
+		$qtd_parcelas = $_POST['qtd_parcelas'];
+		$vlr_parcela_fixa = $_POST['vlr_parcela_fixa'];
+		$frequencia = $_POST['frequencia'];
+		$data_inicial = $_POST['data_inicial'];
+
+    	$array_valores_fazendas = $_POST['array_fazendas'];
+
+    	/*if ($array_valores_fazendas!='') {
+			$codigo_c_custo = implode(', ', $codigo_c_custo);
+		    $array_ccusto = explode(",", $codigo_c_custo);
+		    $quantidade_centro_custos = count($array_ccusto);
+    	}
+    	else {
+			$codigo_c_custo = implode(', ', $codigo_c_custo);
+		    $array_ccusto = explode(",", $codigo_c_custo);
+    		$quantidade_centro_custos = 1;
+    		$codigo_c_custo = $array_ccusto[0];
+		}*/
+
+    	if ($array_valores_fazendas!='') {
+			$codigo_local = implode(', ', $codigo_local);
+		    $array_fazenda = explode(",", $codigo_local);
+		    $quantidade_fazendas = count($array_fazenda);
+    	}
+    	else {
+			$codigo_local = implode(', ', $codigo_local);
+		    $array_fazenda = explode(",", $codigo_local);
+    		$quantidade_fazendas = 1;
+    		$codigo_local = $array_fazenda[0];
+		}
+	}
+	else {
+		$ctp_id = $_POST['ctp_id'];
+		$numero_doc = $_POST['doc_editar'];
+		$tipo_documento = $_POST['tipo_doc'];
+		$codigo_forma_pag = $_POST['codigo_forma_rec'];
+		$numero_cheque = $_POST['cheque_editar'];
+		$data_emissao = $_POST['data_emissao'];
+		$data_vencimento = $_POST['data_vencimento'];
+		$vlr_parcela = $_POST['vlr_parcela'];
+		$vlr_juros = $_POST['vlr_juros'];
+		$desc_juros = $_POST['desc_juros'];
+		$vlr_desconto = $_POST['vlr_desconto'];
+		$desc_desconto = $_POST['desc_desconto'];
+		$vlr_acrescimo  = $_POST['vlr_acrescimo'];
+		$desc_acrescimo = $_POST['desc_acrescimo'];
+		$observacoes    = isset($_POST['observacoes']) ? $_POST['observacoes'] : '';
+	}
+
+	$data_sistema = date("Y-m-d H:i:s");
+
+	@ session_start(); 
+	$nomeusuario = $_SESSION['nome_usuario'];
+
+	include "conecta_mysql.inc";
+
+	// Número do documento: usa o informado pelo usuário ou deixa em branco
+
+    // =========================================================
+    // NOVO SISTEMA — parcelamento dinâmico (parcelamento >= 0)
+    // =========================================================
+    $parcelamento    = isset($_POST['parcelamento'])   ? intval($_POST['parcelamento'])   : -1;
+    $rep_ocorrencias = isset($_POST['rep_ocorrencias']) ? intval($_POST['rep_ocorrencias']) : 0;
+
+    // Quando repetição está ativa (rep_ocorrencias >= 2), pula o bloco de parcelamento
+    if ($tipo_operacao == 1 && $parcelamento >= 0 && $rep_ocorrencias < 2) {
+
+        // --- Leitura dos campos do novo form ---
+        $data_emissao_n   = isset($_POST['data_emissao'])   ? mysqli_real_escape_string($conector, $_POST['data_emissao'])   : '';
+        $numero_doc_n     = isset($_POST['number_doc'])      ? mysqli_real_escape_string($conector, $_POST['number_doc'])     : '';
+        $descricao_n      = mysqli_real_escape_string($conector, $descricao_compra);
+        $codigo_for_n     = mysqli_real_escape_string($conector, $codigo_for);
+        $codigo_conta_n   = mysqli_real_escape_string($conector, $codigo_conta);
+        $codigo_ccusto_n  = isset($_POST['codigo_cc']) ? mysqli_real_escape_string($conector, $_POST['codigo_cc']) : '';
+        $observacoes_n    = isset($_POST['observacoes']) ? mysqli_real_escape_string($conector, $_POST['observacoes']) : '';
+
+        // Se alguma parcela (ou a conta à vista) vier marcada como Paga e o Número do
+        // Documento estiver vazio, gera um número automaticamente — mesma regra da baixa.
+        // Só ocorre de fato para Recibo: para os demais tipos o front-end já exige que o
+        // usuário digite o número antes de confirmar.
+        if (empty($numero_doc_n)) {
+            $tem_pago_n = isset($_POST['pago']);
+            if (!$tem_pago_n && isset($_POST['parcela']) && is_array($_POST['parcela'])) {
+                foreach ($_POST['parcela'] as $parc_chk) {
+                    if (isset($parc_chk['pago'])) { $tem_pago_n = true; break; }
+                }
+            }
+            if ($tem_pago_n) {
+                do {
+                    $numero_doc_n = sonumero(date('y/m/d')) . substr(mt_rand(), 0, 4);
+                    $rs_chk_doc = mysqli_query($conector, "SELECT COUNT(*) c FROM contas_pagar WHERE ctp_numero_doc='$numero_doc_n' AND ctp_codigo_fornecedor='$codigo_for_n'");
+                } while (mysqli_fetch_assoc($rs_chk_doc)['c'] > 0);
+            }
+        }
+
+        // Resolve local (fazenda) — pode ser array
+        $cod_local_raw = isset($_POST['codigo_fazenda']) ? $_POST['codigo_fazenda'] : [];
+        if (!is_array($cod_local_raw)) $cod_local_raw = [$cod_local_raw];
+
+        // Resolve array_fazendas (rateio)
+        $array_valores_fazendas_n = isset($_POST['array_fazendas']) ? $_POST['array_fazendas'] : '';
+
+        if ($array_valores_fazendas_n != '') {
+            $codigo_local_str = implode(', ', $cod_local_raw);
+            $array_fazenda_n  = explode(',', $codigo_local_str);
+            $qtd_fazendas_n   = count($array_fazenda_n);
+        } else {
+            $codigo_local_str = implode(', ', $cod_local_raw);
+            $array_fazenda_n  = explode(',', $codigo_local_str);
+            $qtd_fazendas_n   = 1;
+            $codigo_local_str = trim($array_fazenda_n[0]);
+        }
+
+        // Quando rateio ativo: local/conta/cc do campo simples são ignorados;
+        // os locais reais vêm do rateio_json
+        if ($tem_rateio) {
+            $codigo_local_str = '';
+            $codigo_ccusto_n  = '';
+            $codigo_conta_n   = '';
+        }
+
+        // Monta array de locais do rateio para uso nos CASOS A e B
+        $rateio_locais = []; // [ ['id'=>..., 'nome'=>..., 'valor'=>..., 'perc'=>...], ... ]
+        if ($tem_rateio) {
+            $rj = json_decode($_POST['rateio_json'], true);
+            if (is_array($rj)) {
+                foreach ($rj as $loc) {
+                    $rateio_locais[] = [
+                        'id'    => mysqli_real_escape_string($conector, $loc['id']   ?? ''),
+                        'nome'  => mysqli_real_escape_string($conector, $loc['nome'] ?? ''),
+                        'valor' => (float)($loc['valor'] ?? 0),
+                        'perc'  => (float)($loc['perc']  ?? 0),
+                    ];
+                }
+            }
+        }
+
+        // Resolve nome do fornecedor
+        if ($codigo_for_n != '999999999') {
+            $rs_for = mysqli_query($conector, "SELECT tbl_pessoa_nome FROM tbl_pessoa WHERE tbl_pessoa_id='$codigo_for_n'");
+            $row_for = mysqli_fetch_object($rs_for);
+            $razao_n = $row_for ? mysqli_real_escape_string($conector, $row_for->tbl_pessoa_nome) : '';
+        } else {
+            $razao_n = isset($_POST['nome_for']) ? mysqli_real_escape_string($conector, $_POST['nome_for']) : '';
+        }
+
+        // Valor total
+        $vlr_total_n = isset($_POST['vlr_primeira_parcela']) ? str_replace(',', '.', str_replace('.', '', $_POST['vlr_primeira_parcela'])) : 0;
+        $vlr_total_n = floatval($vlr_total_n);
+
+        // --- Validações comuns (ordem: Fornecedor, Emissão, Descrição, Valor,
+        //     Local, Centro de Custos e Código Contábil só quando sem rateio) ---
+        if (empty($codigo_for_n)) {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Informe o Fornecedor.'));
+            mysqli_close($conector); exit;
+        }
+        if (empty($data_emissao_n)) {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Informe a Data de Emissão.'));
+            mysqli_close($conector); exit;
+        }
+        if (empty($descricao_n)) {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Informe a Descrição da Compra.'));
+            mysqli_close($conector); exit;
+        }
+        if ($vlr_total_n <= 0) {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Informe o Valor.'));
+            mysqli_close($conector); exit;
+        }
+        if (!$tem_rateio && (empty($codigo_local_str) || $codigo_local_str == '000000000')) {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Informe o Local.'));
+            mysqli_close($conector); exit;
+        }
+        if (!$tem_rateio && empty($codigo_ccusto_n)) {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Informe o Centro de Custos.'));
+            mysqli_close($conector); exit;
+        }
+        if (!$tem_rateio && (empty($codigo_conta_n) || $codigo_conta_n == '0000000')) {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Informe o Código Contábil.'));
+            mysqli_close($conector); exit;
+        }
+
+        // ---- FUNÇÃO AUXILIAR: insere um registro na tabela contas_pagar ----
+        $insere_parcela = function(
+            $numero_doc, $codigo_for, $numero_parcela, $tipo_doc, $razao,
+            $qtd_total_parcelas, $data_emissao, $data_vencimento, $vlr_parcela,
+            $codigo_local, $codigo_ccusto, $codigo_conta, $conta_pagamento,
+            $descricao, $observacoes, $nomeusuario, $data_sistema, $conector
+        ) {
+            // Campos opcionais: NULL quando vazio
+            $sql_local  = ($codigo_local  === null || $codigo_local  === '') ? 'NULL' : "'$codigo_local'";
+            $sql_ccusto = ($codigo_ccusto === null || $codigo_ccusto === '') ? 'NULL' : "'$codigo_ccusto'";
+            $sql_conta  = ($codigo_conta  === null || $codigo_conta  === '') ? 'NULL' : "'$codigo_conta'";
+
+            $sql = "INSERT INTO contas_pagar (
+                ctp_numero_doc, ctp_codigo_fornecedor, ctp_parcela,
+                ctp_tipo_documento, ctp_nome_fornecedor, ctp_numero_documento,
+                ctp_qtd_parcelas, ctp_data_emissao, ctp_data_vencimento,
+                ctp_valor_parcela, ctp_valor_desconto, ctp_descricao_valor_desconto,
+                ctp_valor_juros, ctp_descricao_valor_juros,
+                ctp_outro_valor, ctp_descricao_outro_valor,
+                ctp_situacao, ctp_previsao_despesas, ctp_agendamento,
+                ctp_data_agendamento, ctp_valor_total_agendamento, ctp_numero_agendamento,
+                ctp_codigo_fazenda, ctp_codigo_centro_custos, ctp_codigo_conta,
+                ctp_codigo_banco, ctp_numero_cheque, ctp_conta_pagamento,
+                ctp_aceite, ctp_data_aceite, ctp_usuario_aceite,
+                ctp_incluido_em, ctp_incluido_por,
+                ctp_alterado_em, ctp_alterado_por,
+                ctp_descricao_compra, ctp_observacoes
+            ) VALUES (
+                '$numero_doc', '$codigo_for', '$numero_parcela',
+                '$tipo_doc', '$razao', '$numero_doc',
+                '$qtd_total_parcelas', '$data_emissao', '$data_vencimento',
+                '$vlr_parcela', 0.00, null,
+                0.00, null,
+                null, null,
+                '', null, null,
+                null, null, null,
+                $sql_local, $sql_ccusto, $sql_conta,
+                null, null, '$conta_pagamento',
+                '', null, null,
+                '$data_sistema', '$nomeusuario',
+                null, null,
+                '$descricao', '$observacoes'
+            )";
+            return mysqli_query($conector, $sql);
+        };
+
+        // =====================================================
+        // CASO A: À Vista (parcelamento == 0)
+        // =====================================================
+        if ($parcelamento == 0) {
+            $data_vencimento_n = isset($_POST['data_vencimento']) ? mysqli_real_escape_string($conector, $_POST['data_vencimento']) : '';
+            $banco_n           = isset($_POST['codigo_forma_rec']) ? intval($_POST['codigo_forma_rec']) : 0;
+            $tipo_doc_n        = isset($_POST['tipo_doc']) ? mysqli_real_escape_string($conector, $_POST['tipo_doc']) : '00';
+            $pago_n            = isset($_POST['pago']) ? 'S' : 'N';
+            // Dados do pagamento (quando Pago marcado)
+            $pago_dt_pag_n   = (!empty($_POST['pago_data_pagamento']))
+                                ? mysqli_real_escape_string($conector, $_POST['pago_data_pagamento'])
+                                : $data_vencimento_n;
+            $pago_desconto_n = (!empty($_POST['pago_desconto']))
+                                ? floatval(str_replace(',', '.', str_replace('.', '', $_POST['pago_desconto'])))
+                                : 0;
+            $pago_juros_n    = (!empty($_POST['pago_juros']))
+                                ? floatval(str_replace(',', '.', str_replace('.', '', $_POST['pago_juros'])))
+                                : 0;
+            $pago_vlr_pago_n = (!empty($_POST['pago_valor_pago']))
+                                ? floatval(str_replace(',', '.', str_replace('.', '', $_POST['pago_valor_pago'])))
+                                : $vlr_total_n;
+
+            if (empty($data_vencimento_n)) {
+                header('Content-type: application/json');
+                echo json_encode(array('error' => true, 'message' => 'Informe a Data de Vencimento.'));
+                mysqli_close($conector); exit;
+            }
+            if ($banco_n == 0) {
+                header('Content-type: application/json');
+                echo json_encode(array('error' => true, 'message' => 'Informe o Banco/Conta Pagamento.'));
+                mysqli_close($conector); exit;
+            }
+
+            if ($tem_rateio && count($rateio_locais) > 0) {
+                // Com rateio: 1 registro com valor total e ctp_codigo_fazenda = NULL
+                $ok = $insere_parcela(
+                    $numero_doc_n, $codigo_for_n, 1, $tipo_doc_n, $razao_n,
+                    1, $data_emissao_n, $data_vencimento_n, $vlr_total_n,
+                    null, null, null, $banco_n,
+                    $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
+                );
+                if (!$ok) {
+                    header('Content-type: application/json');
+                    echo json_encode(array('error' => true, 'message' => 'Erro ao gravar: ' . mysqli_error($conector)));
+                    mysqli_close($conector); exit;
+                }
+                $novo_id = mysqli_insert_id($conector);
+                $primeiro_id_n = $novo_id;
+                salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                salvar_rateio($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                if ($pago_n == 'S') {
+                    $novo_id_fmt = str_pad($novo_id, 9, '0', STR_PAD_LEFT);
+                    $hist = mysqli_real_escape_string($conector, 'Pag total do doc para: ' . $razao_n);
+                    mysqli_query($conector, "INSERT INTO baixa_contas_pagar (bcp_id, bcp_numero_id, bcp_codigo_fornecedor, bcp_parcela, bcp_sequencia_pagamento, bcp_nome_fornecedor, bcp_numero_documento, bcp_data_pagamento, bcp_valor_pagamento, bcp_situacao, bcp_data_aceite, bcp_usuario_aceite, bcp_numero_agendamento, bcp_historico_pagamento) VALUES ('$novo_id_fmt','$numero_doc_n','$codigo_for_n',1,1,'$razao_n','$numero_doc_n','$pago_dt_pag_n','$pago_vlr_pago_n','P','$data_sistema','$nomeusuario',null,'$hist')");
+                    mysqli_query($conector, "UPDATE contas_pagar SET ctp_situacao='P', ctp_valor_desconto='$pago_desconto_n', ctp_valor_juros='$pago_juros_n' WHERE ctp_id='$novo_id'");
+                }
+            } elseif ($qtd_fazendas_n == 1) {
+                // Única fazenda sem rateio
+                $cod_loc_esc = mysqli_real_escape_string($conector, trim($codigo_local_str));
+                $ok = $insere_parcela(
+                    $numero_doc_n, $codigo_for_n, 1, $tipo_doc_n, $razao_n,
+                    1, $data_emissao_n, $data_vencimento_n, $vlr_total_n,
+                    $cod_loc_esc, $codigo_ccusto_n, $codigo_conta_n, $banco_n,
+                    $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
+                );
+                if (!$ok) {
+                    header('Content-type: application/json');
+                    echo json_encode(array('error' => true, 'message' => 'Erro ao gravar: ' . mysqli_error($conector)));
+                    mysqli_close($conector); exit;
+                }
+                $novo_id = mysqli_insert_id($conector);
+                salvar_anexos($novo_id, $conector, $nomeusuario, $data_sistema);
+                salvar_rateio($novo_id, $conector, $nomeusuario, $data_sistema);
+                if ($pago_n == 'S') {
+                    $novo_id_fmt = str_pad($novo_id, 9, '0', STR_PAD_LEFT);
+                    $hist = mysqli_real_escape_string($conector, 'Pag total do doc para: ' . $razao_n);
+                    mysqli_query($conector, "INSERT INTO baixa_contas_pagar (bcp_id, bcp_numero_id, bcp_codigo_fornecedor, bcp_parcela, bcp_sequencia_pagamento, bcp_nome_fornecedor, bcp_numero_documento, bcp_data_pagamento, bcp_valor_pagamento, bcp_situacao, bcp_data_aceite, bcp_usuario_aceite, bcp_numero_agendamento, bcp_historico_pagamento) VALUES ('$novo_id_fmt','$numero_doc_n','$codigo_for_n',1,1,'$razao_n','$numero_doc_n','$pago_dt_pag_n','$pago_vlr_pago_n','P','$data_sistema','$nomeusuario',null,'$hist')");
+                    mysqli_query($conector, "UPDATE contas_pagar SET ctp_situacao='P', ctp_valor_desconto='$pago_desconto_n', ctp_valor_juros='$pago_juros_n' WHERE ctp_id='$novo_id'");
+                }
+            } else {
+                // Múltiplas fazendas sem rateio (array_fazendas legado)
+                $primeiro_id_n = null;
+                $matriz_n = explode('<|>', $array_valores_fazendas_n);
+                foreach ($matriz_n as $item) {
+                    $partes = explode('|', $item);
+                    $loc_i  = mysqli_real_escape_string($conector, trim($partes[0]));
+                    $vlr_i  = floatval(str_replace(',', '.', str_replace('.', '', $partes[2])));
+                    $ok = $insere_parcela(
+                        $numero_doc_n, $codigo_for_n, 1, $tipo_doc_n, $razao_n,
+                        1, $data_emissao_n, $data_vencimento_n, $vlr_i,
+                        $loc_i, $codigo_ccusto_n, $codigo_conta_n, $banco_n,
+                        $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
+                    );
+                    if (!$ok) {
+                        header('Content-type: application/json');
+                        echo json_encode(array('error' => true, 'message' => 'Erro ao gravar fazenda: ' . mysqli_error($conector)));
+                        mysqli_close($conector); exit;
+                    }
+                    if ($primeiro_id_n === null) {
+                        $primeiro_id_n = mysqli_insert_id($conector);
+                        salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                        salvar_rateio($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                    }
+                }
+            }
+
+            header('Content-type: application/json');
+            echo json_encode(array('success' => true, 'message' => 'Conta incluída com sucesso.'));
+            mysqli_close($conector);
+            exit;
+        }
+
+        // =====================================================
+        // CASO B: Parcelado (parcelamento >= 1)
+        // =====================================================
+        $parcelas_post = isset($_POST['parcela']) ? $_POST['parcela'] : [];
+        if (count($parcelas_post) == 0) {
+            header('Content-type: application/json');
+            echo json_encode(array('error' => true, 'message' => 'Nenhuma parcela encontrada no envio.'));
+            mysqli_close($conector); exit;
+        }
+
+        $qtd_total_n  = count($parcelas_post);
+        $primeiro_id_n = null; // para vincular anexos na 1ª parcela
+
+        if ($tem_rateio && count($rateio_locais) > 0) {
+            // Com rateio: 1 registro por parcela com valor total e ctp_codigo_fazenda = NULL
+            foreach ($parcelas_post as $idx => $parc) {
+                $p_data    = mysqli_real_escape_string($conector, $parc['data_vencimento']);
+                $p_vlr     = floatval(str_replace(',', '.', str_replace('.', '', $parc['valor'])));
+                $p_banco   = intval($parc['banco_conta']);
+                $p_tdoc    = mysqli_real_escape_string($conector, $parc['tipo_doc']);
+                $p_pago    = isset($parc['pago']) ? 'S' : 'N';
+                $p_num     = $idx + 1;
+                $p_dt_pag  = (!empty($parc['data_pagamento'])) ? mysqli_real_escape_string($conector, $parc['data_pagamento']) : $p_data;
+                $p_desconto = (!empty($parc['desconto'])) ? floatval(str_replace(',', '.', str_replace('.', '', $parc['desconto']))) : 0;
+                $p_juros    = (!empty($parc['juros']))    ? floatval(str_replace(',', '.', str_replace('.', '', $parc['juros'])))    : 0;
+                $p_vlr_pago = (!empty($parc['valor_pago'])) ? floatval(str_replace(',', '.', str_replace('.', '', $parc['valor_pago']))) : $p_vlr;
+
+                $ok = $insere_parcela(
+                    $numero_doc_n, $codigo_for_n, $p_num, $p_tdoc, $razao_n,
+                    $qtd_total_n, $data_emissao_n, $p_data, $p_vlr,
+                    null, null, null, $p_banco,
+                    $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
+                );
+                if (!$ok) {
+                    header('Content-type: application/json');
+                    echo json_encode(array('error' => true, 'message' => 'Erro ao gravar parcela ' . $p_num . ': ' . mysqli_error($conector)));
+                    mysqli_close($conector); exit;
+                }
+                $novo_id = mysqli_insert_id($conector);
+                if ($primeiro_id_n === null) {
+                    $primeiro_id_n = $novo_id;
+                    salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                    salvar_rateio($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                }
+                if ($p_pago == 'S') {
+                    $novo_id_fmt = str_pad($novo_id, 9, '0', STR_PAD_LEFT);
+                    $hist = mysqli_real_escape_string($conector, 'Pag parcela ' . $p_num . ' para: ' . $razao_n);
+                    mysqli_query($conector, "INSERT INTO baixa_contas_pagar (bcp_id, bcp_numero_id, bcp_codigo_fornecedor, bcp_parcela, bcp_sequencia_pagamento, bcp_nome_fornecedor, bcp_numero_documento, bcp_data_pagamento, bcp_valor_pagamento, bcp_situacao, bcp_data_aceite, bcp_usuario_aceite, bcp_numero_agendamento, bcp_historico_pagamento) VALUES ('$novo_id_fmt','$numero_doc_n','$codigo_for_n','$p_num',1,'$razao_n','$numero_doc_n','$p_dt_pag','$p_vlr_pago','P','$data_sistema','$nomeusuario',null,'$hist')");
+                    mysqli_query($conector, "UPDATE contas_pagar SET ctp_situacao='P', ctp_valor_desconto='$p_desconto', ctp_valor_juros='$p_juros' WHERE ctp_id='$novo_id'");
+                }
+            }
+        } elseif ($qtd_fazendas_n == 1) {
+            // Única fazenda sem rateio
+            $cod_loc_esc = mysqli_real_escape_string($conector, trim($codigo_local_str));
+            foreach ($parcelas_post as $idx => $parc) {
+                $p_data    = mysqli_real_escape_string($conector, $parc['data_vencimento']);
+                $p_vlr     = floatval(str_replace(',', '.', str_replace('.', '', $parc['valor'])));
+                $p_banco   = intval($parc['banco_conta']);
+                $p_tdoc    = mysqli_real_escape_string($conector, $parc['tipo_doc']);
+                $p_pago    = isset($parc['pago']) ? 'S' : 'N';
+                $p_num     = $idx + 1;
+                $p_dt_pag  = (!empty($parc['data_pagamento'])) ? mysqli_real_escape_string($conector, $parc['data_pagamento']) : $p_data;
+                $p_desconto = (!empty($parc['desconto'])) ? floatval(str_replace(',', '.', str_replace('.', '', $parc['desconto']))) : 0;
+                $p_juros    = (!empty($parc['juros']))    ? floatval(str_replace(',', '.', str_replace('.', '', $parc['juros'])))    : 0;
+                $p_vlr_pago = (!empty($parc['valor_pago'])) ? floatval(str_replace(',', '.', str_replace('.', '', $parc['valor_pago']))) : $p_vlr;
+
+                $ok = $insere_parcela(
+                    $numero_doc_n, $codigo_for_n, $p_num, $p_tdoc, $razao_n,
+                    $qtd_total_n, $data_emissao_n, $p_data, $p_vlr,
+                    $cod_loc_esc, $codigo_ccusto_n, $codigo_conta_n, $p_banco,
+                    $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
+                );
+                if (!$ok) {
+                    header('Content-type: application/json');
+                    echo json_encode(array('error' => true, 'message' => 'Erro ao gravar parcela ' . $p_num . ': ' . mysqli_error($conector)));
+                    mysqli_close($conector); exit;
+                }
+                $novo_id = mysqli_insert_id($conector);
+                if ($primeiro_id_n === null) {
+                    $primeiro_id_n = $novo_id;
+                    salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                    salvar_rateio($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                }
+                if ($p_pago == 'S') {
+                    $novo_id_fmt = str_pad($novo_id, 9, '0', STR_PAD_LEFT);
+                    $hist = mysqli_real_escape_string($conector, 'Pag parcela ' . $p_num . ' para: ' . $razao_n);
+                    mysqli_query($conector, "INSERT INTO baixa_contas_pagar (bcp_id, bcp_numero_id, bcp_codigo_fornecedor, bcp_parcela, bcp_sequencia_pagamento, bcp_nome_fornecedor, bcp_numero_documento, bcp_data_pagamento, bcp_valor_pagamento, bcp_situacao, bcp_data_aceite, bcp_usuario_aceite, bcp_numero_agendamento, bcp_historico_pagamento) VALUES ('$novo_id_fmt','$numero_doc_n','$codigo_for_n','$p_num',1,'$razao_n','$numero_doc_n','$p_dt_pag','$p_vlr_pago','P','$data_sistema','$nomeusuario',null,'$hist')");
+                    mysqli_query($conector, "UPDATE contas_pagar SET ctp_situacao='P', ctp_valor_desconto='$p_desconto', ctp_valor_juros='$p_juros' WHERE ctp_id='$novo_id'");
+                }
+            }
+        } else {
+            // Múltiplas fazendas sem rateio (array_fazendas legado)
+            $matriz_n = explode('<|>', $array_valores_fazendas_n);
+            foreach ($matriz_n as $item) {
+                $partes = explode('|', $item);
+                $loc_i  = mysqli_real_escape_string($conector, trim($partes[0]));
+                $perc_i = floatval($partes[1]) / 100;
+                foreach ($parcelas_post as $idx => $parc) {
+                    $p_data  = mysqli_real_escape_string($conector, $parc['data_vencimento']);
+                    $p_vlr   = round(floatval(str_replace(',', '.', str_replace('.', '', $parc['valor']))) * $perc_i, 2);
+                    $p_banco = intval($parc['banco_conta']);
+                    $p_tdoc  = mysqli_real_escape_string($conector, $parc['tipo_doc']);
+                    $p_num   = $idx + 1;
+                    $ok = $insere_parcela(
+                        $numero_doc_n, $codigo_for_n, $p_num, $p_tdoc, $razao_n,
+                        $qtd_total_n, $data_emissao_n, $p_data, $p_vlr,
+                        $loc_i, $codigo_ccusto_n, $codigo_conta_n, $p_banco,
+                        $descricao_n, $observacoes_n, $nomeusuario, $data_sistema, $conector
+                    );
+                    if (!$ok) {
+                        header('Content-type: application/json');
+                        echo json_encode(array('error' => true, 'message' => 'Erro ao gravar parcela ' . $p_num . ' da fazenda: ' . mysqli_error($conector)));
+                        mysqli_close($conector); exit;
+                    }
+                    if ($primeiro_id_n === null) {
+                        $primeiro_id_n = mysqli_insert_id($conector);
+                        salvar_anexos($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                        salvar_rateio($primeiro_id_n, $conector, $nomeusuario, $data_sistema);
+                    }
+                }
+            }
+        }
+
+        header('Content-type: application/json');
+        echo json_encode(array('success' => true, 'message' => 'Conta incluída com sucesso.'));
+        mysqli_close($conector);
+        exit;
+
+    } // fim novo sistema parcelamento
+
+    // =========================================================
+    // NOVO SISTEMA — Repetir Lançamento (recorrência)
+    // =========================================================
+    if ($tipo_operacao == 1 && $rep_ocorrencias >= 2) {
+
+        // Leitura dos campos
+        $data_emissao_r   = isset($_POST['data_emissao'])       ? mysqli_real_escape_string($conector, $_POST['data_emissao'])       : '';
+        $descricao_r      = mysqli_real_escape_string($conector, $descricao_compra);
+        $codigo_for_r     = mysqli_real_escape_string($conector, $codigo_for);
+        $codigo_conta_r   = mysqli_real_escape_string($conector, $codigo_conta);
+        $codigo_ccusto_r  = isset($_POST['codigo_cc'])          ? mysqli_real_escape_string($conector, $_POST['codigo_cc'])          : '';
+        $observacoes_r    = isset($_POST['observacoes'])         ? mysqli_real_escape_string($conector, $_POST['observacoes'])        : '';
+        $numero_doc_r     = isset($_POST['number_doc'])          ? mysqli_real_escape_string($conector, $_POST['number_doc'])         : '';
+        $rep_cada         = max(1, intval($_POST['rep_cada']));
+        $rep_freq         = intval($_POST['rep_frequencia']);
+        $rep_cobrar_no    = isset($_POST['rep_cobrar_no'])       ? mysqli_real_escape_string($conector, $_POST['rep_cobrar_no'])      : 'dia_vencimento';
+        $rep_prim_venc    = isset($_POST['rep_primeiro_venc'])   ? mysqli_real_escape_string($conector, $_POST['rep_primeiro_venc'])  : '';
+        $rep_banco        = isset($_POST['rep_banco'])           ? intval($_POST['rep_banco'])                                        : 0;
+        $rep_tipodoc      = isset($_POST['rep_tipodoc'])         ? mysqli_real_escape_string($conector, $_POST['rep_tipodoc'])        : '00';
+
+        $vlr_r = isset($_POST['vlr_primeira_parcela'])
+            ? floatval(str_replace(',', '.', str_replace('.', '', $_POST['vlr_primeira_parcela'])))
+            : 0;
+
+        // Resolve local
+        $cod_local_raw_r = isset($_POST['codigo_fazenda']) ? $_POST['codigo_fazenda'] : [];
+        if (!is_array($cod_local_raw_r)) $cod_local_raw_r = [$cod_local_raw_r];
+        $codigo_local_r = trim(implode(', ', $cod_local_raw_r));
+        // Para repetição usamos sempre a primeira fazenda (simplificado)
+        $partes_local_r = explode(',', $codigo_local_r);
+        $codigo_local_r = mysqli_real_escape_string($conector, trim($partes_local_r[0]));
+
+        // Quando rateio ativo: local/conta/cc do campo simples são ignorados
+        if ($tem_rateio) {
+            $codigo_local_r  = '';
+            $codigo_ccusto_r = '';
+            $codigo_conta_r  = '';
+        }
+
+        // Monta locais do rateio para repetição
+        $rateio_locais_r = [];
+        if ($tem_rateio) {
+            $rj_r = json_decode($_POST['rateio_json'], true);
+            if (is_array($rj_r)) {
+                foreach ($rj_r as $loc) {
+                    $rateio_locais_r[] = [
+                        'id'    => mysqli_real_escape_string($conector, $loc['id']   ?? ''),
+                        'valor' => (float)($loc['valor'] ?? 0),
+                    ];
+                }
+            }
+        }
+
+        // Resolve nome do fornecedor
+        if ($codigo_for_r != '999999999') {
+            $rs_for_r = mysqli_query($conector, "SELECT tbl_pessoa_nome FROM tbl_pessoa WHERE tbl_pessoa_id='$codigo_for_r'");
+            $row_r = mysqli_fetch_object($rs_for_r);
+            $razao_r = $row_r ? mysqli_real_escape_string($conector, $row_r->tbl_pessoa_nome) : '';
+        } else {
+            $razao_r = isset($_POST['nome_for']) ? mysqli_real_escape_string($conector, $_POST['nome_for']) : '';
+        }
+
+        // Validações (ordem: Fornecedor, Emissão, Descrição, Valor, Local,
+        // Centro de Custos e Código Contábil só quando sem rateio, Vencimento, Banco/Conta Pagamento)
+        if (empty($codigo_for_r))    { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Fornecedor.']); mysqli_close($conector); exit; }
+        if (empty($data_emissao_r))  { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe a Data de Emissão.']); mysqli_close($conector); exit; }
+        if (empty($descricao_r))     { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe a Descrição da Compra.']); mysqli_close($conector); exit; }
+        if ($vlr_r <= 0)              { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Valor.']); mysqli_close($conector); exit; }
+        if (!$tem_rateio && empty($codigo_local_r))  { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Local.']); mysqli_close($conector); exit; }
+        if (!$tem_rateio && empty($codigo_ccusto_r)) { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Centro de Custos.']); mysqli_close($conector); exit; }
+        if (!$tem_rateio && (empty($codigo_conta_r) || $codigo_conta_r == '0000000')) { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Código Contábil.']); mysqli_close($conector); exit; }
+        if (empty($rep_prim_venc))   { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Vencimento.']); mysqli_close($conector); exit; }
+        if ($rep_banco == 0)          { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Banco/Conta Pagamento.']); mysqli_close($conector); exit; }
+
+        // UUID do grupo de repetição
+        $uuid_grupo = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            mt_rand(0,0xffff), mt_rand(0,0xffff), mt_rand(0,0xffff),
+            mt_rand(0,0x0fff)|0x4000, mt_rand(0,0x3fff)|0x8000,
+            mt_rand(0,0xffff), mt_rand(0,0xffff), mt_rand(0,0xffff));
+
+        // Dia base para cálculo de vencimento
+        $dia_base = null;
+        if ($rep_cobrar_no === 'dia_vencimento') {
+            $dia_base = (int)date('d', strtotime($rep_prim_venc));
+        } elseif ($rep_cobrar_no === 'dia_emissao') {
+            $dia_base = (int)date('d', strtotime($data_emissao_r));
+        } elseif ($rep_cobrar_no === 'ultimo') {
+            $dia_base = null; // calculado por mês
+        } else {
+            $dia_base = intval($rep_cobrar_no);
+        }
+
+        // Função local: avança data conforme frequência
+        $avancar_data = function($dateStr, $freq, $cada, $n) {
+            $total = $cada * $n;
+            $ts    = strtotime($dateStr);
+            switch ($freq) {
+                case 1: return date('Y-m-d', strtotime("+{$total} days",    $ts)); // diária
+                case 2: return date('Y-m-d', strtotime("+{$total} weeks",   $ts)); // semanal
+                case 3: return date('Y-m-d', strtotime("+" . ($total*15) . " days", $ts)); // quinzenal
+                case 4: return date('Y-m-d', strtotime("+{$total} months",  $ts)); // mensal
+                case 5: return date('Y-m-d', strtotime("+" . ($total*2) . " months", $ts)); // bimestral
+                case 6: return date('Y-m-d', strtotime("+" . ($total*3) . " months", $ts)); // trimestral
+                case 7: return date('Y-m-d', strtotime("+" . ($total*6) . " months", $ts)); // semestral
+                case 8: return date('Y-m-d', strtotime("+" . ($total*12) . " months", $ts)); // anual
+                default: return $dateStr;
+            }
+        };
+
+        $ajustar_dia = function($dateStr, $dia_base, $cobrar_no) {
+            if ($cobrar_no === 'ultimo') {
+                return date('Y-m-t', strtotime($dateStr)); // último dia do mês
+            }
+            if ($dia_base !== null) {
+                $ano = (int)date('Y', strtotime($dateStr));
+                $mes = (int)date('m', strtotime($dateStr));
+                $ultimo = (int)date('t', mktime(0,0,0,$mes,1,$ano));
+                $dia    = min($dia_base, $ultimo);
+                return sprintf('%04d-%02d-%02d', $ano, $mes, $dia);
+            }
+            return $dateStr;
+        };
+
+        $primeiro_id_r = null;
+
+        // Helper para inserir uma ocorrência de repetição
+        $insere_repeticao = function($loc_id, $loc_vlr, $i) use (
+            &$primeiro_id_r, $numero_doc_r, $codigo_for_r, $rep_tipodoc, $razao_r,
+            $rep_ocorrencias, $rep_banco, $data_sistema, $nomeusuario,
+            $observacoes_r, $uuid_grupo, $codigo_ccusto_r, $codigo_conta_r,
+            $avancar_data, $ajustar_dia, $data_emissao_r, $rep_prim_venc,
+            $rep_freq, $rep_cada, $dia_base, $rep_cobrar_no, $descricao_r,
+            $conector, $vlr_r
+        ) {
+            $data_emissao_i  = $avancar_data($data_emissao_r, $rep_freq, $rep_cada, $i);
+            $data_vencto_i   = ($i === 0) ? $rep_prim_venc : $ajustar_dia($avancar_data($rep_prim_venc, $rep_freq, $rep_cada, $i), $dia_base, $rep_cobrar_no);
+            $descricao_i     = mysqli_real_escape_string($conector, $descricao_r . ' (' . ($i+1) . '/' . $rep_ocorrencias . ')');
+            $vlr_i           = $loc_vlr > 0 ? $loc_vlr : $vlr_r;
+            $sql_local       = ($loc_id === '' || $loc_id === null) ? 'NULL' : "'$loc_id'";
+            $sql_cc          = ($codigo_ccusto_r === '') ? 'NULL' : "'$codigo_ccusto_r'";
+            $sql_conta       = ($codigo_conta_r  === '') ? 'NULL' : "'$codigo_conta_r'";
+
+            $sql = "INSERT INTO contas_pagar (
+                ctp_numero_doc, ctp_codigo_fornecedor, ctp_parcela,
+                ctp_tipo_documento, ctp_nome_fornecedor, ctp_numero_documento,
+                ctp_qtd_parcelas, ctp_data_emissao, ctp_data_vencimento,
+                ctp_valor_parcela, ctp_valor_desconto, ctp_valor_juros,
+                ctp_outro_valor, ctp_situacao,
+                ctp_codigo_fazenda, ctp_codigo_centro_custos, ctp_codigo_conta,
+                ctp_conta_pagamento,
+                ctp_incluido_em, ctp_incluido_por,
+                ctp_descricao_compra, ctp_observacoes,
+                ctp_grupo_repeticao, ctp_repeticao_seq, ctp_repeticao_total
+            ) VALUES (
+                '$numero_doc_r', '$codigo_for_r', " . ($i+1) . ",
+                '$rep_tipodoc', '$razao_r', '$numero_doc_r',
+                '$rep_ocorrencias', '$data_emissao_i', '$data_vencto_i',
+                '$vlr_i', 0.00, 0.00,
+                null, '',
+                $sql_local, $sql_cc, $sql_conta,
+                '$rep_banco',
+                '$data_sistema', '$nomeusuario',
+                '$descricao_i', '$observacoes_r',
+                '$uuid_grupo', " . ($i+1) . ", '$rep_ocorrencias'
+            )";
+
+            $ok = mysqli_query($conector, $sql);
+            if (!$ok) {
+                header('Content-type: application/json');
+                echo json_encode(['error'=>true,'message'=>'Erro ao gravar recorrência '.($i+1).': '.mysqli_error($conector)]);
+                mysqli_close($conector); exit;
+            }
+            $novo_id_r = mysqli_insert_id($conector);
+            if ($primeiro_id_r === null) {
+                $primeiro_id_r = $novo_id_r;
+                // Anexos/links ficam só na 1ª ocorrência — a busca (api/get_anexos.php)
+                // já enxerga todo o grupo de repetição, então duplicar aqui só faria o
+                // mesmo anexo aparecer repetido N vezes no popup.
+                salvar_anexos($primeiro_id_r, $conector, $nomeusuario, $data_sistema);
+            }
+            // O rateio, diferente do anexo, é buscado pelo ctp_id exato da ocorrência
+            // (não pelo grupo inteiro) — por isso cada ocorrência precisa da própria cópia.
+            salvar_rateio($novo_id_r, $conector, $nomeusuario, $data_sistema);
+        };
+
+        if ($tem_rateio && count($rateio_locais_r) > 0) {
+            // Com rateio: 1 registro por ocorrência com valor total e ctp_codigo_fazenda = NULL
+            for ($i = 0; $i < $rep_ocorrencias; $i++) {
+                $insere_repeticao('', 0, $i);
+            }
+        } else {
+            // Sem rateio: uma linha por ocorrência
+            for ($i = 0; $i < $rep_ocorrencias; $i++) {
+                $insere_repeticao($codigo_local_r, 0, $i);
+            }
+        }
+
+        header('Content-type: application/json');
+        echo json_encode(['success'=>true,'message'=>'Lançamento recorrente incluído com sucesso ('.$rep_ocorrencias.' ocorrências).']);
+        mysqli_close($conector);
+        exit;
+
+    } // fim repetir lançamento
+    // =========================================================
+    // FIM NOVO SISTEMA
+    // =========================================================
+
+    if (empty($descricao_compra)) {
+	    header('Content-type: application/json');
+	    echo json_encode(array('error' => true, 'message' => 'Informe a Descrição da Compra.'));
+	    mysqli_close($conector);
+	    exit;
+    }
+
+    if (!$tem_rateio && ($codigo_local=='' || $codigo_local=='000000000')) {
+	    header('Content-type: application/json');
+	    echo json_encode(array('error' => true, 'message' => 'Informe a Fazenda.'));
+	    mysqli_close($conector);
+	    exit;
+    }
+
+    if (empty($codigo_for)) {
+	    header('Content-type: application/json');
+	    echo json_encode(array('error' => true, 'message' => 'Informe o Fornecedor.'));
+	    mysqli_close($conector);
+	    exit;
+    }
+
+    if ($codigo_for==999999999 && empty($nome_for)){
+	    header('Content-type: application/json');
+	    echo json_encode(array('error' => true, 'message' => 'Informe a Razão/Nome do Fornecedor.'));
+	    mysqli_close($conector);
+	    exit;
+    }
+
+    /*if ($codigo_c_custo=='') {
+	    header('Content-type: application/json');
+	    echo json_encode(array('error' => true, 'message' => 'Informe o Centro de Custos.'));
+	    mysqli_close($conector);
+	    exit;
+    }*/
+
+    if (!$tem_rateio && (empty($codigo_conta) || $codigo_conta=='0000000')) {
+	    header('Content-type: application/json');
+	    echo json_encode(array('error' => true, 'message' => 'Informe a Conta.'));
+	    mysqli_close($conector);
+	    exit;
+    }
+
+	if ($tipo_operacao==1){
+		
+	    if (empty($qtd_parcelas) && empty($data_vencimento)) {
+		    header('Content-type: application/json');
+		    echo json_encode(array('error' => true, 'message' => 'Informe os campos para a Forma de Pagamento'));
+		    mysqli_close($conector);
+		    exit;
+	    }
+
+	    if (empty($data_emissao)) {
+		    header('Content-type: application/json');
+		    echo json_encode(array('error' => true, 'message' => 'Informe a Data de Emissão.'));
+		    mysqli_close($conector);
+		    exit;
+	    }
+
+	    if (empty($data_vencimento)) {
+		    header('Content-type: application/json');
+		    echo json_encode(array('error' => true, 'message' => 'Informe a Data de Vencimento da 1ª Parcela ou Parcela Única.'));
+		    mysqli_close($conector);
+		    exit;
+	    }
+
+	    if ($data_vencimento<$data_emissao) {
+		    header('Content-type: application/json');
+		    echo json_encode(array('error' => true, 'message' => 'Data de Vencimento não pode ser < Data de Emissão.'));
+		    mysqli_close($conector);
+		    exit;
+	    }
+
+		if (empty($vlr_primeira_parcela)) {
+		    header('Content-type: application/json');
+		    echo json_encode(array('error' => true, 'message' => 'Informe o Valor da 1ª Parcela ou Parcela Única.'));
+		    mysqli_close($conector);
+		    exit;
+		}
+
+		if ($pago=="S") {
+		  	if (empty($data_pagamento)){
+			    header('Content-type: application/json');
+			    echo json_encode(array('error' => true, 'message' => 'Informe a Data de Pagamento.'));
+			    mysqli_close($conector);
+			    exit;
+		   	}
+
+		    if (empty($vlr_pagamento)) {
+			    header('Content-type: application/json');
+			    echo json_encode(array('error' => true, 'message' => 'Informe o Valor do Pagamento.'));
+			    mysqli_close($conector);
+			    exit;
+		    }
+		}
+
+		if ($codigo_forma_pag==0) {
+		    header('Content-type: application/json');
+		    echo json_encode(array('error' => true, 'message' => 'Informe a Conta Pagamento da 1ª Parcela ou Parcela Única.'));
+		    mysqli_close($conector);
+		    exit;
+		}
+		
+	    if (!empty($qtd_parcelas)){
+		    if (!isset($_POST['tipo_inclusao'])) {
+			    header('Content-type: application/json');
+			    echo json_encode(array('error' => true, 'message' => 'Selecione Programar repetição do pagamento ou Incluir parcelas por prazo de pagamento.'));
+			    mysqli_close($conector);
+			    exit;
+		    }
+
+            $tipo_inclusao = $_POST['tipo_inclusao'];
+
+	    	if ($tipo_inclusao=='P'){
+				$prazos = $_POST['prazo'];
+				$vetor_prazos = explode(",", $prazos);
+				$quantidade_prazos = count($vetor_prazos);
+				$vlr_compra = $_POST['vlr_compra'];
+
+			    if ($quantidade_prazos!=$qtd_parcelas){
+				    header('Content-type: application/json');
+				    echo json_encode(array('error' => true, 'message' => 'Informe o prazo conforme o Número de Ocorrências das Parcelas Restantes ou o Prazo foi digitado incorretamente.'));
+				    mysqli_close($conector);
+				    exit;
+				}
+
+			    if (empty($vlr_compra)) {
+				    header('Content-type: application/json');
+				    echo json_encode(array('error' => true, 'message' => 'Informe o Valor total da compra.'));
+				    mysqli_close($conector);
+				    exit;
+			    }
+	    	}
+	    	else if ($tipo_inclusao=='F') {
+			    if (empty($vlr_parcela_fixa)) {
+				    header('Content-type: application/json');
+				    echo json_encode(array('error' => true, 'message' => 'Informe o Valor das Parcelas.'));
+				    mysqli_close($conector);
+				    exit;
+			    }
+
+			    if (empty($frequencia)) {
+				    header('Content-type: application/json');
+				    echo json_encode(array('error' => true, 'message' => 'Selecione a Freqûência.'));
+				    mysqli_close($conector);
+				    exit;
+			    }
+
+			    if (empty($data_inicial)) {
+				    header('Content-type: application/json');
+				    echo json_encode(array('error' => true, 'message' => 'Data Inicial Próximos Pagamentos.'));
+				    mysqli_close($conector);
+				    exit;
+			    }
+	    	}
+		}
+	}
+    else {
+	    if ($data_vencimento<$data_emissao) {
+		    header('Content-type: application/json');
+		    echo json_encode(array('error' => true, 'message' => 'Data de Vencimento não pode ser < Data de Emissão.'));
+		    mysqli_close($conector);
+		    exit;
+	    }
+
+		if (empty($vlr_parcela)) {
+		    header('Content-type: application/json');
+		    echo json_encode(array('error' => true, 'message' => 'Informe o Valor da Parcela.'));
+		    mysqli_close($conector);
+		    exit;
+		}
+    }
+
+    if ($codigo_for!=999999999) {
+	    $rs = mysqli_query($conector, "SELECT * FROM tbl_pessoa
+	                                           WHERE tbl_pessoa_id='$codigo_for'");
+	    $fila = mysqli_fetch_object($rs);
+	    $razao = $fila->tbl_pessoa_nome;
+    }
+    else {
+    	$razao = $_POST['nome_for'];
+    }
+
+	if ($tipo_operacao==2) {
+		// Quando a conta tem rateio, Local/CC/Conta devem permanecer NULL no banco
+		$rateio_existente_ed = !empty($_POST['rateio_existente']) && $_POST['rateio_existente'] === '1';
+
+		// Valor, qtd de parcelas, doc, fornecedor e grupo de repetição atuais (antes
+		// do UPDATE), para decidir se o rateio precisa ser recalculado e, se for
+		// conta parcelada, achar as parcelas-irmãs pela identidade que o registro
+		// tinha até agora
+		$ctp_id_esc = (int) $ctp_id;
+		$rs_atual   = mysqli_query($conector, "SELECT ctp_valor_parcela, ctp_valor_juros, ctp_valor_desconto, ctp_outro_valor, ctp_qtd_parcelas, ctp_numero_doc, ctp_codigo_fornecedor, ctp_grupo_repeticao FROM contas_pagar WHERE ctp_id='$ctp_id_esc'");
+		$reg_atual  = $rs_atual ? mysqli_fetch_object($rs_atual) : null;
+		$vlr_parcela_antigo       = $reg_atual ? (float) $reg_atual->ctp_valor_parcela      : 0.00;
+		$vlr_juros_antigo         = $reg_atual ? (float) $reg_atual->ctp_valor_juros        : 0.00;
+		$vlr_desconto_antigo      = $reg_atual ? (float) $reg_atual->ctp_valor_desconto     : 0.00;
+		$vlr_acrescimo_antigo     = $reg_atual ? (float) $reg_atual->ctp_outro_valor        : 0.00;
+		$qtd_parcela_atual        = $reg_atual ? (int)   $reg_atual->ctp_qtd_parcelas       : 1;
+		$numero_doc_antigo        = $reg_atual ? $reg_atual->ctp_numero_doc                 : '';
+		$codigo_fornecedor_antigo = $reg_atual ? $reg_atual->ctp_codigo_fornecedor          : '';
+		// "Repetir Lançamento" também grava ctp_qtd_parcelas > 1 (total de ocorrências),
+		// mas cada ocorrência é independente e já tem sua PRÓPRIA cópia do rateio —
+		// diferente do parcelamento real, onde o rateio fica só na 1ª parcela e
+		// representa o total de todas. Por isso essas ocorrências não podem entrar
+		// no agrupamento por documento: cada uma recalcula só o próprio valor.
+		$eh_ocorrencia_repeticao  = $reg_atual && !empty($reg_atual->ctp_grupo_repeticao);
+
+		if (empty($_POST['vlr_parcela'])) {
+			$vlr_parcela = 0.00;
+		}
+		else {
+			$vlr_parcela = str_replace(',','.', str_replace('.','', $_POST['vlr_parcela']));
+		}
+
+		if ($vlr_parcela==0.00) {
+		    header('Content-type: application/json');
+		    echo json_encode(array('error' => true, 'message' => 'Informe o Valor da Parcela.'));
+		    mysqli_close($conector);
+		    exit;
+		}
+
+		if (empty($_POST['vlr_juros'])) {
+			$vlr_juros = 0.00;
+		}
+		else {
+			$vlr_juros = str_replace(',','.', str_replace('.','', $_POST['vlr_juros']));
+		}
+
+		if (empty($_POST['vlr_desconto'])) {
+			$vlr_desconto = 0.00;
+		}
+		else {
+			$vlr_desconto = str_replace(',','.', str_replace('.','', $_POST['vlr_desconto']));
+		}
+
+		if (empty($_POST['vlr_acrescimo'])) {
+			$vlr_acrescimo = 0.00;
+		}
+		else {
+			$vlr_acrescimo = str_replace(',','.', str_replace('.','', $_POST['vlr_acrescimo']));
+		}
+
+		$upd_fazenda = $rateio_existente_ed ? 'NULL' : "'$codigo_local'";
+	$upd_conta   = $rateio_existente_ed ? 'NULL' : "'$codigo_conta'";
+	$upd_ccusto  = $rateio_existente_ed ? 'NULL' : "'$codigo_c_custo'";
+
+    $sql = "UPDATE contas_pagar SET
+                ctp_numero_doc='$numero_doc',
+                ctp_numero_documento='$numero_doc',
+	            ctp_nome_fornecedor='$razao',
+	            ctp_codigo_fazenda=$upd_fazenda,
+	            ctp_codigo_conta=$upd_conta,
+	            ctp_codigo_centro_custos=$upd_ccusto,
+	            ctp_tipo_documento='$tipo_documento',
+	            ctp_conta_pagamento='$codigo_forma_pag',
+	            ctp_numero_cheque='$numero_cheque',
+	            ctp_data_emissao='$data_emissao',
+	            ctp_data_vencimento='$data_vencimento',
+	            ctp_valor_parcela='$vlr_parcela',
+	            ctp_valor_juros='$vlr_juros',
+	            ctp_descricao_valor_juros='$desc_juros',
+	            ctp_valor_desconto='$vlr_desconto',
+	            ctp_descricao_valor_desconto='$desc_desconto',
+	            ctp_outro_valor='$vlr_acrescimo',
+	            ctp_descricao_outro_valor='$desc_acrescimo',
+	            ctp_alterado_em='$data_sistema',
+	            ctp_alterado_por='$nomeusuario',
+	            ctp_descricao_compra='$descricao_compra',
+	            ctp_observacoes='". mysqli_real_escape_string($conector, $observacoes) ."'
+	            WHERE ctp_id='$ctp_id'";
+	    $resultado = mysqli_query($conector,$sql);
+		$erro_mysql = mysqli_error($conector);
+		if (!$resultado){
+	    	header('Content-type: application/json');
+	    	echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro ao processar sua solicitação. ' . $erro_mysql));
+			mysqli_close($conector);
+			exit;
+		}
+
+		// Conta com rateio: se o valor total da conta mudou — parcela, juros, desconto
+		// OU outros acréscimos, já que o rateio (e o "Valor Total" exibido na tela de
+		// Distribuição do Rateio) considera a soma de todos eles — refaz os valores do
+		// rateio em cima dos mesmos percentuais já gravados. Parcela única e ocorrência
+		// de repetição recalculam sobre o próprio total; conta parcelada (parcelamento
+		// real) recalcula sobre o novo total do documento (soma de todas as parcelas),
+		// já que nesse caso o rateio fica gravado uma única vez e representa o total,
+		// não uma parcela isolada.
+		$total_conta_antigo = $vlr_parcela_antigo   + $vlr_juros_antigo     + $vlr_acrescimo_antigo     - $vlr_desconto_antigo;
+		$total_conta_novo   = (float) $vlr_parcela  + (float) $vlr_juros    + (float) $vlr_acrescimo    - (float) $vlr_desconto;
+
+		$rateio_recalculado = false;
+		if ($rateio_existente_ed && round($total_conta_antigo, 2) != round($total_conta_novo, 2)) {
+			if ($qtd_parcela_atual <= 1 || $eh_ocorrencia_repeticao) {
+				$rateio_recalculado = recalcular_valores_rateio($ctp_id_esc, $total_conta_novo, $conector);
+			} else {
+				$rateio_recalculado = recalcular_rateio_documento($ctp_id_esc, $total_conta_novo, $numero_doc_antigo, $codigo_fornecedor_antigo, $conector);
+			}
+		}
+
+		$mensagem_sucesso = 'Conta alterada com sucesso.';
+		if ($rateio_recalculado) {
+			$mensagem_sucesso .= ' O rateio foi recalculado automaticamente para o novo valor.';
+		}
+
+		header('Content-type: application/json');
+    	echo json_encode(array('success' => true, 'message' => $mensagem_sucesso, 'rateio_recalculado' => $rateio_recalculado, 'ctp_id' => $ctp_id_esc));
+		mysqli_close($conector);
+		exit;
+    }
+
+    if ($tipo_operacao==1){
+    	// grava conta para apenas 1 centro de custos
+		if ($quantidade_fazendas == 1) {
+			if (empty($_POST['vlr_primeira_parcela'])) {
+				$vlr_primeira_parcela = 0.00;
+			}
+			else {
+				$vlr_primeira_parcela = str_replace(',','.', str_replace('.','', $_POST['vlr_primeira_parcela']));
+			}
+
+			if (empty($_POST['vlr_desconto'])) {
+				$vlr_desconto = 0.00;
+			}
+			else {
+				$vlr_desconto = str_replace(',','.', str_replace('.','', $_POST['vlr_desconto']));
+			}
+
+			if (empty($_POST['vlr_juros'])) {
+				$vlr_juros = 0.00;
+			}
+			else {
+				$vlr_juros = str_replace(',','.', str_replace('.','', $_POST['vlr_juros']));
+			}
+
+			if (empty($_POST['vlr_pagamento'])) {
+				$vlr_pagamento = 0.00;
+			}
+			else {
+				$vlr_pagamento = str_replace(',','.', str_replace('.','', $_POST['vlr_pagamento']));
+			}
+
+			if ($qtd_parcelas==0){
+				$numero_parcelas = 1;
+			}
+	        else {
+	        	$numero_parcelas = $qtd_parcelas + 1;
+	        }
+
+		    $sql = "INSERT INTO contas_pagar (
+				ctp_numero_doc,
+				ctp_codigo_fornecedor,
+				ctp_parcela,
+				ctp_tipo_documento,
+				ctp_nome_fornecedor,
+				ctp_numero_documento,
+				ctp_qtd_parcelas,
+				ctp_data_emissao,
+				ctp_data_vencimento,
+				ctp_valor_parcela,
+				ctp_valor_desconto,
+				ctp_descricao_valor_desconto,
+				ctp_valor_juros,
+				ctp_descricao_valor_juros,
+				ctp_outro_valor,
+				ctp_descricao_outro_valor,
+				ctp_situacao,
+				ctp_previsao_despesas,
+				ctp_agendamento,
+				ctp_data_agendamento,
+				ctp_valor_total_agendamento,
+				ctp_numero_agendamento,
+				ctp_codigo_fazenda,
+				ctp_codigo_centro_custos,
+				ctp_codigo_conta,
+				ctp_codigo_banco,
+				ctp_numero_cheque,
+				ctp_conta_pagamento,
+				ctp_aceite,
+				ctp_data_aceite,
+				ctp_usuario_aceite,
+				ctp_incluido_em,
+				ctp_incluido_por,
+				ctp_alterado_em,
+				ctp_alterado_por,
+				ctp_descricao_compra
+		        ) VALUES (
+				'$numero_doc',
+				'$codigo_for',
+				1,
+				'$tipo_documento',
+				'$razao',
+				'$numero_doc',
+				'$numero_parcelas',
+				'$data_emissao',
+				'$data_vencimento',
+				'$vlr_primeira_parcela',
+				'$vlr_desconto',
+				null,
+				'$vlr_juros',
+				null,
+				null,
+				null,
+				'',
+				null,
+				null,
+				null,
+				null,
+				null,
+				'$codigo_local',
+				'$codigo_c_custo',
+				'$codigo_conta',
+				null,
+				'$numero_cheque',
+				'$codigo_forma_pag',
+				'',
+				null,
+				null,
+				'$data_sistema',
+				'$nomeusuario',
+				null,
+				null,
+				'$descricao_compra'
+		    )";
+
+		    $resultado = mysqli_query($conector,$sql);
+			$erro_mysql = mysqli_error($conector);
+
+			if (!$resultado){
+		    	header('Content-type: application/json');
+		    	echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro incluir o registro da 1ª parcela ou parcela única.' . $erro_mysql));
+		    	exit;
+			} else {
+				$numero_id = mysqli_insert_id($conector);
+				$numero_id = str_pad($numero_id, 9, "0", STR_PAD_LEFT);
+
+				if ($pago=="S")	{
+					$historico = "Pag total do doc para: " . $razao;
+
+			        $sql = "INSERT INTO baixa_contas_pagar (
+			        	bcp_id,
+			        	bcp_numero_id,
+					    bcp_codigo_fornecedor, 
+					    bcp_parcela, 
+						bcp_sequencia_pagamento, 
+						bcp_nome_fornecedor, 
+						bcp_numero_documento, 
+						bcp_data_pagamento, 
+						bcp_valor_pagamento, 
+						bcp_situacao,
+						bcp_data_aceite,
+						bcp_usuario_aceite,
+						bcp_numero_agendamento,
+						bcp_historico_pagamento)
+				           VALUES ('$numero_id',
+				           		   '$numero_doc', 
+						           '$codigo_for',
+								   1,
+								   1,
+								   '$razao',
+								   '$numero_doc', 
+					               '$data_pagamento',
+								   '$vlr_pagamento',
+								   'P',
+								   '$data_sistema',
+								   '$nomeusuario',
+								   null,
+								   '$historico')";
+								   
+					$resultado = mysqli_query($conector, $sql);
+					$erro_mysql = mysqli_error($conector);
+
+			        if (!$resultado) {
+				    	header('Content-type: application/json');
+				    	echo json_encode(array('error' => true, 'message' => 'Ocorreu 2 um erro ao gravar a baixa da conta.' . $erro_mysql));
+						mysqli_close($conector);
+				    	exit;
+					}
+
+		    		$sql = ("UPDATE contas_pagar SET ctp_situacao='P' 
+		    			                       WHERE ctp_id='$numero_id'");
+		    		$resultado = mysqli_query($conector, $sql);
+					$erro_mysql = mysqli_error($conector);
+					
+		        	if (!$resultado) {
+				    	header('Content-type: application/json');
+				    	echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro ao gravar a baixa da conta no ctp.' . $erro_mysql));
+		    			mysqli_close($conector);
+				    	exit;
+					}
+				}
+			}
+
+			if ($qtd_parcelas==0) {
+		    	header('Content-type: application/json');
+		    	echo json_encode(array('success' => true, 'message' => 'Conta incluída com sucesso.'));
+				mysqli_close($conector);
+				exit;
+			}
+
+			if ($tipo_inclusao=='P'){
+	 			$numero_parcela = 1;
+				for ($i=0; $i < $quantidade_prazos; $i++) { 
+					$numero_parcela++;
+					$string_dias= "+".$vetor_prazos[$i]." days";
+					$data_vencimento = date("Y-m-d", strtotime($string_dias,strtotime($data_emissao)));
+					$vlr_compra = str_replace(',','.', str_replace('.','', $_POST['vlr_compra']));
+		            $vlr_parcela = ($vlr_compra - $vlr_primeira_parcela) / $qtd_parcelas;
+
+				    $sql = "INSERT INTO contas_pagar (
+						ctp_numero_doc,
+						ctp_codigo_fornecedor,
+						ctp_parcela,
+						ctp_tipo_documento,
+						ctp_nome_fornecedor,
+						ctp_numero_documento,
+						ctp_qtd_parcelas,
+						ctp_data_emissao,
+						ctp_data_vencimento,
+						ctp_valor_parcela,
+						ctp_valor_desconto,
+						ctp_descricao_valor_desconto,
+						ctp_valor_juros,
+						ctp_descricao_valor_juros,
+						ctp_outro_valor,
+						ctp_descricao_outro_valor,
+						ctp_situacao,
+						ctp_previsao_despesas,
+						ctp_agendamento,
+						ctp_data_agendamento,
+						ctp_valor_total_agendamento,
+						ctp_numero_agendamento,
+						ctp_codigo_fazenda,
+						ctp_codigo_centro_custos,
+						ctp_codigo_conta,
+						ctp_codigo_banco,
+						ctp_numero_cheque,
+						ctp_conta_pagamento,
+						ctp_aceite,
+						ctp_data_aceite,
+						ctp_usuario_aceite,
+						ctp_incluido_em,
+						ctp_incluido_por,
+						ctp_alterado_em,
+						ctp_alterado_por,
+						ctp_descricao_compra
+				        ) VALUES (
+						'$numero_doc',
+						'$codigo_for',
+						'$numero_parcela',
+						'$tipo_documento',
+						'$razao',
+						'$numero_doc',
+						'$numero_parcelas',
+						'$data_emissao',
+						'$data_vencimento',
+						'$vlr_parcela',
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						'',
+						null,
+						null,
+						null,
+						null,
+						null,
+						'$codigo_local',
+						'$codigo_c_custo',
+						'$codigo_conta',
+						null,
+						null,
+						'$codigo_forma_pag_parc',
+						'',
+						null,
+						null,
+						'$data_sistema',
+						'$nomeusuario',
+						null,
+						null,
+						'$descricao_compra'
+				    )";
+
+				    $resultado = mysqli_query($conector,$sql);
+					$erro_mysql = mysqli_error($conector);
+
+					if (!$resultado){
+					    header('Content-type: application/json');
+					    echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro incluir o registro por parcelas por prazo de pagamento.' . $erro_mysql));
+						mysqli_close($conector);
+						exit;
+					} 
+				}
+			    header('Content-type: application/json');
+			    echo json_encode(array('success' => true, 'message' => 'Conta incluída com sucesso.'));
+				exit;
+			}
+			else {
+				$vlr_parcela_fixa = str_replace(',','.', str_replace('.','', $_POST['vlr_parcela_fixa']));
+	 			$numero_parcela = 1;
+
+				for ($i=0; $i < $qtd_parcelas; $i++) { 
+					$numero_parcela++;
+
+			       	if ($numero_parcela==2){
+			       		$data_vencimento = $data_inicial;
+			       	}
+			       	else {
+						switch ($frequencia) {
+					    case 1:
+					   		$data_vencimento = date("Y-m-d", strtotime('+1 day',strtotime($data_vencimento)));
+					        break;
+					    case 2:
+					   		$data_vencimento = date("Y-m-d", strtotime('+1 week',strtotime($data_vencimento)));
+					        break;
+					    case 3:   
+					   		$data_vencimento = date("Y-m-d", strtotime('+2 week',strtotime($data_vencimento)));
+						  	break;
+					    case 4:   
+					   		$data_vencimento = date("Y-m-d", strtotime('+1 month',strtotime($data_vencimento)));
+						  	break;
+					    case 5:   
+					   		$data_vencimento = date("Y-m-d", strtotime('+2 month',strtotime($data_vencimento)));
+						  	break;
+					    case 6:   
+					   		$data_vencimento = date("Y-m-d", strtotime('+3 month',strtotime($data_vencimento)));
+						  	break;
+					    case 7:   
+					   		$data_vencimento = date("Y-m-d", strtotime('+6 month',strtotime($data_vencimento)));
+						  	break;
+					    case 8:   
+					   		$data_vencimento = date("Y-m-d", strtotime('+12 month',strtotime($data_vencimento)));
+						  	break;
+						} 
+			       	}
+
+				    $sql = "INSERT INTO contas_pagar (
+						ctp_numero_doc,
+						ctp_codigo_fornecedor,
+						ctp_parcela,
+						ctp_tipo_documento,
+						ctp_nome_fornecedor,
+						ctp_numero_documento,
+						ctp_qtd_parcelas,
+						ctp_data_emissao,
+						ctp_data_vencimento,
+						ctp_valor_parcela,
+						ctp_valor_desconto,
+						ctp_descricao_valor_desconto,
+						ctp_valor_juros,
+						ctp_descricao_valor_juros,
+						ctp_outro_valor,
+						ctp_descricao_outro_valor,
+						ctp_situacao,
+						ctp_previsao_despesas,
+						ctp_agendamento,
+						ctp_data_agendamento,
+						ctp_valor_total_agendamento,
+						ctp_numero_agendamento,
+						ctp_codigo_fazenda,
+						ctp_codigo_centro_custos,
+						ctp_codigo_conta,
+						ctp_codigo_banco,
+						ctp_numero_cheque,
+						ctp_conta_pagamento,
+						ctp_aceite,
+						ctp_data_aceite,
+						ctp_usuario_aceite,
+						ctp_incluido_em,
+						ctp_incluido_por,
+						ctp_alterado_em,
+						ctp_alterado_por,
+						ctp_descricao_compra
+				        ) VALUES (
+						null,
+						'$codigo_for',
+						'$numero_parcela',
+						null,
+						'$razao',
+						'$numero_doc',
+						'$numero_parcelas',
+						'$data_emissao',
+						'$data_vencimento',
+						'$vlr_parcela_fixa',
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						'',
+						null,
+						null,
+						null,
+						null,
+						null,
+						'$codigo_local',
+						'$codigo_c_custo',
+						'$codigo_conta',
+						null,
+						null,
+						'$codigo_forma_pag_parc',
+						'',
+						null,
+						null,
+						'$data_sistema',
+						'$nomeusuario',
+						null,
+						null,
+						'$descricao_compra'
+				    )";
+
+				    $resultado = mysqli_query($conector,$sql);
+					$erro_mysql = mysqli_error($conector);
+
+					if (!$resultado){
+					    header('Content-type: application/json');
+					    echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro incluir o registro por parcelas por repeticao.' . $erro_mysql));
+						mysqli_close($conector);
+						exit;
+					} 
+				}
+			    header('Content-type: application/json');
+			    echo json_encode(array('success' => true, 'message' => 'Conta incluída com sucesso.'));
+				mysqli_close($conector);
+				exit;
+			}
+		} // fim do if $quantidade_fazendas
+		else {
+		    // grava conta para apenas 2 ou mais fazendas
+
+			$array_itens = $_POST['array_fazendas'];
+			$matriz_itens = explode("<|>", $array_itens);
+			$quantidade_itens = count($matriz_itens);
+
+			for($k=0; $k < $quantidade_itens; $k++) {
+	    		$tabela_itens = $matriz_itens[$k];
+
+	    		$itens = explode("|", $tabela_itens);
+				$codigo_local = $itens[0];
+				$percentual = $itens[1];
+				$primeira_parcela = $itens[2];
+				$parcela_restante= $itens[3];
+
+				$vlr_desconto = 0.00;
+				$vlr_juros = 0.00;
+				$vlr_pagamento = 0.00;
+
+				if ($qtd_parcelas==0){
+					$numero_parcelas = 1;
+				}
+		        else {
+		        	$numero_parcelas = $qtd_parcelas + 1;
+		        }
+
+				$numero_doc = $_POST['number_doc'];
+
+			    $sql = "INSERT INTO contas_pagar (
+					ctp_numero_doc,
+					ctp_codigo_fornecedor,
+					ctp_parcela,
+					ctp_tipo_documento,
+					ctp_nome_fornecedor,
+					ctp_numero_documento,
+					ctp_qtd_parcelas,
+					ctp_data_emissao,
+					ctp_data_vencimento,
+					ctp_valor_parcela,
+					ctp_valor_desconto,
+					ctp_descricao_valor_desconto,
+					ctp_valor_juros,
+					ctp_descricao_valor_juros,
+					ctp_outro_valor,
+					ctp_descricao_outro_valor,
+					ctp_situacao,
+					ctp_previsao_despesas,
+					ctp_agendamento,
+					ctp_data_agendamento,
+					ctp_valor_total_agendamento,
+					ctp_numero_agendamento,
+					ctp_codigo_fazenda,
+					ctp_codigo_centro_custos,
+					ctp_codigo_conta,
+					ctp_codigo_banco,
+					ctp_numero_cheque,
+					ctp_conta_pagamento,
+					ctp_aceite,
+					ctp_data_aceite,
+					ctp_usuario_aceite,
+					ctp_incluido_em,
+					ctp_incluido_por,
+					ctp_alterado_em,
+					ctp_alterado_por,
+					ctp_descricao_compra
+			        ) VALUES (
+					'$numero_doc',
+					'$codigo_for',
+					1,
+					'$tipo_documento',
+					'$razao',
+					'$numero_doc',
+					'$numero_parcelas',
+					'$data_emissao',
+					'$data_vencimento',
+					'$primeira_parcela',
+					'$vlr_desconto',
+					null,
+					'$vlr_juros',
+					null,
+					null,
+					null,
+					'',
+					null,
+					null,
+					null,
+					null,
+					null,
+					'$codigo_local',
+					'$codigo_c_custo',
+					'$codigo_conta',
+					null,
+					'$numero_cheque',
+					'$codigo_forma_pag',
+					'',
+					null,
+					null,
+					'$data_sistema',
+					'$nomeusuario',
+					null,
+					null,
+					'$descricao_compra'
+			    )";
+
+			    $resultado = mysqli_query($conector,$sql);
+				$erro_mysql = mysqli_error($conector);
+
+				if (!$resultado){
+			    	header('Content-type: application/json');
+			    	echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro incluir o registro da 1ª parcela ou parcela única para o C.Custo ' . $codigo_c_custo .' '. $erro_mysql));
+			    	exit;
+				} 
+				else {
+					$numero_id = mysqli_insert_id($conector);
+					$numero_id = str_pad($numero_id, 9, "0", STR_PAD_LEFT);
+
+					if ($pago=="S")	{
+						$historico = "Pag total do doc para: " . $razao;
+
+				        $sql = "INSERT INTO baixa_contas_pagar (
+				        	bcp_id,
+				        	bcp_numero_id,
+						    bcp_codigo_fornecedor, 
+						    bcp_parcela, 
+							bcp_sequencia_pagamento, 
+							bcp_nome_fornecedor, 
+							bcp_numero_documento, 
+							bcp_data_pagamento, 
+							bcp_valor_pagamento, 
+							bcp_situacao,
+							bcp_data_aceite,
+							bcp_usuario_aceite,
+							bcp_numero_agendamento,
+							bcp_historico_pagamento)
+					           VALUES ('$numero_id',
+					           		   '$numero_doc', 
+							           '$codigo_for',
+									   1,
+									   1,
+									   '$razao',
+									   '$numero_doc', 
+						               '$data_pagamento',
+									   '$primeira_parcela',
+									   'P',
+									   '$data_sistema',
+									   '$nomeusuario',
+									   null,
+									   '$historico')";
+									   
+						$resultado = mysqli_query($conector, $sql);
+						$erro_mysql = mysqli_error($conector);
+
+				        if (!$resultado) {
+					    	header('Content-type: application/json');
+					    	echo json_encode(array('error' => true, 'message' => 'Ocorreu 1 um erro ao gravar a baixa da conta.' . $erro_mysql));
+							mysqli_close($conector);
+					    	exit;
+						}
+
+			    		$sql = ("UPDATE contas_pagar SET ctp_situacao='P' 
+			    			    WHERE ctp_id='$numero_id'");
+			    		$resultado = mysqli_query($conector, $sql);
+						$erro_mysql = mysqli_error($conector);
+						
+			        	if (!$resultado) {
+					    	header('Content-type: application/json');
+					    	echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro ao gravar a baixa da conta no ctp.' . $erro_mysql));
+			    			mysqli_close($conector);
+					    	exit;
+						}
+					}
+				}
+
+				/*if ($qtd_parcelas==0) {
+			    	header('Content-type: application/json');
+			    	echo json_encode(array('success' => true, 'message' => 'Conta incluída com sucesso.'));
+					mysqli_close($conector);
+					exit;
+				}*/
+
+				if ($qtd_parcelas!=0) {
+					if ($tipo_inclusao=='P'){
+			 			$numero_parcela = 1;
+						for ($i=0; $i < $quantidade_prazos; $i++) { 
+							$numero_parcela++;
+							$string_dias= "+".$vetor_prazos[$i]." days";
+							$data_vencimento_par = date("Y-m-d", strtotime($string_dias,strtotime($data_emissao)));
+						    $sql = "INSERT INTO contas_pagar (
+								ctp_numero_doc,
+								ctp_codigo_fornecedor,
+								ctp_parcela,
+								ctp_tipo_documento,
+								ctp_nome_fornecedor,
+								ctp_numero_documento,
+								ctp_qtd_parcelas,
+								ctp_data_emissao,
+								ctp_data_vencimento,
+								ctp_valor_parcela,
+								ctp_valor_desconto,
+								ctp_descricao_valor_desconto,
+								ctp_valor_juros,
+								ctp_descricao_valor_juros,
+								ctp_outro_valor,
+								ctp_descricao_outro_valor,
+								ctp_situacao,
+								ctp_previsao_despesas,
+								ctp_agendamento,
+								ctp_data_agendamento,
+								ctp_valor_total_agendamento,
+								ctp_numero_agendamento,
+								ctp_codigo_fazenda,
+								ctp_codigo_centro_custos,
+								ctp_codigo_conta,
+								ctp_codigo_banco,
+								ctp_numero_cheque,
+								ctp_conta_pagamento,
+								ctp_aceite,
+								ctp_data_aceite,
+								ctp_usuario_aceite,
+								ctp_incluido_em,
+								ctp_incluido_por,
+								ctp_alterado_em,
+								ctp_alterado_por,
+								ctp_descricao_compra
+						        ) VALUES (
+								'$numero_doc',
+								'$codigo_for',
+								'$numero_parcela',
+								'$tipo_documento',
+								'$razao',
+								'$numero_doc',
+								'$numero_parcelas',
+								'$data_emissao',
+								'$data_vencimento_par',
+								'$parcela_restante',
+								null,
+								null,
+								null,
+								null,
+								null,
+								null,
+								'',
+								null,
+								null,
+								null,
+								null,
+								null,
+								'$codigo_local',
+								'$codigo_c_custo',
+								'$codigo_conta',
+								null,
+								null,
+								'$codigo_forma_pag_parc',
+								'',
+								null,
+								null,
+								'$data_sistema',
+								'$nomeusuario',
+								null,
+								null,
+								'$descricao_compra'
+						    )";
+
+						    $resultado = mysqli_query($conector,$sql);
+							$erro_mysql = mysqli_error($conector);
+
+							if (!$resultado){
+							    header('Content-type: application/json');
+							    echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro incluir o registro por parcelas por prazo de pagamento.' . $erro_mysql));
+								mysqli_close($conector);
+								exit;
+							} 
+						}
+					}
+					else {
+			 			$numero_parcela = 1;
+
+						for ($i=0; $i < $qtd_parcelas; $i++) { 
+							$numero_parcela++;
+
+					       	if ($numero_parcela==2){
+					       		$data_vencimento_par = $data_inicial;
+					       	}
+					       	else {
+								switch ($frequencia) {
+							    case 1:
+							   		$data_vencimento_par = date("Y-m-d", strtotime('+1 day',strtotime($data_vencimento_par)));
+							        break;
+							    case 2:
+							   		$data_vencimento_par = date("Y-m-d", strtotime('+1 week',strtotime($data_vencimento_par)));
+							        break;
+							    case 3:   
+							   		$data_vencimento_par = date("Y-m-d", strtotime('+2 week',strtotime($data_vencimento_par)));
+								  	break;
+							    case 4:   
+							   		$data_vencimento_par = date("Y-m-d", strtotime('+1 month',strtotime($data_vencimento_par)));
+								  	break;
+							    case 5:   
+							   		$data_vencimento_par = date("Y-m-d", strtotime('+2 month',strtotime($data_vencimento_par)));
+								  	break;
+							    case 6:   
+							   		$data_vencimento_par = date("Y-m-d", strtotime('+3 month',strtotime($data_vencimento_par)));
+								  	break;
+							    case 7:   
+							   		$data_vencimento_par = date("Y-m-d", strtotime('+6 month',strtotime($data_vencimento_par)));
+								  	break;
+							    case 8:   
+							   		$data_vencimento_par = date("Y-m-d", strtotime('+12 month',strtotime($data_vencimento_par)));
+								  	break;
+								} 
+					       	}
+
+						    $sql = "INSERT INTO contas_pagar (
+								ctp_numero_doc,
+								ctp_codigo_fornecedor,
+								ctp_parcela,
+								ctp_tipo_documento,
+								ctp_nome_fornecedor,
+								ctp_numero_documento,
+								ctp_qtd_parcelas,
+								ctp_data_emissao,
+								ctp_data_vencimento,
+								ctp_valor_parcela,
+								ctp_valor_desconto,
+								ctp_descricao_valor_desconto,
+								ctp_valor_juros,
+								ctp_descricao_valor_juros,
+								ctp_outro_valor,
+								ctp_descricao_outro_valor,
+								ctp_situacao,
+								ctp_previsao_despesas,
+								ctp_agendamento,
+								ctp_data_agendamento,
+								ctp_valor_total_agendamento,
+								ctp_numero_agendamento,
+								ctp_codigo_fazenda,
+								ctp_codigo_centro_custos,
+								ctp_codigo_conta,
+								ctp_codigo_banco,
+								ctp_numero_cheque,
+								ctp_conta_pagamento,
+								ctp_aceite,
+								ctp_data_aceite,
+								ctp_usuario_aceite,
+								ctp_incluido_em,
+								ctp_incluido_por,
+								ctp_alterado_em,
+								ctp_alterado_por,
+								ctp_descricao_compra
+						        ) VALUES (
+								null,
+								'$codigo_for',
+								'$numero_parcela',
+								null,
+								'$razao',
+								'$numero_doc',
+								'$numero_parcelas',
+								'$data_emissao',
+								'$data_vencimento_par',
+								'$parcela_restante',
+								null,
+								null,
+								null,
+								null,
+								null,
+								null,
+								'',
+								null,
+								null,
+								null,
+								null,
+								null,
+								'$codigo_local',
+								'$codigo_c_custo',
+								'$codigo_conta',
+								null,
+								null,
+								'$codigo_forma_pag_parc',
+								'',
+								null,
+								null,
+								'$data_sistema',
+								'$nomeusuario',
+								null,
+								null,
+								'$descricao_compra'
+						    )";
+
+						    $resultado = mysqli_query($conector,$sql);
+							$erro_mysql = mysqli_error($conector);
+
+							if (!$resultado){
+							    header('Content-type: application/json');
+							    echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro incluir o registro por parcelas por repeticao.' . $erro_mysql));
+								mysqli_close($conector);
+								exit;
+							} 
+						}
+					}
+				}
+			}
+
+		} // fim do if grava 2 ou mais fazendas
+
+		header('Content-type: application/json');
+		echo json_encode(array('success' => true, 'message' => 'Conta incluída com sucesso.'));
+		mysqli_close($conector);
+		exit;
+
+	}// fim do if de gravacao do tipo 1
+
+
+	mysqli_close($conector);
+	exit;
+
+?>
