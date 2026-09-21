@@ -198,6 +198,7 @@ $spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(11);
 $spreadsheet->getActiveSheet()->getColumnDimension('M')->setWidth(11);
 $spreadsheet->getActiveSheet()->getColumnDimension('N')->setWidth(11);
 $spreadsheet->getActiveSheet()->getColumnDimension('O')->setWidth(11);
+$spreadsheet->getActiveSheet()->getColumnDimension('P')->setWidth(11);
 
 $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER;
 $spreadsheet->getActiveSheet()->getStyle('A4')->getAlignment()->setHorizontal($align);
