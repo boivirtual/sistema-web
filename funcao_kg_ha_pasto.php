@@ -1,14 +1,20 @@
 <?php
-// Kg/Ha (inteiro arredondado) por pasto: qtd de animais do pasto em cada categoria
-// x peso médio arredondado da categoria na fazenda, dividido pela área do pasto.
+// Kg/Ha (inteiro arredondado) por pasto: qtd de animais do pasto em cada categoria+sexo
+// x peso médio arredondado da categoria+sexo na fazenda, dividido pela área do pasto.
+// Calculado separado por sexo porque macho e fêmea têm pesos médios bem diferentes;
+// somar antes de dividir (em vez de fazer uma média única por categoria) evita
+// distorcer o resultado quando a proporção de machos/fêmeas do pasto é diferente
+// da proporção da fazenda.
 // Retorna [tbl_pasto_id => kg_ha]; pastos sem área, sem animais ou sem peso não entram.
 function calcular_kg_ha_pastos($conector, $local_id, $pasto_id = 0) {
     $local_id = mysqli_real_escape_string($conector, $local_id);
-    $peso_medio_categoria = [];
+    $peso_medio_categoria_sexo = [];
 
     $rs_peso_medio = mysqli_query($conector, "SELECT c.tab_codigo_categoria_idade AS categoria,
+               a.sexo AS sexo,
                SUM(a.peso) / COUNT(*) AS peso_medio
-        FROM (SELECT GREATEST(TIMESTAMPDIFF(MONTH, COALESCE(tbl_animal_data_nascimento, CURDATE()), CURDATE()), 0) AS idade,
+        FROM (SELECT tbl_animal_sexo AS sexo,
+                     GREATEST(TIMESTAMPDIFF(MONTH, COALESCE(tbl_animal_data_nascimento, CURDATE()), CURDATE()), 0) AS idade,
                      CASE
                          WHEN tbl_animal_ultimo_peso IS NOT NULL AND tbl_animal_ultimo_peso<>0 THEN tbl_animal_ultimo_peso
                          WHEN tbl_animal_peso_desmama IS NOT NULL AND tbl_animal_peso_desmama<>0 THEN tbl_animal_peso_desmama
@@ -22,10 +28,11 @@ function calcular_kg_ha_pastos($conector, $local_id, $pasto_id = 0) {
         INNER JOIN tabela_categoria_idade c
                 ON a.idade BETWEEN c.tab_categoria_idade_de AND c.tab_categoria_idade_ate AND
                    c.tab_registro_lixeira_categoria_idade='0'
-        GROUP BY c.tab_codigo_categoria_idade");
+        GROUP BY c.tab_codigo_categoria_idade, a.sexo");
 
     while ($reg_peso_medio = mysqli_fetch_object($rs_peso_medio)) {
-        $peso_medio_categoria[$reg_peso_medio->categoria] = round($reg_peso_medio->peso_medio);
+        $chave = $reg_peso_medio->categoria . '|' . $reg_peso_medio->sexo;
+        $peso_medio_categoria_sexo[$chave] = round($reg_peso_medio->peso_medio);
     }
 
     $wpasto = '';
@@ -37,8 +44,10 @@ function calcular_kg_ha_pastos($conector, $local_id, $pasto_id = 0) {
     $rs_qtd_pasto = mysqli_query($conector, "SELECT p.tbl_pasto_id AS pasto,
                p.tbl_pasto_area AS area,
                c.tab_codigo_categoria_idade AS categoria,
+               a.sexo AS sexo,
                COUNT(*) AS qtd
         FROM (SELECT tbl_animal_pasto_id AS pasto_id,
+                     tbl_animal_pasto_sexo AS sexo,
                      GREATEST(TIMESTAMPDIFF(MONTH, COALESCE(tbl_animal_pasto_nascimento, CURDATE()), CURDATE()), 0) AS idade
               FROM tbl_animal_pasto
               WHERE tbl_animal_pasto_situacao='A') a
@@ -48,7 +57,7 @@ function calcular_kg_ha_pastos($conector, $local_id, $pasto_id = 0) {
                 ON a.idade BETWEEN c.tab_categoria_idade_de AND c.tab_categoria_idade_ate AND
                    c.tab_registro_lixeira_categoria_idade='0'
         WHERE p.tbl_pasto_codigo_local='$local_id'" . $wpasto . "
-        GROUP BY p.tbl_pasto_id, p.tbl_pasto_area, c.tab_codigo_categoria_idade");
+        GROUP BY p.tbl_pasto_id, p.tbl_pasto_area, c.tab_codigo_categoria_idade, a.sexo");
 
     $kg_pasto = [];
     $area_pasto = [];
@@ -61,8 +70,10 @@ function calcular_kg_ha_pastos($conector, $local_id, $pasto_id = 0) {
             $kg_pasto[$pasto] = 0;
         }
 
-        if (isset($peso_medio_categoria[$reg_qtd_pasto->categoria])) {
-            $kg_pasto[$pasto] += $peso_medio_categoria[$reg_qtd_pasto->categoria] * $reg_qtd_pasto->qtd;
+        $chave = $reg_qtd_pasto->categoria . '|' . $reg_qtd_pasto->sexo;
+
+        if (isset($peso_medio_categoria_sexo[$chave])) {
+            $kg_pasto[$pasto] += $peso_medio_categoria_sexo[$chave] * $reg_qtd_pasto->qtd;
         }
     }
 

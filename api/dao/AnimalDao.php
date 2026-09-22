@@ -316,7 +316,8 @@ class AnimalDao{
                     mae.tbl_animal_codigo_numerico AS mae_num,
                     a.tbl_animal_ultimo_peso AS ultimo_peso,
                     a.tbl_animal_data_ultimo AS data_ultimo,
-                    a.tbl_animal_peso_desmama AS peso_desmama
+                    a.tbl_animal_peso_desmama AS peso_desmama,
+                    a.tbl_animal_ativo AS ativo
                 FROM tbl_animais a
                 LEFT JOIN tabela_racas r ON a.tbl_animal_codigo_raca = r.tab_codigo_raca
                 LEFT JOIN tabela_pelagens pel ON a.tbl_animal_codigo_pelagem = pel.tab_codigo_pelagem
@@ -368,6 +369,7 @@ class AnimalDao{
                     'ultimoPeso' => $dados['ultimo_peso'],
                     'DataUltimo' => $dados['data_ultimo'],
                     'pesoDesmama' => $dados['peso_desmama'],
+                    'ativo' => $dados['ativo'],
                 ];
             }
         }

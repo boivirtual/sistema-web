@@ -99,7 +99,7 @@ foreach ($array_locais_usuario as $value) {
 
 			if ($kg_total!='' && $area_fazenda!='') {
 				$kgha = $kg_total/$area_fazenda;
-				$kg_ha[$codigo_fazenda]=number_format($kgha,2,',','.');
+				$kg_ha[$codigo_fazenda]=number_format(round($kgha),0,',','.');
 			}
 		}
 	}
@@ -155,7 +155,7 @@ foreach ($array_locais_usuario as $value) {
 
 			if ($kg_total!='' && $area_fazenda!='' && $area_fazenda!=0) {
 				$kgha = $kg_total/$area_fazenda;
-				$kg_ha[$codigo_fazenda]=number_format($kgha,2,',','.');
+				$kg_ha[$codigo_fazenda]=number_format(round($kgha),0,',','.');
 			}
 		}
 	}
