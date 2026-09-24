@@ -374,7 +374,7 @@
                 </div>
             </div>
 
-            <div class='modal fade' id='modal_mover_todos_tabuleiro' tabindex='-1' role='dialog' 
+            <div class='modal' id='modal_mover_todos_tabuleiro' tabindex='-1' role='dialog'
                 aria-labelledby='myModalLabel' aria-hidden='true' data-backdrop='static'>
                 <div class='modal-dialog modal-dialog-centered' role='document'>
                     <div class='modal-content'>
@@ -390,7 +390,7 @@
                         <div class='modal-footer'>
                             <input type="hidden" id="id_entrada">
                             <input type="hidden" id="id_saida">
-                            <button class='btn btn-success' type='button' onclick='gravar_retirar_tudo_tabuleiro();'>Sim</button>
+                            <button id="btn_confirmar_mover_todos_tabuleiro" class='btn btn-success' type='button' onclick='gravar_retirar_tudo_tabuleiro();'>Sim</button>
 
                             <button data-dismiss='modal' class='btn btn-default' type='button'>Não</button>
                         </div>
