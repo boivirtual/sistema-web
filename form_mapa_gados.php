@@ -144,15 +144,15 @@
                             <a href="#" style="color: gray; margin-left: 10px;" data-toggle='tooltip' data-placement='right' title="Mapa Tabuleiro" onclick="mapa_tabuleiro()"><i class="fa fa-object-group" style="font-size:20px;"></i></a>
                         </li>
 
-                        <li id="busca_pasto_tabuleiro_li" class="no-before">
-                            <input type="text" class="form-control input-sm" id="buscar_pasto_tabuleiro" placeholder="Buscar pasto..." style="width: 180px; display: inline-block; margin-left: 10px; vertical-align: middle;" onkeyup="filtrar_pasto_tabuleiro()">
+                        <li class="no-before" style="margin-left: 20px;"><label id='totalAnimais'></label></li>
+
+                        <li id="modo_toque_tabuleiro_li" class="no-before pull-right">
+                            <button type="button" id="modo_toque_tabuleiro_btn" class="btn btn-default btn-sm" style="vertical-align: middle;" data-toggle="tooltip" data-trigger="hover" data-container="body" data-placement="bottom" title="Alternativa ao arrastar" onclick="alternar_modo_toque_tabuleiro()"><i class="fa fa-hand-pointer-o"></i> Mover por toque</button>
                         </li>
 
-                        <li id="modo_toque_tabuleiro_li" class="no-before">
-                            <button type="button" id="modo_toque_tabuleiro_btn" class="btn btn-default btn-sm" style="margin-left: 10px; vertical-align: middle;" data-toggle="tooltip" data-trigger="hover" data-container="body" data-placement="bottom" title="Alternativa ao arrastar" onclick="alternar_modo_toque_tabuleiro()"><i class="fa fa-hand-pointer-o"></i> Mover por toque</button>
+                        <li id="busca_pasto_tabuleiro_li" class="no-before pull-right">
+                            <input type="text" class="form-control input-sm" id="buscar_pasto_tabuleiro" placeholder="Buscar pasto..." style="width: 180px; display: inline-block; margin-right: 10px; vertical-align: middle;" onkeyup="filtrar_pasto_tabuleiro()">
                         </li>
-
-                        <li class="pull-right no-before"><label id='totalAnimais'></label></li>
                     </ol>
 
                     <div class="row" id="aviso_modo_toque_tabuleiro" style="display: none;">
