@@ -145,7 +145,7 @@
                         </li>
 
                         <li id="busca_pasto_tabuleiro_li" class="no-before">
-                            <input type="text" class="form-control" id="buscar_pasto_tabuleiro" placeholder="Buscar pasto..." style="width: 180px; display: inline-block; margin-left: 10px;" onkeyup="filtrar_pasto_tabuleiro()">
+                            <input type="text" class="form-control input-sm" id="buscar_pasto_tabuleiro" placeholder="Buscar pasto..." style="width: 180px; display: inline-block; margin-left: 10px; vertical-align: middle;" onkeyup="filtrar_pasto_tabuleiro()">
                         </li>
 
                         <li id="modo_toque_tabuleiro_li" class="no-before">
