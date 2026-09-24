@@ -3355,6 +3355,88 @@ $(document).on('dragend', function(ev){
     $('.item_mapa').removeClass('pasto-drop-hover');
 });
 
+// Modo Toque do Tabuleiro (alternativa ao arrastar): toca no pasto de origem, depois no de destino
+var _tabuleiroModoToque = false;
+var _tabuleiroOrigemToque = null;
+
+function alternar_modo_toque_tabuleiro(){
+    _tabuleiroModoToque = !_tabuleiroModoToque;
+    _tabuleiroOrigemToque = null;
+    $('.item_mapa').removeClass('pasto-origem-selecionada');
+
+    if (_tabuleiroModoToque) {
+        $('#modo_toque_tabuleiro_btn').addClass('btn-primary').removeClass('btn-default');
+        $('#aviso_modo_toque_tabuleiro').show();
+    }
+    else {
+        $('#modo_toque_tabuleiro_btn').addClass('btn-default').removeClass('btn-primary');
+        $('#aviso_modo_toque_tabuleiro').hide();
+    }
+}
+
+function selecionar_pasto_toque(elemento){
+    if (elemento == null) {
+        return;
+    }
+
+    if (_tabuleiroOrigemToque === null) {
+        if ($(elemento).attr('draggable') !== 'true') {
+            // pasto vazio nao pode ser origem, igual ao arrastar
+            return;
+        }
+        _tabuleiroOrigemToque = elemento;
+        $(elemento).addClass('pasto-origem-selecionada');
+        return;
+    }
+
+    if (_tabuleiroOrigemToque === elemento) {
+        // tocar de novo na origem cancela a selecao
+        $(elemento).removeClass('pasto-origem-selecionada');
+        _tabuleiroOrigemToque = null;
+        return;
+    }
+
+    mover_tabuleiro_toque(_tabuleiroOrigemToque, elemento);
+}
+
+// Repete a mesma logica do drop() (drag-and-drop), so que a partir de dois toques
+function mover_tabuleiro_toque(elemento_origem, elemento_destino){
+    var id_pai = elemento_origem.id;
+    var nome = elemento_origem.getElementsByTagName('strong')[0].innerHTML;
+    var id_target = elemento_destino.id;
+    var nomeRecebe = elemento_destino.getElementsByTagName('strong')[0].innerHTML;
+
+    var id_pasto_destino = id_target.replaceAll('"', '');
+    $("#id_pasto_destino").val(id_pasto_destino);
+    $("#desc_pasto_destino").val(nomeRecebe);
+    $("#id_entrada").val(id_target);
+    $("#id_saida").val(id_pai);
+
+    $('.item_mapa').removeClass('pasto-origem-selecionada');
+    _tabuleiroOrigemToque = null;
+
+    $.ajax({
+        type: 'post',
+        url: 'ler_pasto_destino.php',
+        data: {
+            'id_destino': id_target
+        },
+        success: function(data){
+            if (data.message=='' || data.message==null) {
+                $("#pasto_destino_estava_vazio").val('S');
+            }
+            else {
+                $("#pasto_destino_estava_vazio").val('N');
+            }
+
+            if (id_target.replace(/[^0-9]/g, '')!=id_pai.replace(/[^0-9]/g, '')) {
+                $("#modal_mover_todos_tabuleiro").modal();
+                $(".modal-body #primeira_mensagem").html("Mover TODOS os animais do pasto "+nome+" para o pasto "+nomeRecebe+"?");
+            }
+        }
+    });
+}
+
 // Busca por nome do pasto no Tabuleiro
 function filtrar_pasto_tabuleiro(){
     var termo = $('#buscar_pasto_tabuleiro').val();
