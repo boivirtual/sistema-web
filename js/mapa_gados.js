@@ -159,6 +159,7 @@ function mapa_tabuleiro() {
 
     $("li#mapa_tabuleiro").hide();
     $("li#mapa_satelite").show();
+    $("li#busca_pasto_tabuleiro_li").show();
 
     var tipo_mapa = 'T';
     //$("#tipo_mapa_gado").val('T');
