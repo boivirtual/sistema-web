@@ -563,7 +563,11 @@
 
     echo "<script src='js/jquery.redirect.js'></script>
             <script>
-                function mais_info(clicked_id){
+                function mais_info(clicked_id, elemento){
+                    if (typeof _tabuleiroModoToque !== 'undefined' && _tabuleiroModoToque) {
+                        selecionar_pasto_toque(elemento);
+                        return;
+                    }
                     $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': clicked_id});
                 }
 
