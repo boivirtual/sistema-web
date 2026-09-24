@@ -148,8 +148,20 @@
                             <input type="text" class="form-control" id="buscar_pasto_tabuleiro" placeholder="Buscar pasto..." style="width: 180px; display: inline-block; margin-left: 10px;" onkeyup="filtrar_pasto_tabuleiro()">
                         </li>
 
+                        <li id="modo_toque_tabuleiro_li" class="no-before">
+                            <button type="button" id="modo_toque_tabuleiro_btn" class="btn btn-default" style="margin-left: 10px;" data-toggle="tooltip" data-placement="right" title="Alternativa ao arrastar: toque no pasto de origem, depois no de destino" onclick="alternar_modo_toque_tabuleiro()"><i class="fa fa-hand-pointer-o"></i> Mover por toque</button>
+                        </li>
+
                         <li class="pull-right no-before"><label id='totalAnimais'></label></li>
                     </ol>
+
+                    <div class="row" id="aviso_modo_toque_tabuleiro" style="display: none;">
+                        <div class="col-lg-12">
+                            <div class="alert alert-info" style="padding: 6px 12px; margin-bottom: 5px;">
+                                Modo toque ativado: toque no pasto de <strong>origem</strong> (fica com borda laranja), depois toque no pasto de <strong>destino</strong>.
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="col-xs-12" id="divTotalAnimais" style="background-color: white; text-align: center;" hidden><label id='totalAnimais'></div>
                 </div>
