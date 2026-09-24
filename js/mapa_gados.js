@@ -191,6 +191,7 @@ function mapa_satelite() {
 
     $("li#mapa_tabuleiro").show();
     $("li#mapa_satelite").hide();
+    $("li#busca_pasto_tabuleiro_li").hide();
 
     var tipo_mapa = 'M';
     //$("#tipo_mapa_gado").val('M');
