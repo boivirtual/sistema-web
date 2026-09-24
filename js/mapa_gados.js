@@ -3381,12 +3381,18 @@ function alternar_modo_toque_tabuleiro(){
     $('#modo_toque_tabuleiro_btn').tooltip('hide').blur();
     $('.item_mapa').removeClass('pasto-origem-selecionada');
 
+    var $btn = $('#modo_toque_tabuleiro_btn');
+
     if (_tabuleiroModoToque) {
-        $('#modo_toque_tabuleiro_btn').addClass('btn-primary').removeClass('btn-default');
+        $btn.addClass('btn-warning').removeClass('btn-default');
+        $btn.html('<i class="fa fa-arrows"></i> Voltar para arrastar');
+        $btn.attr('title', 'Sair do modo toque e voltar a arrastar os pastos').attr('data-original-title', 'Sair do modo toque e voltar a arrastar os pastos');
         $('#aviso_modo_toque_tabuleiro').show();
     }
     else {
-        $('#modo_toque_tabuleiro_btn').addClass('btn-default').removeClass('btn-primary');
+        $btn.addClass('btn-default').removeClass('btn-warning');
+        $btn.html('<i class="fa fa-hand-pointer-o"></i> Mover por toque');
+        $btn.attr('title', 'Alternativa ao arrastar').attr('data-original-title', 'Alternativa ao arrastar');
         $('#aviso_modo_toque_tabuleiro').hide();
     }
 }
