@@ -182,12 +182,12 @@
             }
 
             if($total_animais == 0){
-                echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id)' id='\"{$pasto_id}\"' style='background-color: #fffff;'>
+                echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id, this)' id='\"{$pasto_id}\"' style='background-color: #fffff;'>
                     <div class='pasto_titulo'>
                         <strong>$pasto_nome</strong>
                     </div></div>";
             }else{
-                echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' draggable='true' ondragstart='drag(event, this)' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id)' id='\"{$pasto_id}\"' style='background-color: #fffff;'>
+                echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' draggable='true' ondragstart='drag(event, this)' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id, this)' id='\"{$pasto_id}\"' style='background-color: #fffff;'>
                     <div class='pasto_titulo'>
                         <strong>$pasto_nome</strong>
                     </div>";
@@ -393,7 +393,7 @@
                 }
                 if($total_animais == 0){
                     if ($pasto_existe=='S') {
-                        echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id)' id='\"{$pasto_id}\"' style='background-color: $cores[$i_cores];'>
+                        echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id, this)' id='\"{$pasto_id}\"' style='background-color: $cores[$i_cores];'>
                                 <div class='pasto_titulo'>
                                     <strong>$pasto_nome</strong>
                                 </div>
@@ -404,7 +404,7 @@
                     }
                 }else{
                     if ($pasto_existe=='S') {
-                        echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' draggable='true' ondragstart='drag(event, this)' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id)' id='\"{$pasto_id}\"' style='background-color: $cores[$i_cores];'>
+                        echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' draggable='true' ondragstart='drag(event, this)' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id, this)' id='\"{$pasto_id}\"' style='background-color: $cores[$i_cores];'>
                                 <div class='pasto_titulo'>
                                     <strong>$pasto_nome</strong>
                                 </div>
@@ -449,7 +449,7 @@
         
                 if($total_animais == 0){
                     if ($pasto_existe=='S') {
-                        echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id)' id='\"{$pasto_id}\"' style='background-color: $cores[$i_cores];'>
+                        echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id, this)' id='\"{$pasto_id}\"' style='background-color: $cores[$i_cores];'>
                                 <div class='pasto_titulo'>
                                     <strong>$pasto_nome</strong>
                                 </div>
@@ -460,7 +460,7 @@
                     }
                 }else{
                     if ($pasto_existe=='S') {
-                        echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' draggable='true' ondragstart='drag(event, this)' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id)' id='\"{$pasto_id}\"' style='background-color: $cores[$i_cores];'>
+                        echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' draggable='true' ondragstart='drag(event, this)' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id, this)' id='\"{$pasto_id}\"' style='background-color: $cores[$i_cores];'>
                                 <div class='pasto_titulo'>
                                     <strong>$pasto_nome</strong>
                                 </div>
@@ -501,7 +501,7 @@
         
                 if($total_animais == 0){
                     if ($pasto_existe=='S') {
-                        echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id)' id='\"{$pasto_id}\"' style='background-color: $cores[$i_cores];'>
+                        echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id, this)' id='\"{$pasto_id}\"' style='background-color: $cores[$i_cores];'>
                                 <div class='pasto_titulo'>
                                     <strong>$pasto_nome</strong>
                                 </div>
@@ -512,7 +512,7 @@
                     }
                 }else{
                     if ($pasto_existe=='S') {
-                        echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' draggable='true' ondragstart='drag(event, this)' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id)' id='\"{$pasto_id}\"' style='background-color: $cores[$i_cores];'>
+                        echo "<div class='col-lg-1 col-md-2 col-sm-3 col-xs-3 item_mapa' draggable='true' ondragstart='drag(event, this)' ondrop='drop(event, this.id, this)' ondragover='allowDrop(event)' onclick='mais_info(this.id, this)' id='\"{$pasto_id}\"' style='background-color: $cores[$i_cores];'>
                                 <div class='pasto_titulo'>
                                     <strong>$pasto_nome</strong>
                                 </div>
