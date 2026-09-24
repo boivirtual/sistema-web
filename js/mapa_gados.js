@@ -3378,6 +3378,7 @@ var _tabuleiroOrigemToque = null;
 function alternar_modo_toque_tabuleiro(){
     _tabuleiroModoToque = !_tabuleiroModoToque;
     _tabuleiroOrigemToque = null;
+    $('#modo_toque_tabuleiro_btn').tooltip('hide').blur();
     $('.item_mapa').removeClass('pasto-origem-selecionada');
 
     if (_tabuleiroModoToque) {
