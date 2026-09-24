@@ -145,6 +145,8 @@ function consultar_mapa(){
 
             var totalAnimais = $("#totalAnimaisFazenda").val();
             $("label#totalAnimais").html("Total de animais: "+totalAnimais);
+
+            filtrar_pasto_tabuleiro();
         }
     });
 }
