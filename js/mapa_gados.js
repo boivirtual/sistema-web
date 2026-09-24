@@ -97,6 +97,12 @@ function informacoes_uso() {
     $("#ajuda").modal();
 }
 
+// Foca o botao Sim ao abrir a confirmacao de mover tudo (Tabuleiro),
+// para permitir confirmar com Enter sem precisar clicar
+$(document).on('shown.bs.modal', '#modal_mover_todos_tabuleiro', function(){
+    $('#btn_confirmar_mover_todos_tabuleiro').trigger('focus');
+});
+
 function digita_valor(){
     $('#qtdProduto').bind('keypress',mask.money);
 }
