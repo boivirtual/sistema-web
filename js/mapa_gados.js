@@ -3390,7 +3390,7 @@ function alternar_modo_toque_tabuleiro(){
         $('#aviso_modo_toque_tabuleiro').show();
     }
     else {
-        $btn.addClass('btn-default').removeClass('btn-warning');
+        $btn.addClass('btn-default').removeClass('btn-success');
         $btn.html('<i class="fa fa-hand-pointer-o"></i> Mover por toque');
         $btn.attr('title', 'Alternativa ao arrastar').attr('data-original-title', 'Alternativa ao arrastar');
         $('#aviso_modo_toque_tabuleiro').hide();
