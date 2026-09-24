@@ -149,7 +149,7 @@
                         </li>
 
                         <li id="modo_toque_tabuleiro_li" class="no-before">
-                            <button type="button" id="modo_toque_tabuleiro_btn" class="btn btn-default" style="margin-left: 10px;" data-toggle="tooltip" data-placement="right" title="Alternativa ao arrastar: toque no pasto de origem, depois no de destino" onclick="alternar_modo_toque_tabuleiro()"><i class="fa fa-hand-pointer-o"></i> Mover por toque</button>
+                            <button type="button" id="modo_toque_tabuleiro_btn" class="btn btn-default btn-sm" style="margin-left: 10px; vertical-align: middle;" data-toggle="tooltip" data-container="body" data-placement="bottom" title="Alternativa ao arrastar" onclick="alternar_modo_toque_tabuleiro()"><i class="fa fa-hand-pointer-o"></i> Mover por toque</button>
                         </li>
 
                         <li class="pull-right no-before"><label id='totalAnimais'></label></li>
