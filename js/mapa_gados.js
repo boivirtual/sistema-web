@@ -3384,7 +3384,7 @@ function alternar_modo_toque_tabuleiro(){
     var $btn = $('#modo_toque_tabuleiro_btn');
 
     if (_tabuleiroModoToque) {
-        $btn.addClass('btn-warning').removeClass('btn-default');
+        $btn.addClass('btn-success').removeClass('btn-default');
         $btn.html('<i class="fa fa-arrows"></i> Voltar para arrastar');
         $btn.attr('title', 'Sair do modo toque e voltar a arrastar os pastos').attr('data-original-title', 'Sair do modo toque e voltar a arrastar os pastos');
         $('#aviso_modo_toque_tabuleiro').show();
