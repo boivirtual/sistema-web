@@ -117,7 +117,7 @@
            <div class="row">
                 <div class="col-lg-12">
                     <h3 class="page-header"><i class="fa fa-map-o"></i> Mapa de Gado</h3>
-                    <ol class="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-mapa-gado">
 
                         <li id="fazendas-select">
                             <label>Fazendas:</label>
