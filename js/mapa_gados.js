@@ -3333,6 +3333,39 @@ function allowDrop(ev){
     ev.preventDefault();
 }
 
+// Destaque visual do pasto de destino durante o arraste (Tabuleiro)
+$(document).on('dragover', '.item_mapa', function(ev){
+    if (!$(this).hasClass('pasto-drop-hover')) {
+        $('.item_mapa').removeClass('pasto-drop-hover');
+        $(this).addClass('pasto-drop-hover');
+    }
+});
+
+$(document).on('drop', '.item_mapa', function(ev){
+    $('.item_mapa').removeClass('pasto-drop-hover');
+});
+
+$(document).on('dragend', function(ev){
+    $('.item_mapa').removeClass('pasto-drop-hover');
+});
+
+// Busca por nome do pasto no Tabuleiro
+function filtrar_pasto_tabuleiro(){
+    var termo = $('#buscar_pasto_tabuleiro').val();
+    termo = termo.toUpperCase();
+
+    $('.item_mapa').each(function(){
+        var nome_pasto = $(this).find('.pasto_titulo strong').text().toUpperCase();
+
+        if (nome_pasto.indexOf(termo) !== -1) {
+            $(this).show();
+        }
+        else {
+            $(this).hide();
+        }
+    });
+}
+
 function drag(ev, divPasto){
     ev.dataTransfer.setData("text", ev.target.id);
 
