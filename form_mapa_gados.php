@@ -144,6 +144,10 @@
                             <a href="#" style="color: gray; margin-left: 10px;" data-toggle='tooltip' data-placement='right' title="Mapa Tabuleiro" onclick="mapa_tabuleiro()"><i class="fa fa-object-group" style="font-size:20px;"></i></a>
                         </li>
 
+                        <li id="busca_pasto_tabuleiro_li" class="no-before">
+                            <input type="text" class="form-control" id="buscar_pasto_tabuleiro" placeholder="Buscar pasto..." style="width: 180px; display: inline-block; margin-left: 10px;" onkeyup="filtrar_pasto_tabuleiro()">
+                        </li>
+
                         <li class="pull-right no-before"><label id='totalAnimais'></label></li>
                     </ol>
 
