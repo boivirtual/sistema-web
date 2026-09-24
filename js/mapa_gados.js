@@ -134,6 +134,7 @@ function consultar_mapa(){
 
                 $("li#mapa_tabuleiro").hide();
                 $("li#mapa_satelite").show();
+                $("li#busca_pasto_tabuleiro_li").show();
             }
             else {
                 $("div#consulta_contas").hide();
@@ -141,6 +142,7 @@ function consultar_mapa(){
 
                 $("li#mapa_tabuleiro").show();
                 $("li#mapa_satelite").hide();
+                $("li#busca_pasto_tabuleiro_li").hide();
             }
 
             var totalAnimais = $("#totalAnimaisFazenda").val();
