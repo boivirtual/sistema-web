@@ -1063,6 +1063,13 @@ div[data-role="editor-toolbar"] {
   overflow: visible;
 }
 
+.breadcrumb-mapa-gado li.mapa-tipo-centro {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  transform: translateX(-50%);
+}
+
 .breadcrumb li i {
   font-size: 15px;
   margin-right: 5px;
