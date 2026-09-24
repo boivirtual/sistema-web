@@ -136,15 +136,15 @@
 
                         </li>
 
-                        <li id="mapa_satelite" class="no-before">
-                            <a href="#" style="color: gray; margin-left: 10px;" data-toggle='tooltip' data-placement='right' title="Mapa Satelite" onclick="mapa_satelite()"><i class="fa fa-map-o" style="font-size:20px;"></i></a>
-                        </li>
-                            
-                        <li id="mapa_tabuleiro" class="no-before">
-                            <a href="#" style="color: gray; margin-left: 10px;" data-toggle='tooltip' data-placement='right' title="Mapa Tabuleiro" onclick="mapa_tabuleiro()"><i class="fa fa-object-group" style="font-size:20px;"></i></a>
+                        <li class="no-before" style="margin-left: 20px;"><label id='totalAnimais'></label></li>
+
+                        <li id="mapa_satelite" class="no-before mapa-tipo-centro">
+                            <a href="#" style="color: gray;" data-toggle='tooltip' data-placement='bottom' title="Mapa Satelite" onclick="mapa_satelite()"><i class="fa fa-map-o" style="font-size:20px;"></i></a>
                         </li>
 
-                        <li class="no-before" style="margin-left: 20px;"><label id='totalAnimais'></label></li>
+                        <li id="mapa_tabuleiro" class="no-before mapa-tipo-centro">
+                            <a href="#" style="color: gray;" data-toggle='tooltip' data-placement='bottom' title="Mapa Tabuleiro" onclick="mapa_tabuleiro()"><i class="fa fa-object-group" style="font-size:20px;"></i></a>
+                        </li>
 
                         <li id="modo_toque_tabuleiro_li" class="no-before pull-right">
                             <button type="button" id="modo_toque_tabuleiro_btn" class="btn btn-default btn-sm" style="vertical-align: middle;" data-toggle="tooltip" data-trigger="hover" data-container="body" data-placement="bottom" title="Alternativa ao arrastar" onclick="alternar_modo_toque_tabuleiro()"><i class="fa fa-hand-pointer-o"></i> Mover por toque</button>
