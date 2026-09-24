@@ -5389,6 +5389,11 @@ div.item_mapa.pasto-drop-hover{
   box-shadow: 0 0 0 3px rgb(18 140 184 / 35%), 0 2px 2px 0 rgb(0 0 0 / 14%);
 }
 
+div.item_mapa.pasto-origem-selecionada{
+  border: dashed 2px #ff8f00;
+  box-shadow: 0 0 0 3px rgb(255 143 0 / 35%), 0 2px 2px 0 rgb(0 0 0 / 14%);
+}
+
 div.item_mapa div.pasto_titulo{
   border-bottom: 1px solid rgba(0, 0, 0, 0.35);
   color: rgba(0, 0, 0, 0.6);
