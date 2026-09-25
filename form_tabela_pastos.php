@@ -484,7 +484,7 @@
                             <div class="row">
                                 <div class="form-group col-md-4">
                                     <label for="editor_local" class="control-label"><span class="required">*</span> Fazenda</label>
-                                    <select class="form-control" id="editor_local">
+                                    <select class="form-control" id="editor_local" onchange="editor_carregar_mapa()">
                                         <option value="">...</option>
 
                                         <?php
