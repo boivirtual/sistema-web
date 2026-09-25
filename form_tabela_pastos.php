@@ -509,6 +509,22 @@
                         <button type="button" class="btn btn-default" id="editor_btn_tracado" onclick="editor_alternar_tracado()" disabled><i class="fa fa-draw-polygon"></i> Editar traçado</button>
                         <button type="button" class="btn btn-default" id="editor_btn_renomear" onclick="editor_renomear()" disabled><i class="fa fa-pen"></i> Renomear</button>
                         <button type="button" class="btn btn-default" id="editor_btn_remover" onclick="editor_remover_novo()" disabled><i class="fa fa-trash"></i> Descartar desenho novo</button>
+                        <button type="button" class="btn btn-danger" id="editor_btn_excluir" onclick="editor_pedir_exclusao()" disabled><i class="fa fa-trash"></i> Excluir pasto</button>
+                    </div>
+                </div>
+
+                <div id="editor_painel_excluir" class="row" style="display: none;">
+                    <div class="col-md-12">
+                        <p id="editor_texto_excluir" style="color: red; font-weight: bold;"></p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="editor_senha_excluir" class="control-label">Sua senha</label>
+                        <input type="password" class="form-control" id="editor_senha_excluir" autocomplete="new-password">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">&nbsp;</label><br>
+                        <button type="button" class="btn btn-danger" onclick="editor_confirmar_exclusao()">Confirmar exclusão</button>
+                        <button type="button" class="btn btn-default" onclick="editor_cancelar_exclusao()">Cancelar</button>
                     </div>
                 </div>
 
