@@ -470,7 +470,85 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="modal_importar_mapa" tabindex="-1" role="dialog" 
+            <div class="modal fade" id="modal_editor_mapa" tabindex="-1" role="dialog"
+             aria-labelledby="modal_editor_mapaTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+
+                <div class="modal-lg modal-dialog modal-dialog-centered" role="document" style="width: 98%;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" aria-label="Close" onclick="fechar_editor_mapa()"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modal_editor_mapaTitle">Pastos - Editor de Mapa</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label for="editor_local" class="control-label"><span class="required">*</span> Fazenda</label>
+                                    <select class="form-control" id="editor_local">
+                                        <option value="">...</option>
+
+                                        <?php
+                                            while($reg_local = mysqli_fetch_object($local_editor)) {
+                                                foreach ($array_locais_usuario as $value) {
+                                                    $value = trim($value);
+                                                    if ($value==$reg_local->tbl_pessoa_id) {
+                                                        echo '<option value="'.$value.'">' .$reg_local->tbl_pessoa_nome. '</option>';
+                                                    }
+                                                }
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-2">
+                                    <label class="control-label">&nbsp;</label>
+                                    <button type="button" class="form-control btn btn-info" onclick="editor_carregar_mapa()">Carregar mapa</button>
+                                </div>
+
+                                <div class="form-group col-md-3">
+                                    <label for="editor_busca" class="control-label">Localizar pasto</label>
+                                    <input type="text" class="form-control" id="editor_busca" list="editor_lista_pastos" autocomplete="off" placeholder="Nome do pasto..." onchange="editor_buscar_pasto()">
+                                    <datalist id="editor_lista_pastos"></datalist>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <button type="button" class="btn btn-primary" id="editor_btn_novo" onclick="editor_novo_pasto()" disabled><i class="fa fa-plus"></i> Novo pasto</button>
+                                    <button type="button" class="btn btn-default" id="editor_btn_tracado" onclick="editor_alternar_tracado()" disabled><i class="fa fa-draw-polygon"></i> Editar traçado</button>
+                                    <button type="button" class="btn btn-default" id="editor_btn_renomear" onclick="editor_renomear()" disabled><i class="fa fa-pen"></i> Renomear</button>
+                                    <button type="button" class="btn btn-default" id="editor_btn_remover" onclick="editor_remover_novo()" disabled><i class="fa fa-trash"></i> Descartar desenho novo</button>
+                                </div>
+                            </div>
+
+                            <div id="editor_painel_nome" class="row">
+                                <div class="form-group col-md-4">
+                                    <label for="editor_nome_pasto" class="control-label">Nome do pasto</label>
+                                    <input type="text" class="form-control" id="editor_nome_pasto" maxlength="60" onkeyup="maiuscula(this)">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">&nbsp;</label><br>
+                                    <button type="button" class="btn btn-primary" onclick="editor_confirmar_nome()">Confirmar</button>
+                                    <button type="button" class="btn btn-default" onclick="editor_cancelar_nome()">Cancelar</button>
+                                </div>
+                            </div>
+
+                            <div id="editor_mapa_aviso" class="alert alert-info" style="padding: 6px 12px;">Selecione a Fazenda e clique em Carregar mapa.</div>
+
+                            <div id="editor_mapa"></div>
+
+                            <p id="editor_info" style="margin-top: 8px; font-weight: bold;">Clique em um pasto no mapa para selecioná-lo.</p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary pull-left" id="editor_btn_salvar" onclick="editor_salvar()" disabled>Salvar alterações</button>
+                            <button type="button" class="btn btn-default" onclick="fechar_editor_mapa()">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modal_importar_mapa" tabindex="-1" role="dialog"
              aria-labelledby="modal_incluirCenterTitle" aria-hidden="true"  data-backdrop="static">
 
                 <div class="modal-lg modal-dialog modal-dialog-centered" role="document" style="width: 100%;">
