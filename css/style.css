@@ -1070,7 +1070,44 @@ div[data-role="editor-toolbar"] {
   transform: translateX(-50%);
 }
 
+.busca-pasto-wrap {
+  position: relative;
+  display: inline-block;
+  width: 180px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.busca-pasto-wrap input {
+  width: 100%;
+  padding-right: 26px;
+}
+
+.breadcrumb .busca-pasto-wrap a.busca-pasto-limpar {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  line-height: 1;
+}
+
+.breadcrumb .busca-pasto-wrap a.busca-pasto-limpar:hover {
+  color: #555;
+}
+
+.breadcrumb .busca-pasto-wrap a.busca-pasto-limpar i {
+  margin: 0;
+  font-size: 15px;
+}
+
 @media (max-width: 767px) {
+  .busca-pasto-wrap {
+    display: block;
+    width: 100%;
+    margin-right: 0;
+  }
+
   .breadcrumb.breadcrumb-mapa-gado {
     display: flex;
     flex-wrap: wrap;
