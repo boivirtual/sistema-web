@@ -50,18 +50,47 @@ function editor_mostrar_erro(mensagem) {
 function editor_aviso(tipo, html) {
     $("#editor_mapa_aviso").removeClass("alert-info alert-success alert-warning alert-danger")
         .addClass("alert-" + tipo).html(html).show();
+    editor_ajustar_altura();
+}
+
+// O mapa ocupa todo o espaco vertical que sobra na tela de trabalho
+function editor_ajustar_altura() {
+    var $mapa = $("#editor_mapa");
+
+    if (!$("#editor_mapa_tela").is(':visible')) {
+        return;
+    }
+
+    var topo = $mapa[0].getBoundingClientRect().top;
+    var altura = Math.max(300, window.innerHeight - topo - $("#editor_info").outerHeight(true) - 20);
+
+    $mapa.css('height', altura + 'px');
+
+    if (editorMapa.map !== null) {
+        editorMapa.map.invalidateSize();
+    }
 }
 
 function abrir_editor_mapa() {
     $("#editor_local").val('');
-    $("#modal_editor_mapa").modal('show');
+    $("#pastos_cabecalho, #pastos_conteudo").hide();
+    $("#editor_mapa_tela").show();
+    editor_ajustar_altura();
+    editor_preparar_mapa(function() {
+        editor_ajustar_altura();
+    });
 }
 
 // Este script e carregado antes do jQuery (rodape.php), entao o registro espera o load da pagina
 window.addEventListener('load', function() {
-    $(document).on('shown.bs.modal', '#modal_editor_mapa', function() {
-        editor_preparar_mapa(function() {});
-    });
+    $(window).on('resize', editor_ajustar_altura);
+});
+
+window.addEventListener('beforeunload', function(ev) {
+    if (editor_tem_alteracoes()) {
+        ev.preventDefault();
+        ev.returnValue = '';
+    }
 });
 
 function editor_preparar_mapa(sucesso) {
