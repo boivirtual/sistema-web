@@ -1070,6 +1070,62 @@ div[data-role="editor-toolbar"] {
   transform: translateX(-50%);
 }
 
+@media (max-width: 767px) {
+  .breadcrumb.breadcrumb-mapa-gado {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    padding: 8px 10px;
+  }
+
+  .breadcrumb-mapa-gado > li {
+    float: none !important;
+    position: static !important;
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0;
+  }
+
+  .breadcrumb-mapa-gado > li#fazendas-select {
+    order: 1;
+    flex: 1 1 100%;
+  }
+
+  .breadcrumb-mapa-gado > li#fazendas-select select {
+    max-width: 65%;
+  }
+
+  .breadcrumb-mapa-gado > li.total-animais-li {
+    order: 2;
+    flex: 1 1 auto;
+  }
+
+  .breadcrumb-mapa-gado > li.mapa-tipo-centro {
+    order: 3;
+    margin-left: auto !important;
+  }
+
+  .breadcrumb-mapa-gado > li#busca_pasto_tabuleiro_li {
+    order: 4;
+    flex: 1 1 50%;
+  }
+
+  .breadcrumb-mapa-gado > li#busca_pasto_tabuleiro_li input {
+    width: 100% !important;
+    margin-right: 0 !important;
+  }
+
+  .breadcrumb-mapa-gado > li#modo_toque_tabuleiro_li {
+    order: 5;
+    flex: 0 0 auto;
+  }
+
+  .breadcrumb-mapa-gado label {
+    margin-bottom: 0;
+  }
+}
+
 .breadcrumb li i {
   font-size: 15px;
   margin-right: 5px;
