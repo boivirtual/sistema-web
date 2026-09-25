@@ -3461,8 +3461,21 @@ function mover_tabuleiro_toque(elemento_origem, elemento_destino){
 }
 
 // Busca por nome do pasto no Tabuleiro
+function limpar_busca_pasto_tabuleiro(){
+    $('#buscar_pasto_tabuleiro').val('').trigger('focus');
+    filtrar_pasto_tabuleiro();
+}
+
 function filtrar_pasto_tabuleiro(){
     var termo = $('#buscar_pasto_tabuleiro').val();
+
+    if (termo == '') {
+        $('#limpar_busca_pasto').hide();
+    }
+    else {
+        $('#limpar_busca_pasto').show();
+    }
+
     termo = termo.toUpperCase();
 
     $('.item_mapa').each(function(){
