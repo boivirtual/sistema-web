@@ -5695,3 +5695,35 @@ body {
     height: 100%;
 }
 
+
+/* Editor de mapa dos pastos (form_tabela_pastos.php) */
+#editor_mapa {
+  height: 60vh;
+  min-height: 320px;
+  border: 1px solid #ccc;
+}
+
+.editor-pasto-label {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+  text-shadow: 0 0 3px #000, 0 0 3px #000;
+  white-space: nowrap;
+  padding: 0;
+}
+
+.editor-pasto-label:before {
+  display: none;
+}
+
+#editor_mapa.editor-sem-rotulos .editor-pasto-label {
+  display: none;
+}
+
+#editor_painel_nome {
+  display: none;
+  margin-bottom: 10px;
+}

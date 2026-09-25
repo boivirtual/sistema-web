@@ -36,7 +36,10 @@
 
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.22/r-2.2.6/datatables.min.css"/>
 
-  <link rel="stylesheet" href="css/select-1.13.14.css"> 
+  <link rel="stylesheet" href="css/select-1.13.14.css">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
 
 </head>
 
