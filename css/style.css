@@ -1087,28 +1087,38 @@ div[data-role="editor-toolbar"] {
     padding: 0;
   }
 
-  .breadcrumb-mapa-gado > li#fazendas-select {
-    order: 1;
-    flex: 1 1 100%;
+  .breadcrumb-mapa-gado > li {
+    text-align: left;
   }
 
-  .breadcrumb-mapa-gado > li#fazendas-select select {
-    max-width: 65%;
+  .breadcrumb-mapa-gado > li#fazendas-select {
+    order: 1;
+    flex: 0 1 auto;
   }
 
   .breadcrumb-mapa-gado > li.total-animais-li {
+    order: 1;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  /* quebra de linha forçada entre a linha da fazenda e a linha dos controles */
+  .breadcrumb.breadcrumb-mapa-gado::after {
+    content: '';
     order: 2;
-    flex: 1 1 auto;
+    flex: 1 1 100%;
+    height: 0;
   }
 
   .breadcrumb-mapa-gado > li.mapa-tipo-centro {
     order: 3;
-    margin-left: auto !important;
+    flex: 0 0 auto;
   }
 
   .breadcrumb-mapa-gado > li#busca_pasto_tabuleiro_li {
     order: 4;
-    flex: 1 1 50%;
+    flex: 1 1 0;
+    min-width: 70px;
   }
 
   .breadcrumb-mapa-gado > li#busca_pasto_tabuleiro_li input {
@@ -1119,6 +1129,10 @@ div[data-role="editor-toolbar"] {
   .breadcrumb-mapa-gado > li#modo_toque_tabuleiro_li {
     order: 5;
     flex: 0 0 auto;
+  }
+
+  .breadcrumb-mapa-gado > li#modo_toque_tabuleiro_li .btn {
+    white-space: nowrap;
   }
 
   .breadcrumb-mapa-gado label {
