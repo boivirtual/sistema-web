@@ -1118,7 +1118,7 @@ div[data-role="editor-toolbar"] {
   }
 
   .breadcrumb-mapa-gado > li.mapa-tipo-centro {
-    order: 3;
+    order: 1;
     flex: 0 0 auto;
   }
 
