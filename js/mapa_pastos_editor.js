@@ -57,14 +57,23 @@ function abrir_editor_mapa() {
     $("#modal_editor_mapa").modal('show');
 }
 
-$(document).on('shown.bs.modal', '#modal_editor_mapa', function() {
+// Este script e carregado antes do jQuery (rodape.php), entao o registro espera o load da pagina
+window.addEventListener('load', function() {
+    $(document).on('shown.bs.modal', '#modal_editor_mapa', function() {
+        editor_preparar_mapa(function() {});
+    });
+});
+
+function editor_preparar_mapa(sucesso) {
     editor_carregar_bibliotecas(function() {
         if (editorMapa.map === null) {
             editor_iniciar_mapa();
         }
+
         editorMapa.map.invalidateSize();
+        sucesso();
     });
-});
+}
 
 function editor_iniciar_mapa() {
     var mapa = L.map('editor_mapa', { zoomSnap: 0.5, maxZoom: 21 }).setView([-15.8, -47.9], 4);
