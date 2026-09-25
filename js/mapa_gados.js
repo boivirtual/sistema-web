@@ -4182,24 +4182,10 @@ $(window).resize(function() {
         
 });
 
-$(window).resize(function(){
-    if(window.innerWidth <= 400){
-        $("#divTotalAnimais").show();
-        $("#totalAnimais").hide();
-    }else{
-        $("#divTotalAnimais").hide();
-        $("#totalAnimais").show();
-    }
-});
-
+// O total de animais fica sempre na linha da fazenda (li), inclusive no celular
 $(document).ready(function(){
-    if(window.innerWidth <= 400){
-        $("#divTotalAnimais").show();
-        $("#totalAnimais").hide();
-    }else{
-        $("#divTotalAnimais").hide();
-        $("#totalAnimais").show();
-    }
+    $("#divTotalAnimais").hide();
+    $("#totalAnimais").show();
 });
 
 
