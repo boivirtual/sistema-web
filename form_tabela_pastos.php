@@ -500,11 +500,6 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-2">
-                                    <label class="control-label">&nbsp;</label>
-                                    <button type="button" class="form-control btn btn-info" onclick="editor_carregar_mapa()">Carregar mapa</button>
-                                </div>
-
                                 <div class="form-group col-md-3">
                                     <label for="editor_busca" class="control-label">Localizar pasto</label>
                                     <input type="text" class="form-control" id="editor_busca" list="editor_lista_pastos" autocomplete="off" placeholder="Nome do pasto..." onchange="editor_buscar_pasto()">
