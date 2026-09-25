@@ -133,11 +133,11 @@ function editor_carregar_mapa() {
     var local = $("#editor_local").val();
 
     if (local == '' || local == null) {
-        editor_aviso('warning', 'Selecione a Fazenda.');
         return;
     }
 
     if (editor_tem_alteracoes() && !confirm('Existem alterações não salvas. Deseja descartá-las e carregar outro mapa?')) {
+        $("#editor_local").val(editorMapa.local);
         return;
     }
 
