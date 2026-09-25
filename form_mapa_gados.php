@@ -136,7 +136,7 @@
 
                         </li>
 
-                        <li class="no-before" style="margin-left: 20px;"><label id='totalAnimais'></label></li>
+                        <li class="no-before total-animais-li" style="margin-left: 20px;"><label id='totalAnimais'></label></li>
 
                         <li id="mapa_satelite" class="no-before mapa-tipo-centro">
                             <a href="#" style="color: gray;" data-toggle='tooltip' data-placement='bottom' title="Mapa Satelite" onclick="mapa_satelite()"><i class="fa fa-map-o" style="font-size:20px;"></i></a>
