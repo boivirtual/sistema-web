@@ -531,7 +531,7 @@ function editor_confirmar_nome() {
     }
 
     $("#editor_painel_nome").hide();
-    editor_aviso('info', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.');
+    editor_aviso('info', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 6);
     editor_atualizar_botoes();
 }
 
