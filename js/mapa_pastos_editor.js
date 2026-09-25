@@ -653,5 +653,7 @@ function fechar_editor_mapa() {
     }
 
     editorMapa.local = '';
-    $("#modal_editor_mapa").modal('hide');
+    $("#editor_mapa_tela").hide();
+    $("#pastos_cabecalho, #pastos_conteudo").show();
+    window.scrollTo(0, 0);
 }
