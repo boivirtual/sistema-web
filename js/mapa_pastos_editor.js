@@ -47,10 +47,26 @@ function editor_mostrar_erro(mensagem) {
     $("#mensagem_erro .modal-body").html(mensagem);
 }
 
-function editor_aviso(tipo, html) {
+var editorTemporizadorAviso = null;
+
+// Mensagens de sucesso somem sozinhas; segundos pode ser informado para outros tipos
+function editor_aviso(tipo, html, segundos) {
+    clearTimeout(editorTemporizadorAviso);
+
     $("#editor_mapa_aviso").removeClass("alert-info alert-success alert-warning alert-danger")
         .addClass("alert-" + tipo).html(html).show();
     editor_ajustar_altura();
+
+    if (tipo == 'success' && !segundos) {
+        segundos = 5;
+    }
+
+    if (segundos) {
+        editorTemporizadorAviso = setTimeout(function() {
+            $("#editor_mapa_aviso").hide();
+            editor_ajustar_altura();
+        }, segundos * 1000);
+    }
 }
 
 // O mapa ocupa todo o espaco vertical que sobra na tela de trabalho
