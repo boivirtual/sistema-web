@@ -699,7 +699,9 @@
         </section>
     </section>
 
-<?php 
+<script src="js/mapa_pastos_editor.js?<?php echo Versao; ?>" charset="utf-8" type="text/javascript"></script>
+
+<?php
   $javascript_file_name = 'tabela_pastos.js';
   require 'rodape.php';
 ?>
