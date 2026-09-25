@@ -528,9 +528,9 @@
                                 </div>
                             </div>
 
-                            <div id="editor_mapa_aviso" class="alert alert-info" style="padding: 6px 12px;">Selecione a Fazenda e clique em Carregar mapa.</div>
+                            <div id="editor_mapa_aviso" class="alert alert-info" style="padding: 6px 12px;">Selecione a Fazenda para carregar o mapa.</div>
 
-                            <div id="editor_mapa"></div>
+                            <div id="editor_mapa" style="height: 60vh; min-height: 320px;"></div>
 
                             <p id="editor_info" style="margin-top: 8px; font-weight: bold;">Clique em um pasto no mapa para selecioná-lo.</p>
                         </div>
