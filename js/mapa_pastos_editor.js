@@ -97,6 +97,14 @@ function editor_iniciar_mapa() {
         editorMapa.desenho = null;
         $("#editor_btn_novo").removeClass('active');
     });
+
+    // Rotulos so aparecem com zoom suficiente, para nao poluir o mapa
+    var ajustarRotulos = function() {
+        $("#editor_mapa").toggleClass('editor-sem-rotulos', mapa.getZoom() < 15);
+    };
+
+    mapa.on('zoomend', ajustarRotulos);
+    ajustarRotulos();
 }
 
 function editor_ha(anel) {
