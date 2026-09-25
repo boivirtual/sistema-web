@@ -331,6 +331,10 @@ function editor_selecionar(item) {
     var anterior = editorMapa.selecionado;
     editorMapa.selecionado = item;
 
+    if (anterior !== item) {
+        editor_cancelar_exclusao();
+    }
+
     if (anterior) {
         editor_estilizar(anterior);
     }
