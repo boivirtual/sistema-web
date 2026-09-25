@@ -571,6 +571,89 @@ function editor_remover_novo() {
     editor_atualizar_botoes();
 }
 
+function editor_pedir_exclusao() {
+    var item = editorMapa.selecionado;
+
+    if (!item || item.novo) {
+        return;
+    }
+
+    if (editor_tem_alteracoes()) {
+        editor_aviso('warning', 'Salve (ou descarte) as alterações do mapa antes de excluir um pasto.');
+        return;
+    }
+
+    $("#editor_texto_excluir").text('Excluir o pasto ' + item.nome + '? Só é possível se ele estiver vazio (sem animais). Digite sua senha para confirmar.');
+    $("#editor_senha_excluir").val('');
+    $("#editor_painel_excluir").show();
+    $("#editor_senha_excluir").trigger('focus');
+    editor_ajustar_altura();
+}
+
+function editor_cancelar_exclusao() {
+    $("#editor_senha_excluir").val('');
+    $("#editor_painel_excluir").hide();
+    editor_ajustar_altura();
+}
+
+function editor_confirmar_exclusao() {
+    var item = editorMapa.selecionado;
+    var senha = $("#editor_senha_excluir").val();
+
+    if (!item) {
+        return;
+    }
+
+    if (senha == '') {
+        editor_aviso('warning', 'Digite sua senha para confirmar a exclusão.');
+        return;
+    }
+
+    $.ajax({
+        type: 'post',
+        url: 'mapa_pastos_excluir.php',
+        dataType: 'json',
+        data: {
+            'local': editorMapa.local,
+            'versao': editorMapa.versao,
+            'nome': item.nome,
+            'senha': senha
+        },
+        success: function(data) {
+            $("#editor_senha_excluir").val('');
+
+            if (data.error) {
+                editor_aviso('danger', data.message);
+                return;
+            }
+
+            editor_cancelar_exclusao();
+
+            var local = editorMapa.local;
+            $.ajax({
+                type: 'post',
+                url: 'mapa_pastos_ler.php',
+                dataType: 'json',
+                data: { 'local': local },
+                success: function(recarregado) {
+                    if (!recarregado.error) {
+                        editor_montar(recarregado, local);
+                    }
+
+                    editor_aviso('success', data.message);
+
+                    if (typeof listar_pastos == 'function' && $("#codigo_local_filtro").val() == local) {
+                        listar_pastos();
+                    }
+                }
+            });
+        },
+        error: function() {
+            editor_aviso('danger', 'Não foi possível excluir o pasto. Tente novamente.');
+        }
+    });
+}
+
 function editor_salvar() {
     if (editorMapa.editando) {
         editor_parar_edicao();
