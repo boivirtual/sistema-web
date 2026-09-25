@@ -29,7 +29,7 @@
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/elegant-icons-style.css" rel="stylesheet" />
   <link href="css/bootstrap-theme.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet">
+  <link href="css/style.css?<?php echo Versao; ?>" rel="stylesheet">
   <link href="css/style-responsive.css" rel="stylesheet" />
 
   <script src="https://kit.fontawesome.com/30604bf5d3.js" crossorigin="anonymous"></script>
