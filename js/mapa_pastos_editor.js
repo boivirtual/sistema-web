@@ -407,6 +407,7 @@ function editor_atualizar_botoes() {
     $("#editor_btn_tracado").prop('disabled', !item || ocupado);
     $("#editor_btn_renomear").prop('disabled', !item || ocupado || editorMapa.editando);
     $("#editor_btn_remover").prop('disabled', !item || !item.novo || ocupado || editorMapa.editando);
+    $("#editor_btn_excluir").prop('disabled', !item || item.novo || ocupado || editorMapa.editando);
     $("#editor_btn_salvar").prop('disabled', !pronto || ocupado || editorMapa.editando || !editor_tem_alteracoes());
 
     if (item) {
