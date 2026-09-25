@@ -29,3 +29,6 @@ sftp-config.json
 objects_salary.txt
 pai.csv
 teste_style.html
+
+# Backups gerados pelo Editor de Mapa dos pastos
+mapa/*/backup/
