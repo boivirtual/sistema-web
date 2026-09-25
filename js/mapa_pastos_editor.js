@@ -459,6 +459,7 @@ function editor_abrir_painel_nome(valor, titulo) {
     $("#editor_nome_pasto").val(valor);
     $("#editor_painel_nome").show();
     $("#editor_nome_pasto").trigger('focus');
+    editor_ajustar_altura();
     editor_atualizar_botoes();
 }
 
