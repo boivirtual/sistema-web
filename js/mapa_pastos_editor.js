@@ -533,6 +533,8 @@ function editor_alternar_tracado() {
 
     if (editorMapa.editando) {
         editor_parar_edicao();
+        $("#editor_mapa_aviso").hide();
+        editor_ajustar_altura();
         editor_atualizar_botoes();
         return;
     }
