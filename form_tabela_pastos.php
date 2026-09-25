@@ -133,6 +133,7 @@
                         <a href="#">
                             <input type="button" class="btn btn-primary" aria-label="Left Align" value="Importar Mapa" onclick="incluir_novo()"/>
                         </a>
+                        <input type="button" class="btn btn-info" value="Editor de Mapa" onclick="abrir_editor_mapa()" style="margin-left: 5px;"/>
                     </div> 
 
                     <div class="row col-md-12" id="consulta_contas">
