@@ -25,6 +25,13 @@ if (!preg_match('/^[0-9]{1,12}$/', $local)) {
     exit;
 }
 
+include "mapa_pastos_acesso.php";
+
+if (!usuario_pode_local($conector_acesso, $local)) {
+    echo json_encode(array('error' => true, 'message' => 'Você não tem acesso a essa Fazenda.'));
+    exit;
+}
+
 $arquivo = __DIR__ . '/mapa/' . $cnpj_cliente . '/' . $local . '.json';
 
 if (file_exists($arquivo)) {
