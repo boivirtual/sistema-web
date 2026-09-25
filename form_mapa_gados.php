@@ -151,7 +151,10 @@
                         </li>
 
                         <li id="busca_pasto_tabuleiro_li" class="no-before pull-right">
-                            <input type="text" class="form-control input-sm" id="buscar_pasto_tabuleiro" placeholder="Buscar pasto..." style="width: 180px; display: inline-block; margin-right: 10px; vertical-align: middle;" onkeyup="filtrar_pasto_tabuleiro()">
+                            <span class="busca-pasto-wrap">
+                                <input type="text" class="form-control input-sm" id="buscar_pasto_tabuleiro" placeholder="Buscar pasto..." autocomplete="off" oninput="filtrar_pasto_tabuleiro()">
+                                <a href="#" id="limpar_busca_pasto" class="busca-pasto-limpar" style="display: none;" onclick="limpar_busca_pasto_tabuleiro(); return false;"><i class="fa fa-times-circle"></i></a>
+                            </span>
                         </li>
                     </ol>
 
