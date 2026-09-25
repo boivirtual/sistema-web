@@ -554,8 +554,16 @@ function editor_alternar_tracado() {
 
     if (editorMapa.editando) {
         editor_parar_edicao();
-        $("#editor_mapa_aviso").hide();
-        editor_ajustar_altura();
+
+        if (editor_tem_alteracoes()) {
+            editor_aviso('info', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 6);
+        }
+        else {
+            clearTimeout(editorTemporizadorAviso);
+            $("#editor_mapa_aviso").hide();
+            editor_ajustar_altura();
+        }
+
         editor_atualizar_botoes();
         return;
     }
