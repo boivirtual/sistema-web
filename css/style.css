@@ -1093,13 +1093,20 @@ div[data-role="editor-toolbar"] {
 
   .breadcrumb-mapa-gado > li#fazendas-select {
     order: 1;
-    flex: 0 1 auto;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .breadcrumb-mapa-gado > li#fazendas-select select {
+    width: 100%;
+    max-width: 100%;
   }
 
   .breadcrumb-mapa-gado > li.total-animais-li {
     order: 1;
     flex: 0 0 auto;
     white-space: nowrap;
+    font-size: 12px;
   }
 
   /* quebra de linha forçada entre a linha da fazenda e a linha dos controles */
