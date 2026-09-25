@@ -143,22 +143,24 @@ function editor_carregar_mapa() {
 
     editor_aviso('info', 'Carregando o mapa...');
 
-    $.ajax({
-        type: 'post',
-        url: 'mapa_pastos_ler.php',
-        dataType: 'json',
-        data: { 'local': local },
-        success: function(data) {
-            if (data.error) {
-                editor_aviso('danger', data.message);
-                return;
-            }
+    editor_preparar_mapa(function() {
+        $.ajax({
+            type: 'post',
+            url: 'mapa_pastos_ler.php',
+            dataType: 'json',
+            data: { 'local': local },
+            success: function(data) {
+                if (data.error) {
+                    editor_aviso('danger', data.message);
+                    return;
+                }
 
-            editor_montar(data, local);
-        },
-        error: function() {
-            editor_aviso('danger', 'Não foi possível carregar o mapa. Tente novamente.');
-        }
+                editor_montar(data, local);
+            },
+            error: function() {
+                editor_aviso('danger', 'Não foi possível carregar o mapa. Tente novamente.');
+            }
+        });
     });
 }
 
