@@ -995,7 +995,8 @@ function editor_salvar() {
             'local': editorMapa.local,
             'versao': editorMapa.versao,
             'geojson': JSON.stringify(editor_serializar()),
-            'renomeados': JSON.stringify(renomeados)
+            'renomeados': JSON.stringify(renomeados),
+            'novos': JSON.stringify(novos)
         },
         success: function(data) {
             if (data.error) {
