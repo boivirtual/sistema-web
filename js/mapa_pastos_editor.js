@@ -817,8 +817,9 @@ function editor_montar(data, local) {
     }
 }
 
-function editor_registrar_item(item) {
-    item.layer.addTo(editorMapa.grupo);
+// Liga ao layer os eventos padrao (tooltip, clique, arraste de ponto). Reaproveitada tambem
+// quando o layer de um item e trocado por um novo (ver editor_cancelar_tracado).
+function editor_vincular_layer(item) {
     item.layer.bindTooltip(item.nome, { permanent: true, direction: 'center', className: 'editor-pasto-label' });
     item.layer.on('click', function(ev) {
         L.DomEvent.stopPropagation(ev);
@@ -830,6 +831,11 @@ function editor_registrar_item(item) {
         item.modificado = true;
         editor_atualizar_botoes();
     });
+}
+
+function editor_registrar_item(item) {
+    item.layer.addTo(editorMapa.grupo);
+    editor_vincular_layer(item);
 
     editorMapa.itens.push(item);
     editor_estilizar(item);
