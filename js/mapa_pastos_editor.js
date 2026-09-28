@@ -289,11 +289,20 @@ function editor_carregar_mapa() {
         return;
     }
 
-    if (editor_tem_alteracoes() && !confirm('Existem alterações não salvas. Deseja descartá-las e carregar outro mapa?')) {
+    if (editor_tem_alteracoes()) {
         $("#editor_local").val(editorMapa.local);
+
+        editor_confirmar_saida(function() {
+            $("#editor_local").val(local);
+            editor_carregar_mapa_agora(local);
+        });
         return;
     }
 
+    editor_carregar_mapa_agora(local);
+}
+
+function editor_carregar_mapa_agora(local) {
     editor_aviso('info', 'Carregando o mapa...');
 
     editor_preparar_mapa(function() {
