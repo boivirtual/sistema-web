@@ -35,6 +35,37 @@ if (!usuario_pode_local($conector_acesso, $local)) {
     resposta_erro('Você não tem acesso a essa Fazenda.');
 }
 
+// Verificacao previa (sem senha e sem excluir nada): diz se o pasto pode ser excluido
+if (isset($_POST['verificar']) && $_POST['verificar'] == '1') {
+    $nome_ver = mysqli_real_escape_string($conector, $nome);
+    $local_ver = mysqli_real_escape_string($conector, $local);
+
+    if ($nome == 'ENTRADA' || $nome == 'SAIDA' || $nome == 'SAÍDA') {
+        resposta_erro('Os pastos ENTRADA e SAIDA não podem ser excluídos.');
+    }
+
+    $rs_ver = mysqli_query($conector, "SELECT tbl_pasto_id, tbl_pasto_modulo FROM tbl_pasto
+        WHERE tbl_pasto_descricao='$nome_ver' AND tbl_pasto_codigo_local='$local_ver' AND tbl_pasto_lixeira=0");
+
+    if (mysqli_num_rows($rs_ver) > 0) {
+        $pasto_ver = mysqli_fetch_object($rs_ver);
+
+        if ($pasto_ver->tbl_pasto_modulo == 999) {
+            resposta_erro('Os pastos ENTRADA e SAIDA não podem ser excluídos.');
+        }
+
+        $rs_qtd = mysqli_query($conector, "SELECT COUNT(*) AS qtd FROM tbl_animal_pasto
+            WHERE tbl_animal_pasto_id=" . (int)$pasto_ver->tbl_pasto_id . " AND tbl_animal_pasto_situacao='A'");
+
+        if ((int)mysqli_fetch_object($rs_qtd)->qtd > 0) {
+            resposta_erro('O pasto ' . $nome . ' ainda tem animais e não pode ser excluído. Transfira todos os animais para outro pasto antes de excluir.');
+        }
+    }
+
+    echo json_encode(array('success' => true), JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 if ($senha === '' || !isset($_SESSION['senha_usuario']) || !hash_equals((string)$_SESSION['senha_usuario'], (string)$senha)) {
     resposta_erro('Senha incorreta.');
 }
