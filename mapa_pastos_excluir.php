@@ -109,7 +109,7 @@ if (mysqli_num_rows($rs) > 0) {
 
     if ($qtd > 0) {
         mysqli_rollback($conector);
-        resposta_erro('O pasto ' . $nome . ' ainda tem animais. Transfira todos os animais para outro pasto antes de excluir.');
+        resposta_erro('O pasto ' . $nome . ' tem animais e não pode ser excluído. Transfira todos os animais para outro pasto antes de excluir.');
     }
 
     $ok = mysqli_query($conector, "UPDATE tbl_pasto SET
