@@ -57,8 +57,11 @@ function editor_aviso(tipo, html, segundos) {
     clearTimeout(editorTemporizadorAviso);
     editorAvisoEhDica = false;
 
+    // A mensagem aparece sobre o mapa; o "x" permite fecha-la antes do tempo
     $("#editor_mapa_aviso").removeClass("alert-info alert-success alert-warning alert-danger")
-        .addClass("alert-" + tipo).html(html).show();
+        .addClass("alert-" + tipo)
+        .html('<button type="button" class="close" onclick="editor_ocultar_aviso()">&times;</button>' + html)
+        .show();
     editor_ajustar_altura();
 
     if (tipo == 'success' && !segundos) {
