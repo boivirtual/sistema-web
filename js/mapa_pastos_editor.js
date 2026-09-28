@@ -1009,7 +1009,8 @@ function editor_tem_alteracoes() {
 
 function editor_atualizar_botoes() {
     var item = editorMapa.selecionado;
-    var pronto = editorMapa.local != '';
+    // No Novo Mapa, so libera o desenho depois de definida a localizacao da fazenda
+    var pronto = editorMapa.local != '' && (editorMapa.modo != 'novo' || editorMapa.coordOk);
     var ocupado = editorMapa.desenho !== null || editorMapa.novoPendente !== null;
 
     $("#editor_total_pastos").text(pronto ? editorMapa.itens.length + ' pasto(s) no mapa' : '');
