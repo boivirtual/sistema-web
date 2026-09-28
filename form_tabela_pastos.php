@@ -545,7 +545,7 @@
 
                 <div id="editor_mapa" style="height: 500px; min-height: 300px;"></div>
 
-                <p id="editor_info" style="margin: 6px 0 0 0; font-weight: bold;">Clique em um pasto no mapa para selecioná-lo.</p>
+                <p id="editor_info" style="margin: 6px 0 0 0; font-weight: bold;">&nbsp;</p>
             </div>
 
             <div class="modal fade" id="modal_editor_sair" tabindex="-1" role="dialog"
