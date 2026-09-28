@@ -609,7 +609,11 @@ function editor_renomear() {
 }
 
 function editor_abrir_painel_nome(valor, titulo) {
-    $("#editor_painel_nome label").text(titulo);
+    clearTimeout(editorTemporizadorAviso);
+    editorAvisoEhDica = false;
+    $("#editor_mapa_aviso").hide();
+
+    $("#editor_painel_nome label").first().text(titulo);
     $("#editor_nome_pasto").val(valor);
     $("#editor_painel_nome").show();
     $("#editor_nome_pasto").trigger('focus');
