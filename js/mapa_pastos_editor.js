@@ -940,11 +940,32 @@ function editor_pedir_exclusao() {
         return;
     }
 
-    $("#editor_texto_excluir").text('Excluir o pasto ' + item.nome + '? Só é possível se ele estiver vazio (sem animais). Digite sua senha para confirmar.');
-    $("#editor_senha_excluir").val('');
-    $("#editor_painel_excluir").show();
-    $("#editor_senha_excluir").trigger('focus');
-    editor_ajustar_altura();
+    // Antes de pedir a senha, confere no servidor se o pasto pode ser excluido (sem animais)
+    $.ajax({
+        type: 'post',
+        url: 'mapa_pastos_excluir.php',
+        dataType: 'json',
+        data: {
+            'verificar': '1',
+            'local': editorMapa.local,
+            'nome': item.nome
+        },
+        success: function(data) {
+            if (data.error) {
+                editor_mostrar_erro(data.message);
+                return;
+            }
+
+            $("#editor_texto_excluir").text('Excluir o pasto ' + item.nome + '? Digite sua senha para confirmar.');
+            $("#editor_senha_excluir").val('');
+            $("#editor_painel_excluir").show();
+            $("#editor_senha_excluir").trigger('focus');
+            editor_ajustar_altura();
+        },
+        error: function() {
+            editor_aviso('danger', 'Não foi possível verificar o pasto. Tente novamente.', 6);
+        }
+    });
 }
 
 function editor_cancelar_exclusao() {
