@@ -547,6 +547,8 @@ function editor_atualizar_botoes() {
     var pronto = editorMapa.local != '';
     var ocupado = editorMapa.desenho !== null || editorMapa.novoPendente !== null;
 
+    $("#editor_total_pastos").text(pronto ? editorMapa.itens.length + ' pasto(s) no mapa' : '');
+
     $("#editor_btn_novo").prop('disabled', !pronto || ocupado || editorMapa.editando);
     $("#editor_btn_tracado").prop('disabled', !item || ocupado);
     $("#editor_btn_renomear").prop('disabled', !item || ocupado || editorMapa.editando);
