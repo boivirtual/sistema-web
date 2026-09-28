@@ -565,7 +565,7 @@ function editor_atualizar_botoes() {
         $("#editor_info").text(item.nome + ' — ' + ha.toFixed(2).replace('.', ',') + ' ha — ' + textoStatus);
     }
     else {
-        $("#editor_info").text('Clique em um pasto no mapa para selecioná-lo.');
+        $("#editor_info").html('&nbsp;');
     }
 }
 
