@@ -5753,3 +5753,25 @@ body {
   background: #9E9E9E;
   border: 2px dashed #ff8f00;
 }
+
+/* Editor de mapa em tela cheia: cobre a pagina toda (menu e cabecalho), sem esconder os modais */
+#editor_mapa_tela.editor-tela-cheia {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1030;
+  background: #eeeeee;
+  padding: 10px 15px;
+  overflow-y: auto;
+}
+
+body.editor-sem-rolagem {
+  overflow: hidden;
+}
+
+/* listas do selectpicker (data-container=body) precisam ficar acima do editor em tela cheia */
+body > .bs-container {
+  z-index: 1060 !important;
+}
