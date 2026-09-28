@@ -429,6 +429,7 @@ echo json_encode(array(
     'message' => 'Mapa gravado com sucesso.',
     'criados' => $criados,
     'atualizados' => $atualizados,
-    'renomeados' => $renomeados_ok
+    'renomeados' => $renomeados_ok,
+    'modulos' => $modulos_alterados_ok
 ), JSON_UNESCAPED_UNICODE);
 ?>
