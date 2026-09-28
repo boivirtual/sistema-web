@@ -743,10 +743,21 @@ function editor_montar(data, local) {
     }
 
     var datalist = $("#editor_lista_pastos").empty();
+    var nomesComPoligono = {};
 
     for (var k = 0; k < editorMapa.itens.length; k++) {
         datalist.append($("<option>").attr("value", editorMapa.itens[k].nome));
+        nomesComPoligono[editorMapa.itens[k].nome.toUpperCase()] = true;
     }
+
+    // Pastos ja cadastrados no sistema que ainda nao tem poligono: sugeridos ao criar um pasto novo
+    var sugestoes = $("#editor_lista_cadastrados").empty();
+
+    Object.keys(editorMapa.pastosSistema).forEach(function(nome) {
+        if (!nomesComPoligono[nome]) {
+            sugestoes.append($("<option>").attr("value", nome));
+        }
+    });
 
     if (editorMapa.itens.length > 0) {
         editorMapa.map.fitBounds(editorMapa.grupo.getBounds(), { maxZoom: 17 });
