@@ -87,10 +87,89 @@ function editor_ajustar_altura() {
     }
 }
 
-function abrir_editor_mapa() {
+var editorSaindo = false;
+var editorAcaoSair = null;
+var editorAcaoNaoSair = null;
+
+// Se houver ajustes nao salvos, pergunta antes de executar a acao que descartaria o trabalho
+function editor_confirmar_saida(aoConfirmar, aoCancelar) {
+    if (!editor_tem_alteracoes()) {
+        aoConfirmar();
+        return;
+    }
+
+    editorAcaoSair = aoConfirmar;
+    editorAcaoNaoSair = aoCancelar || null;
+    $("#modal_editor_sair").modal('show');
+}
+
+function editor_sair_sim() {
+    var acao = editorAcaoSair;
+
+    editorAcaoSair = null;
+    editorAcaoNaoSair = null;
+    $("#modal_editor_sair").modal('hide');
+
+    if (acao) {
+        acao();
+    }
+}
+
+function editor_sair_nao() {
+    var acao = editorAcaoNaoSair;
+
+    editorAcaoSair = null;
+    editorAcaoNaoSair = null;
+    $("#modal_editor_sair").modal('hide');
+
+    if (acao) {
+        acao();
+    }
+}
+
+// Volta o editor ao estado inicial, sem nada carregado
+function editor_limpar_tudo() {
+    editor_parar_edicao();
+
+    if (editorMapa.desenho) {
+        editorMapa.desenho.disable();
+        editorMapa.desenho = null;
+    }
+
+    if (editorMapa.grupo) {
+        editorMapa.grupo.clearLayers();
+    }
+
+    editorMapa.itens = [];
+    editorMapa.pontos = [];
+    editorMapa.pastosSistema = [];
+    editorMapa.selecionado = null;
+    editorMapa.novoPendente = null;
+    editorMapa.local = '';
+    editorMapa.versao = '';
+    editorMapa.snapshot = '';
+    editorMapa.modoNome = '';
+
     $("#editor_local").val('');
+    $("#editor_busca").val('');
+    $("#editor_lista_pastos").empty();
+    $("#editor_nome_pasto, #editor_senha_excluir").val('');
+    $("#editor_painel_nome, #editor_painel_excluir").hide();
+    $("#editor_btn_novo").removeClass('active');
+
+    clearTimeout(editorTemporizadorAviso);
+    editor_aviso('info', 'Selecione a Fazenda para carregar o mapa.');
+    editor_atualizar_botoes();
+
+    if (editorMapa.map !== null) {
+        editorMapa.map.setView([-15.8, -47.9], 4);
+    }
+}
+
+function abrir_editor_mapa() {
     $("#pastos_cabecalho, #pastos_conteudo").hide();
     $("#editor_mapa_tela").show();
+    editor_limpar_tudo();
     editor_ajustar_altura();
     editor_preparar_mapa(function() {
         editor_ajustar_altura();
