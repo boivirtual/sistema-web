@@ -808,7 +808,7 @@ function editor_atualizar_botoes() {
         $("#editor_info").text(item.nome + ' — ' + textoModulo + ha.toFixed(2).replace('.', ',') + ' ha — ' + textoStatus).show();
     }
     else {
-        $("#editor_info").html('&nbsp;');
+        $("#editor_info").hide().text('');
     }
 }
 
