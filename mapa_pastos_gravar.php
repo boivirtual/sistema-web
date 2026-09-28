@@ -194,6 +194,17 @@ $criados = array();
 $atualizados = array();
 $renomeados_ok = array();
 
+include "funcao_modulo_pasto_cor.php";
+
+// Modulos ativos aceitos para pastos novos (999 e reservado para ENTRADA/SAIDA)
+$modulos_validos = array();
+
+foreach (ler_modulos_pasto($conector) as $m) {
+    if ($m['id'] != 999) {
+        $modulos_validos[$m['id']] = true;
+    }
+}
+
 mysqli_begin_transaction($conector);
 
 // 1) Renomeia no banco os pastos que mudaram de nome no mapa
