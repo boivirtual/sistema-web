@@ -496,12 +496,19 @@ function editor_carregar_mapa_agora(local) {
                     return;
                 }
 
-                // Fazenda sem mapa desenhado: orienta a incluir o mapa pela tela inicial
+                // Novo Mapa: monta o mapa vazio e vai para a localizacao da fazenda
+                if (editorMapa.modo == 'novo' && data.geojson.features.length == 0) {
+                    editor_montar(data, local);
+                    editor_iniciar_localizacao(local);
+                    return;
+                }
+
+                // Editar Mapa em fazenda sem mapa desenhado: orienta a usar o Novo Mapa
                 if (data.geojson.features.length == 0) {
                     var nomeFazenda = $("#editor_local option:selected").text();
 
                     editor_limpar_tudo();
-                    editor_mostrar_erro('A fazenda <strong>' + nomeFazenda + '</strong> não tem mapa desenhado. Para incluir o mapa, clique no botão <strong>Importar Mapa</strong> na tela inicial.');
+                    editor_mostrar_erro('A fazenda <strong>' + nomeFazenda + '</strong> não tem mapa desenhado. Para incluir o mapa, clique no botão <strong>Novo Mapa</strong> na tela inicial.');
 
                     // Garante o seletor na posicao inicial (sem fazenda) tambem ao fechar o modal
                     $("#editor_local").val('');
