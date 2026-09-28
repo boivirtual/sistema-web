@@ -334,11 +334,16 @@ $cnpj_cliente = $_SESSION['id_cliente'];
 
 $arquivo = 'mapa/'.$cnpj_cliente.'/'.$local.'.json';
 
-$json = json_encode($geojson, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+include "conecta_mysql.inc";
+include "funcao_mapa_fazenda.php";
 
-$file = fopen(__DIR__ . '/' . $arquivo,'w');
-fwrite($file, $json);
-fclose($file);
+// Grava o mapa no banco (com historico) e regenera o arquivo JSON
+$erro_mapa = mapa_gravar($conector, $cnpj_cliente, $local, $geojson, $_SESSION['nome_usuario'], 'importacao');
+
+if ($erro_mapa !== '') {
+	echo "<script> alert ('" . addslashes($erro_mapa) . "'); location.href='form_tabela_pastos.php'</script>";
+	exit;
+}
 
 // Gerar os pastos no banco de dados do local
 $tem_entrada_saida = 'N';
