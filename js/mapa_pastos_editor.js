@@ -741,6 +741,14 @@ function editor_parar_edicao() {
 function editor_remover_novo() {
     var item = editorMapa.selecionado;
 
+    // Durante o desenho, este botao vira "Cancelar desenho"
+    if (editorMapa.desenho) {
+        editorMapa.desenho.disable();
+        editorMapa.desenho = null;
+        editor_atualizar_botoes();
+        return;
+    }
+
     if (!item || !item.novo) {
         return;
     }
