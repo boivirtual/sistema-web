@@ -58,7 +58,7 @@ if (isset($_POST['verificar']) && $_POST['verificar'] == '1') {
             WHERE tbl_animal_pasto_id=" . (int)$pasto_ver->tbl_pasto_id . " AND tbl_animal_pasto_situacao='A'");
 
         if ((int)mysqli_fetch_object($rs_qtd)->qtd > 0) {
-            resposta_erro('O pasto ' . $nome . ' ainda tem animais e não pode ser excluído. Transfira todos os animais para outro pasto antes de excluir.');
+            resposta_erro('O pasto ' . $nome . ' tem animais e não pode ser excluído. Transfira todos os animais para outro pasto antes de excluir.');
         }
     }
 
