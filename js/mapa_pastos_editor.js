@@ -563,7 +563,14 @@ function editor_atualizar_botoes() {
     $("#editor_btn_novo").prop('disabled', !pronto || ocupado || editorMapa.editando);
     $("#editor_btn_tracado").prop('disabled', !item || ocupado);
     $("#editor_btn_renomear").prop('disabled', !item || ocupado || editorMapa.editando);
-    $("#editor_btn_remover").prop('disabled', !item || !item.novo || ocupado || editorMapa.editando);
+    if (editorMapa.desenho !== null) {
+        $("#editor_btn_remover").html('<i class="fa fa-times"></i> Cancelar desenho').prop('disabled', false);
+    }
+    else {
+        $("#editor_btn_remover").html('<i class="fa fa-trash"></i> Descartar desenho novo')
+            .prop('disabled', !item || !item.novo || ocupado || editorMapa.editando);
+    }
+
     $("#editor_btn_excluir").prop('disabled', !item || item.novo || ocupado || editorMapa.editando);
     $("#editor_btn_salvar").prop('disabled', !pronto || ocupado || editorMapa.editando || !editor_tem_alteracoes());
 
