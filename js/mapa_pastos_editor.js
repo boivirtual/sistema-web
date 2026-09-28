@@ -88,6 +88,26 @@ function editor_mostrar_dica() {
     editorAvisoEhDica = true;
 }
 
+function editor_alternar_tela_cheia() {
+    var ativa = !$("#editor_mapa_tela").hasClass('editor-tela-cheia');
+
+    $("#editor_mapa_tela").toggleClass('editor-tela-cheia', ativa);
+    $("body").toggleClass('editor-sem-rolagem', ativa);
+
+    var $botao = $(".editor-btn-tela-cheia");
+
+    $botao.html(ativa ? '<i class="fa fa-compress"></i>' : '<i class="fa fa-expand"></i>');
+    $botao.attr('data-original-title', ativa ? 'Sair da tela cheia' : 'Tela cheia').tooltip('hide');
+
+    editor_ajustar_altura();
+}
+
+function editor_sair_tela_cheia() {
+    if ($("#editor_mapa_tela").hasClass('editor-tela-cheia')) {
+        editor_alternar_tela_cheia();
+    }
+}
+
 // O mapa ocupa todo o espaco vertical que sobra na tela de trabalho
 function editor_ajustar_altura() {
     var $mapa = $("#editor_mapa");
