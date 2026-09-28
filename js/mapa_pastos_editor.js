@@ -805,7 +805,7 @@ function editor_atualizar_botoes() {
         var moduloItem = editor_modulo(editor_modulo_do_item(item));
         var textoModulo = moduloItem ? moduloItem.descricao + ' — ' : '';
 
-        $("#editor_info").text(item.nome + ' — ' + textoModulo + ha.toFixed(2).replace('.', ',') + ' ha — ' + textoStatus);
+        $("#editor_info").text(item.nome + ' — ' + textoModulo + ha.toFixed(2).replace('.', ',') + ' ha — ' + textoStatus).show();
     }
     else {
         $("#editor_info").html('&nbsp;');
