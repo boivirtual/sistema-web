@@ -547,6 +547,25 @@
                 <p id="editor_info" style="margin: 6px 0 0 0; font-weight: bold;">Clique em um pasto no mapa para selecioná-lo.</p>
             </div>
 
+            <div class="modal fade" id="modal_editor_sair" tabindex="-1" role="dialog"
+             aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Editor de Mapa - Mensagem</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Existem ajustes no mapa que ainda não foram salvos. Se sair agora, você vai perder esses ajustes.</p>
+                            <p style="font-weight: bold;">Deseja sair mesmo assim?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" onclick="editor_sair_sim()">Sim</button>
+                            <button type="button" class="btn btn-default" onclick="editor_sair_nao()">Não</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="modal fade" id="modal_importar_mapa" tabindex="-1" role="dialog"
              aria-labelledby="modal_incluirCenterTitle" aria-hidden="true"  data-backdrop="static">
 
