@@ -387,38 +387,13 @@ foreach ($poligonos as $p) {
     }
 }
 
-// 3) Backup do mapa atual e gravacao do novo arquivo
-if (!is_dir($pasta) && !mkdir($pasta, 0775, true)) {
+// 3) Grava o mapa (banco + historico + arquivo JSON) junto com as alteracoes dos pastos
+$erro_mapa = mapa_gravar($conector, $cnpj_cliente, $local,
+    array('type' => 'FeatureCollection', 'features' => $features), $nomeusuario, 'editor');
+
+if ($erro_mapa !== '') {
     mysqli_rollback($conector);
-    resposta_erro('Não foi possível criar a pasta do mapa.');
-}
-
-if ($conteudo_atual !== '') {
-    $pasta_backup = $pasta . '/backup';
-
-    if (!is_dir($pasta_backup)) {
-        mkdir($pasta_backup, 0775, true);
-    }
-
-    file_put_contents($pasta_backup . '/' . $local . '_' . date('Ymd_His') . '.json', $conteudo_atual);
-
-    $backups = glob($pasta_backup . '/' . $local . '_*.json');
-    sort($backups);
-
-    while (count($backups) > 30) {
-        unlink(array_shift($backups));
-    }
-}
-
-$json = json_encode(array('type' => 'FeatureCollection', 'features' => $features),
-    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-$temporario = $arquivo . '.tmp';
-
-if (file_put_contents($temporario, $json, LOCK_EX) === false || !rename($temporario, $arquivo)) {
-    @unlink($temporario);
-    mysqli_rollback($conector);
-    resposta_erro('Não foi possível gravar o arquivo do mapa.');
+    resposta_erro($erro_mapa);
 }
 
 mysqli_commit($conector);
