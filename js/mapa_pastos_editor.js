@@ -732,6 +732,8 @@ function editor_abrir_painel_nome(valor, titulo) {
     $("#editor_mapa_aviso").hide();
 
     $("#editor_painel_nome label").first().text(titulo);
+    $("#editor_grupo_modulo").toggle(editorMapa.modoNome == 'novo');
+    $("#editor_modulo_pasto").val('');
     $("#editor_nome_pasto").val(valor);
     $("#editor_painel_nome").show();
     $("#editor_nome_pasto").trigger('focus');
