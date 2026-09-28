@@ -976,6 +976,14 @@ function editor_salvar() {
         }
     });
 
+    var novos = {};
+
+    editorMapa.itens.forEach(function(it) {
+        if (it.novo) {
+            novos[it.nome.toUpperCase()] = it.modulo;
+        }
+    });
+
     $("#editor_btn_salvar").prop('disabled', true);
     editor_aviso('info', 'Gravando o mapa...');
 
