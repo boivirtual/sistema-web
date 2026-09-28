@@ -69,6 +69,11 @@ function editor_aviso(tipo, html, segundos) {
         editorTemporizadorAviso = setTimeout(function() {
             $("#editor_mapa_aviso").hide();
             editor_ajustar_altura();
+
+            // Depois de uma mensagem de sucesso (salvar, excluir), volta a dica de selecao
+            if (tipo == 'success' && editorMapa.selecionado === null) {
+                editor_mostrar_dica();
+            }
         }, segundos * 1000);
     }
 }
