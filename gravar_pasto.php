@@ -426,29 +426,32 @@ function alterar_animal_pasto($conector, $codigo_pasto, $local,
 }
 
 function alterar_mapa($local, $descricao, $descricao_anterior) {
-  	@ session_start(); 
+	global $conector;
+
+  	@ session_start();
   	$cnpj_cliente = $_SESSION['id_cliente'];
+
+	include_once "funcao_mapa_fazenda.php";
 
 	$arquivo = 'mapa/'.$cnpj_cliente.'/'.$local.'.json';
 
-	$json_data = json_decode(file_get_contents($arquivo));
+	$leitura = mapa_ler($conector, $cnpj_cliente, $local);
 
-	foreach ($json_data->features as $data) {
-		$array_coordenadas = $data->geometry->coordinates;
+	if ($leitura['json'] === '') {
+		return $arquivo;
+	}
 
-		$pasto = mb_strtoupper($data->properties->name, 'UTF-8');
+	$json_data = json_decode($leitura['json'], true);
+
+	foreach ($json_data['features'] as $i => $data) {
+		$pasto = mb_strtoupper($data['properties']['name'], 'UTF-8');
 
 	    if ($pasto==$descricao_anterior) {
-	        $data->properties->name=$descricao;
+	        $json_data['features'][$i]['properties']['name'] = $descricao;
 
-	        $json_str = json_encode($json_data, JSON_UNESCAPED_UNICODE);
+	        $erro = mapa_gravar($conector, $cnpj_cliente, $local, $json_data, $_SESSION['nome_usuario'], 'renomear');
 
-	        $file = fopen(__DIR__ . '/' . $arquivo,'w');
-	        fwrite($file, $json_str);
-	        fclose($file);
-
-	    	return 'Alterado';
-			break;
+	    	return ($erro === '') ? 'Alterado' : $erro;
 	    }
 	}
 
