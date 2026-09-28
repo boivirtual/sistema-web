@@ -48,10 +48,12 @@ function editor_mostrar_erro(mensagem) {
 }
 
 var editorTemporizadorAviso = null;
+var editorAvisoEhDica = false;
 
 // Mensagens de sucesso somem sozinhas; segundos pode ser informado para outros tipos
 function editor_aviso(tipo, html, segundos) {
     clearTimeout(editorTemporizadorAviso);
+    editorAvisoEhDica = false;
 
     $("#editor_mapa_aviso").removeClass("alert-info alert-success alert-warning alert-danger")
         .addClass("alert-" + tipo).html(html).show();
