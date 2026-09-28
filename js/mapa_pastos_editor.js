@@ -261,10 +261,7 @@ function editor_iniciar_mapa() {
         editorMapa.desenho = null;
 
         if (editorMapa.novoPendente === null) {
-            clearTimeout(editorTemporizadorAviso);
-            editorAvisoEhDica = false;
-            $("#editor_mapa_aviso").hide();
-            editor_ajustar_altura();
+            editor_mostrar_dica();
         }
 
         editor_atualizar_botoes();
