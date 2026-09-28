@@ -593,7 +593,7 @@ function editor_novo_pasto() {
     editorMapa.desenho.enable();
 
     editor_atualizar_botoes();
-    editor_aviso('info', 'Clique no mapa para marcar cada ponto do pasto. Para terminar, clique no primeiro ponto (ou dê duplo clique no último). Para desistir, clique em <strong>Cancelar desenho</strong> (ou tecle Esc).');
+    editor_aviso('info', 'Clique no mapa para marcar cada ponto do pasto. Para terminar, clique no primeiro ponto (ou dê duplo clique no último). Clique em <strong>Esc</strong> para sair do modo Novo Pasto.');
 }
 
 function editor_novo_desenhado(layer) {
