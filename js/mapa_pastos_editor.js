@@ -681,7 +681,10 @@ function editor_atualizar_botoes() {
         var textoStatus = status == 'novo' ? 'novo (será criado ao salvar)' :
             (status == 'sem' ? 'sem cadastro no sistema (será criado ao salvar)' : 'cadastrado no sistema');
 
-        $("#editor_info").text(item.nome + ' — ' + ha.toFixed(2).replace('.', ',') + ' ha — ' + textoStatus);
+        var moduloItem = editor_modulo(editor_modulo_do_item(item));
+        var textoModulo = moduloItem ? moduloItem.descricao + ' — ' : '';
+
+        $("#editor_info").text(item.nome + ' — ' + textoModulo + ha.toFixed(2).replace('.', ',') + ' ha — ' + textoStatus);
     }
     else {
         $("#editor_info").html('&nbsp;');
