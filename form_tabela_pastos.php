@@ -130,10 +130,12 @@
                 <div class="col-lg-12">
 
                     <div  class="form-group">
-                        <a href="#">
-                            <input type="button" class="btn btn-primary" aria-label="Left Align" value="Importar Mapa" onclick="incluir_novo()"/>
+                        <input type="button" class="btn btn-primary" value="Novo Mapa" onclick="abrir_editor_mapa('novo')"/>
+                        <input type="button" class="btn btn-info" value="Editar Mapa" onclick="abrir_editor_mapa('editar')" style="margin-left: 5px;"/>
+                        <!-- Importacao de KML oculta por enquanto (o codigo continua no sistema): para voltar, tire o display:none -->
+                        <a href="#" id="btn_importar_kml" style="display: none; margin-left: 5px;">
+                            <input type="button" class="btn btn-default" aria-label="Left Align" value="Importar KML" onclick="incluir_novo()"/>
                         </a>
-                        <input type="button" class="btn btn-info" value="Editar Mapa" onclick="abrir_editor_mapa()" style="margin-left: 5px;"/>
                     </div> 
 
                     <div class="row col-md-12" id="consulta_contas">
