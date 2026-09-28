@@ -491,9 +491,8 @@
                     </div>
 
                     <div class="form-group col-md-3">
-                        <label for="editor_busca" class="control-label">Localizar pasto</label>
-                        <input type="text" class="form-control" id="editor_busca" list="editor_lista_pastos" autocomplete="off" placeholder="Nome do pasto..." onchange="editor_buscar_pasto()">
-                        <datalist id="editor_lista_pastos"></datalist>
+                        <label class="control-label">&nbsp;</label>
+                        <div id="editor_total_pastos" style="padding-top: 8px; font-weight: bold; color: #555;"></div>
                     </div>
 
                     <div class="form-group col-md-6 text-right">
