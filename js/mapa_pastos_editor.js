@@ -800,7 +800,8 @@ function editor_confirmar_nome() {
     }
 
     if (editorMapa.modoNome == 'novo') {
-        var reservado = (nome == 'ENTRADA' || nome == 'SAIDA' || nome == 'SAÍDA');
+        var nomeMaiusculo = nome.toUpperCase();
+        var reservado = (nomeMaiusculo == 'ENTRADA' || nomeMaiusculo == 'SAIDA' || nomeMaiusculo == 'SAÍDA');
         var moduloEscolhido = reservado ? 999 : parseInt($("#editor_modulo_pasto").val(), 10);
 
         if (!reservado && isNaN(moduloEscolhido)) {
