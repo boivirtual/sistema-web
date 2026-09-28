@@ -696,6 +696,10 @@ function editor_cancelar_nome() {
     $("#editor_painel_nome").hide();
     editor_ajustar_altura();
     editor_atualizar_botoes();
+
+    if (editorMapa.selecionado === null) {
+        editor_mostrar_dica();
+    }
 }
 
 function editor_alternar_tracado() {
