@@ -509,6 +509,8 @@
                         <button type="button" class="btn btn-default" id="editor_btn_renomear" onclick="editor_renomear()" disabled><i class="fa fa-pen"></i> Renomear</button>
                         <button type="button" class="btn btn-default" id="editor_btn_remover" onclick="editor_remover_novo()" disabled><i class="fa fa-trash"></i> Descartar desenho novo</button>
                         <button type="button" class="btn btn-danger" id="editor_btn_excluir" onclick="editor_pedir_exclusao()" disabled><i class="fa fa-trash"></i> Excluir pasto</button>
+                        <input type="text" class="form-control" id="editor_busca" list="editor_lista_pastos" autocomplete="off" placeholder="Localizar pasto..." onchange="editor_buscar_pasto()" style="width: 220px; display: inline-block; vertical-align: middle; margin-left: 10px;">
+                        <datalist id="editor_lista_pastos"></datalist>
                     </div>
                 </div>
 
