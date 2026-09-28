@@ -402,23 +402,17 @@ function editor_montar(data, local) {
         }
     });
 
-    var texto = '';
-
-    if (semCadastro > 0) {
-        texto = '<strong>' + semCadastro + '</strong> pasto(s) sem cadastro no sistema (em laranja) serão criados ao salvar.';
-    }
+    var dica = 'Clique em um pasto no mapa para selecioná-lo.';
 
     if (editorMapa.itens.length == 0) {
-        texto = 'Essa fazenda ainda não tem mapa. Use <strong>Novo pasto</strong> para desenhar o primeiro (comece por ENTRADA e SAIDA).';
+        editor_aviso('info', 'Essa fazenda ainda não tem mapa. Use <strong>Novo pasto</strong> para desenhar o primeiro (comece por ENTRADA e SAIDA).');
     }
-
-    if (texto == '') {
-        clearTimeout(editorTemporizadorAviso);
-        $("#editor_mapa_aviso").hide();
-        editor_ajustar_altura();
+    else if (semCadastro > 0) {
+        editor_aviso('info', dica + '<br><strong>' + semCadastro + '</strong> pasto(s) sem cadastro no sistema (em laranja) serão criados ao salvar.');
     }
     else {
-        editor_aviso('info', texto);
+        editor_aviso('info', dica);
+        editorAvisoEhDica = true;
     }
 }
 
