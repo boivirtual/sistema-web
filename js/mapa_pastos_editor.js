@@ -562,6 +562,8 @@ function editor_preencher_modulos() {
             select.append($("<option>").attr("value", m.id).text(m.descricao));
         }
     });
+
+    select.selectpicker('refresh');
 }
 
 // Legenda com as cores dos modulos que aparecem no mapa carregado
