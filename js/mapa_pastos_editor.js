@@ -445,6 +445,22 @@ function editor_preencher_fazendas() {
 window.addEventListener('load', function() {
     $(window).on('resize', editor_ajustar_altura);
 
+    // Cola "latitude, longitude" (como o Google copia) no campo Latitude e separa nos dois campos
+    $(document).on('change blur', '#editor_lat', function() {
+        var par = $(this).val().match(/^\s*(-?\d+(?:[.,]\d+)?)\s*(?:;|\/|,\s+|\s+)\s*(-?\d+(?:[.,]\d+)?)\s*$/);
+
+        if (par) {
+            $("#editor_lat").val(par[1]);
+            $("#editor_lng").val(par[2]);
+        }
+    });
+
+    $(document).on('keydown', '#editor_lat, #editor_lng', function(ev) {
+        if (ev.which == 13) {
+            editor_aplicar_coordenadas();
+        }
+    });
+
     // Mostra no mapa a cor do modulo escolhido para o pasto que esta sendo nomeado
     $(document).on('change', '#editor_modulo_pasto', function() {
         var m = editor_modulo($(this).val());
