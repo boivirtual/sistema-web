@@ -5727,3 +5727,29 @@ body {
   display: none;
   margin-bottom: 10px;
 }
+
+/* Legenda de cores dos modulos no editor de mapa */
+.editor-legenda {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  padding: 6px 8px;
+  font-size: 11px;
+  line-height: 16px;
+  max-height: 55%;
+  overflow-y: auto;
+}
+
+.editor-legenda .editor-legenda-cor {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  vertical-align: middle;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+}
+
+.editor-legenda .editor-legenda-sem {
+  background: #9E9E9E;
+  border: 2px dashed #ff8f00;
+}
