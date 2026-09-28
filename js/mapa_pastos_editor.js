@@ -1288,11 +1288,50 @@ function editor_alternar_tracado() {
         return;
     }
 
+    // Guarda o traçado e a situação atuais para poder descartar a edição depois
+    editorMapa.tracadoAntes = {
+        item: item,
+        latlngs: item.layer.getLatLngs()[0].map(function(p) { return L.latLng(p.lat, p.lng); }),
+        modificado: item.modificado
+    };
+
     item.layer.editing.enable();
     editorMapa.editando = true;
     $("#editor_btn_tracado").addClass('btn-success').removeClass('btn-default')
         .html('<i class="fa fa-check"></i> Concluir traçado');
-    editor_aviso('info', 'Arraste os pontos brancos para mudar o traçado. Arraste os pontos menores do meio das linhas para criar um novo ponto. Clique em um ponto para removê-lo. Ao terminar, clique em <strong>Concluir traçado</strong>.');
+    $("#editor_btn_cancelar_tracado").show();
+    editor_aviso('info', 'Arraste os pontos brancos para mudar o traçado. Arraste os pontos menores do meio das linhas para criar um novo ponto. Clique em um ponto para removê-lo. Ao terminar, clique em <strong>Concluir traçado</strong>, ou em <strong>Descartar edição do traçado</strong> para voltar como estava.');
+    editor_atualizar_botoes();
+}
+
+// Descarta as mudancas feitas nesta sessao de edicao do tracado e volta ao formato de antes
+function editor_cancelar_tracado() {
+    var antes = editorMapa.tracadoAntes;
+
+    if (!antes || !editorMapa.editando) {
+        return;
+    }
+
+    antes.item.layer.editing.disable();
+    antes.item.layer.setLatLngs([antes.latlngs]);
+    antes.item.modificado = antes.modificado;
+
+    editorMapa.editando = false;
+    editorMapa.tracadoAntes = null;
+
+    $("#editor_btn_tracado").addClass('btn-default').removeClass('btn-success')
+        .html('<i class="fa fa-draw-polygon"></i> Editar traçado');
+    $("#editor_btn_cancelar_tracado").hide();
+
+    editor_estilizar(antes.item);
+
+    if (editor_tem_alteracoes()) {
+        editor_aviso('info', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 6);
+    }
+    else {
+        editor_mostrar_dica();
+    }
+
     editor_atualizar_botoes();
 }
 
