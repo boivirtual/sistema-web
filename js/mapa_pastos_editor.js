@@ -207,6 +207,18 @@ function editor_limpar_tudo() {
     editorMapa.versao = '';
     editorMapa.snapshot = '';
     editorMapa.modoNome = '';
+    editorMapa.coordOk = false;
+    editorMapa.coordenadas = null;
+
+    if (editorMapa.marcador && editorMapa.map) {
+        editorMapa.map.removeLayer(editorMapa.marcador);
+    }
+
+    editorMapa.marcador = null;
+
+    $("#editor_painel_coord").hide();
+    $("#editor_lat, #editor_lng").val('');
+    $("#editor_lista_cadastrados").empty();
 
     $("#editor_local").val('');
     $("#editor_busca").val('');
