@@ -830,6 +830,19 @@ function editor_confirmar_nome() {
         if (atual.novo) {
             atual.nomeOriginal = nome;
         }
+
+        var novoModulo = parseInt($("#editor_modulo_pasto").val(), 10);
+
+        if ($("#editor_grupo_modulo").is(':visible') && !isNaN(novoModulo)) {
+            if (atual.novo) {
+                atual.modulo = novoModulo;
+            }
+            else {
+                atual.moduloAlterado = (novoModulo === editor_modulo_original(atual)) ? null : novoModulo;
+            }
+        }
+
+        editor_estilizar(atual);
     }
 
     $("#editor_painel_nome").hide();
