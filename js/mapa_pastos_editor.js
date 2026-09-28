@@ -1312,7 +1312,14 @@ function editor_cancelar_tracado() {
         return;
     }
 
-    antes.item.layer.editing.disable();
+    // Desliga a edicao em qualquer pasto (mesma cautela do editor_parar_edicao) antes de restaurar o traçado
+    editorMapa.itens.forEach(function(it) {
+        if (it.layer.editing && it.layer.editing.enabled()) {
+            it.layer.editing.disable();
+        }
+    });
+
+    antes.item.setLatLngsOriginal = antes.latlngs;
     antes.item.layer.setLatLngs([antes.latlngs]);
     antes.item.modificado = antes.modificado;
 
