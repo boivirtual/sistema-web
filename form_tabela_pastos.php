@@ -490,12 +490,14 @@
                         </select>
                     </div>
 
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-6">
                         <label class="control-label">&nbsp;</label>
-                        <div id="editor_total_pastos" style="padding-top: 8px; font-weight: bold; color: #555;"></div>
+                        <div style="padding-top: 8px; font-weight: bold; color: #555;">
+                            <span id="editor_total_pastos"></span><span id="editor_info" style="display: none; margin-left: 15px; padding-left: 15px; border-left: 2px solid #bbb; color: #333;"></span>
+                        </div>
                     </div>
 
-                    <div class="form-group col-md-6 text-right">
+                    <div class="form-group col-md-3 text-right">
                         <label class="control-label">&nbsp;</label><br>
                         <button type="button" class="btn btn-primary" id="editor_btn_salvar" onclick="editor_salvar()" disabled>Salvar alterações</button>
                         <button type="button" class="btn btn-info" onclick="fechar_editor_mapa()">Voltar</button>
