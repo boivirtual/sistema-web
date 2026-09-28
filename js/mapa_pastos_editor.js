@@ -16,6 +16,7 @@ var editorMapa = {
     snapshot: '',
     desenho: null,
     modo: 'editar',
+    tracadoAntes: null,
     coordOk: false,
     coordenadas: null,
     marcador: null
