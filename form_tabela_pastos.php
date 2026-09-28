@@ -237,16 +237,6 @@
                                             </div>
                                         </div>
 
-                                        <div class="row mens_descricao" style="padding-top: 10px;">
-                                            <div class="form-group col-md-12" style="color: red;">
-                                                <p>Altere a Descrição  somente aqui.&nbsp;&nbsp;&nbsp;  
-                                                <span>
-                                                As áreas comuns criadas deverão ser associadas ao MÓDULO ÁREA COMUM. 
-                                                </span>
-                                                </p>
-                                            </div>
-                                        </div>
-
                                         <div class="row">
                                             <div class="form-group col-md-6">
                                                 <label for="codigo_local" class="control-label"><span class="required">*</span> Fazenda</label>
