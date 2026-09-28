@@ -977,14 +977,13 @@ function editor_confirmar_exclusao() {
             'senha': senha
         },
         success: function(data) {
-            $("#editor_senha_excluir").val('');
+            // Com sucesso ou erro, fecha o painel da senha e limpa o campo
+            editor_cancelar_exclusao();
 
             if (data.error) {
-                editor_aviso('danger', data.message);
+                editor_aviso('danger', data.message, 6);
                 return;
             }
-
-            editor_cancelar_exclusao();
 
             var local = editorMapa.local;
             $.ajax({
