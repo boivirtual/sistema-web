@@ -247,6 +247,57 @@ foreach ($mapa_renomeados as $de => $para) {
     $renomeados_ok[] = $de . ' -> ' . $para;
 }
 
+// 1b) Troca o modulo dos pastos ja cadastrados (a busca e pelo nome ja renomeado)
+$modulos_alterados_ok = array();
+$descricao_modulo = array();
+
+foreach (ler_modulos_pasto($conector) as $m) {
+    $descricao_modulo[$m['id']] = $m['descricao'];
+}
+
+foreach ($alterados_modulo as $nome_pasto => $modulo_novo) {
+    $modulo_novo = (int)$modulo_novo;
+    $nome_pasto = mb_strtoupper(trim($nome_pasto), 'UTF-8');
+    $nome_sql = mysqli_real_escape_string($conector, $nome_pasto);
+
+    if (!isset($modulos_validos[$modulo_novo])) {
+        mysqli_rollback($conector);
+        resposta_erro('Módulo inválido para o pasto "' . $nome_pasto . '".');
+    }
+
+    $rs_mod = mysqli_query($conector, "SELECT tbl_pasto_id, tbl_pasto_modulo FROM tbl_pasto
+        WHERE tbl_pasto_descricao='$nome_sql' AND tbl_pasto_codigo_local='$local_sql' AND tbl_pasto_lixeira=0");
+
+    if (mysqli_num_rows($rs_mod) == 0) {
+        continue;
+    }
+
+    $reg_mod = mysqli_fetch_object($rs_mod);
+
+    if ((int)$reg_mod->tbl_pasto_modulo == 999) {
+        mysqli_rollback($conector);
+        resposta_erro('O módulo de ENTRADA e SAIDA não pode ser alterado.');
+    }
+
+    if ((int)$reg_mod->tbl_pasto_modulo == $modulo_novo) {
+        continue;
+    }
+
+    $ok = mysqli_query($conector, "UPDATE tbl_pasto SET
+        tbl_pasto_modulo='$modulo_novo',
+        tbl_pasto_alterado_em='$data_sistema',
+        tbl_pasto_alterado_por='$usuario_sql'
+        WHERE tbl_pasto_id=" . (int)$reg_mod->tbl_pasto_id);
+
+    if (!$ok) {
+        $erro = mysqli_error($conector);
+        mysqli_rollback($conector);
+        resposta_erro('Erro ao alterar o módulo do pasto "' . $nome_pasto . '": ' . $erro);
+    }
+
+    $modulos_alterados_ok[] = $nome_pasto . ' -> ' . $descricao_modulo[$modulo_novo];
+}
+
 $nome_antigo_de = array_flip($mapa_renomeados);
 
 // 2) Cria os pastos que ainda nao existem e atualiza a area dos que tiveram o traçado alterado
