@@ -1020,7 +1020,7 @@
         {
             "type": "Feature",
             "properties": {
-                "name": "MANGA 11"
+                "name": "MANGA 11 teste"
             },
             "geometry": {
                 "type": "Polygon",
