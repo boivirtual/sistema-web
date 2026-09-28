@@ -5775,3 +5775,48 @@ body.editor-sem-rolagem {
 body > .bs-container {
   z-index: 1060 !important;
 }
+
+/* Mensagens e informacoes do pasto sobre o mapa (nao ocupam espaco da tela) */
+.editor-aviso-sobre-mapa {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001;
+  max-width: 60%;
+  margin: 0;
+  padding: 6px 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.editor-aviso-sobre-mapa .close {
+  margin-left: 12px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.editor-info-sobre-mapa {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001;
+  max-width: 55%;
+  padding: 4px 12px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.93);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  font-weight: bold;
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .editor-aviso-sobre-mapa {
+    max-width: 90%;
+  }
+
+  .editor-info-sobre-mapa {
+    max-width: 90%;
+    bottom: 40px;
+  }
+}

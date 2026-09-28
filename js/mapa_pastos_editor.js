@@ -117,9 +117,14 @@ function editor_ajustar_altura() {
     }
 
     var topo = $mapa[0].getBoundingClientRect().top;
-    var altura = Math.max(300, window.innerHeight - topo - $("#editor_info").outerHeight(true) - 6);
+    var altura = Math.max(300, window.innerHeight - topo - 8);
 
     $mapa.css('height', altura + 'px');
+
+    // A legenda nao pode cobrir os botoes de zoom e tela cheia (canto superior esquerdo)
+    if (editorMapa.legenda !== null) {
+        $(editorMapa.legenda.getContainer()).css('max-height', Math.max(80, altura - 150) + 'px');
+    }
 
     if (editorMapa.map !== null) {
         editorMapa.map.invalidateSize();
