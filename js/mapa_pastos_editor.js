@@ -81,6 +81,12 @@ function editor_aviso(tipo, html, segundos) {
     }
 }
 
+function editor_ocultar_aviso() {
+    clearTimeout(editorTemporizadorAviso);
+    editorAvisoEhDica = false;
+    $("#editor_mapa_aviso").hide();
+}
+
 // Dica padrao do editor com o mapa carregado; some quando um pasto e selecionado
 function editor_mostrar_dica() {
     if (editorMapa.local == '') {
