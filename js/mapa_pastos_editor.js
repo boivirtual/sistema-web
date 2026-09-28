@@ -1319,7 +1319,6 @@ function editor_cancelar_tracado() {
         }
     });
 
-    antes.item.setLatLngsOriginal = antes.latlngs;
     antes.item.layer.setLatLngs([antes.latlngs]);
     antes.item.modificado = antes.modificado;
 
