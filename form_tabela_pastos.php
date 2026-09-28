@@ -737,6 +737,36 @@
         </section>
     </section>
 
+<?php
+    // Fazendas liberadas para o usuario, com a localizacao cadastrada e se ja tem mapa desenhado
+    include_once "funcao_mapa_fazenda.php";
+
+    $fazendas_editor = array();
+    $locais_permitidos = is_array($array_locais_usuario) ? array_map('trim', $array_locais_usuario) : array();
+
+    while ($reg_faz = mysqli_fetch_object($local_editor)) {
+        if (!in_array(trim($reg_faz->tbl_pessoa_id), $locais_permitidos)) {
+            continue;
+        }
+
+        $leitura_faz = mapa_ler($conector, $_SESSION['id_cliente'], $reg_faz->tbl_pessoa_id);
+        $itens_faz = 0;
+
+        if ($leitura_faz['json'] !== '') {
+            $dados_faz = json_decode($leitura_faz['json'], true);
+            $itens_faz = isset($dados_faz['features']) ? count($dados_faz['features']) : 0;
+        }
+
+        $fazendas_editor[] = array(
+            'id' => $reg_faz->tbl_pessoa_id,
+            'nome' => $reg_faz->tbl_pessoa_nome,
+            'lat' => is_null($reg_faz->tbl_pessoa_latitude_fazenda) ? null : (float)$reg_faz->tbl_pessoa_latitude_fazenda,
+            'lng' => is_null($reg_faz->tbl_pessoa_longitude_fazenda) ? null : (float)$reg_faz->tbl_pessoa_longitude_fazenda,
+            'semMapa' => ($itens_faz == 0)
+        );
+    }
+?>
+<script>var editorFazendas = <?php echo json_encode($fazendas_editor, JSON_UNESCAPED_UNICODE); ?>;</script>
 <script src="js/mapa_pastos_editor.js?<?php echo Versao; ?>" charset="utf-8" type="text/javascript"></script>
 
 <?php
