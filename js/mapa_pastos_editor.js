@@ -1475,6 +1475,30 @@ function editor_salvar() {
             }
 
             var local = editorMapa.local;
+
+            // Mapa novo salvo: a fazenda deixa a lista do Novo Mapa e as coordenadas digitadas vao para o cadastro
+            var fazendaSalva = editor_fazenda(local);
+
+            if (fazendaSalva) {
+                fazendaSalva.semMapa = false;
+            }
+
+            if (editorMapa.coordenadas && editorMapa.coordenadas.digitadas) {
+                var coordenadasDigitadas = editorMapa.coordenadas;
+
+                $.post('mapa_pastos_coordenadas.php', {
+                    local: local,
+                    latitude: coordenadasDigitadas.lat,
+                    longitude: coordenadasDigitadas.lng
+                }, function(resp) {
+                    if (resp && resp.success && fazendaSalva) {
+                        fazendaSalva.lat = coordenadasDigitadas.lat;
+                        fazendaSalva.lng = coordenadasDigitadas.lng;
+                    }
+                }, 'json');
+
+                editorMapa.coordenadas.digitadas = false;
+            }
             $.ajax({
                 type: 'post',
                 url: 'mapa_pastos_ler.php',
