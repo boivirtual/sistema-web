@@ -400,17 +400,24 @@ function editor_montar(data, local) {
         }
     });
 
-    var texto = editorMapa.itens.length + ' pasto(s) no mapa.';
+    var texto = '';
 
     if (semCadastro > 0) {
-        texto += ' <strong>' + semCadastro + '</strong> sem cadastro no sistema (em laranja) serão criados ao salvar.';
+        texto = '<strong>' + semCadastro + '</strong> pasto(s) sem cadastro no sistema (em laranja) serão criados ao salvar.';
     }
 
     if (editorMapa.itens.length == 0) {
         texto = 'Essa fazenda ainda não tem mapa. Use <strong>Novo pasto</strong> para desenhar o primeiro (comece por ENTRADA e SAIDA).';
     }
 
-    editor_aviso('info', texto);
+    if (texto == '') {
+        clearTimeout(editorTemporizadorAviso);
+        $("#editor_mapa_aviso").hide();
+        editor_ajustar_altura();
+    }
+    else {
+        editor_aviso('info', texto);
+    }
 }
 
 function editor_registrar_item(item) {
