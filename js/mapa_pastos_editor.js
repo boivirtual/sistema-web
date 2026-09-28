@@ -363,6 +363,15 @@ function editor_carregar_mapa_agora(local) {
                     return;
                 }
 
+                // Fazenda sem mapa desenhado: orienta a incluir o mapa pela tela inicial
+                if (data.geojson.features.length == 0) {
+                    var nomeFazenda = $("#editor_local option:selected").text();
+
+                    editor_limpar_tudo();
+                    editor_mostrar_erro('A fazenda <strong>' + nomeFazenda + '</strong> não tem mapa desenhado. Para incluir o mapa, clique no botão <strong>Importar Mapa</strong> na tela inicial.');
+                    return;
+                }
+
                 editor_montar(data, local);
             },
             error: function() {
