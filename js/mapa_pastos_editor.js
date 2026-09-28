@@ -259,10 +259,30 @@ function editor_preparar_mapa(sucesso) {
 function editor_iniciar_mapa() {
     var mapa = L.map('editor_mapa', { zoomSnap: 0.5, maxZoom: 21 }).setView([-15.8, -47.9], 4);
 
+    // No zoom 19 a Esri devolve "Map data not yet available" nessa regiao; 18 e o ultimo com imagem
     var satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxNativeZoom: 19,
+        maxNativeZoom: 18,
         maxZoom: 21,
         attribution: 'Imagens &copy; Esri, Maxar, Earthstar Geographics'
+    });
+
+    // Nomes de cidades, rios e estradas sobre o satelite (camadas de referencia da Esri, sem chave).
+    // Na regiao das fazendas so ha conteudo ate o zoom ~14; acima disso a camada e ampliada ate o 17/16.
+    mapa.createPane('rotulos');
+    mapa.getPane('rotulos').style.zIndex = 450;
+    mapa.getPane('rotulos').style.pointerEvents = 'none';
+
+    var lugares = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+        pane: 'rotulos',
+        maxNativeZoom: 15,
+        maxZoom: 17,
+        attribution: 'Nomes &copy; Esri'
+    });
+
+    var estradas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', {
+        pane: 'rotulos',
+        maxNativeZoom: 14,
+        maxZoom: 16
     });
 
     var ruas = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
