@@ -1383,6 +1383,29 @@ function editor_salvar() {
         editor_parar_edicao();
     }
 
+    // Mapa novo: o tabuleiro depende dos pastos ENTRADA e SAIDA
+    if (editorMapa.versao === 'novo') {
+        var temEntrada = false;
+        var temSaida = false;
+
+        editorMapa.itens.forEach(function(it) {
+            var n = it.nome.toUpperCase();
+
+            if (n == 'ENTRADA') {
+                temEntrada = true;
+            }
+
+            if (n == 'SAIDA' || n == 'SAÍDA') {
+                temSaida = true;
+            }
+        });
+
+        if (!temEntrada || !temSaida) {
+            editor_aviso('warning', 'Desenhe os pastos <strong>ENTRADA</strong> e <strong>SAIDA</strong> antes de salvar o mapa novo.');
+            return;
+        }
+    }
+
     var renomeados = [];
 
     editorMapa.itens.forEach(function(it) {
