@@ -764,11 +764,20 @@ function editor_confirmar_nome() {
     }
 
     if (editorMapa.modoNome == 'novo') {
+        var reservado = (nome == 'ENTRADA' || nome == 'SAIDA' || nome == 'SAÍDA');
+        var moduloEscolhido = reservado ? 999 : parseInt($("#editor_modulo_pasto").val(), 10);
+
+        if (!reservado && isNaN(moduloEscolhido)) {
+            editor_aviso('warning', 'Selecione o módulo do novo pasto.');
+            return;
+        }
+
         var item = {
             layer: editorMapa.novoPendente,
             nome: nome,
             nomeOriginal: nome,
             novo: true,
+            modulo: moduloEscolhido,
             modificado: true,
             orig: null
         };
