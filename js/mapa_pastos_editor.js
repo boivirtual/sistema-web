@@ -250,6 +250,36 @@ function abrir_editor_mapa(modo) {
     });
 }
 
+function editor_fazenda(id) {
+    for (var i = 0; i < editorFazendas.length; i++) {
+        if (editorFazendas[i].id == id) {
+            return editorFazendas[i];
+        }
+    }
+
+    return null;
+}
+
+// Editar Mapa: todas as fazendas do usuario. Novo Mapa: so as que ainda nao tem mapa desenhado.
+function editor_preencher_fazendas() {
+    var novo = (editorMapa.modo == 'novo');
+    var $select = $("#editor_local").empty().append($("<option>").attr("value", "").text("..."));
+    var disponiveis = 0;
+
+    editorFazendas.forEach(function(f) {
+        if (!novo || f.semMapa) {
+            $select.append($("<option>").attr("value", f.id).text(f.nome));
+            disponiveis++;
+        }
+    });
+
+    $("#editor_rotulo_fazenda").text(novo ? 'Fazenda (sem mapa)' : 'Fazenda');
+
+    if (novo && disponiveis == 0) {
+        editor_aviso('warning', 'Não há fazendas sem mapa desenhado liberadas para o seu usuário.');
+    }
+}
+
 // Este script e carregado antes do jQuery (rodape.php), entao o registro espera o load da pagina
 window.addEventListener('load', function() {
     $(window).on('resize', editor_ajustar_altura);
