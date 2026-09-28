@@ -1016,11 +1016,23 @@ function editor_salvar() {
         }
     });
 
+    // novos: pastos que serao criados; alterados: pastos ja cadastrados que mudaram de modulo
     var novos = {};
+    var alterados = {};
 
     editorMapa.itens.forEach(function(it) {
+        var chave = it.nome.toUpperCase();
+
         if (it.novo) {
-            novos[it.nome.toUpperCase()] = it.modulo;
+            novos[chave] = it.modulo;
+        }
+        else if (it.moduloAlterado !== undefined && it.moduloAlterado !== null) {
+            if (editor_status(it) == 'ok') {
+                alterados[chave] = it.moduloAlterado;
+            }
+            else {
+                novos[chave] = it.moduloAlterado;
+            }
         }
     });
 
