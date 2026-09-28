@@ -1048,7 +1048,8 @@ function editor_salvar() {
             'versao': editorMapa.versao,
             'geojson': JSON.stringify(editor_serializar()),
             'renomeados': JSON.stringify(renomeados),
-            'novos': JSON.stringify(novos)
+            'novos': JSON.stringify(novos),
+            'alterados': JSON.stringify(alterados)
         },
         success: function(data) {
             if (data.error) {
