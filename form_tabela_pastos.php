@@ -534,6 +534,12 @@
                         <label for="editor_nome_pasto" class="control-label">Nome do pasto</label>
                         <input type="text" class="form-control" id="editor_nome_pasto" maxlength="60" onkeyup="maiuscula(this)">
                     </div>
+                    <div class="form-group col-md-3" id="editor_grupo_modulo">
+                        <label for="editor_modulo_pasto" class="control-label"><span class="required">*</span> Módulo</label>
+                        <select class="form-control" id="editor_modulo_pasto">
+                            <option value="">Selecione...</option>
+                        </select>
+                    </div>
                     <div class="form-group col-md-4">
                         <label class="control-label">&nbsp;</label><br>
                         <button type="button" class="btn btn-primary" onclick="editor_confirmar_nome()">Confirmar</button>
