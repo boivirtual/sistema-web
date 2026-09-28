@@ -142,28 +142,11 @@ if ($conteudo_atual !== '') {
 
     $json['features'] = $restantes;
 
-    $pasta_backup = $pasta . '/backup';
+    $erro_mapa = mapa_gravar($conector, $cnpj_cliente, $local, $json, $nomeusuario, 'exclusao');
 
-    if (!is_dir($pasta_backup)) {
-        mkdir($pasta_backup, 0775, true);
-    }
-
-    file_put_contents($pasta_backup . '/' . $local . '_' . date('Ymd_His') . '.json', $conteudo_atual);
-
-    $backups = glob($pasta_backup . '/' . $local . '_*.json');
-    sort($backups);
-
-    while (count($backups) > 30) {
-        unlink(array_shift($backups));
-    }
-
-    $temporario = $arquivo . '.tmp';
-    $novo_conteudo = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-    if (file_put_contents($temporario, $novo_conteudo, LOCK_EX) === false || !rename($temporario, $arquivo)) {
-        @unlink($temporario);
+    if ($erro_mapa !== '') {
         mysqli_rollback($conector);
-        resposta_erro('Não foi possível gravar o arquivo do mapa.');
+        resposta_erro($erro_mapa);
     }
 }
 
