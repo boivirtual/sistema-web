@@ -532,7 +532,7 @@
                 <div id="editor_painel_nome" class="row">
                     <div class="form-group col-md-4">
                         <label for="editor_nome_pasto" class="control-label">Nome do pasto</label>
-                        <input type="text" class="form-control" id="editor_nome_pasto" maxlength="60" onkeyup="maiuscula(this)">
+                        <input type="text" class="form-control" id="editor_nome_pasto" maxlength="60" autocomplete="off">
                     </div>
                     <div class="form-group col-md-3" id="editor_grupo_modulo">
                         <label for="editor_modulo_pasto" class="control-label"><span class="required">*</span> Módulo</label>
