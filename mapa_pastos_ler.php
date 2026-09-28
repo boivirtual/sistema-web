@@ -50,15 +50,21 @@ else {
     $versao = 'novo';
 }
 
-$pastos = array();
+include "funcao_modulo_pasto_cor.php";
+
+$modulos = ler_modulos_pasto($conector);
+
+// nome do pasto (maiusculas) => id do modulo
+$pastos = new stdClass();
 $local_escapado = mysqli_real_escape_string($conector, $local);
 
-$rs = mysqli_query($conector, "SELECT tbl_pasto_descricao FROM tbl_pasto
+$rs = mysqli_query($conector, "SELECT tbl_pasto_descricao, tbl_pasto_modulo FROM tbl_pasto
     WHERE tbl_pasto_codigo_local='$local_escapado' AND
           tbl_pasto_lixeira=0");
 
 while ($reg = mysqli_fetch_object($rs)) {
-    $pastos[] = mb_strtoupper($reg->tbl_pasto_descricao, 'UTF-8');
+    $nome = mb_strtoupper($reg->tbl_pasto_descricao, 'UTF-8');
+    $pastos->$nome = (int)$reg->tbl_pasto_modulo;
 }
 
 mysqli_close($conector);
@@ -67,6 +73,7 @@ echo json_encode(array(
     'success' => true,
     'versao' => $versao,
     'geojson' => $geojson,
-    'pastos' => $pastos
+    'pastos' => $pastos,
+    'modulos' => $modulos
 ), JSON_UNESCAPED_UNICODE);
 ?>
