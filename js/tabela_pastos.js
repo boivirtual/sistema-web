@@ -68,15 +68,17 @@ $(document).ready(function(){
 });
 
 function listar_pastos(){
-    
+
     var local = $("#codigo_local_filtro").val();
 
-    //if (local==null) {
-    //    local=[''];
-    //}
+    if (local == null || local == '' || local == '000000000') {
+        $("#mensagem_erro").modal();
+        $("#mensagem_erro .modal-body").html('Selecione a Fazenda para consultar.');
+        return;
+    }
 
     $.post("form_lista_pastos.php", {local:local},
-        function(valor){ $("div[id=lista_pastos]").html(valor); 
+        function(valor){ $("div[id=lista_pastos]").html(valor);
     });
 }
 
