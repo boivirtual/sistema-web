@@ -998,7 +998,14 @@ function editor_confirmar_exclusao() {
             'senha': senha
         },
         success: function(data) {
-            // Com sucesso ou erro, fecha o painel da senha e limpa o campo
+            // Senha errada: continua no painel para digitar de novo
+            if (data.error && data.senha) {
+                $("#editor_senha_excluir").val('').trigger('focus');
+                editor_aviso('danger', data.message, 6);
+                return;
+            }
+
+            // Com sucesso ou outro erro, fecha o painel da senha e limpa o campo
             editor_cancelar_exclusao();
 
             if (data.error) {
