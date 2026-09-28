@@ -905,13 +905,32 @@ function editor_preencher_modulos() {
 
     select.append($("<option>").attr("value", "").text("Selecione..."));
 
+    // O 999 (ENTRADA/SAIDA) aparece na lista, mas so fica liberado para os pastos ENTRADA e SAIDA
     editorMapa.modulos.forEach(function(m) {
-        if (m.id != 999) {
-            select.append($("<option>").attr("value", m.id).text(m.descricao));
-        }
+        select.append($("<option>").attr("value", m.id).text(m.descricao).prop("disabled", m.id == 999));
     });
 
     select.selectpicker('refresh');
+}
+
+// reservado = ENTRADA/SAIDA: o seletor fica travado no 999. Para os demais pastos o 999 fica bloqueado.
+function editor_travar_modulo(reservado) {
+    var $select = $("#editor_modulo_pasto");
+
+    $select.find('option[value="999"]').prop('disabled', !reservado);
+
+    if (reservado) {
+        $select.val('999').prop('disabled', true);
+    }
+    else {
+        if ($select.val() == '999') {
+            $select.val('');
+        }
+
+        $select.prop('disabled', false);
+    }
+
+    $select.selectpicker('refresh');
 }
 
 // Legenda com as cores dos modulos que aparecem no mapa carregado
