@@ -491,6 +491,7 @@
                     <div class="form-group col-md-12">
                         <button type="button" class="btn btn-primary" id="editor_btn_novo" onclick="editor_novo_pasto()" disabled><i class="fa fa-plus"></i> Novo pasto</button>
                         <button type="button" class="btn btn-default" id="editor_btn_tracado" onclick="editor_alternar_tracado()" disabled><i class="fa fa-draw-polygon"></i> Editar traçado</button>
+                        <button type="button" class="btn btn-default" id="editor_btn_cancelar_tracado" onclick="editor_cancelar_tracado()" style="display: none;"><i class="fa fa-undo"></i> Descartar edição do traçado</button>
                         <button type="button" class="btn btn-default" id="editor_btn_renomear" onclick="editor_renomear()" disabled><i class="fa fa-pen"></i> Renomear</button>
                         <button type="button" class="btn btn-default" id="editor_btn_remover" onclick="editor_remover_novo()" disabled><i class="fa fa-trash"></i> Descartar desenho novo</button>
                         <button type="button" class="btn btn-danger" id="editor_btn_excluir" onclick="editor_pedir_exclusao()" disabled><i class="fa fa-trash"></i> Excluir pasto</button>
