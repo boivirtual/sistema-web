@@ -263,7 +263,21 @@ foreach ($poligonos as $p) {
         }
         else {
             $tipo_curral = '';
-            $modulo = 1;
+
+            if (isset($novos_modulos[$p['nome']])) {
+                $modulo = (int)$novos_modulos[$p['nome']];
+            }
+            else if (isset($novos_modulos[$p['chave']])) {
+                $modulo = (int)$novos_modulos[$p['chave']];
+            }
+            else {
+                $modulo = 1;
+            }
+
+            if (!isset($modulos_validos[$modulo])) {
+                mysqli_rollback($conector);
+                resposta_erro('Informe um módulo válido para o pasto "' . $p['nome'] . '".');
+            }
         }
 
         $ok = mysqli_query($conector, "INSERT INTO tbl_pasto (
