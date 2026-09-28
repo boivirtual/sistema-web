@@ -369,6 +369,12 @@ function editor_carregar_mapa_agora(local) {
 
                     editor_limpar_tudo();
                     editor_mostrar_erro('A fazenda <strong>' + nomeFazenda + '</strong> não tem mapa desenhado. Para incluir o mapa, clique no botão <strong>Importar Mapa</strong> na tela inicial.');
+
+                    // Garante o seletor na posicao inicial (sem fazenda) tambem ao fechar o modal
+                    $("#editor_local").val('');
+                    $("#mensagem_erro").one('hidden.bs.modal', function() {
+                        $("#editor_local").val('');
+                    });
                     return;
                 }
 
