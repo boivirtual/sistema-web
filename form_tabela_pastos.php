@@ -522,6 +522,25 @@
                     </div>
                 </div>
 
+                <div id="editor_painel_coord" class="row" style="display: none;">
+                    <div class="col-md-12">
+                        <p id="editor_texto_coord" style="font-weight: bold; color: #b94a48;"></p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="editor_lat" class="control-label">Latitude</label>
+                        <input type="text" class="form-control" id="editor_lat" placeholder="Ex.: -19,9611" autocomplete="off">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="editor_lng" class="control-label">Longitude</label>
+                        <input type="text" class="form-control" id="editor_lng" placeholder="Ex.: -42,5952" autocomplete="off">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">&nbsp;</label><br>
+                        <button type="button" class="btn btn-primary" id="editor_btn_coord" onclick="editor_aplicar_coordenadas()">Aplicar</button>
+                        <button type="button" class="btn btn-default" onclick="editor_cancelar_coordenadas()">Cancelar</button>
+                    </div>
+                </div>
+
                 <div id="editor_painel_nome" class="row">
                     <div class="form-group col-md-4">
                         <label for="editor_nome_pasto" class="control-label">Nome do pasto</label>
