@@ -554,7 +554,6 @@
 
                     <div id="editor_mapa" style="height: 500px; min-height: 300px;"></div>
 
-                    <div id="editor_info" class="editor-info-sobre-mapa" style="display: none;"></div>
                 </div>
             </div>
 
