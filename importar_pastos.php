@@ -366,9 +366,7 @@ if ($tem_entrada_saida=='N') {
 	exit;
 }
 
-include "conecta_mysql.inc";
-
-@ session_start(); 
+@ session_start();
 $nomeusuario = $_SESSION['nome_usuario'];
 $data_sistema = date("Y-m-d H:i:s");
 $array_categoria = '001!002!003!004!005';
