@@ -5780,8 +5780,7 @@ body > .bs-container {
 .editor-aviso-sobre-mapa {
   position: absolute;
   top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 56px;
   z-index: 1001;
   max-width: 60%;
   margin: 0;
@@ -5795,28 +5794,8 @@ body > .bs-container {
   line-height: 1;
 }
 
-.editor-info-sobre-mapa {
-  position: absolute;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1001;
-  max-width: 55%;
-  padding: 4px 12px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.93);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-  font-weight: bold;
-  text-align: center;
-}
-
 @media (max-width: 767px) {
   .editor-aviso-sobre-mapa {
-    max-width: 90%;
-  }
-
-  .editor-info-sobre-mapa {
-    max-width: 90%;
-    bottom: 40px;
+    max-width: calc(100% - 110px);
   }
 }
