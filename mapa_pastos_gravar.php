@@ -44,6 +44,11 @@ if (!usuario_pode_local($conector_acesso, $local)) {
 $versao_recebida = isset($_POST['versao']) ? $_POST['versao'] : '';
 $novo = json_decode(isset($_POST['geojson']) ? $_POST['geojson'] : '', true);
 $renomeados = json_decode(isset($_POST['renomeados']) ? $_POST['renomeados'] : '[]', true);
+$novos_modulos = json_decode(isset($_POST['novos']) ? $_POST['novos'] : '{}', true);
+
+if (!is_array($novos_modulos)) {
+    $novos_modulos = array();
+}
 
 if (!is_array($novo) || !isset($novo['features']) || !is_array($novo['features'])) {
     resposta_erro('Os dados do mapa enviados são inválidos.');
