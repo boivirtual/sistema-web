@@ -778,7 +778,7 @@ function editor_abrir_painel_nome(valor, titulo) {
 }
 
 function editor_confirmar_nome() {
-    var nome = $("#editor_nome_pasto").val().trim().toUpperCase().replace(/\s+/g, ' ');
+    var nome = $("#editor_nome_pasto").val().trim().replace(/\s+/g, ' ');
 
     if (nome == '') {
         editor_aviso('warning', 'Informe o nome do pasto.');
