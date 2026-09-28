@@ -1336,9 +1336,13 @@ function editor_cancelar_tracado() {
 }
 
 function editor_parar_edicao() {
-    if (editorMapa.editando && editorMapa.selecionado) {
-        editorMapa.selecionado.layer.editing.disable();
-    }
+    // Desliga a edicao em qualquer pasto que ainda esteja com os pontos de arraste visiveis,
+    // nao so no selecionado, para nunca sobrar marcador "fantasma" de uma edicao anterior
+    editorMapa.itens.forEach(function(it) {
+        if (it.layer.editing && it.layer.editing.enabled()) {
+            it.layer.editing.disable();
+        }
+    });
 
     editorMapa.editando = false;
     editorMapa.tracadoAntes = null;
