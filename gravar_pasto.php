@@ -107,7 +107,27 @@ else if ($tipo_gravacao==3){
 		exit;
 }
 else if ($tipo_gravacao==1){
-	$sql = ("UPDATE tbl_pasto SET 
+	// Fazenda, Módulo, Descrição e Área só podem ser alteradas pelo Editor de Mapa (form_tabela_pastos.php),
+	// que mantém o traçado do polígono sincronizado. Aqui essas informações são só leitura: ignora o que
+	// vier no POST para elas e usa sempre o que já está gravado no pasto.
+	$codigo_pasto_id = (int)$codigo_pasto;
+	$rs_pasto_atual = mysqli_query($conector, "SELECT tbl_pasto_codigo_local, tbl_pasto_descricao, tbl_pasto_area, tbl_pasto_modulo
+		FROM tbl_pasto WHERE tbl_pasto_id=$codigo_pasto_id");
+
+	if (!$rs_pasto_atual || mysqli_num_rows($rs_pasto_atual)==0){
+	   	header('Content-type: application/json');
+	   	echo json_encode(array('error' => true, 'message' => 'Pasto não encontrado.'));
+		mysqli_close($conector);
+		exit;
+	}
+
+	$pasto_atual = mysqli_fetch_object($rs_pasto_atual);
+	$local = $pasto_atual->tbl_pasto_codigo_local;
+	$descricao = $pasto_atual->tbl_pasto_descricao;
+	$area = $pasto_atual->tbl_pasto_area;
+	$modulo = $pasto_atual->tbl_pasto_modulo;
+
+	$sql = ("UPDATE tbl_pasto SET
 		  		tbl_pasto_codigo_local='$local',
 				tbl_pasto_descricao='$descricao',
 				tbl_pasto_area='$area',
