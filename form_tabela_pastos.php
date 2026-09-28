@@ -475,20 +475,9 @@
             <div id="editor_mapa_tela" style="display: none;">
                 <div class="row">
                     <div class="form-group col-md-3">
-                        <label for="editor_local" class="control-label"><span class="required">*</span> Fazenda</label>
+                        <label for="editor_local" class="control-label"><span class="required">*</span> <span id="editor_rotulo_fazenda">Fazenda</span></label>
                         <select class="form-control" id="editor_local" onchange="editor_carregar_mapa()">
                             <option value="">...</option>
-
-                            <?php
-                                while($reg_local = mysqli_fetch_object($local_editor)) {
-                                    foreach ($array_locais_usuario as $value) {
-                                        $value = trim($value);
-                                        if ($value==$reg_local->tbl_pessoa_id) {
-                                            echo '<option value="'.$value.'">' .$reg_local->tbl_pessoa_nome. '</option>';
-                                        }
-                                    }
-                                }
-                            ?>
                         </select>
                     </div>
 
