@@ -874,19 +874,10 @@ function editor_salvar() {
 }
 
 function fechar_editor_mapa() {
-    if (editor_tem_alteracoes() && !confirm('Existem alterações não salvas. Deseja sair mesmo assim?')) {
-        return;
-    }
-
-    editor_parar_edicao();
-
-    if (editorMapa.desenho) {
-        editorMapa.desenho.disable();
-        editorMapa.desenho = null;
-    }
-
-    editorMapa.local = '';
-    $("#editor_mapa_tela").hide();
-    $("#pastos_cabecalho, #pastos_conteudo").show();
-    window.scrollTo(0, 0);
+    editor_confirmar_saida(function() {
+        editor_limpar_tudo();
+        $("#editor_mapa_tela").hide();
+        $("#pastos_cabecalho, #pastos_conteudo").show();
+        window.scrollTo(0, 0);
+    });
 }
