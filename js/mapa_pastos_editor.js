@@ -168,6 +168,7 @@ function editor_sair_nao() {
 
 // Volta o editor ao estado inicial, sem nada carregado
 function editor_limpar_tudo() {
+    editor_sair_tela_cheia();
     editor_parar_edicao();
 
     if (editorMapa.desenho) {
