@@ -314,6 +314,30 @@ function editor_iniciar_mapa() {
     editorMapa.legenda = new Legenda();
     editorMapa.legenda.addTo(mapa);
 
+    // Botao de tela cheia (abaixo do zoom): o editor cobre a pagina toda para tracar com mais precisao
+    var TelaCheia = L.Control.extend({
+        options: { position: 'topleft' },
+        onAdd: function() {
+            var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            var a = L.DomUtil.create('a', 'editor-btn-tela-cheia', div);
+
+            a.href = '#';
+            a.innerHTML = '<i class="fa fa-expand"></i>';
+
+            L.DomEvent.disableClickPropagation(div);
+            L.DomEvent.on(a, 'click', function(ev) {
+                L.DomEvent.preventDefault(ev);
+                editor_alternar_tela_cheia();
+            });
+
+            $(a).tooltip({ container: 'body', placement: 'right', title: 'Tela cheia', trigger: 'hover' });
+
+            return div;
+        }
+    });
+
+    new TelaCheia().addTo(mapa);
+
     mapa.on(L.Draw.Event.CREATED, function(ev) {
         editorMapa.desenho = null;
         editor_novo_desenhado(ev.layer);
