@@ -1068,6 +1068,10 @@ function editor_salvar() {
                 linhas.push('Renomeados: ' + data.renomeados.join(', '));
             }
 
+            if (data.modulos.length > 0) {
+                linhas.push('Módulo alterado: ' + data.modulos.join(', '));
+            }
+
             if (data.atualizados.length > 0) {
                 linhas.push('Área atualizada: ' + data.atualizados.join(', '));
             }
