@@ -71,6 +71,16 @@ function editor_aviso(tipo, html, segundos) {
     }
 }
 
+// Dica padrao do editor com o mapa carregado; some quando um pasto e selecionado
+function editor_mostrar_dica() {
+    if (editorMapa.local == '') {
+        return;
+    }
+
+    editor_aviso('info', 'Clique em um pasto no mapa para selecioná-lo.');
+    editorAvisoEhDica = true;
+}
+
 // O mapa ocupa todo o espaco vertical que sobra na tela de trabalho
 function editor_ajustar_altura() {
     var $mapa = $("#editor_mapa");
