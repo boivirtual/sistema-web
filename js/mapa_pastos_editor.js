@@ -771,7 +771,7 @@ function editor_abrir_painel_nome(valor, titulo) {
     }
 
     $("#editor_grupo_modulo").toggle(mostrarModulo);
-    $("#editor_modulo_pasto").val(moduloAtual);
+    $("#editor_modulo_pasto").selectpicker('val', moduloAtual);
     $("#editor_nome_pasto").val(valor);
     $("#editor_painel_nome").show();
     $("#editor_nome_pasto").trigger('focus');
