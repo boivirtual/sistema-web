@@ -292,7 +292,11 @@ function editor_iniciar_mapa() {
     });
 
     satelite.addTo(mapa);
-    L.control.layers({ 'Satélite': satelite, 'Ruas': ruas }, null, { position: 'topright' }).addTo(mapa);
+    lugares.addTo(mapa);
+    estradas.addTo(mapa);
+
+    L.control.layers({ 'Satélite': satelite, 'Ruas': ruas },
+        { 'Nomes de lugares': lugares, 'Estradas': estradas }, { position: 'topright' }).addTo(mapa);
 
     editorMapa.grupo = L.featureGroup().addTo(mapa);
     editorMapa.map = mapa;
