@@ -72,7 +72,7 @@
 
     $local_importar = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0");
 
-    $local_editor = mysqli_query($conector, "select tbl_pessoa_id, tbl_pessoa_nome, tbl_pessoa_latitude_fazenda, tbl_pessoa_longitude_fazenda from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0 order by tbl_pessoa_nome");
+    $local_editor = mysqli_query($conector, "select tbl_pessoa_id, tbl_pessoa_nome, tbl_pessoa_latitude_fazenda, tbl_pessoa_longitude_fazenda from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0 order by tbl_pessoa_id");
 
     $tbl_modulo = mysqli_query($conector, "select * from tbl_modulo_pasto where tbl_modulo_lixeira=0 order by tbl_modulo_descricao ASC"); 
 
