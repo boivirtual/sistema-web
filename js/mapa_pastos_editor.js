@@ -471,6 +471,13 @@ function editor_selecionar(item) {
         editor_cancelar_exclusao();
     }
 
+    // A dica de "clique em um pasto" some assim que o primeiro pasto e selecionado
+    if (item && editorAvisoEhDica) {
+        editorAvisoEhDica = false;
+        $("#editor_mapa_aviso").hide();
+        editor_ajustar_altura();
+    }
+
     if (anterior) {
         editor_estilizar(anterior);
     }
