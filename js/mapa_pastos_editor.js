@@ -250,6 +250,167 @@ function abrir_editor_mapa(modo) {
     });
 }
 
+// ---- Novo Mapa: localizacao da fazenda (latitude/longitude) ----
+
+// Formato valido: numeros dentro do intervalo do planeta e diferentes de 0,0
+function editor_coordenada_valida(lat, lng) {
+    return typeof lat == 'number' && typeof lng == 'number' && isFinite(lat) && isFinite(lng) &&
+        Math.abs(lat) <= 90 && Math.abs(lng) <= 180 && !(lat === 0 && lng === 0);
+}
+
+// Aceita ponto ou virgula como decimal; devolve NaN se nao for numero
+function editor_numero(texto) {
+    texto = String(texto).trim().replace(',', '.');
+
+    return /^-?\d+(\.\d+)?$/.test(texto) ? parseFloat(texto) : NaN;
+}
+
+function editor_buscar_json(url) {
+    return new Promise(function(resolve) {
+        var controle = new AbortController();
+        var limite = setTimeout(function() { controle.abort(); }, 8000);
+
+        fetch(url, { signal: controle.signal })
+            .then(function(r) { return r.json(); })
+            .then(function(j) { clearTimeout(limite); resolve(j); })
+            .catch(function() { clearTimeout(limite); resolve(null); });
+    });
+}
+
+// Confere pela internet se o ponto esta em terra (nao no mar) e nao e topo de montanha.
+// Se o servico de verificacao estiver fora do ar, aceita o ponto e avisa que nao conseguiu confirmar.
+function editor_verificar_terra(lat, lng, retorno) {
+    var urlLugar = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=5&lat=' + lat + '&lon=' + lng;
+    var urlAltitude = 'https://api.open-meteo.com/v1/elevation?latitude=' + lat + '&longitude=' + lng;
+
+    Promise.all([editor_buscar_json(urlLugar), editor_buscar_json(urlAltitude)]).then(function(r) {
+        var lugar = r[0];
+        var altitude = (r[1] && r[1].elevation) ? r[1].elevation[0] : null;
+
+        if (lugar && lugar.error) {
+            retorno({ ok: false, motivo: 'esse ponto está no mar/oceano (fora de qualquer território).' });
+            return;
+        }
+
+        if (altitude !== null && altitude > 3500) {
+            retorno({ ok: false, motivo: 'a altitude nesse ponto é de ' + Math.round(altitude) + ' m (parece topo de montanha).' });
+            return;
+        }
+
+        retorno({
+            ok: true,
+            aviso: (lugar === null || altitude === null) ? 'Não foi possível confirmar pela internet se essa localização está em terra.' : ''
+        });
+    });
+}
+
+function editor_iniciar_localizacao(local) {
+    var f = editor_fazenda(local);
+
+    editorMapa.coordOk = false;
+    editor_atualizar_botoes();
+
+    if (f && f.lat !== null && f.lng !== null && editor_coordenada_valida(f.lat, f.lng)) {
+        editor_aviso('info', 'Verificando a localização da fazenda...');
+
+        editor_verificar_terra(f.lat, f.lng, function(res) {
+            if (editorMapa.local != local) {
+                return;
+            }
+
+            if (res.ok) {
+                editor_definir_localizacao(f.lat, f.lng, false, res.aviso);
+            }
+            else {
+                editor_pedir_coordenadas('As coordenadas cadastradas (' + f.lat + ' / ' + f.lng + ') não servem: ' + res.motivo + ' Digite a latitude e a longitude da fazenda.');
+            }
+        });
+
+        return;
+    }
+
+    if (f && f.lat !== null && f.lng !== null && (f.lat !== 0 || f.lng !== 0)) {
+        editor_pedir_coordenadas('As coordenadas cadastradas (' + f.lat + ' / ' + f.lng + ') não são válidas. Digite a latitude e a longitude da fazenda.');
+    }
+    else {
+        editor_pedir_coordenadas('Essa fazenda não tem latitude e longitude cadastradas. Digite a latitude e a longitude da fazenda.');
+    }
+}
+
+function editor_pedir_coordenadas(texto) {
+    editor_ocultar_aviso();
+    editorMapa.coordOk = false;
+
+    $("#editor_texto_coord").text(texto);
+    $("#editor_lat, #editor_lng").val('');
+    $("#editor_painel_coord").show();
+    $("#editor_lat").trigger('focus');
+
+    editor_ajustar_altura();
+    editor_atualizar_botoes();
+}
+
+function editor_definir_localizacao(lat, lng, digitadas, aviso) {
+    if (editorMapa.marcador) {
+        editorMapa.map.removeLayer(editorMapa.marcador);
+    }
+
+    editorMapa.marcador = L.circleMarker([lat, lng], {
+        radius: 9, color: '#ffeb3b', weight: 3, fillColor: '#128cb8', fillOpacity: 0.9, interactive: false
+    }).addTo(editorMapa.map);
+
+    editorMapa.map.setView([lat, lng], 15);
+
+    editorMapa.coordOk = true;
+    editorMapa.coordenadas = { lat: lat, lng: lng, digitadas: digitadas };
+
+    $("#editor_painel_coord").hide();
+    editor_ajustar_altura();
+    editor_atualizar_botoes();
+
+    editor_aviso('info', 'Mapa novo: clique em <strong>Novo pasto</strong> e comece pelos pastos ENTRADA e SAIDA.' +
+        (aviso ? '<br>' + aviso : ''));
+}
+
+function editor_aplicar_coordenadas() {
+    var lat = editor_numero($("#editor_lat").val());
+    var lng = editor_numero($("#editor_lng").val());
+
+    if (isNaN(lat) || isNaN(lng)) {
+        $("#editor_texto_coord").text('Digite números na latitude e na longitude (exemplo: -19,9611 e -42,5952).');
+        return;
+    }
+
+    if (!editor_coordenada_valida(lat, lng)) {
+        $("#editor_texto_coord").text('Latitude precisa estar entre -90 e 90, e longitude entre -180 e 180 (e não podem ser 0 e 0).');
+        return;
+    }
+
+    var local = editorMapa.local;
+
+    $("#editor_btn_coord").prop('disabled', true).text('Verificando...');
+
+    editor_verificar_terra(lat, lng, function(res) {
+        $("#editor_btn_coord").prop('disabled', false).text('Aplicar');
+
+        if (editorMapa.local != local) {
+            return;
+        }
+
+        if (!res.ok) {
+            $("#editor_texto_coord").text('Coordenada recusada: ' + res.motivo + ' Confira a latitude e a longitude.');
+            return;
+        }
+
+        editor_definir_localizacao(lat, lng, true, res.aviso);
+    });
+}
+
+// Desistiu de informar as coordenadas: volta o editor ao inicio, sem fazenda selecionada
+function editor_cancelar_coordenadas() {
+    editor_limpar_tudo();
+}
+
 function editor_fazenda(id) {
     for (var i = 0; i < editorFazendas.length; i++) {
         if (editorFazendas[i].id == id) {
