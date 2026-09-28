@@ -1137,9 +1137,21 @@ function editor_confirmar_nome() {
     if (editorMapa.modoNome == 'novo') {
         var nomeMaiusculo = nome.toUpperCase();
         var reservado = (nomeMaiusculo == 'ENTRADA' || nomeMaiusculo == 'SAIDA' || nomeMaiusculo == 'SAÍDA');
-        var moduloEscolhido = reservado ? 999 : parseInt($("#editor_modulo_pasto").val(), 10);
+        var cadastrado = editorMapa.pastosSistema.hasOwnProperty(nomeMaiusculo);
+        var moduloEscolhido;
 
-        if (!reservado && isNaN(moduloEscolhido)) {
+        if (reservado) {
+            moduloEscolhido = 999;
+        }
+        else if (cadastrado) {
+            // ja existe no sistema: o desenho se liga ao pasto cadastrado, mantendo o modulo dele
+            moduloEscolhido = editorMapa.pastosSistema[nomeMaiusculo];
+        }
+        else {
+            moduloEscolhido = parseInt($("#editor_modulo_pasto").val(), 10);
+        }
+
+        if (!reservado && !cadastrado && isNaN(moduloEscolhido)) {
             editor_aviso('warning', 'Selecione o módulo do novo pasto.');
             return;
         }
