@@ -32,18 +32,19 @@ if (!usuario_pode_local($conector_acesso, $local)) {
     exit;
 }
 
-$arquivo = __DIR__ . '/mapa/' . $cnpj_cliente . '/' . $local . '.json';
+include "funcao_mapa_fazenda.php";
 
-if (file_exists($arquivo)) {
-    $conteudo = file_get_contents($arquivo);
-    $geojson = json_decode($conteudo);
+$leitura_mapa = mapa_ler($conector, $cnpj_cliente, $local);
+
+if ($leitura_mapa['json'] !== '') {
+    $geojson = json_decode($leitura_mapa['json']);
 
     if ($geojson === null || !isset($geojson->features)) {
-        echo json_encode(array('error' => true, 'message' => 'O arquivo do mapa dessa fazenda está inválido.'));
+        echo json_encode(array('error' => true, 'message' => 'O mapa dessa fazenda está inválido.'));
         exit;
     }
 
-    $versao = md5($conteudo);
+    $versao = $leitura_mapa['versao'];
 }
 else {
     $geojson = array('type' => 'FeatureCollection', 'features' => array());
