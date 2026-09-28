@@ -361,6 +361,8 @@ function editor_montar(data, local) {
     editorMapa.local = local;
     editorMapa.versao = data.versao;
     editorMapa.pastosSistema = data.pastos;
+    editorMapa.modulos = data.modulos;
+    editor_preencher_modulos();
 
     $("#editor_painel_nome").hide();
 
