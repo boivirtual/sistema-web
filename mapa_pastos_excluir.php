@@ -67,7 +67,8 @@ if (isset($_POST['verificar']) && $_POST['verificar'] == '1') {
 }
 
 if ($senha === '' || !isset($_SESSION['senha_usuario']) || !hash_equals((string)$_SESSION['senha_usuario'], (string)$senha)) {
-    resposta_erro('Senha incorreta.');
+    echo json_encode(array('error' => true, 'senha' => true, 'message' => 'Senha incorreta.'), JSON_UNESCAPED_UNICODE);
+    exit;
 }
 
 if ($nome == 'ENTRADA' || $nome == 'SAIDA' || $nome == 'SAÍDA') {
