@@ -193,6 +193,15 @@ function abrir_editor_mapa() {
 // Este script e carregado antes do jQuery (rodape.php), entao o registro espera o load da pagina
 window.addEventListener('load', function() {
     $(window).on('resize', editor_ajustar_altura);
+
+    // Mostra no mapa a cor do modulo escolhido para o pasto que esta sendo nomeado
+    $(document).on('change', '#editor_modulo_pasto', function() {
+        var m = editor_modulo($(this).val());
+
+        if (editorMapa.novoPendente && m) {
+            editorMapa.novoPendente.setStyle({ fillColor: m.cor, fillOpacity: 0.6 });
+        }
+    });
 });
 
 // Ultima barreira (fechar aba, digitar outro endereco): aviso nativo do navegador
