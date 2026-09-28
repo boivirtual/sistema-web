@@ -45,8 +45,6 @@ function garantir_cor_modulo_pasto($conector) {
 
 // Lista os modulos ativos (por ID) com a cor de cada um
 function ler_modulos_pasto($conector) {
-    garantir_cor_modulo_pasto($conector);
-
     $modulos = array();
     $tem_cor = false;
 
