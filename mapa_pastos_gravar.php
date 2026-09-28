@@ -45,6 +45,11 @@ $versao_recebida = isset($_POST['versao']) ? $_POST['versao'] : '';
 $novo = json_decode(isset($_POST['geojson']) ? $_POST['geojson'] : '', true);
 $renomeados = json_decode(isset($_POST['renomeados']) ? $_POST['renomeados'] : '[]', true);
 $novos_modulos = json_decode(isset($_POST['novos']) ? $_POST['novos'] : '{}', true);
+$alterados_modulo = json_decode(isset($_POST['alterados']) ? $_POST['alterados'] : '{}', true);
+
+if (!is_array($alterados_modulo)) {
+    $alterados_modulo = array();
+}
 
 if (!is_array($novos_modulos)) {
     $novos_modulos = array();
