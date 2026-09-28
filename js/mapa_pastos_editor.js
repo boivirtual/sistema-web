@@ -1341,8 +1341,10 @@ function editor_parar_edicao() {
     }
 
     editorMapa.editando = false;
+    editorMapa.tracadoAntes = null;
     $("#editor_btn_tracado").addClass('btn-default').removeClass('btn-success')
         .html('<i class="fa fa-draw-polygon"></i> Editar traçado');
+    $("#editor_btn_cancelar_tracado").hide();
 }
 
 function editor_remover_novo() {
