@@ -263,6 +263,19 @@ function editor_iniciar_mapa() {
     editorMapa.grupo = L.featureGroup().addTo(mapa);
     editorMapa.map = mapa;
 
+    var Legenda = L.Control.extend({
+        options: { position: 'bottomleft' },
+        onAdd: function() {
+            var div = L.DomUtil.create('div', 'editor-legenda');
+            L.DomEvent.disableClickPropagation(div);
+            L.DomEvent.disableScrollPropagation(div);
+            return div;
+        }
+    });
+
+    editorMapa.legenda = new Legenda();
+    editorMapa.legenda.addTo(mapa);
+
     mapa.on(L.Draw.Event.CREATED, function(ev) {
         editorMapa.desenho = null;
         editor_novo_desenhado(ev.layer);
