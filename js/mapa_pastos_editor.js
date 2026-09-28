@@ -1128,18 +1128,23 @@ function editor_abrir_painel_nome(valor, titulo) {
 
     $("#editor_painel_nome label").first().text(titulo);
     var moduloAtual = '';
-    var mostrarModulo = (editorMapa.modoNome == 'novo');
+    var reservado = false;
 
-    // Ao renomear, o modulo tambem pode ser alterado (ENTRADA/SAIDA ficam sempre no 999)
+    // Ao renomear, o modulo tambem pode ser alterado (ENTRADA/SAIDA ficam travadas no 999)
     if (editorMapa.modoNome == 'renomear' && editorMapa.selecionado) {
         var atualId = editor_modulo_do_item(editorMapa.selecionado);
 
-        mostrarModulo = (atualId !== 999);
+        reservado = (atualId === 999);
         moduloAtual = (atualId === null || atualId === undefined) ? '' : String(atualId);
     }
 
-    $("#editor_grupo_modulo").toggle(mostrarModulo);
-    $("#editor_modulo_pasto").selectpicker('val', moduloAtual);
+    $("#editor_grupo_modulo").show();
+    editor_travar_modulo(reservado);
+
+    if (!reservado) {
+        $("#editor_modulo_pasto").selectpicker('val', moduloAtual);
+    }
+
     $("#editor_nome_pasto").val(valor);
     $("#editor_painel_nome").show();
     $("#editor_nome_pasto").trigger('focus');
