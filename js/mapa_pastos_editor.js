@@ -460,24 +460,106 @@ function editor_status(item) {
 
     var nome = item.nomeOriginal.toUpperCase();
 
-    return editorMapa.pastosSistema.indexOf(nome) !== -1 ? 'ok' : 'sem';
+    return editorMapa.pastosSistema.hasOwnProperty(nome) ? 'ok' : 'sem';
+}
+
+// Id do modulo do pasto: o escolhido (novo) ou o gravado no sistema
+function editor_modulo_do_item(item) {
+    if (item.novo) {
+        return item.modulo;
+    }
+
+    var nome = item.nomeOriginal.toUpperCase();
+
+    return editorMapa.pastosSistema.hasOwnProperty(nome) ? editorMapa.pastosSistema[nome] : null;
+}
+
+function editor_modulo(id) {
+    for (var i = 0; i < editorMapa.modulos.length; i++) {
+        if (editorMapa.modulos[i].id == id) {
+            return editorMapa.modulos[i];
+        }
+    }
+
+    return null;
 }
 
 function editor_estilizar(item) {
     var status = editor_status(item);
-    var cor = status == 'novo' ? EDITOR_COR_NOVO : (status == 'sem' ? EDITOR_COR_SEM_CADASTRO : EDITOR_COR_OK);
+    var modulo = editor_modulo(editor_modulo_do_item(item));
     var selecionado = (editorMapa.selecionado === item);
 
-    item.layer.setStyle({
-        color: selecionado ? '#ffeb3b' : '#ffffff',
-        weight: selecionado ? 4 : 1.5,
-        fillColor: cor,
-        fillOpacity: selecionado ? 0.5 : 0.3
-    });
+    if (status == 'sem' || modulo === null) {
+        // sem cadastro (ou modulo desconhecido): cinza com contorno laranja tracejado
+        item.layer.setStyle({
+            color: selecionado ? '#ffeb3b' : EDITOR_COR_SEM_CADASTRO,
+            weight: selecionado ? 4 : 3,
+            dashArray: selecionado ? null : '6 4',
+            fillColor: '#9E9E9E',
+            fillOpacity: selecionado ? 0.6 : 0.35
+        });
+    }
+    else {
+        item.layer.setStyle({
+            color: selecionado ? '#ffeb3b' : '#ffffff',
+            weight: selecionado ? 4 : 1.5,
+            dashArray: null,
+            fillColor: modulo.cor,
+            fillOpacity: selecionado ? 0.7 : 0.5
+        });
+    }
 
     if (selecionado) {
         item.layer.bringToFront();
     }
+}
+
+function editor_preencher_modulos() {
+    var select = $("#editor_modulo_pasto").empty();
+
+    select.append($("<option>").attr("value", "").text("Selecione..."));
+
+    editorMapa.modulos.forEach(function(m) {
+        if (m.id != 999) {
+            select.append($("<option>").attr("value", m.id).text(m.descricao));
+        }
+    });
+}
+
+// Legenda com as cores dos modulos que aparecem no mapa carregado
+function editor_atualizar_legenda() {
+    if (editorMapa.legenda === null) {
+        return;
+    }
+
+    var contagem = {};
+    var semCadastro = 0;
+
+    editorMapa.itens.forEach(function(it) {
+        var m = editor_modulo(editor_modulo_do_item(it));
+
+        if (editor_status(it) == 'sem' || m === null) {
+            semCadastro++;
+        }
+        else {
+            contagem[m.id] = (contagem[m.id] || 0) + 1;
+        }
+    });
+
+    var html = '';
+
+    editorMapa.modulos.forEach(function(m) {
+        if (contagem[m.id]) {
+            html += '<div><span class="editor-legenda-cor" style="background:' + m.cor + '"></span>' +
+                $('<div>').text(m.descricao).html() + ' (' + contagem[m.id] + ')</div>';
+        }
+    });
+
+    if (semCadastro > 0) {
+        html += '<div><span class="editor-legenda-cor editor-legenda-sem"></span>Sem cadastro (' + semCadastro + ')</div>';
+    }
+
+    $(editorMapa.legenda.getContainer()).html(html).toggle(html != '');
 }
 
 function editor_selecionar(item) {
