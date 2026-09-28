@@ -117,7 +117,7 @@ function editor_ajustar_altura() {
     }
 
     var topo = $mapa[0].getBoundingClientRect().top;
-    var altura = Math.max(300, window.innerHeight - topo - $("#editor_info").outerHeight(true) - 20);
+    var altura = Math.max(300, window.innerHeight - topo - $("#editor_info").outerHeight(true) - 6);
 
     $mapa.css('height', altura + 'px');
 
