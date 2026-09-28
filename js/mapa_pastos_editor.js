@@ -427,7 +427,7 @@ function editor_montar(data, local) {
         editor_aviso('info', 'Essa fazenda ainda não tem mapa. Use <strong>Novo pasto</strong> para desenhar o primeiro (comece por ENTRADA e SAIDA).');
     }
     else if (semCadastro > 0) {
-        editor_aviso('info', dica + '<br><strong>' + semCadastro + '</strong> pasto(s) sem cadastro no sistema (em laranja) serão criados ao salvar.');
+        editor_aviso('info', dica + '<br><strong>' + semCadastro + '</strong> pasto(s) sem cadastro no sistema (contorno laranja tracejado) serão criados ao salvar.');
     }
     else {
         editor_aviso('info', dica);
