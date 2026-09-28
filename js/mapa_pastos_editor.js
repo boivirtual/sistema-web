@@ -14,7 +14,11 @@ var editorMapa = {
     novoPendente: null,
     modoNome: '',
     snapshot: '',
-    desenho: null
+    desenho: null,
+    modo: 'editar',
+    coordOk: false,
+    coordenadas: null,
+    marcador: null
 };
 
 var EDITOR_COR_OK = '#2E8B57';
