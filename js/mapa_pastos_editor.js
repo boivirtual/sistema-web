@@ -589,6 +589,10 @@ function editor_novo_pasto() {
 }
 
 function editor_novo_desenhado(layer) {
+    // O contorno fica visivel no mapa enquanto o nome e digitado
+    layer.setStyle({ color: '#ffeb3b', weight: 3, fillColor: EDITOR_COR_NOVO, fillOpacity: 0.4 });
+    layer.addTo(editorMapa.grupo);
+
     editorMapa.novoPendente = layer;
     editorMapa.modoNome = 'novo';
 
