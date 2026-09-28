@@ -181,12 +181,41 @@ window.addEventListener('load', function() {
     $(window).on('resize', editor_ajustar_altura);
 });
 
+// Ultima barreira (fechar aba, digitar outro endereco): aviso nativo do navegador
 window.addEventListener('beforeunload', function(ev) {
-    if (editor_tem_alteracoes()) {
+    if (!editorSaindo && editor_tem_alteracoes()) {
         ev.preventDefault();
         ev.returnValue = '';
     }
 });
+
+// Cliques em links (menu, logotipo, etc.) que sairiam da tela com ajustes nao salvos
+document.addEventListener('click', function(ev) {
+    if (typeof $ == 'undefined' || !$("#editor_mapa_tela").is(':visible') || !editor_tem_alteracoes()) {
+        return;
+    }
+
+    var a = ev.target.closest ? ev.target.closest('a[href]') : null;
+
+    if (!a || a.closest('#editor_mapa_tela') || a.closest('.modal')) {
+        return;
+    }
+
+    var href = a.getAttribute('href');
+
+    if (!href || href.charAt(0) == '#' || href.indexOf('javascript:') === 0 ||
+        a.target == '_blank' || a.hasAttribute('data-toggle')) {
+        return;
+    }
+
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    editor_confirmar_saida(function() {
+        editorSaindo = true;
+        window.location.href = a.href;
+    });
+}, true);
 
 function editor_preparar_mapa(sucesso) {
     editor_carregar_bibliotecas(function() {
