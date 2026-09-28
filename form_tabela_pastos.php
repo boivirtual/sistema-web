@@ -156,30 +156,30 @@
 
                                                 <option value="000000000">...</option>    
 
-                                                <?php while($reg_local = mysqli_fetch_object($local_filtro)) { ?>
+                                                <?php
+                                                    while($reg_local = mysqli_fetch_object($local_filtro)) {
+                                                        foreach ($array_locais_usuario as $value_filtro) {
+                                                            $value_filtro = trim($value_filtro);
 
-                                                    <option value="<?php 
-                                                       echo $reg_local->tbl_pessoa_id ?>"
-
-                                                    <?php 
-
-                                                        if ($array_local!="") {
-                                                            if ($array_local==$reg_local->tbl_pessoa_id) {
-                                                                echo "selected";       
+                                                            if ($value_filtro!=$reg_local->tbl_pessoa_id) {
+                                                                continue;
                                                             }
-                                                        }
-                                                        else {
-                                                            if ($codigo_local==$reg_local->tbl_pessoa_id) { 
-                                                                echo "selected";       
+
+                                                            $selecionado_filtro = '';
+
+                                                            if ($array_local!="") {
+                                                                if ($array_local==$reg_local->tbl_pessoa_id) {
+                                                                    $selecionado_filtro = "selected";
+                                                                }
                                                             }
+                                                            else if ($codigo_local==$reg_local->tbl_pessoa_id) {
+                                                                $selecionado_filtro = "selected";
+                                                            }
+
+                                                            echo '<option value="'.$reg_local->tbl_pessoa_id.'" '.$selecionado_filtro.'>'.$reg_local->tbl_pessoa_nome.'</option>';
                                                         }
-                                                    ?>>
-                                                        
-                                                    <?php 
-                                                        echo $reg_local->tbl_pessoa_nome;
-                                                    ?>
-                                                    </option>
-                                                <?php } ?>
+                                                    }
+                                                ?>
 
                                                 </select>
                                             </div>
