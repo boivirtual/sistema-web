@@ -312,6 +312,8 @@
                                             <div class="form-group col-md-4">
                                                 <label for="area" class="control-label">Área (ha)</label>
                                                 <input name="area" type="text" class="form-control" id="area" placeholder="0,00" onkeypress="digita_valor()" onblur="exibe_valor_area()">
+
+                                                <input type="text" class="form-control" id="area_readonly" readonly>
                                             </div>
                                         </div>
 
