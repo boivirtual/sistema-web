@@ -793,7 +793,7 @@ function editor_confirmar_nome() {
     var atual = editorMapa.modoNome == 'renomear' ? editorMapa.selecionado : null;
 
     for (var i = 0; i < editorMapa.itens.length; i++) {
-        if (editorMapa.itens[i] !== atual && editorMapa.itens[i].nome.toUpperCase() == nome) {
+        if (editorMapa.itens[i] !== atual && editorMapa.itens[i].nome.toUpperCase() == nome.toUpperCase()) {
             editor_aviso('warning', 'Já existe um pasto chamado "' + nome + '" nesse mapa.');
             return;
         }
