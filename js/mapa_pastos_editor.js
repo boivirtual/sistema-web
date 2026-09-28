@@ -681,7 +681,7 @@ function editor_tem_alteracoes() {
         return false;
     }
 
-    return JSON.stringify(editor_serializar()) !== editorMapa.snapshot;
+    return JSON.stringify(editor_serializar()) !== editorMapa.snapshot || editor_tem_modulo_alterado();
 }
 
 function editor_atualizar_botoes() {
