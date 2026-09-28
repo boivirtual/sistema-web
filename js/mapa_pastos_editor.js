@@ -236,10 +236,14 @@ function editor_limpar_tudo() {
     }
 }
 
-function abrir_editor_mapa() {
+// modo 'editar' (fazendas com mapa) ou 'novo' (fazendas sem mapa, liberadas para o usuario)
+function abrir_editor_mapa(modo) {
+    editorMapa.modo = (modo == 'novo') ? 'novo' : 'editar';
+
     $("#pastos_cabecalho, #pastos_conteudo").hide();
     $("#editor_mapa_tela").show();
     editor_limpar_tudo();
+    editor_preencher_fazendas();
     editor_ajustar_altura();
     editor_preparar_mapa(function() {
         editor_ajustar_altura();
