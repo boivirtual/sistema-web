@@ -491,9 +491,25 @@ function editor_modulo_do_item(item) {
         return item.modulo;
     }
 
+    if (item.moduloAlterado !== undefined && item.moduloAlterado !== null) {
+        return item.moduloAlterado;
+    }
+
+    return editor_modulo_original(item);
+}
+
+// Modulo gravado no sistema (ignora alteracao ainda nao salva)
+function editor_modulo_original(item) {
     var nome = item.nomeOriginal.toUpperCase();
 
     return editorMapa.pastosSistema.hasOwnProperty(nome) ? editorMapa.pastosSistema[nome] : null;
+}
+
+function editor_tem_modulo_alterado() {
+    return editorMapa.itens.some(function(it) {
+        return !it.novo && it.moduloAlterado !== undefined && it.moduloAlterado !== null &&
+            it.moduloAlterado !== editor_modulo_original(it);
+    });
 }
 
 function editor_modulo(id) {
