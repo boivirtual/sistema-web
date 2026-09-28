@@ -674,6 +674,7 @@ function editor_confirmar_nome() {
 
 function editor_cancelar_nome() {
     if (editorMapa.modoNome == 'novo' && editorMapa.novoPendente) {
+        editorMapa.grupo.removeLayer(editorMapa.novoPendente);
         editorMapa.novoPendente = null;
     }
 
