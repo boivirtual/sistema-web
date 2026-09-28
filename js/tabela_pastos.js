@@ -295,41 +295,34 @@ function editar_pasto(array_registro) {
     $("#capim").val($array_conta[11]);
     $("#observacao").val($array_conta[16]);
 
+    // Fazenda, Módulo, Descrição e Área agora só se alteram pelo Editor de Mapa: aqui ficam
+    // somente informativos, para não ficarem fora de sincronia com o traçado do pasto.
+    var descLocal = $("#codigo_local option:selected").text().trim();
+    $("#local_readonly").val(descLocal);
+    $("#local_readonly").show();
+    $("#codigo_local").hide();
+
+    var descModulo = $("#modulo option:selected").text().trim();
+    $("#modulo_readonly").val(descModulo);
+    $("#modulo_readonly").show();
+    $("#modulo").hide();
+
+    document.getElementById('descricao').readOnly = true;
+
+    $("#area_readonly").val($("#area").val());
+    $("#area_readonly").show();
+    $("#area").hide();
+
     if ($array_conta[10]==999) {
-        var desc = $("#codigo_local option:selected").text();
-        desc = desc.trim();
-        $("#local_readonly").val(desc);
+        var descCapim = $("#capim option:selected").text().trim();
+        $("#capim_readonly").val(descCapim);
 
-        var desc = $("#modulo option:selected").text();
-        desc = desc.trim();
-        $("#modulo_readonly").val(desc);
-
-        var desc = $("#capim option:selected").text();
-        desc = desc.trim();
-        $("#capim_readonly").val(desc);
-
-        document.getElementById('descricao').readOnly = true;
-
-        $("#local_readonly").show();    
-        $("#codigo_local").hide();    
-
-        $("#modulo_readonly").show();    
-        $("#modulo").hide();    
-
-        $("#capim_readonly").show();    
-        $("#capim").hide();    
+        $("#capim_readonly").show();
+        $("#capim").hide();
     }
     else {
-        document.getElementById('descricao').readOnly = false;
-
-        $("#local_readonly").hide();    
-        $("#codigo_local").show();    
-
-        $("#modulo_readonly").hide();    
-        $("#modulo").show();    
-
-        $("#capim_readonly").hide();    
-        $("#capim").show();    
+        $("#capim_readonly").hide();
+        $("#capim").show();
     }
 
     if (controle_estoque=='L') {
