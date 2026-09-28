@@ -19,31 +19,8 @@ function cor_padrao_modulo_pasto($id) {
     return $extras[$id % count($extras)];
 }
 
-// Cria a coluna tbl_modulo_cor se ainda nao existir e preenche os modulos sem cor
-function garantir_cor_modulo_pasto($conector) {
-    try {
-        $rs = mysqli_query($conector, "SHOW COLUMNS FROM tbl_modulo_pasto LIKE 'tbl_modulo_cor'");
-
-        if ($rs && mysqli_num_rows($rs) == 0) {
-            mysqli_query($conector, "ALTER TABLE tbl_modulo_pasto ADD COLUMN tbl_modulo_cor VARCHAR(7) NULL DEFAULT NULL");
-        }
-
-        $rs = mysqli_query($conector, "SELECT tbl_modulo_id FROM tbl_modulo_pasto
-            WHERE tbl_modulo_cor IS NULL OR tbl_modulo_cor=''");
-
-        while ($rs && $reg = mysqli_fetch_object($rs)) {
-            $cor = cor_padrao_modulo_pasto($reg->tbl_modulo_id);
-            $id = (int)$reg->tbl_modulo_id;
-
-            mysqli_query($conector, "UPDATE tbl_modulo_pasto SET tbl_modulo_cor='$cor' WHERE tbl_modulo_id=$id");
-        }
-    }
-    catch (Exception $e) {
-        // sem permissao para alterar a tabela: as cores padrao continuam valendo em memoria
-    }
-}
-
-// Lista os modulos ativos (por ID) com a cor de cada um
+// Lista os modulos ativos (por ID) com a cor de cada um.
+// Em bancos sem a coluna tbl_modulo_cor vale a cor padrao acima (a coluna nao e criada automaticamente).
 function ler_modulos_pasto($conector) {
     $modulos = array();
     $tem_cor = false;
