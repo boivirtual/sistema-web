@@ -536,7 +536,7 @@
                     </div>
                     <div class="form-group col-md-3" id="editor_grupo_modulo">
                         <label for="editor_modulo_pasto" class="control-label"><span class="required">*</span> Módulo</label>
-                        <select class="form-control" id="editor_modulo_pasto">
+                        <select class="form-control selectpicker" id="editor_modulo_pasto" data-live-search="true" data-size="8" data-container="body" data-none-selected-text="Selecione...">
                             <option value="">Selecione...</option>
                         </select>
                     </div>
