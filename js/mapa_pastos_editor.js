@@ -253,13 +253,21 @@ function editor_iniciar_mapa() {
 
     mapa.on(L.Draw.Event.CREATED, function(ev) {
         editorMapa.desenho = null;
-        $("#editor_btn_novo").removeClass('active');
         editor_novo_desenhado(ev.layer);
     });
 
+    // Disparado ao terminar, cancelar (botao ou tecla Esc) ou interromper o desenho
     mapa.on('draw:drawstop', function() {
         editorMapa.desenho = null;
-        $("#editor_btn_novo").removeClass('active');
+
+        if (editorMapa.novoPendente === null) {
+            clearTimeout(editorTemporizadorAviso);
+            editorAvisoEhDica = false;
+            $("#editor_mapa_aviso").hide();
+            editor_ajustar_altura();
+        }
+
+        editor_atualizar_botoes();
     });
 
     // Rotulos so aparecem com zoom suficiente, para nao poluir o mapa
