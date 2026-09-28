@@ -547,11 +547,13 @@
                     </div>
                 </div>
 
-                <div id="editor_mapa_aviso" class="alert alert-info" style="padding: 6px 12px; margin-bottom: 8px;">Selecione a Fazenda para carregar o mapa.</div>
+                <div id="editor_mapa_area" style="position: relative;">
+                    <div id="editor_mapa_aviso" class="alert alert-info editor-aviso-sobre-mapa">Selecione a Fazenda para carregar o mapa.</div>
 
-                <div id="editor_mapa" style="height: 500px; min-height: 300px;"></div>
+                    <div id="editor_mapa" style="height: 500px; min-height: 300px;"></div>
 
-                <p id="editor_info" style="margin: 6px 0 0 0; font-weight: bold;">&nbsp;</p>
+                    <div id="editor_info" class="editor-info-sobre-mapa" style="display: none;"></div>
+                </div>
             </div>
 
             <div class="modal fade" id="modal_editor_sair" tabindex="-1" role="dialog"
