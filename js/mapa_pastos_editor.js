@@ -445,6 +445,17 @@ function editor_preencher_fazendas() {
 window.addEventListener('load', function() {
     $(window).on('resize', editor_ajustar_altura);
 
+    // Ao digitar ENTRADA ou SAIDA num pasto novo, o modulo vai sozinho para 999 (ENTRADA/SAIDA) e trava
+    $(document).on('input', '#editor_nome_pasto', function() {
+        if (editorMapa.modoNome != 'novo') {
+            return;
+        }
+
+        var n = $(this).val().trim().toUpperCase();
+
+        editor_travar_modulo(n == 'ENTRADA' || n == 'SAIDA' || n == 'SAÍDA');
+    });
+
     // Cola "latitude, longitude" (como o Google copia) no campo Latitude e separa nos dois campos
     $(document).on('change blur', '#editor_lat', function() {
         var par = $(this).val().match(/^\s*(-?\d+(?:[.,]\d+)?)\s*(?:;|\/|,\s+|\s+)\s*(-?\d+(?:[.,]\d+)?)\s*$/);
