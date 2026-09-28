@@ -5791,7 +5791,7 @@ body > .bs-container {
 }
 
 .editor-aviso-sobre-mapa.alert-info {
-  background-color: rgba(18, 140, 184, 0.95);
+  background-color: rgba(18, 140, 184, 0.7);
   border-color: #0e6f92;
   color: #ffffff;
 }
