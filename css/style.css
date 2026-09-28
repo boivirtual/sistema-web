@@ -5791,12 +5791,24 @@ body > .bs-container {
 }
 
 .editor-aviso-sobre-mapa.alert-info {
-  background-color: rgba(18, 140, 184, 0.7);
+  background-color: rgba(18, 140, 184, 0.55);
   border-color: #0e6f92;
   color: #ffffff;
 }
 
 .editor-aviso-sobre-mapa.alert-info .close {
+  color: #ffffff;
+  opacity: 0.85;
+  text-shadow: none;
+}
+
+.editor-aviso-sobre-mapa.alert-success {
+  background-color: rgba(46, 160, 67, 0.55);
+  border-color: #268a39;
+  color: #ffffff;
+}
+
+.editor-aviso-sobre-mapa.alert-success .close {
   color: #ffffff;
   opacity: 0.85;
   text-shadow: none;
