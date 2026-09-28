@@ -175,6 +175,26 @@ foreach ($novo['features'] as $f) {
     $poligonos[] = array('nome' => $nome, 'chave' => $chave, 'anel' => $aneis[0]);
 }
 
+// Mapa novo (primeira gravacao): o tabuleiro depende de ENTRADA e SAIDA
+if ($versao_atual === 'novo') {
+    $tem_entrada = false;
+    $tem_saida = false;
+
+    foreach ($poligonos as $p) {
+        if ($p['chave'] == 'ENTRADA') {
+            $tem_entrada = true;
+        }
+
+        if ($p['chave'] == 'SAIDA' || $p['chave'] == 'SAÍDA') {
+            $tem_saida = true;
+        }
+    }
+
+    if (!$tem_entrada || !$tem_saida) {
+        resposta_erro('Desenhe os pastos ENTRADA e SAIDA antes de salvar o mapa novo.');
+    }
+}
+
 // Renomeacoes: nome antigo (em maiusculas) -> nome novo
 $mapa_renomeados = array();
 
