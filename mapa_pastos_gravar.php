@@ -63,12 +63,12 @@ if (!is_array($renomeados)) {
     $renomeados = array();
 }
 
-$pasta = __DIR__ . '/mapa/' . $cnpj_cliente;
-$arquivo = $pasta . '/' . $local . '.json';
+include "funcao_mapa_fazenda.php";
 
 // Impede sobrescrever alteracao feita por outra pessoa desde que o mapa foi carregado
-$conteudo_atual = file_exists($arquivo) ? file_get_contents($arquivo) : '';
-$versao_atual = $conteudo_atual === '' ? 'novo' : md5($conteudo_atual);
+$leitura_mapa = mapa_ler($conector, $cnpj_cliente, $local);
+$conteudo_atual = $leitura_mapa['json'];
+$versao_atual = $leitura_mapa['versao'];
 
 if ($versao_recebida !== $versao_atual) {
     resposta_erro('O mapa dessa fazenda foi alterado por outra pessoa desde que você o carregou. Feche e abra o editor novamente para não perder o trabalho dela.');
