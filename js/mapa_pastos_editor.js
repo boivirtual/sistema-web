@@ -156,7 +156,7 @@ function editor_limpar_tudo() {
 
     editorMapa.itens = [];
     editorMapa.pontos = [];
-    editorMapa.pastosSistema = [];
+    editorMapa.pastosSistema = {};
     editorMapa.selecionado = null;
     editorMapa.novoPendente = null;
     editorMapa.local = '';
