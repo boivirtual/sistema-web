@@ -291,6 +291,11 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             });
 
             L.DomEvent.on(poligono._path, 'drop', function(ev) {
+                console.log('[DIAG satelite drop] alvo=', nome, 'elementoDestino.id=', elementoDestino.id,
+                    'dataTransfer.types=', ev.dataTransfer && ev.dataTransfer.types,
+                    'text=', ev.dataTransfer && ev.dataTransfer.getData('text'),
+                    'nome_dt=', ev.dataTransfer && ev.dataTransfer.getData('nome'));
+
                 poligono.setStyle(mapa_gado_satelite_estilo_padrao(nome));
                 mapaGadoSatelite.dragHoverLayer = null;
 
