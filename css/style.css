@@ -5827,9 +5827,9 @@ body > .bs-container {
 }
 
 /* Selo com Bezerro/Vaca/Boi no Mapa de Gado via satelite (igual ao Tabuleiro) */
-.leaflet-div-icon.satelite-pasto-badge-wrap {
-  background: transparent;
-  border: none;
+.satelite-pasto-badge-wrap {
+  background: transparent !important;
+  border: none !important;
 }
 
 .satelite-pasto-badge {
