@@ -3482,6 +3482,13 @@ function filtrar_pasto_tabuleiro(){
 
     termo = termo.toUpperCase();
 
+    // No mapa satelite a busca localiza e da zoom no pasto (igual ao Editor de Mapa),
+    // ja que aqui nao faz sentido mostrar/esconder cards como no Tabuleiro
+    if ($("#map").is(':visible')) {
+        buscar_pasto_satelite(termo);
+        return;
+    }
+
     $('.item_mapa').each(function(){
         var nome_pasto = $(this).find('.pasto_titulo strong').text().toUpperCase();
 
