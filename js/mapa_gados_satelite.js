@@ -9,10 +9,14 @@ var mapaGadoSatelite = {
 // (drag() e drop() sao as funcoes globais do Tabuleiro, em mapa_gados.js; aqui so criamos os
 // elementos de origem (icones arrastaveis) e destino (poligono) no mesmo formato que elas esperam.
 
-// Sem isso o mousedown no icone vaza para o Leaflet e o mapa arrasta (pan) junto com o inicio do drag
-$(document).on('mousedown', '.satelite-pasto-badge img, .satelite-pasto-badge .total', function(ev) {
-    ev.stopPropagation();
-});
+// Sem isso o mousedown no icone chega no container do Leaflet (que fica mais perto do elemento na
+// fase de bubble) antes do jQuery, e o mapa arrasta (pan) junto com o inicio do arraste do icone.
+// Por isso e' preciso interceptar na fase de captura, que roda antes de qualquer handler do Leaflet.
+document.addEventListener('mousedown', function(ev) {
+    if (ev.target.closest && ev.target.closest('.satelite-pasto-badge img, .satelite-pasto-badge .total')) {
+        ev.stopPropagation();
+    }
+}, true);
 
 $(document).on('dragstart', '.satelite-pasto-badge img, .satelite-pasto-badge .total', function() {
     if (mapaGadoSatelite.map) {
