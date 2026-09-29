@@ -129,10 +129,8 @@ else {
     $erro_mysql = mysqli_error($conector);
 
     if (!$resultado){
-        header('Content-type: application/json');
-        echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro ao atualizar as datas SEM ' . $erro_mysql));
-        exit;
-    } 
+        erro_transferencia_mapa_gados($conector, 'Ocorreu um erro ao atualizar as datas SEM ' . $erro_mysql);
+    }
 }
 
 // UPDADE PARA O PASTO QUE TERÁ OS ANIMAIS INCLUIDOS
