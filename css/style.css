@@ -5891,9 +5891,6 @@ body > .bs-container {
   cursor: pointer;
 }
 
-.satelite-pasto-badge .total {
-  cursor: pointer;
-}
 
 .satelite-pasto-badge .satelite-badge-divisor {
   align-self: stretch;
