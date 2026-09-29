@@ -41,15 +41,13 @@ while ($reg_pasto = mysqli_fetch_object($tbl_pasto)) {
 		$descricao_capim = '';
 	}
 
-	$tbl_animal_pasto = mysqli_query($conector, "SELECT * FROM tbl_animal_pasto
-		WHERE tbl_animal_pasto_id='$id_pasto'");
-
-	$num_rows_animal_pasto = mysqli_num_rows($tbl_animal_pasto);	
+	// Mesma conta do Tabuleiro: bezerros (categoria 0, os dois sexos) + femeas/machos (demais categorias)
+	$categorias = contar_categorias_pasto($conector, $id_pasto, $reg_pasto->tbl_pasto_array_categoria);
 
 	$dias_com_animais = 0;
 	$dias_sem_animais = 0;
 
-	if ($num_rows_animal_pasto!=0) {
+	if ($categorias['total']!=0) {
 		// Calcula dias com animais no pasto
 		$dataAtual = new DateTime();
 		$dataCom = new DateTime($reg_pasto->tbl_pasto_data_com_animais);
@@ -72,7 +70,10 @@ while ($reg_pasto = mysqli_fetch_object($tbl_pasto)) {
     	'id_pasto' => $id_pasto,
         'descricao' => $descricao,
         'tem_animal' => $tem_animal,
-        'total_animais' => $num_rows_animal_pasto,
+        'total_animais' => $categorias['total'],
+        'bezerros' => $categorias['bezerros'],
+        'femeas' => $categorias['femeas'],
+        'machos' => $categorias['machos'],
         'dias_com_animais' => $dias_com_animais,
         'dias_sem_animais' => $dias_sem_animais,
         'descricao_capim' => $descricao_capim,
