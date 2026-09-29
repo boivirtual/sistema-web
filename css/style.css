@@ -5858,6 +5858,11 @@ body > .bs-container {
   gap: 4px;
   white-space: nowrap;
   font-size: 13px;
+  cursor: pointer;
+  /* o marker do selo e' "interactive: false" no Leaflet, que aplica pointer-events:none em cascata;
+     sem isso a linha toda fica "vazando" o clique/arraste direto pro poligono por baixo. E' a linha
+     inteira (icone + numero) que arrasta, nao so' a imagem - area pequena demais para acertar no mouse */
+  pointer-events: auto;
 }
 
 .satelite-pasto-badge .linha .icone-animal {
