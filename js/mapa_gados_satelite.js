@@ -158,6 +158,7 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
 
     mapaGadoSatelite.poligonos = [];
     mapaGadoSatelite.dragHoverLayer = null;
+    mapaGadoSatelite.origemToque = null;
 
     if (!pastosAnimais.length) {
         return;
