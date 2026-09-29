@@ -179,7 +179,7 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
     function ajustar_zoom_fazenda() {
         if (mapaGadoSatelite.poligonos.length) {
             var grupo = L.featureGroup(mapaGadoSatelite.poligonos.map(function(p) { return p.layer; }));
-            map.fitBounds(grupo.getBounds(), { padding: [20, 20] });
+            map.fitBounds(grupo.getBounds(), { padding: [20, 20], maxZoom: 17 });
         }
         else {
             map.setView([latitude, longitude], 13);
