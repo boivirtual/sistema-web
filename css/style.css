@@ -5707,7 +5707,8 @@ body {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  color: #fff;
+  color: #fff !important;
+  font-family: 'Lato', sans-serif !important;
   font-size: 10px;
   font-weight: bold;
   text-shadow: 0 0 1.5px #000, 0 0 1.5px #000;
