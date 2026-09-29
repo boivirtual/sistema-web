@@ -5851,8 +5851,8 @@ body > .bs-container {
 }
 
 .satelite-pasto-badge .linha img {
-  width: 13px;
-  height: auto;
+  width: 13px !important;
+  height: auto !important;
 }
 
 .satelite-pasto-badge .total {
