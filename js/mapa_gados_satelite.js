@@ -8,6 +8,12 @@ var mapaGadoSatelite = {
 // Transferencia de animais por arraste no mapa satelite - mesma logica/telas do Mapa Tabuleiro
 // (drag() e drop() sao as funcoes globais do Tabuleiro, em mapa_gados.js; aqui so criamos os
 // elementos de origem (icones arrastaveis) e destino (poligono) no mesmo formato que elas esperam.
+
+// Sem isso o mousedown no icone vaza para o Leaflet e o mapa arrasta (pan) junto com o inicio do drag
+$(document).on('mousedown', '.satelite-pasto-badge img, .satelite-pasto-badge .total', function(ev) {
+    ev.stopPropagation();
+});
+
 $(document).on('dragstart', '.satelite-pasto-badge img, .satelite-pasto-badge .total', function() {
     if (mapaGadoSatelite.map) {
         mapaGadoSatelite.map.dragging.disable();
