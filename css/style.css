@@ -5710,16 +5710,7 @@ body {
   color: #fff;
   font-size: 10px;
   font-weight: bold;
-  /* contorno preto nitido (sem desfoque), em vez de sombra borrada */
-  text-shadow:
-    -1px -1px 0 #000,
-     1px -1px 0 #000,
-    -1px  1px 0 #000,
-     1px  1px 0 #000,
-     0    1px 0 #000,
-     0   -1px 0 #000,
-     1px  0   0 #000,
-    -1px  0   0 #000;
+  text-shadow: 0 0 1.5px #000, 0 0 1.5px #000;
   white-space: nowrap;
   padding: 0;
 }
