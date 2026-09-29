@@ -1,15 +1,34 @@
-<?php 
+<?php
     include "conecta_mysql.inc";
+
+// Interrompe a transferencia com uma mensagem clara (em vez de deixar o MySQL estourar um erro de
+// sintaxe) e desfaz qualquer alteracao ja feita nesta gravacao.
+function erro_transferencia_mapa_gados($conector, $mensagem) {
+    mysqli_rollback($conector);
+    header('Content-type: application/json');
+    echo json_encode(array('error' => true, 'message' => $mensagem));
+    exit;
+}
 
 $nome_usuario = $_SESSION['nome_usuario'];
 $data_sistema = date("Y-m-d H:i:s");
 $data_atual= date("Y-m-d");
 
 //DADOS DO PASTO ONDE OS ANIMAIS IRÃO SAIR
-$pasto_remover_id = $_POST["id_saida"];
+// So' os digitos do id (o Tabuleiro e o Mapa Satelite mandam o id entre aspas literais, ex.: "47")
+$pasto_remover_id = preg_replace('/[^0-9]/', '', (string) ($_POST["id_saida"] ?? ''));
+$pasto_incluir_id = preg_replace('/[^0-9]/', '', (string) ($_POST["id_entrada"] ?? ''));
 
-$tbl_pasto_sair = mysqli_query($conector, "SELECT * FROM tbl_pasto 
-    WHERE tbl_pasto_id = $pasto_remover_id AND 
+if ($pasto_remover_id === '' || $pasto_incluir_id === '') {
+    header('Content-type: application/json');
+    echo json_encode(array('error' => true, 'message' => 'Não foi possível identificar o pasto de origem ou de destino. Tente arrastar novamente.'));
+    exit;
+}
+
+mysqli_begin_transaction($conector);
+
+$tbl_pasto_sair = mysqli_query($conector, "SELECT * FROM tbl_pasto
+    WHERE tbl_pasto_id = $pasto_remover_id AND
           tbl_pasto_lixeira = 0");
 
 $reg_pasto_remover = mysqli_fetch_object($tbl_pasto_sair);
