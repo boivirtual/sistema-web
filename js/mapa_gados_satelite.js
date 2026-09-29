@@ -204,6 +204,37 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             }).addTo(map);
         }
     });
+
+    // reaplica o termo de busca (se houver) nos poligonos recem desenhados
+    if (typeof filtrar_pasto_tabuleiro === 'function') {
+        filtrar_pasto_tabuleiro();
+    }
+}
+
+// Busca por nome do pasto no mapa satelite: destaca e da zoom no pasto encontrado (igual ao Editor de Mapa)
+function buscar_pasto_satelite(termo) {
+    if (!mapaGadoSatelite.map) {
+        return;
+    }
+
+    var encontrado = null;
+
+    mapaGadoSatelite.poligonos.forEach(function(p) {
+        var combina = termo !== '' && p.nome.indexOf(termo) !== -1;
+
+        p.layer.setStyle({
+            color: combina ? '#ffeb3b' : '#ffffff',
+            weight: combina ? 3 : 1
+        });
+
+        if (combina && !encontrado) {
+            encontrado = p;
+        }
+    });
+
+    if (encontrado) {
+        mapaGadoSatelite.map.fitBounds(encontrado.layer.getBounds(), { maxZoom: 17 });
+    }
 }
 
 function mais_info_mapa_satelite(clicked_id) {
