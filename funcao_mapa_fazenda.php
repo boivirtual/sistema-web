@@ -7,6 +7,52 @@ function mapa_caminho_arquivo($cnpj, $local) {
     return __DIR__ . '/mapa/' . $cnpj . '/' . $local . '.json';
 }
 
+// Geojson do mapa + o modulo de cada pasto (pelo nome, em maiusculas) + a lista de modulos com cor.
+// Usada tanto pelo Editor de Mapa quanto pelo Mapa de Gado via satelite (mapa_pastos_ler.php e
+// mapa_gados_satelite_ler.php), que so diferem na permissao exigida para chamar o endpoint.
+function mapa_pastos_dados($conector, $cnpj_cliente, $local) {
+    include_once __DIR__ . '/funcao_modulo_pasto_cor.php';
+
+    $leitura_mapa = mapa_ler($conector, $cnpj_cliente, $local);
+
+    if ($leitura_mapa['json'] !== '') {
+        $geojson = json_decode($leitura_mapa['json']);
+
+        if ($geojson === null || !isset($geojson->features)) {
+            return array('error' => true, 'message' => 'O mapa dessa fazenda está inválido.');
+        }
+
+        $versao = $leitura_mapa['versao'];
+    }
+    else {
+        $geojson = array('type' => 'FeatureCollection', 'features' => array());
+        $versao = 'novo';
+    }
+
+    $modulos = ler_modulos_pasto($conector);
+
+    // nome do pasto (maiusculas) => id do modulo
+    $pastos = new stdClass();
+    $local_escapado = mysqli_real_escape_string($conector, $local);
+
+    $rs = mysqli_query($conector, "SELECT tbl_pasto_descricao, tbl_pasto_modulo FROM tbl_pasto
+        WHERE tbl_pasto_codigo_local='$local_escapado' AND
+              tbl_pasto_lixeira=0");
+
+    while ($reg = mysqli_fetch_object($rs)) {
+        $nome = mb_strtoupper($reg->tbl_pasto_descricao, 'UTF-8');
+        $pastos->$nome = (int)$reg->tbl_pasto_modulo;
+    }
+
+    return array(
+        'success' => true,
+        'versao' => $versao,
+        'geojson' => $geojson,
+        'pastos' => $pastos,
+        'modulos' => $modulos
+    );
+}
+
 function mapa_tabelas_existem($conector) {
     static $cache = array();
     $chave = spl_object_id($conector);
