@@ -246,6 +246,13 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
         }
 
         poligono.on('click', function(ev) {
+            // Mover por toque (alternativa ao arraste, mesma regra/tela do Tabuleiro): enquanto o modo
+            // estiver ativo, o clique no pasto seleciona origem/destino em vez de abrir o balao de info.
+            if (typeof _tabuleiroModoToque !== 'undefined' && _tabuleiroModoToque) {
+                satelite_selecionar_pasto_toque(poligono, infoAnimal);
+                return;
+            }
+
             var totalTexto = '';
             var situacaoTexto = 'Este pasto nao existe no sistema';
 
