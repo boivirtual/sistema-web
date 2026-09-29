@@ -9,40 +9,46 @@ var mapaGadoSatelite = {
 // (drag() e drop() sao as funcoes globais do Tabuleiro, em mapa_gados.js; aqui so criamos os
 // elementos de origem (icones arrastaveis) e destino (poligono) no mesmo formato que elas esperam.
 
-// O clique no icone (mousedown) tambem chega no Leaflet e ele comeca a arrastar o MAPA (pan) ao
-// mesmo tempo que o navegador tenta iniciar o arraste do icone. So' interromper a propagacao do
-// evento nao e' suficiente (o Leaflet ainda assim comeca o pan), entao desabilitamos o dragging do
-// mapa assim que o botao desce no icone, e devolvemos ao normal quando o botao sobe (mouseup) ou
-// quando o arraste termina (dragend) - o que vier primeiro.
+// Desabilitar o dragging do mapa so' no mousedown do icone nao e' suficiente: o Leaflet ainda assim
+// comeca a arrastar o mapa (parece reagir a outro evento alem do mousedown, tipo pointerdown). Por
+// isso desabilitamos o dragging assim que o MOUSE ENTRA na area do icone (antes de qualquer clique),
+// e so' devolvemos ao normal quando o mouse sai dali, quando o botao sobe ou quando o arraste termina.
 var _satelitePanSuspenso = false;
 var SATELITE_SELETOR_ARRASTAVEL = '.satelite-pasto-badge .linha, .satelite-pasto-badge .total';
 
-document.addEventListener('mousedown', function(ev) {
-    if (!ev.target.closest || !ev.target.closest(SATELITE_SELETOR_ARRASTAVEL)) {
-        return;
-    }
-
-    ev.stopPropagation();
-
+function _sateliteSuspenderPan() {
     if (mapaGadoSatelite.map && mapaGadoSatelite.map.dragging.enabled()) {
         mapaGadoSatelite.map.dragging.disable();
         _satelitePanSuspenso = true;
     }
-}, true);
+}
 
-document.addEventListener('mouseup', function() {
+function _sateliteRetomarPan() {
     if (_satelitePanSuspenso && mapaGadoSatelite.map) {
         mapaGadoSatelite.map.dragging.enable();
         _satelitePanSuspenso = false;
     }
+}
+
+$(document).on('mouseenter', SATELITE_SELETOR_ARRASTAVEL, _sateliteSuspenderPan);
+$(document).on('mouseleave', SATELITE_SELETOR_ARRASTAVEL, function() {
+    // so' retoma se nao estiver no meio de um arraste (dragend cuida desse caso)
+    if (!document.querySelector('.satelite-pasto-badge .linha:active, .satelite-pasto-badge .total:active')) {
+        _sateliteRetomarPan();
+    }
 });
 
-$(document).on('dragend', SATELITE_SELETOR_ARRASTAVEL, function() {
-    if (mapaGadoSatelite.map) {
-        mapaGadoSatelite.map.dragging.enable();
+document.addEventListener('mousedown', function(ev) {
+    if (ev.target.closest && ev.target.closest(SATELITE_SELETOR_ARRASTAVEL)) {
+        ev.stopPropagation();
+        _sateliteSuspenderPan();
     }
+}, true);
 
-    _satelitePanSuspenso = false;
+document.addEventListener('mouseup', _sateliteRetomarPan);
+
+$(document).on('dragend', SATELITE_SELETOR_ARRASTAVEL, function() {
+    _sateliteRetomarPan();
 
     if (mapaGadoSatelite.dragHoverLayer) {
         mapaGadoSatelite.dragHoverLayer.setStyle(mapa_gado_satelite_estilo_padrao(mapaGadoSatelite.dragHoverLayer._nomePasto));
