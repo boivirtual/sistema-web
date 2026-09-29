@@ -351,11 +351,10 @@ $resposta = array('success' => true, 'message' => 'Animais movidos com sucesso.'
 $erro_mysql = mysqli_error($conector);
 
 if (!$resultado){
-    header('Content-type: application/json');
-    echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro ao atualizar os animais no pasto' . $erro_mysql));
-    exit;
-} 
+    erro_transferencia_mapa_gados($conector, 'Ocorreu um erro ao atualizar os animais no pasto ' . $erro_mysql);
+}
 else {
+    mysqli_commit($conector);
     header('Content-type: application/json');
     echo json_encode($resposta);
     exit;
