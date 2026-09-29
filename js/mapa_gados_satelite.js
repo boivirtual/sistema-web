@@ -203,6 +203,43 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             }
         });
 
+        // Pasto como destino do arraste: usa o mesmo drop() do Tabuleiro (js/mapa_gados.js), passando
+        // um elemento "por fora" (nao inserido na tela) so para dar a ele o id e o <strong> que o drop() le
+        if (infoAnimal && poligono._path) {
+            poligono._nomePasto = nome;
+
+            var elementoDestino = document.createElement('div');
+            elementoDestino.id = '"' + infoAnimal.id_pasto + '"';
+            elementoDestino.appendChild(document.createElement('strong')).innerHTML = nome;
+
+            L.DomEvent.on(poligono._path, 'dragover', function(ev) {
+                ev.preventDefault();
+
+                if (mapaGadoSatelite.dragHoverLayer !== poligono) {
+                    if (mapaGadoSatelite.dragHoverLayer) {
+                        mapaGadoSatelite.dragHoverLayer.setStyle(mapa_gado_satelite_estilo_padrao(mapaGadoSatelite.dragHoverLayer._nomePasto));
+                    }
+
+                    mapaGadoSatelite.dragHoverLayer = poligono;
+                    poligono.setStyle({ color: '#128cb8', weight: 4 });
+                }
+            });
+
+            L.DomEvent.on(poligono._path, 'dragleave', function(ev) {
+                if (mapaGadoSatelite.dragHoverLayer === poligono) {
+                    poligono.setStyle(mapa_gado_satelite_estilo_padrao(nome));
+                    mapaGadoSatelite.dragHoverLayer = null;
+                }
+            });
+
+            L.DomEvent.on(poligono._path, 'drop', function(ev) {
+                poligono.setStyle(mapa_gado_satelite_estilo_padrao(nome));
+                mapaGadoSatelite.dragHoverLayer = null;
+
+                drop(ev, elementoDestino.id, elementoDestino);
+            });
+        }
+
         if (infoAnimal && infoAnimal.tem_animal == 'S') {
             var centro = mapa_gado_satelite_centroide(anel);
             var linhas = '';
