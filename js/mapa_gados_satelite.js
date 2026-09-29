@@ -9,18 +9,30 @@ var mapaGadoSatelite = {
 // (drag() e drop() sao as funcoes globais do Tabuleiro, em mapa_gados.js; aqui so criamos os
 // elementos de origem (icones arrastaveis) e destino (poligono) no mesmo formato que elas esperam.
 
-// Sem isso o mousedown no icone chega no container do Leaflet (que fica mais perto do elemento na
-// fase de bubble) antes do jQuery, e o mapa arrasta (pan) junto com o inicio do arraste do icone.
-// Por isso e' preciso interceptar na fase de captura, que roda antes de qualquer handler do Leaflet.
+// O clique no icone (mousedown) tambem chega no Leaflet e ele comeca a arrastar o MAPA (pan) ao
+// mesmo tempo que o navegador tenta iniciar o arraste do icone. So' interromper a propagacao do
+// evento nao e' suficiente (o Leaflet ainda assim comeca o pan), entao desabilitamos o dragging do
+// mapa assim que o botao desce no icone, e devolvemos ao normal quando o botao sobe (mouseup) ou
+// quando o arraste termina (dragend) - o que vier primeiro.
+var _satelitePanSuspenso = false;
+
 document.addEventListener('mousedown', function(ev) {
-    if (ev.target.closest && ev.target.closest('.satelite-pasto-badge img, .satelite-pasto-badge .total')) {
-        ev.stopPropagation();
+    if (!ev.target.closest || !ev.target.closest('.satelite-pasto-badge img, .satelite-pasto-badge .total')) {
+        return;
+    }
+
+    ev.stopPropagation();
+
+    if (mapaGadoSatelite.map && mapaGadoSatelite.map.dragging.enabled()) {
+        mapaGadoSatelite.map.dragging.disable();
+        _satelitePanSuspenso = true;
     }
 }, true);
 
-$(document).on('dragstart', '.satelite-pasto-badge img, .satelite-pasto-badge .total', function() {
-    if (mapaGadoSatelite.map) {
-        mapaGadoSatelite.map.dragging.disable();
+document.addEventListener('mouseup', function() {
+    if (_satelitePanSuspenso && mapaGadoSatelite.map) {
+        mapaGadoSatelite.map.dragging.enable();
+        _satelitePanSuspenso = false;
     }
 });
 
@@ -28,6 +40,8 @@ $(document).on('dragend', '.satelite-pasto-badge img, .satelite-pasto-badge .tot
     if (mapaGadoSatelite.map) {
         mapaGadoSatelite.map.dragging.enable();
     }
+
+    _satelitePanSuspenso = false;
 
     if (mapaGadoSatelite.dragHoverLayer) {
         mapaGadoSatelite.dragHoverLayer.setStyle(mapa_gado_satelite_estilo_padrao(mapaGadoSatelite.dragHoverLayer._nomePasto));
