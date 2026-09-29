@@ -399,3 +399,49 @@ function buscar_pasto_satelite(termo) {
 function mais_info_mapa_satelite(clicked_id) {
     $.redirect('form_mapa_gados_movimentacao.php', { 'pasto_id': clicked_id });
 }
+
+// Destaque do pasto escolhido como origem no "Mover por toque" (mesma cor/estilo do Tabuleiro: borda
+// tracejada laranja em .pasto-origem-selecionada)
+var SATELITE_ESTILO_ORIGEM_TOQUE = { color: '#ff8f00', weight: 4, dashArray: '8, 6' };
+
+// Mover por toque no mapa satelite (alternativa ao arraste): toca no pasto de origem, depois no de
+// destino. Reaproveita mover_tabuleiro_toque() (js/mapa_gados.js) - a mesma funcao/tela do Tabuleiro -
+// passando os elementos "por fora" que cada poligono ja guarda para o arraste (poligono._elementoToque).
+function satelite_selecionar_pasto_toque(poligono, infoAnimal) {
+    if (!poligono._elementoToque) {
+        return; // pasto sem cadastro no banco (geojson sem tbl_pasto correspondente)
+    }
+
+    if (mapaGadoSatelite.origemToque === null) {
+        // so' pode ser origem quem tem animal - mesma regra do Tabuleiro (card sem draggable=true nao entra)
+        if (!infoAnimal || infoAnimal.tem_animal != 'S') {
+            return;
+        }
+
+        mapaGadoSatelite.origemToque = poligono;
+        poligono.setStyle(SATELITE_ESTILO_ORIGEM_TOQUE);
+        return;
+    }
+
+    if (mapaGadoSatelite.origemToque === poligono) {
+        // tocar de novo na origem cancela a selecao
+        poligono.setStyle(mapa_gado_satelite_estilo_padrao(poligono._nomePasto));
+        mapaGadoSatelite.origemToque = null;
+        return;
+    }
+
+    var origemPoligono = mapaGadoSatelite.origemToque;
+    origemPoligono.setStyle(mapa_gado_satelite_estilo_padrao(origemPoligono._nomePasto));
+    mapaGadoSatelite.origemToque = null;
+
+    mover_tabuleiro_toque(origemPoligono._elementoToque, poligono._elementoToque);
+}
+
+// Chamada pelo alternar_modo_toque_tabuleiro() (js/mapa_gados.js) ao ligar/desligar o modo toque, para
+// nao deixar um pasto de origem "preso" selecionado no satelite ao trocar de modo
+function satelite_cancelar_toque() {
+    if (mapaGadoSatelite.origemToque) {
+        mapaGadoSatelite.origemToque.setStyle(mapa_gado_satelite_estilo_padrao(mapaGadoSatelite.origemToque._nomePasto));
+        mapaGadoSatelite.origemToque = null;
+    }
+}
