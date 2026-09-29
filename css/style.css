@@ -5888,6 +5888,11 @@ body > .bs-container {
   width: 12px !important;
   height: auto !important;
   filter: brightness(0) invert(1);
+  cursor: pointer;
+}
+
+.satelite-pasto-badge .total {
+  cursor: pointer;
 }
 
 .satelite-pasto-badge .satelite-badge-divisor {
