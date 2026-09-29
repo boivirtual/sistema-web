@@ -180,6 +180,13 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
         if (mapaGadoSatelite.poligonos.length) {
             var grupo = L.featureGroup(mapaGadoSatelite.poligonos.map(function(p) { return p.layer; }));
             map.fitBounds(grupo.getBounds(), { padding: [20, 20], maxZoom: 17 });
+
+            // Se a fazenda tiver algum pasto bem isolado (ex.: Entrada/Saida longe do resto), o
+            // fitBounds abriria demais o zoom so' para encaixar ele. Nesse caso preferimos manter
+            // um zoom legivel no grupo principal, mesmo que o pasto isolado fique fora da tela inicial.
+            if (map.getZoom() < 15) {
+                map.setZoom(15);
+            }
         }
         else {
             map.setView([latitude, longitude], 13);
