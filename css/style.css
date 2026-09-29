@@ -5834,13 +5834,22 @@ body > .bs-container {
 }
 
 .satelite-pasto-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   transform: translate(-50%, 6px);
   background: transparent;
   padding: 0;
-  font-size: 14px;
+  font-family: 'Lato', sans-serif !important;
   font-weight: bold;
   color: #fff;
   text-shadow: 0 0 1.5px #000, 0 0 1.5px #000;
+}
+
+.satelite-pasto-badge .satelite-badge-categorias {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .satelite-pasto-badge .linha {
@@ -5848,17 +5857,46 @@ body > .bs-container {
   align-items: center;
   gap: 4px;
   white-space: nowrap;
-  justify-content: center;
+  font-size: 13px;
 }
 
-.satelite-pasto-badge .linha img {
-  width: 22px !important;
+.satelite-pasto-badge .linha .icone-animal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.85);
+}
+
+.satelite-pasto-badge .linha .icone-animal.bezerro {
+  background-color: #9c7239;
+}
+
+.satelite-pasto-badge .linha .icone-animal.femea {
+  background-color: #b71c1c;
+}
+
+.satelite-pasto-badge .linha .icone-animal.macho {
+  background-color: #212121;
+}
+
+.satelite-pasto-badge .linha .icone-animal img {
+  width: 12px !important;
   height: auto !important;
-  filter: drop-shadow(0 0 1.5px #000) drop-shadow(0 0 1.5px #000);
+  filter: brightness(0) invert(1);
+}
+
+.satelite-pasto-badge .satelite-badge-divisor {
+  align-self: stretch;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 1.5px #000;
 }
 
 .satelite-pasto-badge .total {
-  margin-top: 2px;
-  text-align: center;
-  font-size: 17px;
+  font-size: 22px;
 }
