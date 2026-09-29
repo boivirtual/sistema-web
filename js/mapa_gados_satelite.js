@@ -1,6 +1,7 @@
 /** MAPA DE GADO - SATELITE (Leaflet, somente visualizacao) */
 var mapaGadoSatelite = {
-    map: null
+    map: null,
+    poligonos: []
 };
 
 function carregar_mapa_satelite_gado() {
