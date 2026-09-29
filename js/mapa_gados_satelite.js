@@ -300,8 +300,13 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
                 linhas += '<div class="linha" draggable="true" ondragstart="drag(event)" ' + idOrigem + '><span class="icone-animal macho"><img src="img/gado.png"></span><span>' + infoAnimal.machos + '</span></div>';
             }
 
-            // total logo apos as categorias, centralizado verticalmente - igual ao card do Tabuleiro
-            var html = '<div class="satelite-pasto-badge">' +
+            // total logo apos as categorias, centralizado verticalmente - igual ao card do Tabuleiro.
+            // Igual ao .item_mapa do Tabuleiro: o "cartao" do selo tambem e' arrastavel e tem um
+            // <strong> (oculto aqui) com o nome do pasto - e' dali que drag() pega o nome de origem
+            // quando o evento borbulha do icone/numero ate' aqui (senao a mensagem de confirmacao
+            // mostra o pasto de origem em branco).
+            var html = '<div class="satelite-pasto-badge" draggable="true" ondragstart="drag(event, this)" ' + idOrigem + '>' +
+                '<strong style="display:none">' + nome + '</strong>' +
                 '<div class="satelite-badge-categorias">' + linhas + '</div>' +
                 '<div class="satelite-badge-divisor"></div>' +
                 '<div class="total" draggable="true" ondragstart="drag(event)" ' + idOrigem + '>' + infoAnimal.total_animais + '</div>' +
