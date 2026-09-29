@@ -3385,6 +3385,10 @@ function alternar_modo_toque_tabuleiro(){
     $('#modo_toque_tabuleiro_btn').tooltip('hide').blur();
     $('.item_mapa').removeClass('pasto-origem-selecionada');
 
+    if (typeof satelite_cancelar_toque === 'function') {
+        satelite_cancelar_toque();
+    }
+
     var $btn = $('#modo_toque_tabuleiro_btn');
 
     if (_tabuleiroModoToque) {
