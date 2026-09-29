@@ -294,14 +294,9 @@ function buscar_pasto_satelite(termo) {
     var encontrado = null;
 
     mapaGadoSatelite.poligonos.forEach(function(p) {
-        var combina = termo !== '' && p.nome.indexOf(termo) !== -1;
+        p.layer.setStyle(mapa_gado_satelite_estilo_padrao(termo !== '' ? p.nome : ''));
 
-        p.layer.setStyle({
-            color: combina ? '#ffeb3b' : '#ffffff',
-            weight: combina ? 3 : 1
-        });
-
-        if (combina && !encontrado) {
+        if (termo !== '' && p.nome.indexOf(termo) !== -1 && !encontrado) {
             encontrado = p;
         }
     });
