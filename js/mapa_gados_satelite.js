@@ -62,6 +62,18 @@ function mapa_gado_satelite_centroide(anel) {
 
     area = area / 2;
 
+    if (Math.abs(area) < 1e-12) {
+        // poligono degenerado (area ~0): usa a media simples dos pontos em vez de dividir por zero
+        var somaLat = 0, somaLng = 0, qtd = anel.length - 1;
+
+        for (var j = 0; j < qtd; j++) {
+            somaLng += anel[j][0];
+            somaLat += anel[j][1];
+        }
+
+        return [somaLat / qtd, somaLng / qtd];
+    }
+
     return [cy / (6 * area), cx / (6 * area)]; // [lat, lng]
 }
 
