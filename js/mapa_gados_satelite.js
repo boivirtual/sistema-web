@@ -335,6 +335,8 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
         }
     });
 
+    ajustar_zoom_fazenda();
+
     // reaplica o termo de busca (se houver) nos poligonos recem desenhados
     if (typeof filtrar_pasto_tabuleiro === 'function') {
         filtrar_pasto_tabuleiro();
