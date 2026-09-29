@@ -174,11 +174,23 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
         attribution: 'Imagens &copy; Esri, Maxar, Earthstar Geographics'
     }).addTo(map);
 
+    // Ajusta o zoom para caber certinho nos limites dos pastos da fazenda, em vez de um zoom fixo
+    // (que deixava tudo minusculo e ilegivel em fazendas grandes ou bem espalhadas)
+    function ajustar_zoom_fazenda() {
+        if (mapaGadoSatelite.poligonos.length) {
+            var grupo = L.featureGroup(mapaGadoSatelite.poligonos.map(function(p) { return p.layer; }));
+            map.fitBounds(grupo.getBounds(), { padding: [20, 20] });
+        }
+        else {
+            map.setView([latitude, longitude], 13);
+        }
+    }
+
     // O container pode ainda nao ter o tamanho definitivo no instante da criacao (troca de aba,
     // aba escondida no carregamento da pagina); sem isso o mapa pode desenhar tudo torto.
     setTimeout(function() {
         map.invalidateSize();
-        map.setView([latitude, longitude], 13);
+        ajustar_zoom_fazenda();
     }, 0);
 
     var popup = L.popup();
