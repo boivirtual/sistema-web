@@ -244,24 +244,28 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             var centro = mapa_gado_satelite_centroide(anel);
             var linhas = '';
 
-            // mesmos icones e a mesma regra do Tabuleiro: só mostra a linha da categoria que tiver animal
+            // id no mesmo formato usado pelo Tabuleiro (com aspas literais - drag()/drop() dependem disso)
+            var idOrigem = "id='\"" + infoAnimal.id_pasto + "\"'";
+
+            // mesmos icones e a mesma regra do Tabuleiro: só mostra a linha da categoria que tiver animal.
+            // draggable+ondragstart=drag(event) reaproveitam a mesma funcao de arraste do Tabuleiro.
             if (infoAnimal.bezerros != 0) {
-                linhas += '<div class="linha"><span class="icone-animal bezerro"><img src="img/bezerro.png"></span><span>' + infoAnimal.bezerros + '</span></div>';
+                linhas += '<div class="linha"><span class="icone-animal bezerro"><img src="img/bezerro.png" draggable="true" ondragstart="drag(event)" ' + idOrigem + '></span><span>' + infoAnimal.bezerros + '</span></div>';
             }
 
             if (infoAnimal.femeas != 0) {
-                linhas += '<div class="linha"><span class="icone-animal femea"><img src="img/vaca.png"></span><span>' + infoAnimal.femeas + '</span></div>';
+                linhas += '<div class="linha"><span class="icone-animal femea"><img src="img/vaca.png" draggable="true" ondragstart="drag(event)" ' + idOrigem + '></span><span>' + infoAnimal.femeas + '</span></div>';
             }
 
             if (infoAnimal.machos != 0) {
-                linhas += '<div class="linha"><span class="icone-animal macho"><img src="img/gado.png"></span><span>' + infoAnimal.machos + '</span></div>';
+                linhas += '<div class="linha"><span class="icone-animal macho"><img src="img/gado.png" draggable="true" ondragstart="drag(event)" ' + idOrigem + '></span><span>' + infoAnimal.machos + '</span></div>';
             }
 
             // total logo apos as categorias, centralizado verticalmente - igual ao card do Tabuleiro
             var html = '<div class="satelite-pasto-badge">' +
                 '<div class="satelite-badge-categorias">' + linhas + '</div>' +
                 '<div class="satelite-badge-divisor"></div>' +
-                '<div class="total">' + infoAnimal.total_animais + '</div>' +
+                '<div class="total" draggable="true" ondragstart="drag(event)" ' + idOrigem + '>' + infoAnimal.total_animais + '</div>' +
                 '</div>';
 
             L.marker(centro, {
