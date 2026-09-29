@@ -146,12 +146,29 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
 
         if (infoAnimal && infoAnimal.tem_animal == 'S') {
             var centro = mapa_gado_satelite_centroide(anel);
+            var linhas = '';
+
+            // mesmos icones e a mesma regra do Tabuleiro: só mostra a linha da categoria que tiver animal
+            if (infoAnimal.bezerros != 0) {
+                linhas += '<div class="linha"><img src="img/bezerro.png"><span>' + infoAnimal.bezerros + '</span></div>';
+            }
+
+            if (infoAnimal.femeas != 0) {
+                linhas += '<div class="linha"><img src="img/vaca.png"><span>' + infoAnimal.femeas + '</span></div>';
+            }
+
+            if (infoAnimal.machos != 0) {
+                linhas += '<div class="linha"><img src="img/gado.png"><span>' + infoAnimal.machos + '</span></div>';
+            }
+
+            var html = '<div class="satelite-pasto-badge">' + linhas +
+                '<div class="total">' + infoAnimal.total_animais + '</div></div>';
 
             L.marker(centro, {
-                icon: L.icon({
-                    iconUrl: 'img/cow-export.png',
-                    iconSize: [28, 33],
-                    iconAnchor: [10, 32]
+                icon: L.divIcon({
+                    className: 'satelite-pasto-badge-wrap',
+                    html: html,
+                    iconSize: [0, 0]
                 }),
                 interactive: false
             }).addTo(map);
