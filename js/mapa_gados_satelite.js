@@ -165,10 +165,12 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
     var latitude = parseFloat(pastosAnimais[0].latitude);
     var longitude = parseFloat(pastosAnimais[0].longitude);
 
-    // Sem view inicial "de mentira" aqui: o Leaflet permite criar o mapa e adicionar camadas antes de
-    // ter uma view definida, e so' definimos a posicao de verdade (ajustar_zoom_fazenda) uma vez os
-    // pastos ja estarem desenhados. Evita o mapa "piscar" - aparecer num lugar e saltar para outro.
-    var map = L.map('map', { zoomSnap: 0.5 });
+    // O Leaflet so' cria de verdade os elementos (path/SVG) dos poligonos que forem adicionados DEPOIS
+    // de existir uma view - sem uma posicao inicial aqui, os pastos ficam "pendurados" sem elemento
+    // proprio ate' a primeira setView, e o arraste (que depende do path de cada poligono) nao funciona.
+    // Por isso a view inicial continua existindo, so' que sem animar a troca para a posicao final
+    // (ajustar_zoom_fazenda), o usuario nunca chega a ver essa posicao provisoria na tela.
+    var map = L.map('map', { zoomSnap: 0.5 }).setView([latitude, longitude], 13, { animate: false });
     mapaGadoSatelite.map = map;
 
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
