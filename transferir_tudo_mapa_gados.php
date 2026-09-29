@@ -47,10 +47,22 @@ $descricao_lote_4_remover = $reg_pasto_remover->tbl_pasto_descricao_lote_4;
 $descricao_lote_5_remover = $reg_pasto_remover->tbl_pasto_descricao_lote_5;
 $descricao_lote_6_remover = $reg_pasto_remover->tbl_pasto_descricao_lote_6;
 
+// Nunca deixa um desses campos ir vazio/nulo para dentro do UPDATE (pasto que nunca teve um ciclo
+// anterior registrado) - usa o instante atual como valor seguro nesse caso.
+$data_sistema_sql = mysqli_real_escape_string($conector, $data_sistema);
+
+function data_pasto_ou_agora($valor, $agora) {
+    if ($valor === null || $valor === '' || $valor === '0000-00-00' || $valor === '0000-00-00 00:00:00') {
+        return $agora;
+    }
+
+    return $valor;
+}
+
 $data_com_remover = $reg_pasto_remover->tbl_pasto_data_com_animais;
-$data_com_remover_anterior = $reg_pasto_remover->tbl_pasto_data_com_animais_anterior;
-$data_sem_remover = $reg_pasto_remover->tbl_pasto_data_sem_animais;
-$data_sem_remover_anterior = $reg_pasto_remover->tbl_pasto_data_sem_animais_anterior;
+$data_com_remover_anterior = data_pasto_ou_agora($reg_pasto_remover->tbl_pasto_data_com_animais_anterior, $data_sistema_sql);
+$data_sem_remover = data_pasto_ou_agora($reg_pasto_remover->tbl_pasto_data_sem_animais, $data_sistema_sql);
+$data_sem_remover_anterior = data_pasto_ou_agora($reg_pasto_remover->tbl_pasto_data_sem_animais_anterior, $data_sistema_sql);
 
 //DADOS DO PASTO ONDE OS ANIMAIS IRÃO ENTRAR
 $tbl_pasto_entrar = mysqli_query($conector, "SELECT * FROM tbl_pasto
