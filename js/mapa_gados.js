@@ -176,7 +176,7 @@ function mapa_tabuleiro() {
     $("li#modo_toque_tabuleiro_li").show();
 
     var tipo_mapa = 'T';
-    //$("#tipo_mapa_gado").val('T');
+    $("#tipo_mapa_gado").val('T');
 
     $.ajax({
         type: "POST",
