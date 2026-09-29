@@ -3503,14 +3503,12 @@ function filtrar_pasto_tabuleiro(){
 
 function drag(ev, divPasto){
     ev.dataTransfer.setData("text", ev.target.id);
-    console.log('[DIAG drag] target.id=', ev.target.id, 'divPasto=', divPasto);
 
     if (divPasto == null){
         return;
     }
     var nomePasto = divPasto.getElementsByTagName('strong')[0].innerHTML;
     ev.dataTransfer.setData("nome", nomePasto);
-    console.log('[DIAG drag] nomePasto=', nomePasto);
 }
 
 function drop(ev, id, elemento){
@@ -3520,7 +3518,6 @@ function drop(ev, id, elemento){
     var nome = ev.dataTransfer.getData("nome");
     var nomeRecebe = elemento.getElementsByTagName('strong')[0].innerHTML;
     var id_pai = ev.dataTransfer.getData("text");
-    console.log('[DIAG drop] id_target=', id_target, 'id_pai=', id_pai, 'nome=', nome, 'nomeRecebe=', nomeRecebe);
 
     var id_pasto_destino = id_target.replaceAll('"', '');
     $("#id_pasto_destino").val(id_pasto_destino);
@@ -3528,7 +3525,6 @@ function drop(ev, id, elemento){
     $("#desc_pasto_destino").val(nomeRecebe);
     $("#id_entrada").val(id_target);
     $("#id_saida").val(id_pai);
-    console.log('[DIAG drop] gravou id_entrada=', $("#id_entrada").val(), 'id_saida=', $("#id_saida").val());
 
     /*  verifica se o pasto destino esta vazio
     Se sim
