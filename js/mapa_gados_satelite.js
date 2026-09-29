@@ -165,7 +165,10 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
     var latitude = parseFloat(pastosAnimais[0].latitude);
     var longitude = parseFloat(pastosAnimais[0].longitude);
 
-    var map = L.map('map', { zoomSnap: 0.5 }).setView([latitude, longitude], 13);
+    // Sem view inicial "de mentira" aqui: o Leaflet permite criar o mapa e adicionar camadas antes de
+    // ter uma view definida, e so' definimos a posicao de verdade (ajustar_zoom_fazenda) uma vez os
+    // pastos ja estarem desenhados. Evita o mapa "piscar" - aparecer num lugar e saltar para outro.
+    var map = L.map('map', { zoomSnap: 0.5 });
     mapaGadoSatelite.map = map;
 
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -175,28 +178,30 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
     }).addTo(map);
 
     // Ajusta o zoom para caber certinho nos limites dos pastos da fazenda, em vez de um zoom fixo
-    // (que deixava tudo minusculo e ilegivel em fazendas grandes ou bem espalhadas)
+    // (que deixava tudo minusculo e ilegivel em fazendas grandes ou bem espalhadas). Sempre sem
+    // animacao: como isso roda logo na abertura do mapa (e de novo apos o invalidateSize), animar
+    // faria o mapa parecer "saltar" de posicao em vez de simplesmente aparecer no lugar certo.
     function ajustar_zoom_fazenda() {
         if (mapaGadoSatelite.poligonos.length) {
             var grupo = L.featureGroup(mapaGadoSatelite.poligonos.map(function(p) { return p.layer; }));
-            map.fitBounds(grupo.getBounds(), { padding: [20, 20], maxZoom: 17 });
+            map.fitBounds(grupo.getBounds(), { padding: [20, 20], maxZoom: 17, animate: false });
 
             // Se a fazenda tiver algum pasto bem isolado (ex.: Entrada/Saida longe do resto), o
             // fitBounds abriria demais o zoom so' para encaixar ele. Nesse caso preferimos manter
             // um zoom legivel no grupo principal, mesmo que o pasto isolado fique fora da tela inicial.
             if (map.getZoom() < 15) {
-                map.setZoom(15);
+                map.setZoom(15, { animate: false });
             }
         }
         else {
-            map.setView([latitude, longitude], 13);
+            map.setView([latitude, longitude], 13, { animate: false });
         }
     }
 
     // O container pode ainda nao ter o tamanho definitivo no instante da criacao (troca de aba,
     // aba escondida no carregamento da pagina); sem isso o mapa pode desenhar tudo torto.
     setTimeout(function() {
-        map.invalidateSize();
+        map.invalidateSize({ animate: false });
         ajustar_zoom_fazenda();
     }, 0);
 
