@@ -2,7 +2,8 @@
 var mapaGadoSatelite = {
     map: null,
     poligonos: [],
-    dragHoverLayer: null
+    dragHoverLayer: null,
+    origemToque: null
 };
 
 // Transferencia de animais por arraste no mapa satelite - mesma logica/telas do Mapa Tabuleiro
