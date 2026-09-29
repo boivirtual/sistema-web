@@ -37,7 +37,7 @@ document.addEventListener('mouseup', function() {
     }
 });
 
-$(document).on('dragend', '.satelite-pasto-badge img, .satelite-pasto-badge .total', function() {
+$(document).on('dragend', SATELITE_SELETOR_ARRASTAVEL, function() {
     if (mapaGadoSatelite.map) {
         mapaGadoSatelite.map.dragging.enable();
     }
