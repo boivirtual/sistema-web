@@ -25,6 +25,9 @@
   <link href="css/select-1.13.14.css" rel="stylesheet" > 
   <link href="css/style-busca.css?<?php echo Versao; ?>" rel="stylesheet">
 
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script src="js/DragDropTouch.js"></script>
 
 
