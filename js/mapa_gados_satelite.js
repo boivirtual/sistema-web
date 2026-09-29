@@ -15,9 +15,10 @@ var mapaGadoSatelite = {
 // mapa assim que o botao desce no icone, e devolvemos ao normal quando o botao sobe (mouseup) ou
 // quando o arraste termina (dragend) - o que vier primeiro.
 var _satelitePanSuspenso = false;
+var SATELITE_SELETOR_ARRASTAVEL = '.satelite-pasto-badge .linha, .satelite-pasto-badge .total';
 
 document.addEventListener('mousedown', function(ev) {
-    if (!ev.target.closest || !ev.target.closest('.satelite-pasto-badge img, .satelite-pasto-badge .total')) {
+    if (!ev.target.closest || !ev.target.closest(SATELITE_SELETOR_ARRASTAVEL)) {
         return;
     }
 
