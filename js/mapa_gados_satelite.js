@@ -99,6 +99,13 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
         attribution: 'Imagens &copy; Esri, Maxar, Earthstar Geographics'
     }).addTo(map);
 
+    // O container pode ainda nao ter o tamanho definitivo no instante da criacao (troca de aba,
+    // aba escondida no carregamento da pagina); sem isso o mapa pode desenhar tudo torto.
+    setTimeout(function() {
+        map.invalidateSize();
+        map.setView([latitude, longitude], 13);
+    }, 0);
+
     var popup = L.popup();
     var features = (dadosMapa.geojson && dadosMapa.geojson.features) ? dadosMapa.geojson.features : [];
 
