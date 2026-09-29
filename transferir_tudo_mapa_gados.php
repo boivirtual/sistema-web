@@ -176,10 +176,8 @@ if ($qtd_animais_pasto_entrada==0) {
             $erro_mysql = mysqli_error($conector);
 
             if (!$resultado){
-                header('Content-type: application/json');
-                echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro ao atualizar as datas COM' . $erro_mysql));
-                exit;
-            } 
+                erro_transferencia_mapa_gados($conector, 'Ocorreu um erro ao atualizar as datas COM ' . $erro_mysql);
+            }
         }
         else {
             //if ($qtd_animais_pasto_entrada==0) {
