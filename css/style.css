@@ -5704,9 +5704,9 @@ body {
 }
 
 .editor-pasto-label {
-  background: transparent;
-  border: none;
-  box-shadow: none;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   color: #fff;
   font-size: 10px;
   font-weight: bold;
