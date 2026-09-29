@@ -306,29 +306,30 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             var idOrigem = "id='\"" + infoAnimal.id_pasto + "\"'";
 
             // mesmos icones e a mesma regra do Tabuleiro: só mostra a linha da categoria que tiver animal.
-            // draggable+ondragstart=drag(event) reaproveitam a mesma funcao de arraste do Tabuleiro.
+            // Cada elemento chama drag(event, ancestor) diretamente, passando o "cartao" do selo (que
+            // tem o <strong> com o nome do pasto) - sem depender do evento borbulhar ate' um segundo
+            // ondragstart no elemento pai (isso se mostrou fragil num arraste real: em alguns casos o
+            // id/nome de origem chegavam vazios no servidor mesmo com a mensagem de confirmacao certa).
+            var ORIGEM_ANCESTOR = "this.closest('.satelite-pasto-badge')";
+
             if (infoAnimal.bezerros != 0) {
-                linhas += '<div class="linha" draggable="true" ondragstart="drag(event)" ' + idOrigem + '><span class="icone-animal bezerro"><img src="img/bezerro.png"></span><span>' + infoAnimal.bezerros + '</span></div>';
+                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal bezerro"><img src="img/bezerro.png"></span><span>' + infoAnimal.bezerros + '</span></div>';
             }
 
             if (infoAnimal.femeas != 0) {
-                linhas += '<div class="linha" draggable="true" ondragstart="drag(event)" ' + idOrigem + '><span class="icone-animal femea"><img src="img/vaca.png"></span><span>' + infoAnimal.femeas + '</span></div>';
+                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal femea"><img src="img/vaca.png"></span><span>' + infoAnimal.femeas + '</span></div>';
             }
 
             if (infoAnimal.machos != 0) {
-                linhas += '<div class="linha" draggable="true" ondragstart="drag(event)" ' + idOrigem + '><span class="icone-animal macho"><img src="img/gado.png"></span><span>' + infoAnimal.machos + '</span></div>';
+                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal macho"><img src="img/gado.png"></span><span>' + infoAnimal.machos + '</span></div>';
             }
 
-            // total logo apos as categorias, centralizado verticalmente - igual ao card do Tabuleiro.
-            // Igual ao .item_mapa do Tabuleiro: o "cartao" do selo tambem e' arrastavel e tem um
-            // <strong> (oculto aqui) com o nome do pasto - e' dali que drag() pega o nome de origem
-            // quando o evento borbulha do icone/numero ate' aqui (senao a mensagem de confirmacao
-            // mostra o pasto de origem em branco).
-            var html = '<div class="satelite-pasto-badge" draggable="true" ondragstart="drag(event, this)" ' + idOrigem + '>' +
+            // total logo apos as categorias, centralizado verticalmente - igual ao card do Tabuleiro
+            var html = '<div class="satelite-pasto-badge">' +
                 '<strong style="display:none">' + nome + '</strong>' +
                 '<div class="satelite-badge-categorias">' + linhas + '</div>' +
                 '<div class="satelite-badge-divisor"></div>' +
-                '<div class="total" draggable="true" ondragstart="drag(event)" ' + idOrigem + '>' + infoAnimal.total_animais + '</div>' +
+                '<div class="total" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '>' + infoAnimal.total_animais + '</div>' +
                 '</div>';
 
             L.marker(centro, {
