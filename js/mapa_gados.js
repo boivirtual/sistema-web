@@ -209,6 +209,8 @@ function mapa_satelite() {
         alternar_modo_toque_tabuleiro();
     }
 
+    carregar_mapa_satelite_gado();
+
     var tipo_mapa = 'M';
     //$("#tipo_mapa_gado").val('M');
 
