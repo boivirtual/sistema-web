@@ -124,7 +124,7 @@
 
                         <li id="fazendas-select">
                             <label>Fazendas:</label>
-                            <select class="select-empresa-menu-control custom-select" id="codigo_local" name="codigo_local" onchange="consultar_mapa(); carregar_mapa_satelite_gado();"> 
+                            <select class="select-empresa-menu-control custom-select" id="codigo_local" name="codigo_local" onchange="consultar_mapa();">
                                 <option value="0">...</option>
                             </select>
 
