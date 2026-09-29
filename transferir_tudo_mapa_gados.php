@@ -33,6 +33,10 @@ $tbl_pasto_sair = mysqli_query($conector, "SELECT * FROM tbl_pasto
 
 $reg_pasto_remover = mysqli_fetch_object($tbl_pasto_sair);
 
+if (!$reg_pasto_remover) {
+    erro_transferencia_mapa_gados($conector, 'O pasto de origem não foi encontrado.');
+}
+
 $descricao_lote_remover = $reg_pasto_remover->tbl_pasto_descricao_lote;
 $id_lote_remover = $reg_pasto_remover->tbl_pasto_id_lote;
 $ano_lote_remover = $reg_pasto_remover->tbl_pasto_ano_lote;
