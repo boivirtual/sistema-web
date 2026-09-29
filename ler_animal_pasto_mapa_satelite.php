@@ -1,5 +1,6 @@
-<?php 
+<?php
 include "conecta_mysql.inc";
+include "funcao_categorias_animais_pasto.php";
 
 $local = $_POST['local'];
 $arr = [];
