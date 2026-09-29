@@ -78,9 +78,9 @@ if (!$reg_pasto_incluir) {
 $descricao_lote_pasto_destino = $reg_pasto_incluir->tbl_pasto_descricao_lote;
 
 $data_com_incluir = $reg_pasto_incluir->tbl_pasto_data_com_animais;
-$data_com_incluir_anterior = $reg_pasto_incluir->tbl_pasto_data_com_animais_anterior;
-$data_sem_incluir = $reg_pasto_incluir->tbl_pasto_data_sem_animais;
-$data_sem_incluir_anterior = $reg_pasto_incluir->tbl_pasto_data_sem_animais_anterior;
+$data_com_incluir_anterior = data_pasto_ou_agora($reg_pasto_incluir->tbl_pasto_data_com_animais_anterior, $data_sistema_sql);
+$data_sem_incluir = data_pasto_ou_agora($reg_pasto_incluir->tbl_pasto_data_sem_animais, $data_sistema_sql);
+$data_sem_incluir_anterior = data_pasto_ou_agora($reg_pasto_incluir->tbl_pasto_data_sem_animais_anterior, $data_sistema_sql);
 
 $tbl_pasto_animais_entrar = mysqli_query($conector, "SELECT * FROM tbl_animal_pasto 
     WHERE tbl_animal_pasto_id = $pasto_incluir_id");
