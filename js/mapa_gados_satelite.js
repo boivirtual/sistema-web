@@ -171,19 +171,23 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
 
             // mesmos icones e a mesma regra do Tabuleiro: só mostra a linha da categoria que tiver animal
             if (infoAnimal.bezerros != 0) {
-                linhas += '<div class="linha"><img src="img/bezerro.png"><span>' + infoAnimal.bezerros + '</span></div>';
+                linhas += '<div class="linha"><span class="icone-animal bezerro"><img src="img/bezerro.png"></span><span>' + infoAnimal.bezerros + '</span></div>';
             }
 
             if (infoAnimal.femeas != 0) {
-                linhas += '<div class="linha"><img src="img/vaca.png"><span>' + infoAnimal.femeas + '</span></div>';
+                linhas += '<div class="linha"><span class="icone-animal femea"><img src="img/vaca.png"></span><span>' + infoAnimal.femeas + '</span></div>';
             }
 
             if (infoAnimal.machos != 0) {
-                linhas += '<div class="linha"><img src="img/gado.png"><span>' + infoAnimal.machos + '</span></div>';
+                linhas += '<div class="linha"><span class="icone-animal macho"><img src="img/gado.png"></span><span>' + infoAnimal.machos + '</span></div>';
             }
 
-            var html = '<div class="satelite-pasto-badge">' + linhas +
-                '<div class="total">' + infoAnimal.total_animais + '</div></div>';
+            // total logo apos as categorias, centralizado verticalmente - igual ao card do Tabuleiro
+            var html = '<div class="satelite-pasto-badge">' +
+                '<div class="satelite-badge-categorias">' + linhas + '</div>' +
+                '<div class="satelite-badge-divisor"></div>' +
+                '<div class="total">' + infoAnimal.total_animais + '</div>' +
+                '</div>';
 
             L.marker(centro, {
                 icon: L.divIcon({
