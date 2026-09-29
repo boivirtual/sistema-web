@@ -294,7 +294,7 @@ function buscar_pasto_satelite(termo) {
     var encontrado = null;
 
     mapaGadoSatelite.poligonos.forEach(function(p) {
-        p.layer.setStyle(mapa_gado_satelite_estilo_padrao(termo !== '' ? p.nome : ''));
+        p.layer.setStyle(mapa_gado_satelite_estilo_padrao(p.nome));
 
         if (termo !== '' && p.nome.indexOf(termo) !== -1 && !encontrado) {
             encontrado = p;
