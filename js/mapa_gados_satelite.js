@@ -313,20 +313,25 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             // mesmos icones e a mesma regra do Tabuleiro: só mostra a linha da categoria que tiver animal.
             // Cada elemento chama drag(event, ancestor) diretamente, passando o "cartao" do selo (que
             // tem o <strong> com o nome do pasto) - sem depender do evento borbulhar ate' um segundo
-            // ondragstart no elemento pai (isso se mostrou fragil num arraste real: em alguns casos o
-            // id/nome de origem chegavam vazios no servidor mesmo com a mensagem de confirmacao certa).
+            // ondragstart no elemento pai.
+            //
+            // ACHADO (via log de diagnostico): a <img> e' arrastavel por padrao do navegador. Quando o
+            // clique cai bem em cima dela (nao na linha ao redor), o navegador assume o arraste NATIVO
+            // da imagem em vez do nosso - o evento ainda borbulha e drag() ainda roda, mas ev.target vira
+            // a <img> (sem id), entao dataTransfer.setData("text", "") grava vazio e o id do pasto de
+            // origem chega em branco no servidor. draggable="false" na imagem resolve isso.
             var ORIGEM_ANCESTOR = "this.closest('.satelite-pasto-badge')";
 
             if (infoAnimal.bezerros != 0) {
-                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal bezerro"><img src="img/bezerro.png"></span><span>' + infoAnimal.bezerros + '</span></div>';
+                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal bezerro"><img src="img/bezerro.png" draggable="false"></span><span>' + infoAnimal.bezerros + '</span></div>';
             }
 
             if (infoAnimal.femeas != 0) {
-                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal femea"><img src="img/vaca.png"></span><span>' + infoAnimal.femeas + '</span></div>';
+                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal femea"><img src="img/vaca.png" draggable="false"></span><span>' + infoAnimal.femeas + '</span></div>';
             }
 
             if (infoAnimal.machos != 0) {
-                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal macho"><img src="img/gado.png"></span><span>' + infoAnimal.machos + '</span></div>';
+                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal macho"><img src="img/gado.png" draggable="false"></span><span>' + infoAnimal.machos + '</span></div>';
             }
 
             // total logo apos as categorias, centralizado verticalmente - igual ao card do Tabuleiro
