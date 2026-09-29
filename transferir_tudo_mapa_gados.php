@@ -105,10 +105,8 @@ if ($diff->h + ($diff->days * 24) < 24){
     $erro_mysql = mysqli_error($conector);
 
     if (!$resultado){
-        header('Content-type: application/json');
-        echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro ao atualizar as datas SEM retornar data anterior ' . $erro_mysql));
-        exit;
-    } 
+        erro_transferencia_mapa_gados($conector, 'Ocorreu um erro ao atualizar as datas SEM retornar data anterior ' . $erro_mysql);
+    }
 }
 else {
     $query = "UPDATE tbl_pasto SET 
