@@ -53,13 +53,15 @@ $data_sem_remover = $reg_pasto_remover->tbl_pasto_data_sem_animais;
 $data_sem_remover_anterior = $reg_pasto_remover->tbl_pasto_data_sem_animais_anterior;
 
 //DADOS DO PASTO ONDE OS ANIMAIS IRÃO ENTRAR
-$pasto_incluir_id = $_POST["id_entrada"];
-
-$tbl_pasto_entrar = mysqli_query($conector, "SELECT * FROM tbl_pasto 
-    WHERE tbl_pasto_id = $pasto_incluir_id AND 
+$tbl_pasto_entrar = mysqli_query($conector, "SELECT * FROM tbl_pasto
+    WHERE tbl_pasto_id = $pasto_incluir_id AND
           tbl_pasto_lixeira = 0");
 
 $reg_pasto_incluir = mysqli_fetch_object($tbl_pasto_entrar);
+
+if (!$reg_pasto_incluir) {
+    erro_transferencia_mapa_gados($conector, 'O pasto de destino não foi encontrado.');
+}
 
 $descricao_lote_pasto_destino = $reg_pasto_incluir->tbl_pasto_descricao_lote;
 
