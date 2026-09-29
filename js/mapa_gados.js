@@ -3647,6 +3647,7 @@ function drop(ev, id, elemento){
 function gravar_retirar_tudo_tabuleiro() {
     var id_target = $("#id_entrada").val();
     var id_pai = $("#id_saida").val();
+    console.log('[DIAG gravar_retirar_tudo_tabuleiro] id_entrada=', id_target, 'id_saida=', id_pai);
 
     $.ajax({
         type: 'post',
