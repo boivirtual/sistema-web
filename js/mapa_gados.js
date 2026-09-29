@@ -214,7 +214,7 @@ function mapa_satelite() {
     carregar_mapa_satelite_gado();
 
     var tipo_mapa = 'M';
-    //$("#tipo_mapa_gado").val('M');
+    $("#tipo_mapa_gado").val('M');
 
     $.ajax({
         type: "POST",
