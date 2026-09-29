@@ -149,8 +149,8 @@ function consultar_mapa(){
 
                 $("li#mapa_tabuleiro").show();
                 $("li#mapa_satelite").hide();
-                $("li#busca_pasto_tabuleiro_li").hide();
-                $("li#modo_toque_tabuleiro_li").hide();
+                $("li#busca_pasto_tabuleiro_li").show();
+                $("li#modo_toque_tabuleiro_li").show();
                 if (_tabuleiroModoToque) {
                     alternar_modo_toque_tabuleiro();
                 }
