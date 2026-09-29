@@ -10,10 +10,12 @@ var mapaGadoSatelite = {
 // elementos de origem (icones arrastaveis) e destino (poligono) no mesmo formato que elas esperam.
 
 // Desabilitar o dragging do mapa so' no mousedown do icone nao e' suficiente: o Leaflet ainda assim
-// comeca a arrastar o mapa (parece reagir a outro evento alem do mousedown, tipo pointerdown). Por
-// isso desabilitamos o dragging assim que o MOUSE ENTRA na area do icone (antes de qualquer clique),
-// e so' devolvemos ao normal quando o mouse sai dali, quando o botao sobe ou quando o arraste termina.
+// comeca a arrastar o mapa (reage a outro evento alem do mousedown). Por isso desabilitamos assim que
+// o MOUSE ENTRA na area do icone (antes de qualquer clique) e so' devolvemos ao normal quando o mouse
+// sai dali - mas nunca enquanto o botao estiver pressionado (senao um arraste que passa por cima de
+// varios elementos reativaria o pan do mapa no meio do proprio arraste).
 var _satelitePanSuspenso = false;
+var _sateliteBotaoPressionado = false;
 var SATELITE_SELETOR_ARRASTAVEL = '.satelite-pasto-badge .linha, .satelite-pasto-badge .total';
 
 function _sateliteSuspenderPan() {
@@ -30,24 +32,30 @@ function _sateliteRetomarPan() {
     }
 }
 
-$(document).on('mouseenter', SATELITE_SELETOR_ARRASTAVEL, _sateliteSuspenderPan);
-$(document).on('mouseleave', SATELITE_SELETOR_ARRASTAVEL, function() {
-    // so' retoma se nao estiver no meio de um arraste (dragend cuida desse caso)
-    if (!document.querySelector('.satelite-pasto-badge .linha:active, .satelite-pasto-badge .total:active')) {
-        _sateliteRetomarPan();
-    }
-});
-
 document.addEventListener('mousedown', function(ev) {
+    _sateliteBotaoPressionado = true;
+
     if (ev.target.closest && ev.target.closest(SATELITE_SELETOR_ARRASTAVEL)) {
         ev.stopPropagation();
         _sateliteSuspenderPan();
     }
 }, true);
 
-document.addEventListener('mouseup', _sateliteRetomarPan);
+document.addEventListener('mouseup', function() {
+    _sateliteBotaoPressionado = false;
+    _sateliteRetomarPan();
+});
+
+$(document).on('mouseenter', SATELITE_SELETOR_ARRASTAVEL, _sateliteSuspenderPan);
+$(document).on('mouseleave', SATELITE_SELETOR_ARRASTAVEL, function() {
+    // enquanto o botao estiver pressionado, quem decide quando retomar o pan e' o mouseup/dragend
+    if (!_sateliteBotaoPressionado) {
+        _sateliteRetomarPan();
+    }
+});
 
 $(document).on('dragend', SATELITE_SELETOR_ARRASTAVEL, function() {
+    _sateliteBotaoPressionado = false;
     _sateliteRetomarPan();
 
     if (mapaGadoSatelite.dragHoverLayer) {
