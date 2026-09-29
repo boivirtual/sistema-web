@@ -5889,6 +5889,9 @@ body > .bs-container {
   height: auto !important;
   filter: brightness(0) invert(1);
   cursor: pointer;
+  /* o marker do selo e' "interactive: false" no Leaflet, que aplica pointer-events:none em cascata;
+     sem isso o icone fica "vazando" o clique/arraste direto pro poligono por baixo */
+  pointer-events: auto;
 }
 
 
