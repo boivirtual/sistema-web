@@ -154,6 +154,8 @@ function consultar_mapa(){
                 if (_tabuleiroModoToque) {
                     alternar_modo_toque_tabuleiro();
                 }
+
+                carregar_mapa_satelite_gado();
             }
 
             var totalAnimais = $("#totalAnimaisFazenda").val();
