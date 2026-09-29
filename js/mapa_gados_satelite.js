@@ -277,14 +277,17 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             }
         });
 
-        // Pasto como destino do arraste: usa o mesmo drop() do Tabuleiro (js/mapa_gados.js), passando
-        // um elemento "por fora" (nao inserido na tela) so para dar a ele o id e o <strong> que o drop() le
+        // Pasto como destino do arraste (e tambem origem/destino do "Mover por toque"): usa as mesmas
+        // drop()/mover_tabuleiro_toque() do Tabuleiro (js/mapa_gados.js), passando um elemento "por
+        // fora" (nao inserido na tela) so' para dar a ele o id e o <strong> que essas funcoes leem.
         if (infoAnimal && poligono._path) {
             poligono._nomePasto = nome;
+            poligono._infoAnimal = infoAnimal;
 
             var elementoDestino = document.createElement('div');
             elementoDestino.id = '"' + infoAnimal.id_pasto + '"';
             elementoDestino.appendChild(document.createElement('strong')).innerHTML = nome;
+            poligono._elementoToque = elementoDestino;
 
             L.DomEvent.on(poligono._path, 'dragover', function(ev) {
                 ev.preventDefault();
