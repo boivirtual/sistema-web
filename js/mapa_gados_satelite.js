@@ -1,8 +1,40 @@
-/** MAPA DE GADO - SATELITE (Leaflet, somente visualizacao) */
+/** MAPA DE GADO - SATELITE (Leaflet) */
 var mapaGadoSatelite = {
     map: null,
-    poligonos: []
+    poligonos: [],
+    dragHoverLayer: null
 };
+
+// Transferencia de animais por arraste no mapa satelite - mesma logica/telas do Mapa Tabuleiro
+// (drag() e drop() sao as funcoes globais do Tabuleiro, em mapa_gados.js; aqui so criamos os
+// elementos de origem (icones arrastaveis) e destino (poligono) no mesmo formato que elas esperam.
+$(document).on('dragstart', '.satelite-pasto-badge img, .satelite-pasto-badge .total', function() {
+    if (mapaGadoSatelite.map) {
+        mapaGadoSatelite.map.dragging.disable();
+    }
+});
+
+$(document).on('dragend', '.satelite-pasto-badge img, .satelite-pasto-badge .total', function() {
+    if (mapaGadoSatelite.map) {
+        mapaGadoSatelite.map.dragging.enable();
+    }
+
+    if (mapaGadoSatelite.dragHoverLayer) {
+        mapaGadoSatelite.dragHoverLayer.setStyle(mapa_gado_satelite_estilo_padrao(mapaGadoSatelite.dragHoverLayer._nomePasto));
+        mapaGadoSatelite.dragHoverLayer = null;
+    }
+});
+
+// Estilo do poligono considerando o termo de busca atual (usado tambem para "desfazer" o destaque de arraste)
+function mapa_gado_satelite_estilo_padrao(nome) {
+    var termo = ($('#buscar_pasto_tabuleiro').val() || '').toUpperCase();
+    var combina = termo !== '' && nome.indexOf(termo) !== -1;
+
+    return {
+        color: combina ? '#ffeb3b' : '#ffffff',
+        weight: combina ? 3 : 1
+    };
+}
 
 function carregar_mapa_satelite_gado() {
     if (!$("#map").is(':visible')) {
