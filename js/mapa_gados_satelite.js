@@ -129,6 +129,8 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             fillOpacity: 0.5
         }).addTo(map);
 
+        poligono.bindTooltip(nome, { permanent: true, direction: 'center', className: 'editor-pasto-label' });
+
         var infoAnimal = null;
 
         for (var i = 0; i < pastosAnimais.length; i++) {
