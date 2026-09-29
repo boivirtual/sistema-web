@@ -5833,31 +5833,31 @@ body > .bs-container {
 }
 
 .satelite-pasto-badge {
-  transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-  padding: 2px 5px;
-  font-size: 10px;
+  transform: translate(-50%, 6px);
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
   font-weight: bold;
-  color: #000;
+  color: #fff;
+  text-shadow: 0 0 1.5px #000, 0 0 1.5px #000;
 }
 
 .satelite-pasto-badge .linha {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   white-space: nowrap;
+  justify-content: center;
 }
 
 .satelite-pasto-badge .linha img {
-  width: 13px !important;
+  width: 22px !important;
   height: auto !important;
+  filter: drop-shadow(0 0 1.5px #000) drop-shadow(0 0 1.5px #000);
 }
 
 .satelite-pasto-badge .total {
-  border-top: 1px solid #999;
   margin-top: 2px;
-  padding-top: 1px;
   text-align: center;
+  font-size: 17px;
 }
