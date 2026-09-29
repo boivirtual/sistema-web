@@ -290,9 +290,7 @@ else {
     $erro_mysql = mysqli_error($conector);
 
     if (!$resultado){
-        header('Content-type: application/json');
-        echo json_encode(array('error' => true, 'message' => 'Ocorreu um erro ao atualizar a descrição do lote no pasto origem' . $erro_mysql));
-        exit;
+        erro_transferencia_mapa_gados($conector, 'Ocorreu um erro ao atualizar a descrição do lote no pasto origem ' . $erro_mysql);
     }
 
     // SE HOUVER NUTRIÇÃO NO DIA DA TRANSFERENCIA DOS ANIMAIS, ENTÃO DEVERÁ SER MOVIDA PARA O PASTO DESTINO CONFORME A PREMISSA 1
