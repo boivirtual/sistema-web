@@ -128,6 +128,68 @@ class MapaGadoService{
     }
 
     // ---------------------------------------------------------------------
+    // Mapa Satélite (exportação para o cache offline do app)
+    // ---------------------------------------------------------------------
+
+    /**
+     * Mapa de cada fazenda (GeoJSON dos pastos, mesma fonte do web), cor
+     * de cada módulo e coordenada da fazenda. $versoes = {fazenda: versão
+     * que o app já tem}: o GeoJSON (o pedaço pesado) só volta quando mudou
+     * — "geojson": null significa "o seu ainda vale".
+     */
+    public function satelite($bd, $fazendas, $versoes){
+        $idsFazendas = array_values(array_unique(array_filter(
+            array_map('intval', is_array($fazendas) ? $fazendas : []),
+            function ($id) { return $id > 0; }
+        )));
+        if (trim((string) $bd) === '' || count($idsFazendas) === 0) {
+            return ["success" => false, "message" => "Informe bd e a lista de fazendas."];
+        }
+        $versoes = is_array($versoes) ? $versoes : [];
+
+        $mapaDao = new MapaFazendaDao($bd);
+        $con = (new PastoDao($bd))->getConexao();
+        if (!$con) {
+            return ["success" => false, "message" => "Não foi possível conectar ao banco."];
+        }
+        $mapaDao = new MapaFazendaDao($bd, $con);
+
+        $modulos = [];
+        foreach ($mapaDao->listarModulosComCor() as $m) {
+            $modulos[] = ["id" => (int) $m['id'], "cor" => (string) $m['cor']];
+        }
+
+        $mapas = [];
+        foreach ($idsFazendas as $fazenda) {
+            $leitura = $mapaDao->lerMapa($fazenda);
+            $geojson = null;
+            $versao = $leitura['json'] === '' ? '' : $leitura['versao'];
+
+            if ($versao !== '' && (string) ($versoes[(string) $fazenda] ?? '') !== $versao) {
+                $geojson = json_decode($leitura['json']);
+                if ($geojson === null || !isset($geojson->features)) {
+                    // mapa inválido: igual ao web, não mostra nada
+                    $geojson = null;
+                    $versao = '';
+                }
+            }
+
+            $coordenadas = $mapaDao->coordenadasFazenda($fazenda);
+            $mapas[] = [
+                "local"     => $fazenda,
+                "versao"    => $versao,
+                "geojson"   => $geojson,
+                "latitude"  => $coordenadas['latitude'],
+                "longitude" => $coordenadas['longitude'],
+            ];
+        }
+
+        mysqli_close($con);
+
+        return ["success" => true, "modulos" => $modulos, "mapas" => $mapas];
+    }
+
+    // ---------------------------------------------------------------------
     // Mover TODOS os animais de um pasto para outro
     // ---------------------------------------------------------------------
 
