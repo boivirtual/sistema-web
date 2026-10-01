@@ -73,7 +73,8 @@ mysqli_set_charset($con, "utf8");
 $esc = function ($v) use ($con) {
     return mysqli_real_escape_string($con, (string) $v);
 };
-$nome_usuario = $esc(mb_substr(trim((string) ($dados['usuario'] ?? '')), 0, 30));
+$nome_usuario_bruto = mb_substr(trim((string) ($dados['usuario'] ?? '')), 0, 30);
+$nome_usuario = $esc($nome_usuario_bruto);
 
 mysqli_begin_transaction($con);
 
