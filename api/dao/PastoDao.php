@@ -11,7 +11,7 @@ class PastoDao{
             $this->con = $con;
         } else {
             require __DIR__ . "/../../conecta_mysql_credenciais.inc";
-            $this->con = @mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
+            $this->con = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
         }
         $this->systemDateHour = date('Y-m-d H:i:s');
     }
