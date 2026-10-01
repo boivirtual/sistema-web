@@ -97,6 +97,10 @@ class MapaGadoService{
                     "ordem"          => $ordem,
                     "descricao_lote" => (string) ($row['tbl_pasto_descricao_lote'] ?? ''),
                     "lotes"          => $lotes,
+                    // false = módulos 1006/1007: só aparecem no Mapa Satélite
+                    "tabuleiro"      => empty($row['_fora_tabuleiro']),
+                    "data_com_animais" => $row['tbl_pasto_data_com_animais'],
+                    "data_sem_animais" => $row['tbl_pasto_data_sem_animais'],
                 ];
             }
         }
