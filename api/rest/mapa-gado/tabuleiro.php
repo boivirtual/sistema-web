@@ -215,8 +215,9 @@ if (count($idsPastos) > 0) {
 mysqli_close($con);
 
 echo json_encode([
-    "success"    => true,
-    "categorias" => $categorias,
+    "success"         => true,
+    "categorias"      => $categorias,
+    "descricoes_lote" => $descricoesLote,
     "pastos"     => $pastos,
     "animais"    => $animais,
 ]);
