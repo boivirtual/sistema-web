@@ -167,14 +167,20 @@ foreach ($idsFazendas as $fazenda) {
         while ($row = mysqli_fetch_assoc($res)) {
             $ordem++;
             $idsPastos[] = (int) $row['id'];
+            $lotes = [];
+            for ($i = 1; $i <= 6; $i++) {
+                $lotes[] = (string) ($row["tbl_pasto_descricao_lote_{$i}"] ?? '');
+            }
             $pastos[] = [
-                "id"         => (int) $row['id'],
-                "local"      => (int) $row['local'],
-                "descricao"  => (string) $row['descricao'],
-                "modulo"     => (int) $row['modulo'],
-                "capim"      => (string) ($row['capim'] ?? ''),
-                "categorias" => (string) ($row['categorias'] ?? ''),
-                "ordem"      => $ordem,
+                "id"             => (int) $row['id'],
+                "local"          => (int) $row['local'],
+                "descricao"      => (string) $row['descricao'],
+                "modulo"         => (int) $row['modulo'],
+                "capim"          => (string) ($row['capim'] ?? ''),
+                "categorias"     => (string) ($row['categorias'] ?? ''),
+                "ordem"          => $ordem,
+                "descricao_lote" => (string) ($row['tbl_pasto_descricao_lote'] ?? ''),
+                "lotes"          => $lotes,
             ];
         }
     }
