@@ -174,27 +174,6 @@ class PastoDao{
         return $this->fillField(mysqli_fetch_object($r));
     }
 
-    public function getPastoByLocal($local, $offset){
-        $a = [];
-
-        $sql = "SELECT *
-        FROM tbl_pasto
-        JOIN tbl_modulo_pasto ON tbl_pasto_modulo = tbl_modulo_id
-        LEFT OUTER JOIN tbl_tipo_capim ON tbl_pasto_tipo_capim = tbl_tipo_capim_id
-        JOIN tbl_pessoa ON tbl_pasto_codigo_local = tbl_pessoa_id
-        WHERE tbl_pasto_codigo_local = '$local' AND tbl_pasto_lixeira = 0
-        ORDER BY tbl_pasto_tipo_curral DESC, tbl_pasto_modulo ASC
-        LIMIT 20 OFFSET {$offset}";
-
-        mysqli_set_charset($this->con, "utf8");
-        $r = mysqli_query($this->con, $sql);
-        while($obj = mysqli_fetch_object($r)){
-            array_push($a, $obj);
-        }
-
-        return $this->fillFields($a);
-    }
-
     public function getPasto($local){
         $a = [];
 
