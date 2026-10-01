@@ -48,9 +48,10 @@ function data_pasto_ou_agora_app($valor, $agora) {
     return $valor;
 }
 
-/** Mesma conta do web: horas entre "agora" e a data informada. */
+/** Mesma conta do web: horas entre "agora" e a data informada (data nula
+ *  = "agora", como o new DateTime(null) do web). */
 function horas_desde_app($agora, $data) {
-    $diff = (new DateTime($agora))->diff(new DateTime($data ?? 'now'));
+    $diff = (new DateTime($agora))->diff(new DateTime($data ?? $agora));
     return $diff->h + ($diff->days * 24);
 }
 
