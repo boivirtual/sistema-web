@@ -4,9 +4,15 @@ class AnimalPastoDao{
     private $con;
     private $systemDateHour;
 
-    public function __construct($banco){
-        require __DIR__ . "/../../conecta_mysql_credenciais.inc";
-        $this->con = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
+    /** $con: conexão já aberta para reaproveitar (ex: várias DAOs na mesma
+     *  transação); sem ela, abre uma nova como sempre. */
+    public function __construct($banco, $con = null){
+        if ($con) {
+            $this->con = $con;
+        } else {
+            require __DIR__ . "/../../conecta_mysql_credenciais.inc";
+            $this->con = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
+        }
         $this->systemDateHour = date("Y-m-d H:i:s");
     }
 
