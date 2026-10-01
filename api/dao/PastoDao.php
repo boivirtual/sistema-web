@@ -194,46 +194,107 @@ class PastoDao{
         return $this->fillFields($a);
     }
 
-    public function getPastoRowCountByLocal($local){
-        $sql = "SELECT * FROM tbl_pasto
-        JOIN tbl_modulo_pasto ON tbl_pasto_modulo = tbl_modulo_id
-        LEFT OUTER JOIN tbl_tipo_capim ON tbl_pasto_tipo_capim = tbl_tipo_capim_id
-        JOIN tbl_pessoa ON tbl_pasto_codigo_local = tbl_pessoa_id
-        WHERE tbl_pasto_codigo_local = '$local' AND tbl_pasto_lixeira = 0
-        ORDER BY tbl_pasto_tipo_curral DESC, tbl_pasto_modulo ASC";
+    // ---------------------------------------------------------------------
+    // Mapa de Gado (Tabuleiro) — usado pelo aplicativo (MapaGadoService).
+    // Campos sempre especificados e valores sempre tratados antes do SQL.
+    // ---------------------------------------------------------------------
 
-        $r = mysqli_query($this->con, $sql);
-        return mysqli_num_rows($r);
+    /** Colunas de descrição do lote que existem nesta conta (bancos antigos
+     *  só têm tbl_pasto_descricao_lote). */
+    public function colunasDescricaoLote(){
+        $colunas = [];
+        $r = mysqli_query($this->con, "SHOW COLUMNS FROM tbl_pasto LIKE 'tbl_pasto_descricao_lote%'");
+        if ($r) {
+            while ($row = mysqli_fetch_assoc($r)) {
+                $colunas[] = $row['Field'];
+            }
+        }
+        return $colunas;
     }
 
-    public function transferObs($obs, $pasto, $user){
-        if($obs != 'null'){
-            $sql = "UPDATE tbl_pasto SET 
-            tbl_pasto_descricao_lote = '{$obs}', 
-            tbl_pasto_alterado_em = '{$this->systemDateHour}', 
-            tbl_pasto_alterado_por = '{$user->getNome()}'
-            WHERE tbl_pasto_id = $pasto";
-        }else{
-            $sql = "UPDATE tbl_pasto SET 
-            tbl_pasto_descricao_lote = $obs, 
-            tbl_pasto_alterado_em = '{$this->systemDateHour}', 
-            tbl_pasto_alterado_por = '{$user->getNome()}'
-            WHERE tbl_pasto_id = $pasto";
+    /** Pastos de ENTRADA/SAÍDA (módulo 999) da fazenda — mesmo SELECT e
+     *  ORDER BY de ler_mapa_gados.php (a ordem dos cards depende dele). */
+    public function listarPastosEntradaSaida($local, $colunasLote = []){
+        $local = (int) $local;
+        return $this->listarPastosTabuleiro("p.tbl_pasto_lixeira = 0 AND
+            p.tbl_pasto_modulo = '999' AND
+            p.tbl_pasto_codigo_local = '{$local}'", $colunasLote);
+    }
+
+    /** Demais pastos da fazenda, sem os módulos 999 (ENTRADA/SAÍDA), 1006
+     *  (NÃO UTILIZADO) e 1007 (ÁREA COMUM) — igual a ler_mapa_gados.php. */
+    public function listarPastosModulos($local, $colunasLote = []){
+        $local = (int) $local;
+        return $this->listarPastosTabuleiro("p.tbl_pasto_lixeira = 0 AND
+            p.tbl_pasto_codigo_local = {$local} AND
+            p.tbl_pasto_modulo != '999' AND
+            p.tbl_pasto_modulo != '1006' AND
+            p.tbl_pasto_modulo != '1007'", $colunasLote);
+    }
+
+    private function listarPastosTabuleiro($where, $colunasLote){
+        $camposLote = '';
+        foreach ($colunasLote as $coluna) {
+            // nomes vindos de SHOW COLUMNS, nunca do cliente
+            $camposLote .= ", p." . preg_replace('/[^a-z0-9_]/', '', $coluna);
         }
+
+        $sql = "SELECT p.tbl_pasto_id, p.tbl_pasto_codigo_local, p.tbl_pasto_descricao,
+                       p.tbl_pasto_modulo, p.tbl_pasto_array_categoria,
+                       c.tbl_tipo_capim_descricao {$camposLote}
+                  FROM tbl_pasto p
+             LEFT JOIN tbl_tipo_capim c ON c.tbl_tipo_capim_id = p.tbl_pasto_tipo_capim
+                 WHERE {$where}
+              ORDER BY p.tbl_pasto_modulo, p.tbl_pasto_codigo_local ASC";
+
+        $a = [];
+        mysqli_set_charset($this->con, "utf8");
+        $r = mysqli_query($this->con, $sql);
+        if ($r) {
+            while ($row = mysqli_fetch_assoc($r)) {
+                $a[] = $row;
+            }
+        }
+        return $a;
+    }
+
+    /** Pasto com os campos usados ao mover animais / gravar descrição do
+     *  lote, travado até o fim da transação (FOR UPDATE). */
+    public function buscarPastoParaMovimentacao($id){
+        $id = (int) $id;
+        $sql = "SELECT tbl_pasto_id, tbl_pasto_codigo_local,
+                       tbl_pasto_descricao_lote, tbl_pasto_id_lote, tbl_pasto_ano_lote,
+                       tbl_pasto_descricao_lote_1, tbl_pasto_descricao_lote_2,
+                       tbl_pasto_descricao_lote_3, tbl_pasto_descricao_lote_4,
+                       tbl_pasto_descricao_lote_5, tbl_pasto_descricao_lote_6,
+                       tbl_pasto_data_com_animais, tbl_pasto_data_com_animais_anterior,
+                       tbl_pasto_data_sem_animais, tbl_pasto_data_sem_animais_anterior,
+                       tbl_pasto_alterado_em, tbl_pasto_alterado_por
+                  FROM tbl_pasto
+                 WHERE tbl_pasto_id = {$id} AND tbl_pasto_lixeira = 0
+                   FOR UPDATE";
+        mysqli_set_charset($this->con, "utf8");
+        $r = mysqli_query($this->con, $sql);
+        return $r ? mysqli_fetch_assoc($r) : null;
+    }
+
+    /** UPDATE dos campos informados (nome da coluna => valor; null grava
+     *  NULL) + alterado em/por. Os nomes das colunas vêm só do service. */
+    public function atualizarCamposPasto($id, $campos, $usuario, $dataHora){
+        $id = (int) $id;
+        $sets = [];
+        foreach ($campos as $coluna => $valor) {
+            $coluna = preg_replace('/[^a-z0-9_]/', '', $coluna);
+            $sets[] = $valor === null
+                ? "{$coluna} = NULL"
+                : "{$coluna} = '" . mysqli_real_escape_string($this->con, (string) $valor) . "'";
+        }
+        $sets[] = "tbl_pasto_alterado_em = '" . mysqli_real_escape_string($this->con, $dataHora) . "'";
+        $sets[] = "tbl_pasto_alterado_por = '" . mysqli_real_escape_string($this->con, $usuario) . "'";
 
         mysqli_set_charset($this->con, "utf8");
-        mysqli_query($this->con, $sql);
-
-        if(mysqli_error($this->con)){
-            return [
-                "error" => true,
-                "message" => "Ocorreu um erro ao alterar a observação do pasto."
-            ];
-        }
-
-        return[
-            "error" => false,
-            "message" => ""
-        ];
+        $ok = mysqli_query($this->con, "UPDATE tbl_pasto SET " . implode(",\n", $sets) . " WHERE tbl_pasto_id = {$id}");
+        return $ok ? ["error" => false, "message" => ""]
+                   : ["error" => true, "message" => mysqli_error($this->con)];
     }
 }
