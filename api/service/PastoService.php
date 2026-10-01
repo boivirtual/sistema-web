@@ -13,12 +13,6 @@ class PastoService{
         return $pastoDao->getPastoById($id);
     }
 
-    public function getPastoByLocal($local, $page, $db){
-        $pastoDao =  new PastoDao($db);
-        $offset = ($page * 20) - 20;
-        return $pastoDao->getPastoByLocal($local, $offset);
-    }
-
     public function getPasto($local, $bd){
         if($local == "000000000" || $local == ""){
             return [
