@@ -3,9 +3,14 @@ class CategoriaIdadeDao{
 
     private $con;
 
-    public function __construct($banco){
-        require __DIR__ . "/../../conecta_mysql_credenciais.inc";
-        $this->con = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
+    /** $con: conexão já aberta para reaproveitar; sem ela, abre uma nova. */
+    public function __construct($banco, $con = null){
+        if ($con) {
+            $this->con = $con;
+        } else {
+            require __DIR__ . "/../../conecta_mysql_credenciais.inc";
+            $this->con = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
+        }
     }
 
     private function fillField($categoriaIdade){
