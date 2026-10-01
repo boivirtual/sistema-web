@@ -261,6 +261,7 @@ class PastoDao{
 
         $sql = "SELECT p.tbl_pasto_id, p.tbl_pasto_codigo_local, p.tbl_pasto_descricao,
                        p.tbl_pasto_modulo, p.tbl_pasto_array_categoria,
+                       p.tbl_pasto_data_com_animais, p.tbl_pasto_data_sem_animais,
                        c.tbl_tipo_capim_descricao {$camposLote}
                   FROM tbl_pasto p
              LEFT JOIN tbl_tipo_capim c ON c.tbl_tipo_capim_id = p.tbl_pasto_tipo_capim
