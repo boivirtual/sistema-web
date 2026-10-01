@@ -242,6 +242,16 @@ class PastoDao{
             p.tbl_pasto_modulo != '1007'", $colunasLote);
     }
 
+    /** Pastos dos módulos 1006 (NÃO UTILIZADO) e 1007 (ÁREA COMUM): ficam
+     *  fora do Tabuleiro, mas aparecem no Mapa Satélite (o web lista todos
+     *  os pastos da fazenda no satélite). */
+    public function listarPastosForaTabuleiro($local, $colunasLote = []){
+        $local = (int) $local;
+        return $this->listarPastosTabuleiro("p.tbl_pasto_lixeira = 0 AND
+            p.tbl_pasto_codigo_local = {$local} AND
+            (p.tbl_pasto_modulo = '1006' OR p.tbl_pasto_modulo = '1007')", $colunasLote);
+    }
+
     private function listarPastosTabuleiro($where, $colunasLote){
         $camposLote = '';
         foreach ($colunasLote as $coluna) {
