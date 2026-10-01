@@ -26,16 +26,6 @@ class PastoService{
         return $dao->getPasto($local); 
     }
 
-    public function getPastoRowCountByLocal($local, $db){
-        $dao = new PastoDao($db);
-        return $dao->getPastoRowCountByLocal($local);
-    }
-
-    public function transferObs($obs, $pasto, $user, $db){
-        $dao = new PastoDao($db);
-        return $dao->transferObs($obs, $pasto->getId(), $user);
-    }
-
     public function list($local, $db){
         $a = [];
         $dao = new PastoDao($db);
