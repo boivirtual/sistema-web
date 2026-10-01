@@ -169,9 +169,4 @@ class AnimalPastoService{
 
         return $this->gravarMorteLote($animal, $motivo, $local, $pasto, $data, $obs, 'L', $user, $db);
     }
-    
-    public function transferAll($pastoIncluir, $pastoRemover, $user, $fazenda, $db){
-        $dao = new AnimalPastoDao($db);
-        return $dao->transferAll($pastoIncluir->getId(), $pastoRemover->getId(), $user, $fazenda);
-    }
 }
