@@ -147,7 +147,6 @@ class MapaGadoService{
         }
         $versoes = is_array($versoes) ? $versoes : [];
 
-        $mapaDao = new MapaFazendaDao($bd);
         $con = (new PastoDao($bd))->getConexao();
         if (!$con) {
             return ["success" => false, "message" => "Não foi possível conectar ao banco."];
