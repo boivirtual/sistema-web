@@ -91,7 +91,7 @@ if (!$reg_pasto) {
 
 // Reenvio seguro (ver docblock).
 $jaAplicado = (string) $reg_pasto->tbl_pasto_descricao_lote === $descricao_lote &&
-    (string) $reg_pasto->tbl_pasto_alterado_por === stripslashes($nome_usuario) &&
+    (string) $reg_pasto->tbl_pasto_alterado_por === $nome_usuario_bruto &&
     (string) $reg_pasto->tbl_pasto_alterado_em >= $data_sistema;
 for ($i = 0; $jaAplicado && $i < 6; $i++) {
     $campo = 'tbl_pasto_descricao_lote_' . ($i + 1);
