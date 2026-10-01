@@ -95,12 +95,42 @@ if ($res) {
     }
 }
 
+// Opções de "Descrição do Lote" (montagem da descrição ao mover animais).
+$descricoesLote = [];
+$res = mysqli_query($con, "SELECT tbl_descricao_lote_id AS id,
+                                  tbl_descricao_lote    AS descricao
+                             FROM tbl_descricao_lote_animais
+                            WHERE tbl_descricao_lote_lixeira = 0");
+if ($res) {
+    while ($row = mysqli_fetch_assoc($res)) {
+        $descricoesLote[] = [
+            "id"        => (int) $row['id'],
+            "descricao" => (string) $row['descricao'],
+        ];
+    }
+}
+
+// Descrição do lote do pasto: só nas contas que já têm as colunas
+// (bancos antigos só têm tbl_pasto_descricao_lote).
+$colunasLote = [];
+$res = mysqli_query($con, "SHOW COLUMNS FROM tbl_pasto LIKE 'tbl_pasto_descricao_lote%'");
+if ($res) {
+    while ($row = mysqli_fetch_assoc($res)) {
+        $colunasLote[] = $row['Field'];
+    }
+}
+$camposLote = '';
+foreach ($colunasLote as $coluna) {
+    $camposLote .= ", p.{$coluna}";
+}
+
 $camposPasto = "p.tbl_pasto_id              AS id,
                 p.tbl_pasto_codigo_local    AS local,
                 p.tbl_pasto_descricao       AS descricao,
                 p.tbl_pasto_modulo          AS modulo,
                 p.tbl_pasto_array_categoria AS categorias,
-                c.tbl_tipo_capim_descricao  AS capim";
+                c.tbl_tipo_capim_descricao  AS capim
+                {$camposLote}";
 
 $pastos = [];
 $idsPastos = [];
