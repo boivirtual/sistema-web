@@ -76,7 +76,11 @@ class MapaGadoService{
                 $pastoDao->listarPastosEntradaSaida($fazenda, $colunasLote),
                 $pastoDao->listarPastosModulos($fazenda, $colunasLote)
             );
-            foreach ($linhas as $row) {
+            $foraTabuleiro = $pastoDao->listarPastosForaTabuleiro($fazenda, $colunasLote);
+            foreach ($foraTabuleiro as $i => $row) {
+                $foraTabuleiro[$i]['_fora_tabuleiro'] = true;
+            }
+            foreach (array_merge($linhas, $foraTabuleiro) as $row) {
                 $ordem++;
                 $idsPastos[] = (int) $row['tbl_pasto_id'];
                 $lotes = [];
