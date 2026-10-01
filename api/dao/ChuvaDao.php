@@ -133,6 +133,38 @@ class ChuvaDao{
         }
     }
 
+    public function getConexao(){
+        return $this->con;
+    }
+
+    /** Registros de chuva das fazendas a partir de 1º/jan do ano informado
+     *  — exportação para o cache offline do app (ChuvaService). */
+    public function listarDesdeAno($idsFazendas, $anoInicial){
+        $ids = array_values(array_filter(array_map('intval', $idsFazendas), function ($id) {
+            return $id > 0;
+        }));
+        if (count($ids) === 0) {
+            return [];
+        }
+        $anoInicial = (int) $anoInicial;
+
+        $sql = "SELECT tbl_chuva_id, tbl_chuva_local, tbl_chuva_data, tbl_chuva_volume_chuva
+                  FROM tbl_chuva
+                 WHERE tbl_chuva_local IN (" . implode(',', $ids) . ")
+                   AND YEAR(tbl_chuva_data) >= {$anoInicial}
+              ORDER BY tbl_chuva_data ASC";
+
+        $a = [];
+        mysqli_set_charset($this->con, "utf8");
+        $r = mysqli_query($this->con, $sql);
+        if ($r) {
+            while ($row = mysqli_fetch_assoc($r)) {
+                $a[] = $row;
+            }
+        }
+        return $a;
+    }
+
     private function escapar($valor){
         return mysqli_real_escape_string($this->con, (string) $valor);
     }
