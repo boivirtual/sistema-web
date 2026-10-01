@@ -66,6 +66,38 @@ class ChuvaService{
         ];
     }
 
+    /**
+     * Exportação em massa para o cache local do app (tela de Chuva
+     * offline). Só os últimos 5 anos: é tudo que a tela exibe (o gráfico
+     * anual mostra o ano atual e os 4 anteriores).
+     */
+    public function listarParaApp($bd, $fazendas){
+        $idsFazendas = array_values(array_filter(
+            array_map('intval', is_array($fazendas) ? $fazendas : []),
+            function ($id) { return $id > 0; }
+        ));
+        if (trim((string) $bd) === '' || count($idsFazendas) === 0) {
+            return ["success" => false, "message" => "Parâmetros inválidos."];
+        }
+
+        $dao = new ChuvaDao($bd);
+        if (!$dao->getConexao()) {
+            return ["success" => false, "message" => "Não foi possível conectar ao banco."];
+        }
+
+        $lista = [];
+        foreach ($dao->listarDesdeAno($idsFazendas, (int) date('Y') - 5) as $row) {
+            $lista[] = [
+                "id"     => (int) $row['tbl_chuva_id'],
+                "local"  => (int) $row['tbl_chuva_local'],
+                "data"   => $row['tbl_chuva_data'],
+                "volume" => (float) $row['tbl_chuva_volume_chuva'],
+            ];
+        }
+
+        return ["success" => true, "chuvas" => $lista];
+    }
+
     public function createChuva($chuva){
         if($chuva["data_chuva"] == ''){
             return [
