@@ -373,26 +373,67 @@ class AnimalPastoDao{
         ];
     }
 
-    public function transferAll($pastoIncluir, $pastoRemover, $user, $fazenda){
-        $sql = "UPDATE tbl_animal_pasto SET
-            tbl_animal_pasto_id = $pastoIncluir,
-            tbl_animal_pasto_alterado_em = '{$this->systemDateHour}',
-            tbl_animal_pasto_alterado_por = '{$user->getNome()}'
-            WHERE tbl_animal_pasto_id = $pastoRemover AND tbl_animal_pasto_situacao = 'A' AND tbl_animal_pasto_local = $fazenda";
+    // ---------------------------------------------------------------------
+    // Mapa de Gado (Tabuleiro) — usado pelo aplicativo (MapaGadoService).
+    // ---------------------------------------------------------------------
 
-        mysqli_set_charset($this->con, "utf8");
-        mysqli_query($this->con, $sql);
-
-        if(mysqli_error($this->con)){
-            return[
-                "error" => true,
-                "message" => "Ocorreu um erro ao transferir os registros. {mysqli_error($this->con)}"
-            ];
+    /** Animais ativos de vários pastos numa consulta só (o web faz uma por
+     *  pasto). Mesmo filtro do web: só pelo pasto + situação 'A'. */
+    public function listarAtivosDosPastos($idsPastos){
+        $ids = array_values(array_filter(array_map('intval', $idsPastos), function ($id) {
+            return $id > 0;
+        }));
+        if (count($ids) === 0) {
+            return [];
         }
 
-        return[
-            "error" => false,
-            "message" => ""
-        ];
+        $sql = "SELECT tbl_animal_pasto_local, tbl_animal_pasto_numero_item,
+                       tbl_animal_pasto_id, tbl_animal_pasto_sexo, tbl_animal_pasto_nascimento
+                  FROM tbl_animal_pasto
+                 WHERE tbl_animal_pasto_id IN (" . implode(',', $ids) . ") AND
+                       tbl_animal_pasto_situacao = 'A'";
+
+        $a = [];
+        $r = mysqli_query($this->con, $sql);
+        if ($r) {
+            while ($row = mysqli_fetch_assoc($r)) {
+                $a[] = $row;
+            }
+        }
+        return $a;
+    }
+
+    public function contarAtivosNoPasto($pasto){
+        $pasto = (int) $pasto;
+        $r = mysqli_query($this->con, "SELECT COUNT(*) AS qtd FROM tbl_animal_pasto
+            WHERE tbl_animal_pasto_id = {$pasto} AND tbl_animal_pasto_situacao = 'A'");
+        return $r ? (int) mysqli_fetch_assoc($r)['qtd'] : 0;
+    }
+
+    /** Todas as linhas do pasto, de qualquer situação (é o que o web usa
+     *  para decidir as datas do pasto destino). */
+    public function contarRegistrosNoPasto($pasto){
+        $pasto = (int) $pasto;
+        $r = mysqli_query($this->con, "SELECT COUNT(*) AS qtd FROM tbl_animal_pasto
+            WHERE tbl_animal_pasto_id = {$pasto}");
+        return $r ? (int) mysqli_fetch_assoc($r)['qtd'] : 0;
+    }
+
+    /** Passa os animais ativos do pasto de origem para o destino. */
+    public function transferirAtivos($origem, $destino, $usuario, $dataHora){
+        $origem = (int) $origem;
+        $destino = (int) $destino;
+        $usuario = mysqli_real_escape_string($this->con, $usuario);
+        $dataHora = mysqli_real_escape_string($this->con, $dataHora);
+
+        mysqli_set_charset($this->con, "utf8");
+        $ok = mysqli_query($this->con, "UPDATE tbl_animal_pasto SET
+                tbl_animal_pasto_id = {$destino},
+                tbl_animal_pasto_alterado_em = '{$dataHora}',
+                tbl_animal_pasto_alterado_por = '{$usuario}'
+            WHERE tbl_animal_pasto_id = {$origem} AND tbl_animal_pasto_situacao = 'A'");
+
+        return $ok ? ["error" => false, "message" => ""]
+                   : ["error" => true, "message" => mysqli_error($this->con)];
     }
 }
