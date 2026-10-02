@@ -207,6 +207,28 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
     function aplicar_escala_zoom(zoom) {
         var escala = Math.min(1.6, Math.max(0.45, 1 + (zoom - 16) * 0.25));
         map.getContainer().style.setProperty('--sat-escala', escala);
+        // visao geral (zoom afastado): o selo mostra so' o total, sem o detalhamento por categoria
+        L.DomUtil[zoom < 16 ? 'addClass' : 'removeClass'](map.getContainer(), 'satelite-zoom-baixo');
+    }
+
+    // Rotulo so' aparece se o nome couber dentro do proprio pasto na tela; os que nao cabem ficam
+    // ocultos (aparecem ao passar o mouse sobre o pasto) para nao virar uma pilha de textos sobrepostos
+    function atualizar_rotulos_zoom() {
+        var medidas = [];
+        mapaGadoSatelite.poligonos.forEach(function(p) {
+            var tooltip = p.layer.getTooltip();
+            var el = tooltip ? tooltip.getElement() : null;
+            if (!el) { return; }
+            L.DomUtil.removeClass(el, 'satelite-rotulo-oculto');
+            tooltip.update();
+            var limites = p.layer.getBounds();
+            var a = map.latLngToContainerPoint(limites.getNorthWest());
+            var b = map.latLngToContainerPoint(limites.getSouthEast());
+            medidas.push({ el: el, cabe: el.offsetWidth <= Math.abs(b.x - a.x) * 0.8 });
+        });
+        medidas.forEach(function(m) {
+            if (!m.cabe) { L.DomUtil.addClass(m.el, 'satelite-rotulo-oculto'); }
+        });
     }
 
     // zoomanim traz o zoom de destino: ja' troca o tamanho no inicio da animacao em vez de so' no fim
