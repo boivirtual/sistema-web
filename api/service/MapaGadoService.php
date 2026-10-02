@@ -101,7 +101,15 @@ class MapaGadoService{
                     "tabuleiro"      => empty($row['_fora_tabuleiro']),
                     "data_com_animais" => $row['tbl_pasto_data_com_animais'],
                     "data_sem_animais" => $row['tbl_pasto_data_sem_animais'],
+                    // Lotação (Kg/Ha) e "L-0012/26" da tela do pasto
+                    "area"           => (float) ($row['tbl_pasto_area'] ?? 0),
+                    "id_lote"        => (int) ($row['tbl_pasto_id_lote'] ?? 0),
+                    "ano_lote"       => (int) ($row['tbl_pasto_ano_lote'] ?? 0),
                 ];
+            }
+
+            foreach ($animalDao->pesosMediosPorCategoriaSexo($fazenda) as $peso) {
+                $pesosMedios[] = ["local" => $fazenda] + $peso;
             }
         }
 
