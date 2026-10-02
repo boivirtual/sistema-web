@@ -68,8 +68,10 @@ class MapaGadoService{
         }
 
         $colunasLote = $pastoDao->colunasDescricaoLote();
+        $animalDao = new AnimalDao($bd, $con);
         $pastos = [];
         $idsPastos = [];
+        $pesosMedios = [];
         foreach ($idsFazendas as $fazenda) {
             $ordem = 0;
             $linhas = array_merge(
