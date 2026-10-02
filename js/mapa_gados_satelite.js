@@ -181,6 +181,25 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
         attribution: 'Imagens &copy; Esri, Maxar, Earthstar Geographics'
     }).addTo(map);
 
+    // Nomes de cidades, rios, lagos e estradas sobre o satelite (mesmas camadas de referencia da Esri do
+    // Editor de Mapa). Ficam num pane proprio, sem receber clique, para nao atrapalhar os pastos.
+    map.createPane('rotulos');
+    map.getPane('rotulos').style.zIndex = 450;
+    map.getPane('rotulos').style.pointerEvents = 'none';
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+        pane: 'rotulos',
+        maxNativeZoom: 15,
+        maxZoom: 20,
+        attribution: 'Nomes &copy; Esri'
+    }).addTo(map);
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', {
+        pane: 'rotulos',
+        maxNativeZoom: 14,
+        maxZoom: 20
+    }).addTo(map);
+
     // Ajusta o zoom para caber certinho nos limites dos pastos da fazenda, em vez de um zoom fixo
     // (que deixava tudo minusculo e ilegivel em fazendas grandes ou bem espalhadas). Sempre sem
     // animacao: como isso roda logo na abertura do mapa (e de novo apos o invalidateSize), animar
