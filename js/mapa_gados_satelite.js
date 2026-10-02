@@ -202,6 +202,29 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
         }
     }
 
+    // Fontes (nomes dos pastos) e icones das categorias acompanham o zoom: o CSS le --sat-escala.
+    // Zoom 16 = tamanho original (1); a cada nivel de zoom varia 25%, limitado entre 0.45 e 1.6.
+    function aplicar_escala_zoom(zoom) {
+        var escala = Math.min(1.6, Math.max(0.45, 1 + (zoom - 16) * 0.25));
+        map.getContainer().style.setProperty('--sat-escala', escala);
+    }
+
+    // zoomanim traz o zoom de destino: ja' troca o tamanho no inicio da animacao em vez de so' no fim
+    map.on('zoomanim', function(ev) {
+        aplicar_escala_zoom(ev.zoom);
+    });
+
+    // No fim do zoom reaplica e recentraliza os rotulos (o Leaflet centraliza pelo tamanho medido do texto)
+    map.on('zoomend', function() {
+        aplicar_escala_zoom(map.getZoom());
+        mapaGadoSatelite.poligonos.forEach(function(p) {
+            var tooltip = p.layer.getTooltip();
+            if (tooltip) {
+                tooltip.update();
+            }
+        });
+    });
+
     // O container pode ainda nao ter o tamanho definitivo no instante da criacao (troca de aba,
     // aba escondida no carregamento da pagina); sem isso o mapa pode desenhar tudo torto.
     setTimeout(function() {
