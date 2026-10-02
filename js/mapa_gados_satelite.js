@@ -391,6 +391,13 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
     });
 
     ajustar_zoom_fazenda();
+    aplicar_escala_zoom(map.getZoom());
+    mapaGadoSatelite.poligonos.forEach(function(p) {
+        var tooltip = p.layer.getTooltip();
+        if (tooltip) {
+            tooltip.update();
+        }
+    });
 
     // reaplica o termo de busca (se houver) nos poligonos recem desenhados
     if (typeof filtrar_pasto_tabuleiro === 'function') {
