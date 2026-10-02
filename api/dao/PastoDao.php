@@ -213,7 +213,9 @@ class PastoDao{
      *  só têm tbl_pasto_descricao_lote). */
     public function colunasDescricaoLote(){
         $colunas = [];
-        $r = mysqli_query($this->con, "SHOW COLUMNS FROM tbl_pasto LIKE 'tbl_pasto_descricao_lote%'");
+        $r = mysqli_query($this->con, "SHOW COLUMNS FROM tbl_pasto
+            WHERE Field LIKE 'tbl_pasto_descricao_lote%' OR
+                  Field IN ('tbl_pasto_id_lote', 'tbl_pasto_ano_lote')");
         if ($r) {
             while ($row = mysqli_fetch_assoc($r)) {
                 $colunas[] = $row['Field'];
