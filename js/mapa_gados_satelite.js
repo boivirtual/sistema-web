@@ -239,12 +239,7 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
     // No fim do zoom reaplica e recentraliza os rotulos (o Leaflet centraliza pelo tamanho medido do texto)
     map.on('zoomend', function() {
         aplicar_escala_zoom(map.getZoom());
-        mapaGadoSatelite.poligonos.forEach(function(p) {
-            var tooltip = p.layer.getTooltip();
-            if (tooltip) {
-                tooltip.update();
-            }
-        });
+        atualizar_rotulos_zoom();
     });
 
     // O container pode ainda nao ter o tamanho definitivo no instante da criacao (troca de aba,
