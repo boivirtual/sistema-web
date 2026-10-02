@@ -5721,6 +5721,15 @@ body {
   display: none;
 }
 
+.editor-pasto-label.satelite-rotulo-oculto {
+  display: none !important;
+}
+
+#map.satelite-zoom-baixo .satelite-badge-categorias,
+#map.satelite-zoom-baixo .satelite-badge-divisor {
+  display: none;
+}
+
 #editor_mapa.editor-sem-rotulos .editor-pasto-label {
   display: none;
 }
