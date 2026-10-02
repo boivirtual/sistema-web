@@ -276,6 +276,22 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
 
         mapaGadoSatelite.poligonos.push({ nome: nome, layer: poligono });
 
+        // rotulo oculto por nao caber no pasto (ver atualizar_rotulos_zoom) aparece enquanto o mouse estiver sobre ele
+        poligono.on('mouseover', function() {
+            var el = poligono.getTooltip().getElement();
+            if (el && L.DomUtil.hasClass(el, 'satelite-rotulo-oculto')) {
+                L.DomUtil.removeClass(el, 'satelite-rotulo-oculto');
+                el.dataset.revelado = '1';
+            }
+        });
+        poligono.on('mouseout', function() {
+            var el = poligono.getTooltip().getElement();
+            if (el && el.dataset.revelado) {
+                delete el.dataset.revelado;
+                L.DomUtil.addClass(el, 'satelite-rotulo-oculto');
+            }
+        });
+
         var infoAnimal = null;
 
         for (var i = 0; i < pastosAnimais.length; i++) {
