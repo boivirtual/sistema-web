@@ -5710,6 +5710,7 @@ body {
   color: #fff !important;
   font-family: 'Lato', sans-serif !important;
   font-size: 10px;
+  font-size: max(7px, calc(10px * var(--sat-escala, 1)));
   font-weight: bold;
   text-shadow: 0 0 1.5px #000, 0 0 1.5px #000;
   white-space: nowrap;
