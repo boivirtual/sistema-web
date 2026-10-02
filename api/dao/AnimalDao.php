@@ -3,9 +3,55 @@ class AnimalDao{
     
     private $con;
 
-    public function __construct($banco){
-        require __DIR__ . "/../../conecta_mysql_credenciais.inc";
-        $this->con = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
+    /** $con: conexão já aberta para reaproveitar; sem ela, abre uma nova. */
+    public function __construct($banco, $con = null){
+        if ($con) {
+            $this->con = $con;
+        } else {
+            require __DIR__ . "/../../conecta_mysql_credenciais.inc";
+            $this->con = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
+        }
+    }
+
+    /**
+     * Peso médio (arredondado) dos animais ativos da fazenda por categoria
+     * de idade + sexo — mesma conta de funcao_kg_ha_pasto.php (sistema web),
+     * usada para a Lotação (Kg/Ha) do pasto. Peso: último peso, senão peso
+     * de desmama, senão primeiro peso, senão 0.
+     */
+    public function pesosMediosPorCategoriaSexo($local){
+        $local = mysqli_real_escape_string($this->con, (string) $local);
+        $r = mysqli_query($this->con, "SELECT c.tab_codigo_categoria_idade AS categoria,
+                   a.sexo AS sexo,
+                   SUM(a.peso) / COUNT(*) AS peso_medio
+            FROM (SELECT tbl_animal_sexo AS sexo,
+                         GREATEST(TIMESTAMPDIFF(MONTH, COALESCE(tbl_animal_data_nascimento, CURDATE()), CURDATE()), 0) AS idade,
+                         CASE
+                             WHEN tbl_animal_ultimo_peso IS NOT NULL AND tbl_animal_ultimo_peso<>0 THEN tbl_animal_ultimo_peso
+                             WHEN tbl_animal_peso_desmama IS NOT NULL AND tbl_animal_peso_desmama<>0 THEN tbl_animal_peso_desmama
+                             WHEN tbl_animal_primeiro_peso IS NOT NULL AND tbl_animal_primeiro_peso<>0 THEN tbl_animal_primeiro_peso
+                             ELSE 0
+                         END AS peso
+                  FROM tbl_animais
+                  WHERE tbl_animal_codigo_fazenda='{$local}' AND
+                        tbl_animal_ativo='S' AND
+                        tbl_animal_lixeira=0) a
+            INNER JOIN tabela_categoria_idade c
+                    ON a.idade BETWEEN c.tab_categoria_idade_de AND c.tab_categoria_idade_ate AND
+                       c.tab_registro_lixeira_categoria_idade='0'
+            GROUP BY c.tab_codigo_categoria_idade, a.sexo");
+
+        $a = [];
+        if ($r) {
+            while ($row = mysqli_fetch_assoc($r)) {
+                $a[] = [
+                    'categoria' => (int) $row['categoria'],
+                    'sexo'      => (string) $row['sexo'],
+                    'peso'      => (int) round($row['peso_medio']),
+                ];
+            }
+        }
+        return $a;
     }
 
     private function fillField($animal){
