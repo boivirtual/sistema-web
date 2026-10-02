@@ -134,6 +134,7 @@ class MapaGadoService{
             "descricoes_lote" => $descricoesLote,
             "pastos"          => $pastos,
             "animais"         => $animais,
+            "pesos_medios"    => $pesosMedios,
         ];
     }
 
