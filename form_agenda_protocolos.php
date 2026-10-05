@@ -590,6 +590,10 @@
                                 <i class="fas fa-align-left" style="color: #6c757d; width: 12px; margin-top: 3px;" aria-hidden="true"></i>
                                 <p id="preview_evento_descricao" style="white-space: pre-wrap; word-wrap: break-word; margin: 0; font-size: 14px; color: #333; flex: 1; min-width: 0;"></p>
                             </div>
+
+                            <div id="preview_evento_bloqueado" style="display: none; margin-top: 18px; font-size: 12px; color: #6c757d;">
+                                <i class="fas fa-lock" style="width: 12px; margin-right: 8px;" aria-hidden="true"></i>Evento gerado pelo Protocolo IATF. Não pode ser editado ou excluído pela agenda.
+                            </div>
                         </div>
                     </div>
                 </div>
