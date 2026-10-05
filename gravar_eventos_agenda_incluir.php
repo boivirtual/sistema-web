@@ -46,6 +46,22 @@ $tipo_gravacao = $_POST["tipo_gravacao"];
 $titulo = $_POST["titulo_agenda"];
 $descricao = $_POST["descricao_agenda"];
 
+// Eventos gerados pelo Protocolo IATF (D0, D7, D9...) não podem ser editados nem excluídos
+if ($tipo_gravacao==1 || $tipo_gravacao==2) {
+    $id_evento_sql = mysqli_real_escape_string($conector, $id_evento);
+
+    $tbl_agenda_evento = mysqli_query($conector, "SELECT tbl_agenda_codigo_cobertura, tbl_agenda_titulo FROM tbl_agenda
+        WHERE tbl_agenda_id = '$id_evento_sql'");
+    $reg_agenda_evento = $tbl_agenda_evento ? mysqli_fetch_object($tbl_agenda_evento) : null;
+
+    if ($reg_agenda_evento && agenda_evento_protocolo($reg_agenda_evento->tbl_agenda_codigo_cobertura, $reg_agenda_evento->tbl_agenda_titulo)) {
+        header('Content-type: application/json');
+        echo json_encode(array('error' => true, 'message' => 'Este evento foi gerado pelo Protocolo IATF e não pode ser editado ou excluído pela agenda.'));
+        mysqli_close($conector);
+        exit;
+    }
+}
+
 if ($tipo_gravacao==0) {
     $atividade = $_POST["atividade"];
 
