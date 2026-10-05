@@ -1,6 +1,7 @@
 <?php
     // Em 10/03/2025 foi incluido Atividade vindo do Post para ler somente a atividade Reprodução para a chamado do programa form_agenda_protocolos.php 
     include "conecta_mysql.inc";
+    include_once "funcao_agenda_protocolo.php";
 
     $codigo_usuario = $_SESSION['id_usuario'];
 
