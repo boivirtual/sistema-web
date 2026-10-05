@@ -816,7 +816,7 @@ function aplicarTooltipsEventos(){
 }
 
 function formatarDataPreviewEvento(evento){
-    var opcoesDia = { weekday: 'long', day: 'numeric', month: 'long' };
+    var opcoesDia = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
     var dataFormatada = evento.start.toLocaleDateString('pt-BR', opcoesDia);
     dataFormatada = dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
 

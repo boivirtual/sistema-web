@@ -217,7 +217,7 @@ function formatarDataHoraBanco(dataStr){
     var data = partes[0].split('-');
     var hora = partes[1];
     var dt = new Date(data[0], data[1] - 1, data[2]);
-    var opcoesDia = { weekday: 'long', day: 'numeric', month: 'long' };
+    var opcoesDia = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
     var dataFormatada = dt.toLocaleDateString('pt-BR', opcoesDia);
     dataFormatada = dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
 
@@ -613,7 +613,7 @@ function ajustarAlturaCalendario(){
 }
 
 function formatarDataPreviewEvento(evento){
-    var opcoesDia = { weekday: 'long', day: 'numeric', month: 'long' };
+    var opcoesDia = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
     var dataFormatada = evento.start.toLocaleDateString('pt-BR', opcoesDia);
     dataFormatada = dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
 
@@ -789,6 +789,12 @@ function mostrarPreviewEvento(evento){
     $("#preview_evento_data").text(formatarDataPreviewEvento(evento));
     $("#preview_evento_cor").css('background', evento.backgroundColor || evento.borderColor || '#378ADD');
     $("#preview_evento_descricao").text('Carregando...');
+
+    // evento gerado pelo Protocolo IATF (D0, D7, D9...) não pode ser editado nem excluído
+    var eventoProtocolo = !!evento.extendedProps.protocolo;
+    $("#modalPreviewEvento .preview-evento-acao").toggle(!eventoProtocolo);
+    $("#preview_evento_bloqueado").toggle(eventoProtocolo);
+
     $("#modalPreviewEvento").modal('show');
 
     $.ajax({

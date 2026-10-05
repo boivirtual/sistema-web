@@ -577,8 +577,8 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content" style="border-radius: 8px; overflow: hidden;">
                         <div class="modal-header" style="border-bottom: none; padding: 20px 22px 14px; display: flex; align-items: center; justify-content: flex-end; gap: 22px;">
-                            <i class="fas fa-pen" data-toggle="tooltip" data-placement="bottom" title="Editar" style="cursor: pointer; color: #5c6670; font-size: 15px;" onclick="editarEventoDoPreview()" aria-hidden="true"></i>
-                            <i class="fas fa-trash-alt" data-toggle="tooltip" data-placement="bottom" title="Excluir" style="cursor: pointer; color: #5c6670; font-size: 15px;" onclick="excluirEventoDoPreview()" aria-hidden="true"></i>
+                            <i class="fas fa-pen preview-evento-acao" data-toggle="tooltip" data-placement="bottom" title="Editar" style="cursor: pointer; color: #5c6670; font-size: 15px;" onclick="editarEventoDoPreview()" aria-hidden="true"></i>
+                            <i class="fas fa-trash-alt preview-evento-acao" data-toggle="tooltip" data-placement="bottom" title="Excluir" style="cursor: pointer; color: #5c6670; font-size: 15px;" onclick="excluirEventoDoPreview()" aria-hidden="true"></i>
                             <i class="fas fa-times" data-toggle="tooltip" data-placement="bottom" title="Fechar" data-dismiss="modal" style="cursor: pointer; color: #5c6670; font-size: 15px;" aria-hidden="true"></i>
                         </div>
                         <div class="modal-body" style="padding-top: 22px;">

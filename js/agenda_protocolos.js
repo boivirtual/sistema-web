@@ -176,7 +176,7 @@ function formatarDataHoraBanco(dataStr){
     var data = partes[0].split('-');
     var hora = partes[1];
     var dt = new Date(data[0], data[1] - 1, data[2]);
-    var opcoesDia = { weekday: 'long', day: 'numeric', month: 'long' };
+    var opcoesDia = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
     var dataFormatada = dt.toLocaleDateString('pt-BR', opcoesDia);
     dataFormatada = dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
 
@@ -447,7 +447,7 @@ function aplicarTooltipsEventos(){
 }
 
 function formatarDataPreviewEvento(evento){
-    var opcoesDia = { weekday: 'long', day: 'numeric', month: 'long' };
+    var opcoesDia = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
     var dataFormatada = evento.start.toLocaleDateString('pt-BR', opcoesDia);
     dataFormatada = dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
 
