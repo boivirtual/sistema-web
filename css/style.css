@@ -5721,8 +5721,10 @@ body {
   display: none;
 }
 
-.satelite-popup-hover {
-  pointer-events: none;
+.satelite-popup-hover,
+.satelite-popup-hover .leaflet-popup-content-wrapper,
+.satelite-popup-hover .leaflet-popup-tip {
+  pointer-events: none !important;
 }
 
 .editor-pasto-label.satelite-rotulo-oculto {
