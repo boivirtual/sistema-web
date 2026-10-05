@@ -220,6 +220,11 @@
                     }
                 }
 
+                if (agenda_evento_protocolo($evento->tbl_agenda_codigo_cobertura, $evento->tbl_agenda_titulo)) {
+                    $arrayEvento["editable"] = false;
+                    $arrayEvento["protocolo"] = true;
+                }
+
                 array_push($eventos, $arrayEvento);
             }
         }
