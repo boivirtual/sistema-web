@@ -5721,6 +5721,10 @@ body {
   display: none;
 }
 
+.satelite-popup-hover {
+  pointer-events: none;
+}
+
 .editor-pasto-label.satelite-rotulo-oculto {
   display: none !important;
 }
