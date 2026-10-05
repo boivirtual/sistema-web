@@ -1,5 +1,6 @@
 <?php
 include "conecta_mysql.inc";
+include_once "funcao_agenda_protocolo.php";
 @ session_start(); 
 $nomeusuario = $_SESSION['nome_usuario'];
 $data_sistema = date("Y-m-d H:i:s");
