@@ -714,10 +714,10 @@ function iniciarCalendarioAgenda(){
             info.el.style.cursor = 'pointer';
         },
         eventDrop: function(info){
-            if(confirm("Tem certeza que deseja alterar a data deste evento?")){
-                var e = info.event;
-                editarEvento(e.id, e.title, e.start);
-            }
+            moverEvento(info);
+        },
+        eventResize: function(info){
+            moverEvento(info);
         },
         datesSet: function(info){
             $('#agenda_periodo_titulo').text(info.view.title);
@@ -738,6 +738,41 @@ function iniciarCalendarioAgenda(){
 
     $('#main-content').off('scroll.agendaPopover').on('scroll.agendaPopover', function(){
         $('.fc-popover').remove();
+    });
+}
+
+function formatarDataHoraGravacao(data){
+    return formatarDataInputDate(data) + ' ' + data.getHours().AddZero() + ':' + data.getMinutes().AddZero() + ':' + data.getSeconds().AddZero();
+}
+
+// Grava a nova data do evento arrastado/redimensionado no calendário
+function moverEvento(info){
+    if (!confirm("Tem certeza que deseja alterar a data deste evento?")) {
+        info.revert();
+        return;
+    }
+
+    var e = info.event;
+
+    $.ajax({
+        type: "POST",
+        url: 'gravar_eventos_agenda_mover.php',
+        dataType: "json",
+        data: {
+                "id_evento": e.id,
+                "data_inicial": formatarDataHoraGravacao(e.start),
+                "data_final": e.end ? formatarDataHoraGravacao(e.end) : ''
+            },
+        success: function(data){
+            if (data.error) {
+                info.revert();
+                $("#mensagem_erro").modal();
+                $("#mensagem_erro .modal-body").html(data.message);
+            }
+        },
+        error: function(){
+            info.revert();
+        }
     });
 }
 
