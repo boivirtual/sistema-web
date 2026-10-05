@@ -212,8 +212,9 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             // Se a fazenda tiver algum pasto bem isolado (ex.: Entrada/Saida longe do resto), o
             // fitBounds abriria demais o zoom so' para encaixar ele. Nesse caso preferimos manter
             // um zoom legivel no grupo principal, mesmo que o pasto isolado fique fora da tela inicial.
-            if (map.getZoom() < 15) {
-                map.setZoom(15, { animate: false });
+            // Zoom 14 e' o menor aceito: ja' mostra a fazenda inteira (fonte e selos se adaptam ao zoom).
+            if (map.getZoom() < 14) {
+                map.setZoom(14, { animate: false });
             }
         }
         else {
