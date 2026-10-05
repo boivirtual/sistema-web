@@ -336,12 +336,29 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
                 }
             }
 
-            var html = nome + '<br>' + totalTexto + '<br>' + situacaoTexto + '<br>' + (infoAnimal ? infoAnimal.descricao_capim : '');
+            return nome + '<br>' + totalTexto + '<br>' + situacaoTexto + '<br>' + (infoAnimal ? infoAnimal.descricao_capim : '');
+        }
 
-            popup.setLatLng(ev.latlng).setContent(html).openOn(map);
+        poligono.on('mouseover', function(ev) {
+            popup.setLatLng(ev.latlng).setContent(montar_html_info()).openOn(map);
         });
 
-        poligono.on('dblclick', function(ev) {
+        poligono.on('mousemove', function(ev) {
+            popup.setLatLng(ev.latlng);
+        });
+
+        poligono.on('mouseout', function() {
+            map.closePopup(popup);
+        });
+
+        poligono.on('click', function(ev) {
+            // Mover por toque (alternativa ao arraste, mesma regra/tela do Tabuleiro): enquanto o modo
+            // estiver ativo, o clique no pasto seleciona origem/destino em vez de entrar no pasto.
+            if (typeof _tabuleiroModoToque !== 'undefined' && _tabuleiroModoToque) {
+                satelite_selecionar_pasto_toque(poligono, infoAnimal);
+                return;
+            }
+
             if (infoAnimal) {
                 mais_info_mapa_satelite('"' + infoAnimal.id_pasto + '"');
             }
