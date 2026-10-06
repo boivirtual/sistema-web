@@ -358,9 +358,13 @@ class MapaGadoService{
     // ---------------------------------------------------------------------
 
     /**
-     * Mesma regra de gravar_alterar_descricao_lote.php com novo_id = 'S':
-     * as descrições preenchidas (até 6) vão para as primeiras posições e o
-     * pasto recebe um novo número de lote da fazenda/ano.
+     * Mesma regra de gravar_alterar_descricao_lote.php: as descrições
+     * preenchidas (até 6) vão para as primeiras posições e o pasto recebe
+     * um novo número de lote da fazenda/ano (novo_id = 'S').
+     *
+     * Com "manter_numero" (clique no campo Descrição do Lote da tela do
+     * pasto — novo_id = 'N' no web), o pasto que já tem número de lote
+     * continua com ele; só gera número novo se ainda não tiver.
      *
      * Reenvio seguro: se o pasto já está com exatamente essa descrição,
      * gravada pelo mesmo usuário a partir dessa mesma data/hora, não gera
@@ -417,7 +421,14 @@ class MapaGadoService{
             return ["success" => true, "ignorado" => true, "message" => "Descrição do Lote já gravada."];
         }
 
-        $idLote = $loteDao->proximoIdLote($p['tbl_pasto_codigo_local'], $ano);
+        $manterNumero = !empty($dados['manter_numero']) &&
+            (int) $p['tbl_pasto_id_lote'] > 0;
+        if ($manterNumero) {
+            $idLote = (int) $p['tbl_pasto_id_lote'];
+            $ano = (int) $p['tbl_pasto_ano_lote'];
+        } else {
+            $idLote = $loteDao->proximoIdLote($p['tbl_pasto_codigo_local'], $ano);
+        }
 
         $campos = [
             'tbl_pasto_id_lote'        => (string) $idLote,

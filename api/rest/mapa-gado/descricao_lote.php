@@ -7,7 +7,9 @@
  *
  * Entrada — JSON no corpo do POST:
  *   bd, pasto (tbl_pasto_id), descricao_lote (texto montado),
- *   lotes (lista de até 6 textos), usuario, data_hora (Y-m-d H:i:s)
+ *   lotes (lista de até 6 textos), usuario, data_hora (Y-m-d H:i:s),
+ *   manter_numero (opcional, true = edição pelo campo Descrição do Lote:
+ *   mantém o número do lote que o pasto já tem)
  *
  * Saída: { "success": true|false, "message": "...", "ignorado": bool,
  *          "id_lote": "0031", "ano_lote": "2026" }
