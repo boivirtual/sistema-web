@@ -442,4 +442,63 @@ class AnimalPastoDao{
         return $ok ? ["error" => false, "message" => ""]
                    : ["error" => true, "message" => mysqli_error($this->con)];
     }
+    /** Animais ativos de um pasto, na ordem do número do item (é a ordem
+     *  em que a transferência por categoria escolhe os animais). */
+    public function listarAtivosDoPasto($pasto){
+        $pasto = (int) $pasto;
+        $a = [];
+        $r = mysqli_query($this->con, "SELECT tbl_animal_pasto_numero_item,
+                tbl_animal_pasto_sexo, tbl_animal_pasto_nascimento
+            FROM tbl_animal_pasto
+            WHERE tbl_animal_pasto_id = {$pasto} AND tbl_animal_pasto_situacao = 'A'
+            ORDER BY tbl_animal_pasto_numero_item");
+        if ($r) {
+            while ($row = mysqli_fetch_assoc($r)) {
+                $a[] = $row;
+            }
+        }
+        return $a;
+    }
+
+    /** Passa os itens informados (animais ativos) da origem para o destino,
+     *  gravando a categoria — igual a remover_animais_categoria.php. */
+    public function transferirItens($origem, $destino, $itens, $categoria, $usuario, $dataHora){
+        $origem = (int) $origem;
+        $destino = (int) $destino;
+        $categoria = (int) $categoria;
+        $itens = array_values(array_filter(array_map('intval', $itens)));
+        if (count($itens) === 0) {
+            return ["error" => false, "message" => ""];
+        }
+        $usuario = mysqli_real_escape_string($this->con, $usuario);
+        $dataHora = mysqli_real_escape_string($this->con, $dataHora);
+
+        mysqli_set_charset($this->con, "utf8");
+        $ok = mysqli_query($this->con, "UPDATE tbl_animal_pasto SET
+                tbl_animal_pasto_id = {$destino},
+                tbl_animal_pasto_categoria = {$categoria},
+                tbl_animal_pasto_alterado_em = '{$dataHora}',
+                tbl_animal_pasto_alterado_por = '{$usuario}'
+            WHERE tbl_animal_pasto_id = {$origem} AND
+                  tbl_animal_pasto_numero_item IN (" . implode(',', $itens) . ") AND
+                  tbl_animal_pasto_situacao = 'A'");
+
+        return $ok ? ["error" => false, "message" => ""]
+                   : ["error" => true, "message" => mysqli_error($this->con)];
+    }
+
+    /** Quantos animais do pasto foram alterados por essa mesma ação
+     *  (usuário + data/hora) — reenvio seguro da transferência por
+     *  categoria. */
+    public function contarMovidosNaAcao($pasto, $usuario, $dataHora){
+        $pasto = (int) $pasto;
+        $usuario = mysqli_real_escape_string($this->con, $usuario);
+        $dataHora = mysqli_real_escape_string($this->con, $dataHora);
+        mysqli_set_charset($this->con, "utf8");
+        $r = mysqli_query($this->con, "SELECT COUNT(*) AS qtd FROM tbl_animal_pasto
+            WHERE tbl_animal_pasto_id = {$pasto} AND
+                  tbl_animal_pasto_alterado_em = '{$dataHora}' AND
+                  tbl_animal_pasto_alterado_por = '{$usuario}'");
+        return $r ? (int) mysqli_fetch_assoc($r)['qtd'] : 0;
+    }
 }

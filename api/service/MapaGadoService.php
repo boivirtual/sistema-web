@@ -261,77 +261,22 @@ class MapaGadoService{
             ];
         }
 
-        $descricaoOrigem = (string) $pOrigem['tbl_pasto_descricao_lote'];
         $descricaoDestino = (string) $pDestino['tbl_pasto_descricao_lote'];
         $registrosDestino = $animalPastoDao->contarRegistrosNoPasto($destino);
 
-        // PASTO DE ORIGEM — datas
-        $semAnterior = $this->dataOuAgora($pOrigem['tbl_pasto_data_sem_animais_anterior'], $agora);
-        if ($this->horasDesde($agora, $pOrigem['tbl_pasto_data_com_animais']) < 24) {
-            $campos = [
-                'tbl_pasto_data_com_animais'          => $semAnterior,
-                'tbl_pasto_data_com_animais_anterior' => $semAnterior,
-                'tbl_pasto_data_sem_animais'          => $semAnterior,
-                'tbl_pasto_data_sem_animais_anterior' => $semAnterior,
-            ];
-            $erro = 'Ocorreu um erro ao atualizar as datas SEM retornar data anterior ';
-        } else {
-            $campos = $this->camposLoteVazio() + [
-                'tbl_pasto_data_sem_animais'          => $agora,
-                'tbl_pasto_data_sem_animais_anterior' => $this->dataOuAgora($pOrigem['tbl_pasto_data_sem_animais'], $agora),
-            ];
-            $erro = 'Ocorreu um erro ao atualizar as datas SEM ';
+        $erro = $this->datasDaOrigemVazia($pastoDao, $origem, $pOrigem, $usuario, $agora);
+        if ($erro !== null) {
+            return $this->falhar($con, $erro);
         }
-        $r = $pastoDao->atualizarCamposPasto($origem, $campos, $usuario, $agora);
-        if ($r['error']) {
-            return $this->falhar($con, $erro . $r['message']);
-        }
-
-        // PASTO DE DESTINO — datas (só quando não tinha nenhum registro de animal)
         if ($registrosDestino == 0) {
-            $comAnterior = $this->dataOuAgora($pDestino['tbl_pasto_data_com_animais_anterior'], $agora);
-            $semDestino = $this->dataOuAgora($pDestino['tbl_pasto_data_sem_animais'], $agora);
-            if ($this->horasDesde($agora, $pDestino['tbl_pasto_data_com_animais']) < 24 ||
-                $this->horasDesde($agora, $semDestino) < 24) {
-                $campos = [
-                    'tbl_pasto_data_com_animais'          => $comAnterior,
-                    'tbl_pasto_data_com_animais_anterior' => $comAnterior,
-                    'tbl_pasto_data_sem_animais'          => $comAnterior,
-                    'tbl_pasto_data_sem_animais_anterior' => $comAnterior,
-                ];
-            } else {
-                $campos = [
-                    'tbl_pasto_data_com_animais'          => $agora,
-                    'tbl_pasto_data_com_animais_anterior' => $pDestino['tbl_pasto_data_com_animais'],
-                ];
-            }
-            $r = $pastoDao->atualizarCamposPasto($destino, $campos, $usuario, $agora);
-            if ($r['error']) {
-                return $this->falhar($con, 'Ocorreu um erro ao atualizar as datas COM ' . $r['message']);
+            $erro = $this->datasDoDestinoQueRecebe($pastoDao, $destino, $pDestino, $usuario, $agora);
+            if ($erro !== null) {
+                return $this->falhar($con, $erro);
             }
         }
-
-        // DESCRIÇÃO DO LOTE — Premissa 1
-        if ($descricaoOrigem != '' && $descricaoDestino == '') {
-            $campos = [
-                'tbl_pasto_descricao_lote' => $descricaoOrigem,
-                'tbl_pasto_id_lote'        => (string) $pOrigem['tbl_pasto_id_lote'],
-                'tbl_pasto_ano_lote'       => (string) $pOrigem['tbl_pasto_ano_lote'],
-            ];
-            for ($i = 1; $i <= 6; $i++) {
-                $campos["tbl_pasto_descricao_lote_{$i}"] = (string) $pOrigem["tbl_pasto_descricao_lote_{$i}"];
-            }
-            $r = $pastoDao->atualizarCamposPasto($destino, $campos, $usuario, $agora);
-            if ($r['error']) {
-                return $this->falhar($con, 'Ocorreu um erro ao atualizar a Descrição do Lote do Pasto Destino ' . $r['message']);
-            }
-            $descricaoDestino = $descricaoOrigem;
-        }
-
-        // Premissas 1 e 6: a origem sempre fica sem descrição do lote.
-        $r = $pastoDao->atualizarCamposPasto($origem, $this->camposLoteVazio(), $usuario, $agora);
-        if ($r['error']) {
-            return $this->falhar($con, 'Ocorreu um erro ao atualizar a Descrição do Lote do Pasto Origem ' . $r['message']);
+        $erro = $this->premissasDaDescricaoDoLote($pastoDao, $origem, $destino, $pOrigem, $descricaoDestino, $usuario, $agora);
+        if ($erro !== null) {
+            return $this->falhar($con, $erro);
         }
 
         // Nutrição do dia vai junto (igual ao web, sem bloquear se falhar).
@@ -453,6 +398,355 @@ class MapaGadoService{
             "id_lote" => str_pad($idLote, 4, "0", STR_PAD_LEFT),
             "ano_lote" => (string) $ano,
         ];
+    }
+
+    // ---------------------------------------------------------------------
+    // Transferir animais de UMA categoria (botão Confirma da tela do pasto)
+    // ---------------------------------------------------------------------
+
+    /**
+     * Mesma regra de remover_animais_categoria.php:
+     *   - passa para o destino a quantidade pedida de animais ativos da
+     *     categoria (faixa de idade) e do sexo informados — sexo vazio =
+     *     bezerros, os dois sexos;
+     *   - destino que não tinha nenhum registro de animal: datas com/sem
+     *     animais (janela de 24h);
+     *   - se a origem ficou sem animais: datas da origem, Premissas 1 e 6
+     *     da Descrição do Lote e a nutrição do dia vão para o destino
+     *     (iguais às de "mover todos").
+     *
+     * A idade é calculada na data da ação (data_hora), para dar o mesmo
+     * resultado que o usuário viu no aparelho mesmo se o envio atrasar.
+     *
+     * Reenvio seguro: os animais movidos ficam com alterado_em = data_hora
+     * e alterado_por = usuário da ação; se o destino já tem animal com essa
+     * marca, a ação já foi aplicada — responde sucesso com "ignorado".
+     */
+    public function transferirCategoria($dados){
+        $bd = trim((string) ($dados['bd'] ?? ''));
+        $origem = (int) ($dados['origem'] ?? 0);
+        $destino = (int) ($dados['destino'] ?? 0);
+        $categoria = (int) ($dados['categoria'] ?? 0);
+        $sexo = strtoupper(trim((string) ($dados['sexo'] ?? '')));
+        $quantidade = (int) ($dados['quantidade'] ?? 0);
+
+        if ($bd === '' || $origem <= 0 || $destino <= 0) {
+            return ["success" => false, "message" => "Não foi possível identificar o pasto de origem ou de destino."];
+        }
+        if ($origem === $destino) {
+            return ["success" => false, "message" => "O pasto de origem e o de destino são o mesmo."];
+        }
+        if ($categoria <= 0) {
+            return ["success" => false, "message" => "Selecione a Qual Categoria."];
+        }
+        if ($sexo !== 'M' && $sexo !== 'F') {
+            $sexo = '';
+        }
+        if ($quantidade <= 0) {
+            return ["success" => false, "message" => "Informe a Quantidade para transferir."];
+        }
+
+        $agora = $this->dataHoraDaAcao($dados);
+        $usuario = $this->usuarioDaAcao($dados);
+
+        $pastoDao = new PastoDao($bd);
+        $con = $pastoDao->getConexao();
+        if (!$con) {
+            return ["success" => false, "message" => "Não foi possível conectar ao banco."];
+        }
+        $animalPastoDao = new AnimalPastoDao($bd, $con);
+        $nutricaoDao = new NutricaoDao($bd, $con);
+        $categoriaDao = new CategoriaIdadeDao($bd, $con);
+
+        mysqli_begin_transaction($con);
+
+        $pOrigem = $pastoDao->buscarPastoParaMovimentacao($origem);
+        if (!$pOrigem) {
+            return $this->falhar($con, 'O pasto de origem não foi encontrado.');
+        }
+        $pDestino = $pastoDao->buscarPastoParaMovimentacao($destino);
+        if (!$pDestino) {
+            return $this->falhar($con, 'O pasto de destino não foi encontrado.');
+        }
+
+        $descricaoOrigem = (string) $pOrigem['tbl_pasto_descricao_lote'];
+        $descricaoDestino = (string) $pDestino['tbl_pasto_descricao_lote'];
+
+        if ($animalPastoDao->contarMovidosNaAcao($destino, $usuario, $agora) > 0) {
+            mysqli_rollback($con);
+            mysqli_close($con);
+            return [
+                "success" => true,
+                "ignorado" => true,
+                "message" => "Transferência já gravada.",
+                "descricao_lote_pasto_destino" => $descricaoDestino,
+                "descricao_lote_pasto_origem" => $descricaoOrigem,
+            ];
+        }
+
+        // Faixa de idade da categoria pedida.
+        $faixa = null;
+        foreach ($categoriaDao->getCategoria() as $c) {
+            if ((int) $c->getId() === $categoria) {
+                $faixa = [(int) $c->getIdadeDe(), (int) $c->getIdadeAte()];
+                break;
+            }
+        }
+        if ($faixa === null) {
+            return $this->falhar($con, 'A categoria informada não foi encontrada.');
+        }
+
+        // Animais da categoria/sexo, na ordem do número do item.
+        $dataAcao = new DateTime(substr($agora, 0, 10));
+        $itens = [];
+        foreach ($animalPastoDao->listarAtivosDoPasto($origem) as $animal) {
+            if ($sexo !== '' && (string) $animal['tbl_animal_pasto_sexo'] !== $sexo) {
+                continue;
+            }
+            $idade = (new DateTime((string) $animal['tbl_animal_pasto_nascimento']))->diff($dataAcao);
+            $meses = ((int) $idade->format('%Y')) * 12 + (int) $idade->format('%m');
+            if ($meses >= $faixa[0] && $meses <= $faixa[1]) {
+                $itens[] = (int) $animal['tbl_animal_pasto_numero_item'];
+            }
+        }
+        if (count($itens) < $quantidade) {
+            return $this->falhar($con, 'A quantidade de animais para transferir da categoria é insuficiente.');
+        }
+        $itens = array_slice($itens, 0, $quantidade);
+
+        $registrosDestino = $animalPastoDao->contarRegistrosNoPasto($destino);
+
+        $r = $animalPastoDao->transferirItens($origem, $destino, $itens, $categoria, $usuario, $agora);
+        if ($r['error']) {
+            return $this->falhar($con, 'Ocorreu um erro ao atualizar os animais no pasto ' . $r['message']);
+        }
+
+        // Origem ficou vazia: mesmas regras de "mover todos".
+        $origemFicouVazia = $animalPastoDao->contarAtivosNoPasto($origem) === 0;
+        if ($origemFicouVazia) {
+            $erro = $this->datasDaOrigemVazia($pastoDao, $origem, $pOrigem, $usuario, $agora);
+            if ($erro !== null) {
+                return $this->falhar($con, $erro);
+            }
+        }
+        if ($registrosDestino == 0) {
+            $erro = $this->datasDoDestinoQueRecebe($pastoDao, $destino, $pDestino, $usuario, $agora);
+            if ($erro !== null) {
+                return $this->falhar($con, $erro);
+            }
+        }
+        if ($origemFicouVazia) {
+            $erro = $this->premissasDaDescricaoDoLote($pastoDao, $origem, $destino, $pOrigem, $descricaoDestino, $usuario, $agora);
+            if ($erro !== null) {
+                return $this->falhar($con, $erro);
+            }
+            $descricaoOrigem = '';
+            $nutricaoDao->transferirNutricaoDoDia($origem, $destino, substr($agora, 0, 10));
+        }
+
+        mysqli_commit($con);
+        mysqli_close($con);
+
+        return [
+            "success" => true,
+            "ignorado" => false,
+            "message" => "Animais movidos com sucesso.",
+            "descricao_lote_pasto_destino" => $descricaoDestino,
+            "descricao_lote_pasto_origem" => $descricaoOrigem,
+        ];
+    }
+
+    // ---------------------------------------------------------------------
+    // Levar a Descrição do Lote do pasto origem para o pasto destino
+    // ---------------------------------------------------------------------
+
+    /**
+     * Opção "Levar a Descrição do Lote" depois de transferir parte dos
+     * animais para um pasto sem descrição (gravar_levar_descricao_lote_
+     * pasto_destino + trocar_id_lote_pasto_origem no web):
+     *   - o destino recebe a descrição, os lotes e o NÚMERO do lote da
+     *     origem (se a origem não tiver número, gera um para o destino);
+     *   - a origem continua com a descrição e recebe um número NOVO.
+     *
+     * Reenvio seguro: destino já com a descrição da origem, gravada pelo
+     * mesmo usuário a partir dessa data/hora -> "ignorado".
+     */
+    public function levarDescricaoLote($dados){
+        $bd = trim((string) ($dados['bd'] ?? ''));
+        $origem = (int) ($dados['origem'] ?? 0);
+        $destino = (int) ($dados['destino'] ?? 0);
+
+        if ($bd === '' || $origem <= 0 || $destino <= 0) {
+            return ["success" => false, "message" => "Não foi possível identificar o pasto de origem ou de destino."];
+        }
+        if ($origem === $destino) {
+            return ["success" => false, "message" => "O pasto de origem e o de destino são o mesmo."];
+        }
+
+        $agora = $this->dataHoraDaAcao($dados);
+        $usuario = $this->usuarioDaAcao($dados);
+        $ano = (int) substr($agora, 0, 4);
+
+        $pastoDao = new PastoDao($bd);
+        $con = $pastoDao->getConexao();
+        if (!$con) {
+            return ["success" => false, "message" => "Não foi possível conectar ao banco."];
+        }
+        $loteDao = new LoteAnimaisDao($bd, $con);
+
+        mysqli_begin_transaction($con);
+
+        $pOrigem = $pastoDao->buscarPastoParaMovimentacao($origem);
+        if (!$pOrigem) {
+            return $this->falhar($con, 'O pasto de origem não foi encontrado.');
+        }
+        $pDestino = $pastoDao->buscarPastoParaMovimentacao($destino);
+        if (!$pDestino) {
+            return $this->falhar($con, 'O pasto de destino não foi encontrado.');
+        }
+
+        $descricaoOrigem = (string) $pOrigem['tbl_pasto_descricao_lote'];
+        if (trim($descricaoOrigem) === '') {
+            return $this->falhar($con, 'O pasto de origem não tem Descrição do Lote para levar.');
+        }
+
+        $jaAplicado = (string) $pDestino['tbl_pasto_descricao_lote'] === $descricaoOrigem &&
+            (string) $pDestino['tbl_pasto_alterado_por'] === $usuario &&
+            (string) $pDestino['tbl_pasto_alterado_em'] >= $agora;
+        if ($jaAplicado) {
+            mysqli_rollback($con);
+            mysqli_close($con);
+            return [
+                "success" => true,
+                "ignorado" => true,
+                "message" => "Descrição do Lote já levada para o pasto destino.",
+                "id_lote_origem" => str_pad((string) (int) $pOrigem['tbl_pasto_id_lote'], 4, "0", STR_PAD_LEFT),
+                "ano_lote_origem" => (string) $pOrigem['tbl_pasto_ano_lote'],
+                "id_lote_destino" => str_pad((string) (int) $pDestino['tbl_pasto_id_lote'], 4, "0", STR_PAD_LEFT),
+                "ano_lote_destino" => (string) $pDestino['tbl_pasto_ano_lote'],
+            ];
+        }
+
+        // Destino: descrição + número do lote da origem.
+        $idDestino = (int) $pOrigem['tbl_pasto_id_lote'];
+        $anoDestino = (int) $pOrigem['tbl_pasto_ano_lote'];
+        if ($idDestino <= 0) {
+            $idDestino = $loteDao->proximoIdLote($pDestino['tbl_pasto_codigo_local'], $ano);
+            $anoDestino = $ano;
+        }
+        $campos = [
+            'tbl_pasto_id_lote'        => (string) $idDestino,
+            'tbl_pasto_ano_lote'       => (string) $anoDestino,
+            'tbl_pasto_descricao_lote' => $descricaoOrigem,
+        ];
+        for ($i = 1; $i <= 6; $i++) {
+            $campos["tbl_pasto_descricao_lote_{$i}"] = (string) $pOrigem["tbl_pasto_descricao_lote_{$i}"];
+        }
+        $r = $pastoDao->atualizarCamposPasto($destino, $campos, $usuario, $agora);
+        if ($r['error']) {
+            return $this->falhar($con, 'Ocorreu um erro ao atualizar a Descrição do Lote: ' . $r['message']);
+        }
+
+        // Origem: mesma descrição, número novo.
+        $idOrigem = $loteDao->proximoIdLote($pOrigem['tbl_pasto_codigo_local'], $ano);
+        $r = $pastoDao->atualizarCamposPasto($origem, [
+            'tbl_pasto_id_lote'  => (string) $idOrigem,
+            'tbl_pasto_ano_lote' => (string) $ano,
+        ], $usuario, $agora);
+        if ($r['error']) {
+            return $this->falhar($con, 'Ocorreu um erro ao atualizar a Descrição do Lote: ' . $r['message']);
+        }
+
+        mysqli_commit($con);
+        mysqli_close($con);
+
+        return [
+            "success" => true,
+            "ignorado" => false,
+            "message" => "Atualização da Descrição do Lote com sucesso",
+            "id_lote_origem" => str_pad((string) $idOrigem, 4, "0", STR_PAD_LEFT),
+            "ano_lote_origem" => (string) $ano,
+            "id_lote_destino" => str_pad((string) $idDestino, 4, "0", STR_PAD_LEFT),
+            "ano_lote_destino" => (string) $anoDestino,
+        ];
+    }
+
+    // ---------------------------------------------------------------------
+    // Regras comuns de "a origem ficou sem animais" (mover todos e
+    // transferir por categoria) — devolvem null ou a mensagem de erro.
+    // ---------------------------------------------------------------------
+
+    /** Datas com/sem animais do pasto de origem que ficou vazio. */
+    private function datasDaOrigemVazia($pastoDao, $origem, $pOrigem, $usuario, $agora){
+        $semAnterior = $this->dataOuAgora($pOrigem['tbl_pasto_data_sem_animais_anterior'], $agora);
+        if ($this->horasDesde($agora, $pOrigem['tbl_pasto_data_com_animais']) < 24) {
+            $campos = [
+                'tbl_pasto_data_com_animais'          => $semAnterior,
+                'tbl_pasto_data_com_animais_anterior' => $semAnterior,
+                'tbl_pasto_data_sem_animais'          => $semAnterior,
+                'tbl_pasto_data_sem_animais_anterior' => $semAnterior,
+            ];
+            $erro = 'Ocorreu um erro ao atualizar as datas SEM retornar data anterior ';
+        } else {
+            $campos = $this->camposLoteVazio() + [
+                'tbl_pasto_data_sem_animais'          => $agora,
+                'tbl_pasto_data_sem_animais_anterior' => $this->dataOuAgora($pOrigem['tbl_pasto_data_sem_animais'], $agora),
+            ];
+            $erro = 'Ocorreu um erro ao atualizar as datas SEM ';
+        }
+        $r = $pastoDao->atualizarCamposPasto($origem, $campos, $usuario, $agora);
+        return $r['error'] ? $erro . $r['message'] : null;
+    }
+
+    /** Datas do pasto de destino que não tinha nenhum registro de animal. */
+    private function datasDoDestinoQueRecebe($pastoDao, $destino, $pDestino, $usuario, $agora){
+        $comAnterior = $this->dataOuAgora($pDestino['tbl_pasto_data_com_animais_anterior'], $agora);
+        $semDestino = $this->dataOuAgora($pDestino['tbl_pasto_data_sem_animais'], $agora);
+        if ($this->horasDesde($agora, $pDestino['tbl_pasto_data_com_animais']) < 24 ||
+            $this->horasDesde($agora, $semDestino) < 24) {
+            $campos = [
+                'tbl_pasto_data_com_animais'          => $comAnterior,
+                'tbl_pasto_data_com_animais_anterior' => $comAnterior,
+                'tbl_pasto_data_sem_animais'          => $comAnterior,
+                'tbl_pasto_data_sem_animais_anterior' => $comAnterior,
+            ];
+        } else {
+            $campos = [
+                'tbl_pasto_data_com_animais'          => $agora,
+                'tbl_pasto_data_com_animais_anterior' => $pDestino['tbl_pasto_data_com_animais'],
+            ];
+        }
+        $r = $pastoDao->atualizarCamposPasto($destino, $campos, $usuario, $agora);
+        return $r['error'] ? 'Ocorreu um erro ao atualizar as datas COM ' . $r['message'] : null;
+    }
+
+    /**
+     * Premissa 1: destino SEM descrição do lote e origem COM -> a descrição
+     * (com o número do lote) vai para o destino. Premissas 1 e 6: a origem
+     * sempre fica sem descrição. $descricaoDestino sai atualizada.
+     */
+    private function premissasDaDescricaoDoLote($pastoDao, $origem, $destino, $pOrigem, &$descricaoDestino, $usuario, $agora){
+        $descricaoOrigem = (string) $pOrigem['tbl_pasto_descricao_lote'];
+        if ($descricaoOrigem != '' && $descricaoDestino == '') {
+            $campos = [
+                'tbl_pasto_descricao_lote' => $descricaoOrigem,
+                'tbl_pasto_id_lote'        => (string) $pOrigem['tbl_pasto_id_lote'],
+                'tbl_pasto_ano_lote'       => (string) $pOrigem['tbl_pasto_ano_lote'],
+            ];
+            for ($i = 1; $i <= 6; $i++) {
+                $campos["tbl_pasto_descricao_lote_{$i}"] = (string) $pOrigem["tbl_pasto_descricao_lote_{$i}"];
+            }
+            $r = $pastoDao->atualizarCamposPasto($destino, $campos, $usuario, $agora);
+            if ($r['error']) {
+                return 'Ocorreu um erro ao atualizar a Descrição do Lote do Pasto Destino ' . $r['message'];
+            }
+            $descricaoDestino = $descricaoOrigem;
+        }
+
+        $r = $pastoDao->atualizarCamposPasto($origem, $this->camposLoteVazio(), $usuario, $agora);
+        return $r['error']
+            ? 'Ocorreu um erro ao atualizar a Descrição do Lote do Pasto Origem ' . $r['message']
+            : null;
     }
 
     // ---------------------------------------------------------------------
