@@ -133,9 +133,12 @@ class MapaGadoService{
         $emEstacaoMonta = $morteDao->listarAnimaisEmEstacaoMonta($idsFazendas);
         $controleEstoque = $morteDao->controleEstoque($bd);
 
+        // Botão Nutrição: situações do cocho, produtos e nutrições recentes.
+        $nutricao = (new MapaGadoNutricaoService())->dadosParaCache($bd, $idsFazendas, $con);
+
         mysqli_close($con);
 
-        return [
+        return $nutricao + [
             "success"         => true,
             "controle_estoque" => $controleEstoque,
             "motivos_morte"   => $motivosMorte,
