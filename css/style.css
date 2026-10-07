@@ -5915,6 +5915,9 @@ body > .bs-container {
 
 .satelite-pasto-badge .satelite-badge-divisor {
   align-self: stretch;
+  /* o selo fica dentro de um marker de largura 0 (iconSize [0,0]): sem isso o flex encolhe o
+     divisor (sem conteudo) para 0px e a barra some */
+  flex: 0 0 2px;
   width: 2px;
   background: rgba(255, 255, 255, 0.75);
   box-shadow: 0 0 1.5px #000;
