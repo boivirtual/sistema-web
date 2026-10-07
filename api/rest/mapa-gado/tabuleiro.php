@@ -27,6 +27,7 @@ require_once __DIR__ . "/../../dao/AnimalPastoDao.php";
 require_once __DIR__ . "/../../dao/AnimalDao.php";
 require_once __DIR__ . "/../../dao/CategoriaIdadeDao.php";
 require_once __DIR__ . "/../../dao/LoteAnimaisDao.php";
+require_once __DIR__ . "/../../dao/MorteDao.php";
 require_once __DIR__ . "/../../entitie/CategoriaIdade.php";
 require_once __DIR__ . "/../../service/MapaGadoService.php";
 

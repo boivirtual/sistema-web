@@ -131,7 +131,7 @@ class MapaGadoService{
         $morteDao = new MorteDao($bd, $con);
         $motivosMorte = $morteDao->listarMotivos();
         $emEstacaoMonta = $morteDao->listarAnimaisEmEstacaoMonta($idsFazendas);
-        $controleEstoque = $morteDao->controleEstoque();
+        $controleEstoque = $morteDao->controleEstoque($bd);
 
         mysqli_close($con);
 
