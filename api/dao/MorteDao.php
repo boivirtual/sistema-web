@@ -40,6 +40,18 @@ class MorteDao{
     // Listas para o aplicativo
     // ---------------------------------------------------------------------
 
+    /** Tipo de controle de estoque da empresa (tbl_empresa_controle_pesagem,
+     *  o mesmo que o login do web põe na sessão): 'I' por animal, 'L' por
+     *  lote. $cnpj é o identificador da empresa (o "bd" do aplicativo). */
+    public function controleEstoque($cnpj){
+        $row = $this->linha("SELECT tbl_empresa_controle_pesagem FROM tbl_empresa
+            WHERE tbl_empresa_cpf_cnpj = '" . $this->esc($cnpj) . "' LIMIT 1");
+        if (!$row) {
+            $row = $this->linha("SELECT tbl_empresa_controle_pesagem FROM tbl_empresa LIMIT 1");
+        }
+        return $row ? (string) $row['tbl_empresa_controle_pesagem'] : '';
+    }
+
     /** Motivos de morte (select "Motivo da Morte"), na ordem do web. */
     public function listarMotivos(){
         $a = [];

@@ -126,10 +126,20 @@ class MapaGadoService{
             ];
         }
 
+        // Botão Morte: motivos, animais em estação de monta (aviso) e o tipo
+        // de controle de estoque da empresa ('I' por animal, 'L' por lote).
+        $morteDao = new MorteDao($bd, $con);
+        $motivosMorte = $morteDao->listarMotivos();
+        $emEstacaoMonta = $morteDao->listarAnimaisEmEstacaoMonta($idsFazendas);
+        $controleEstoque = $morteDao->controleEstoque();
+
         mysqli_close($con);
 
         return [
             "success"         => true,
+            "controle_estoque" => $controleEstoque,
+            "motivos_morte"   => $motivosMorte,
+            "animais_estacao_monta" => $emEstacaoMonta,
             "categorias"      => $categorias,
             "descricoes_lote" => $descricoesLote,
             "pastos"          => $pastos,
@@ -668,6 +678,282 @@ class MapaGadoService{
             "ano_lote_origem" => (string) $ano,
             "id_lote_destino" => str_pad((string) $idDestino, 4, "0", STR_PAD_LEFT),
             "ano_lote_destino" => (string) $anoDestino,
+        ];
+    }
+
+    // ---------------------------------------------------------------------
+    // Morte de um animal (botão Morte da tela do pasto)
+    // ---------------------------------------------------------------------
+
+    /**
+     * Mesma regra de gravar_morte.php (sistema web) para o controle de
+     * estoque POR ANIMAL ('I'):
+     *   - baixa do pasto um registro com o sexo e a data de nascimento do
+     *     animal; se o pasto não tem esse nascimento, troca a data com um
+     *     registro de outro pasto da fazenda (o estoque do pasto não é
+     *     ligado ao cadastro do animal);
+     *   - morte com data de um mês já fechado: ajusta o fechamento mensal;
+     *   - pasto ficou sem animais: limpa a Descrição do Lote e acerta as
+     *     datas com/sem animais;
+     *   - grava a movimentação tipo 888 (Morte) com o item;
+     *   - baixa o animal (inativo, situação 'M') e registra a saída no
+     *     histórico de estoque;
+     *   - fêmea em cobertura: tira da cobertura ou marca o item, como o web.
+     *
+     * Tudo numa transação. Reenvio seguro: a movimentação fica com
+     * incluido_em = data_hora da ação e incluido_por = usuário; se já
+     * existe para esse animal, responde sucesso com "ignorado": true.
+     *
+     * O controle por lote ('L') ainda não é atendido pelo aplicativo.
+     */
+    public function gravarMorte($dados){
+        $bd = trim((string) ($dados['bd'] ?? ''));
+        $local = (int) ($dados['fazenda'] ?? 0);
+        $pasto = (int) ($dados['pasto'] ?? 0);
+        $codigoId = (int) ($dados['animal'] ?? 0);
+        $motivo = (int) ($dados['motivo'] ?? 0);
+        $observacao = trim((string) ($dados['observacao'] ?? ''));
+        $dataMorteObj = DateTime::createFromFormat('!Y-m-d', (string) ($dados['data_morte'] ?? ''));
+
+        if ($bd === '' || $local <= 0) {
+            return ["success" => false, "message" => "Fazenda não informada."];
+        }
+        if ($pasto <= 0) {
+            return ["success" => false, "message" => "Informe o Pasto!"];
+        }
+        if ($codigoId <= 0) {
+            return ["success" => false, "message" => "FALTA VALIDAR O CÓDIGO DO ANIMAL."];
+        }
+        if ($motivo <= 0) {
+            return ["success" => false, "message" => "Informe o Motivo da Morte!"];
+        }
+        if (!$dataMorteObj) {
+            return ["success" => false, "message" => "A Data precisa ser informada!"];
+        }
+
+        $agora = $this->dataHoraDaAcao($dados);
+        $usuario = $this->usuarioDaAcao($dados);
+        $hoje = substr($agora, 0, 10);
+        $dataMorte = $dataMorteObj->format('Y-m-d');
+        if ($dataMorte > $hoje) {
+            return ["success" => false, "message" => "A Data não pode ser maior que a data atual!"];
+        }
+
+        $pastoDao = new PastoDao($bd);
+        $con = $pastoDao->getConexao();
+        if (!$con) {
+            return ["success" => false, "message" => "Não foi possível conectar ao banco."];
+        }
+        $morteDao = new MorteDao($bd, $con);
+        $categoriaDao = new CategoriaIdadeDao($bd, $con);
+
+        mysqli_begin_transaction($con);
+
+        if ($morteDao->existeMovimentacaoDaAcao($local, $codigoId, $usuario, $agora)) {
+            mysqli_rollback($con);
+            mysqli_close($con);
+            return ["success" => true, "ignorado" => true, "message" => "Morte já gravada."];
+        }
+
+        $animal = $morteDao->buscarAnimal($codigoId);
+        if (!$animal || (int) $animal['tbl_animal_lixeira'] !== 0) {
+            return $this->falhar($con, 'Animal não cadastrado com esse código.');
+        }
+        if ((string) $animal['tbl_animal_ativo'] !== 'S') {
+            return $this->falhar($con, 'O animal já está baixado no sistema.');
+        }
+        if ((int) $animal['tbl_animal_codigo_fazenda'] !== $local) {
+            return $this->falhar($con, 'Animal não consta no local ou Id não cadastrado.');
+        }
+
+        $nascimento = (string) $animal['tbl_animal_data_nascimento'];
+        if ($dataMorte < $nascimento) {
+            return $this->falhar($con, 'A Data da Morte não pode ser menor que a Data do Nascimento.');
+        }
+
+        $descricaoMotivo = $morteDao->descricaoMotivo($motivo);
+        if ($descricaoMotivo === null) {
+            return $this->falhar($con, 'Informe o Motivo da Morte!');
+        }
+
+        $sexo = (string) $animal['tbl_animal_sexo'] === 'M' ? 'M' : 'F';
+
+        // Peso do animal (para o fechamento mensal): último, desmama ou primeiro.
+        $peso = 0;
+        foreach (['tbl_animal_ultimo_peso', 'tbl_animal_peso_desmama', 'tbl_animal_primeiro_peso'] as $campo) {
+            if ($animal[$campo] != 0 && $animal[$campo] != '') {
+                $peso = $animal[$campo];
+                break;
+            }
+        }
+
+        // Categoria (faixa de idade) do animal na data da ação.
+        $idade = (new DateTime($nascimento))->diff(new DateTime($hoje));
+        $meses = ((int) $idade->format('%Y')) * 12 + (int) $idade->format('%m');
+        $categoria = 0;
+        foreach ($categoriaDao->getCategoria() as $c) {
+            if ($meses >= (int) $c->getIdadeDe() && $meses <= (int) $c->getIdadeAte()) {
+                $categoria = (int) $c->getId();
+            }
+        }
+        $descricoesCategoria = [
+            1 => '00 a 07 meses',
+            2 => '08 a 12 meses',
+            3 => '13 a 24 meses',
+            4 => '25 a 36 meses',
+            5 => '> 36 meses',
+        ];
+        $descCategoria = $descricoesCategoria[$categoria] ?? '';
+
+        // ANIMAL NO PASTO — o registro com o nascimento do animal; se o
+        // pasto não tem, troca a data com um registro de outro pasto.
+        $registro = $morteDao->buscarNoPastoPorNascimento($local, $pasto, $sexo, $nascimento);
+        if (!$registro) {
+            $atual = $morteDao->buscarNoPastoPorCategoria($local, $pasto, $sexo, $categoria);
+            if (!$atual) {
+                return $this->falhar($con, 'Não existe animais com o sexo ' . $sexo . ', categoria ' . $descCategoria . ' no pasto.');
+            }
+            $trocar = $morteDao->buscarNaFazendaPorNascimento($local, $sexo, $nascimento);
+            if (!$trocar) {
+                return $this->falhar($con, 'Não existe animais com o sexo ' . $sexo . ', categoria ' . $descCategoria . ', nascimento ' . $nascimento . ' em outros pastos.');
+            }
+
+            $r = $morteDao->trocarNascimentoNoPasto($local, $pasto, $atual['tbl_animal_pasto_numero_item'], $trocar['tbl_animal_pasto_nascimento']);
+            if ($r['error']) {
+                return $this->falhar($con, 'Ocorreu um erro ao ajustar o nascimento no pasto atual ' . $r['message']);
+            }
+            $r = $morteDao->trocarNascimentoNoPasto($local, $trocar['tbl_animal_pasto_id'], $trocar['tbl_animal_pasto_numero_item'], $atual['tbl_animal_pasto_nascimento']);
+            if ($r['error']) {
+                return $this->falhar($con, 'Ocorreu um erro ao ajustar o nascimento no pasto trocar ' . $r['message']);
+            }
+
+            $registro = $morteDao->buscarNoPastoPorNascimento($local, $pasto, $sexo, $nascimento);
+            if (!$registro) {
+                return $this->falhar($con, 'Erro na alteração do registro no pasto.');
+            }
+        }
+
+        $r = $morteDao->excluirDoPasto($local, $registro['tbl_animal_pasto_numero_item']);
+        if ($r['error']) {
+            return $this->falhar($con, 'Erro na alteração do registro no pasto.' . $r['message']);
+        }
+
+        // FECHAMENTO MENSAL — só quando a morte é de outro mês.
+        if (substr($hoje, 0, 7) !== substr($dataMorte, 0, 7)) {
+            $fechamento = new DateTime($dataMorte);
+            $fechamento->modify('last day of this month');
+            $dataFechamento = $fechamento->format('Y-m-d');
+
+            $r = $morteDao->baixarDoFechamentoMensal($local, $dataFechamento, $categoria, $sexo, $peso);
+            if ($r['error']) {
+                return $this->falhar($con, 'Ocorreu um erro na alteração do fechamento mensal!' . $r['message']);
+            }
+            $r = $morteDao->somarMorteNoFechamentoEntSai($local, $dataFechamento, $peso);
+            if ($r['error']) {
+                return $this->falhar($con, 'Ocorreu um erro na alteração do fechamento mensal Ent/Sai' . $r['message']);
+            }
+        }
+
+        // PASTO FICOU VAZIO — limpa a Descrição do Lote e acerta as datas.
+        if ($morteDao->contarRegistrosNoPasto($local, $pasto) === 0) {
+            $p = $pastoDao->buscarPastoParaMovimentacao($pasto);
+            if ($p) {
+                $r = $pastoDao->atualizarCamposPasto($pasto, $this->camposLoteVazio(), $usuario, $agora);
+                if ($r['error']) {
+                    return $this->falhar($con, 'Ocorreu um erro ao atualizar a descrição do lote no pasto origem' . $r['message']);
+                }
+                $erro = $this->datasDaOrigemVazia($pastoDao, $pasto, $p, $usuario, $agora);
+                if ($erro !== null) {
+                    return $this->falhar($con, $erro);
+                }
+            }
+        }
+
+        // MOVIMENTAÇÃO DE MORTE (tipo 888) + item
+        $r = $morteDao->incluirMovimentacao($local, $dataMorte, $usuario, $agora);
+        if ($r['error']) {
+            return $this->falhar($con, 'Ocorreu um erro ao registrar a movimentação' . $r['message']);
+        }
+        $numeroMovimentacao = $r['id'];
+
+        $alfa = (string) $animal['tbl_animal_codigo_alfa'];
+        $numerico = (string) $animal['tbl_animal_codigo_numerico'];
+        $r = $morteDao->incluirItemMovimentacao($numeroMovimentacao, $dataMorte, [
+            'codigo_id'     => $codigoId,
+            'codigo_animal' => $alfa !== '' ? $alfa . '-' . $numerico : $numerico,
+            'sexo'          => $sexo,
+            'nascimento'    => (new DateTime($nascimento))->format('d/m/Y'),
+            'raca'          => (string) $animal['desc_raca'],
+            'pelagem'       => (string) $animal['desc_pelagem'],
+            'mae'           => (string) $animal['mae_alfa'] . (string) $animal['mae_numerico'],
+            'observacao'    => $observacao,
+            'motivo'        => $motivo,
+            'pasto'         => $pasto,
+            'categoria'     => $categoria,
+        ]);
+        if ($r['error']) {
+            return $this->falhar($con, 'Ocorreu um erro na gravação dos itens.' . $r['message']);
+        }
+
+        // ANIMAL — baixa e histórico de estoque
+        $r = $morteDao->baixarAnimalPorMorte(
+            $codigoId,
+            $dataMorte,
+            $usuario,
+            'Motivo da morte: ' . $descricaoMotivo . '. Obs: ' . $observacao,
+            $animal['tbl_animal_codigo_origem'],
+            $animal['tbl_animal_codigo_fazenda']
+        );
+        if ($r['error']) {
+            return $this->falhar($con, 'Ocorreu um erro na atualização do animal.' . $r['message']);
+        }
+        $r = $morteDao->incluirSaidaEstoque($codigoId, $dataMorte, $nascimento, $local, $numeroMovimentacao, $pasto, $categoria, $sexo);
+        if ($r['error']) {
+            return $this->falhar($con, 'Erro na gravacao histórico saída morte.' . $r['message']);
+        }
+
+        // COBERTURA — fêmea que estava em cobertura
+        $cobertura = $morteDao->buscarUltimaCobertura($codigoId);
+        if ($cobertura) {
+            $coberturaId = (int) $cobertura['tbl_ite_cobertura_numero_id'];
+            $numeroItem = (int) $cobertura['tbl_ite_cobertura_numero_item'];
+
+            if ($cobertura['tbl_cobertura_protocoloiatf'] == 0 || (string) $cobertura['tbl_ite_cobertura_dia_1'] === '') {
+                $r = $morteDao->atualizarQtdAnimaisCobertura($coberturaId, ((int) $cobertura['tbl_cobertura_qtd_animais']) - 1, $usuario, $agora);
+                if ($r['error']) {
+                    return $this->falhar($con, 'Erro na atualização da qtd de animais no grupo ' . $cobertura['tbl_cobertura_codigo_grupo'] . ' da cobertura ' . $coberturaId . ' erro ' . $r['message']);
+                }
+                $r = $morteDao->excluirItemCobertura($coberturaId, $numeroItem);
+                if ($r['error']) {
+                    return $this->falhar($con, 'Erro na exclusão do registro item de cobertura ' . $r['message']);
+                }
+                $r = $morteDao->renumerarItensCobertura($coberturaId);
+                if ($r['error']) {
+                    return $this->falhar($con, 'Erro refazer os itens! ' . $r['message']);
+                }
+            } else if ((string) $cobertura['tbl_ite_cobertura_resultado_diagnostico'] === 'P') {
+                if ((string) $cobertura['tbl_ite_cobertura_nascido'] === '') {
+                    $r = $morteDao->marcarCoberturaFemeaMorta($coberturaId, $numeroItem, false, $usuario, $agora);
+                    if ($r['error']) {
+                        return $this->falhar($con, 'Ocorreu um erro na atualização do item de cobertura animal ' . $alfa . ' ' . $numerico . ' erro ' . $r['message']);
+                    }
+                }
+            } else {
+                $r = $morteDao->marcarCoberturaFemeaMorta($coberturaId, $numeroItem, true, $usuario, $agora);
+                if ($r['error']) {
+                    return $this->falhar($con, 'Ocorreu um erro na atualização do item de cobertura animal ' . $alfa . ' ' . $numerico . ' erro ' . $r['message']);
+                }
+            }
+        }
+
+        mysqli_commit($con);
+        mysqli_close($con);
+
+        return [
+            "success" => true,
+            "ignorado" => false,
+            "message" => "Movimentação de morte processada com sucesso.",
+            "movimentacao" => str_pad((string) $numeroMovimentacao, 9, "0", STR_PAD_LEFT),
         ];
     }
 
