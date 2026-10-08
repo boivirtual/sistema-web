@@ -291,6 +291,67 @@ document.addEventListener('keydown', function(ev) {
     }
 });
 
+// Vista (centro + zoom) do mapa satelite guardada no navegador: ao entrar num pasto e clicar em Voltar,
+// a pagina do mapa e' carregada de novo e precisa reabrir exatamente onde o usuario estava.
+// So' vale quando o Voltar da tela do pasto liga o aviso (ver voltar() em mapa_gados.js); o icone
+// "Mapa Satelite" (satelite_esquecer_vista) e a primeira entrada abrem ajustados a fazenda.
+var SATELITE_CHAVE_VISTA = 'mapa_gado_satelite_vista';
+var SATELITE_CHAVE_VOLTAR = 'mapa_gado_satelite_voltar';
+var _sateliteTimerVista = null;
+
+function satelite_salvar_vista_agora() {
+    var map = mapaGadoSatelite.map;
+
+    if (!map || mapaGadoSatelite.localDesenhado === null) {
+        return;
+    }
+
+    try {
+        var centro = map.getCenter();
+        sessionStorage.setItem(SATELITE_CHAVE_VISTA, JSON.stringify({
+            local: String(mapaGadoSatelite.localDesenhado),
+            lat: centro.lat,
+            lng: centro.lng,
+            zoom: map.getZoom()
+        }));
+    } catch (e) {}
+}
+
+function satelite_agendar_salvar_vista() {
+    clearTimeout(_sateliteTimerVista);
+    _sateliteTimerVista = setTimeout(satelite_salvar_vista_agora, 300);
+}
+
+// Devolve a vista guardada (e apaga o aviso: vale so' para esta carga) se o usuario acabou de voltar
+// da tela do pasto, ou null.
+function satelite_vista_ao_voltar(local) {
+    try {
+        if (sessionStorage.getItem(SATELITE_CHAVE_VOLTAR) !== '1') {
+            return null;
+        }
+
+        sessionStorage.removeItem(SATELITE_CHAVE_VOLTAR);
+
+        var salva = JSON.parse(sessionStorage.getItem(SATELITE_CHAVE_VISTA) || 'null');
+
+        if (salva && String(salva.local) === String(local)) {
+            return { centro: L.latLng(salva.lat, salva.lng), zoom: salva.zoom };
+        }
+    } catch (e) {}
+
+    return null;
+}
+
+function satelite_esquecer_vista() {
+    clearTimeout(_sateliteTimerVista);
+    mapaGadoSatelite.localDesenhado = null;
+
+    try {
+        sessionStorage.removeItem(SATELITE_CHAVE_VISTA);
+        sessionStorage.removeItem(SATELITE_CHAVE_VOLTAR);
+    } catch (e) {}
+}
+
 // Estilo do poligono considerando o termo de busca atual (usado tambem para "desfazer" o destaque de arraste)
 function mapa_gado_satelite_estilo_padrao(nome) {
     var termo = ($('#buscar_pasto_tabuleiro').val() || '').toUpperCase();
