@@ -5604,22 +5604,12 @@ div.span_esquerda{
     text-align: left !important;
 }
 
-/* Cartoes da tela Mapa de Gado - Movimentacoes (mesmo visual da tela do aplicativo):
-   azul claro no topo (fazenda, pasto, total) e cinza claro envolvendo os campos de digitacao.
-   As .row de dentro tem margem lateral negativa do Bootstrap, entao o padding lateral de 15px
-   do cartao faz elas ocuparem exatamente a largura dele. */
-.card-pasto-topo {
-    background: rgba(33, 150, 243, 0.1);
-    border-radius: 12px;
-    padding: 8px 15px;
-    margin-bottom: 12px;
-}
-
-.card-pasto-digitacao {
-    background: #f1f3f6;
-    border-radius: 12px;
-    padding: 12px 15px 0;
-    margin-bottom: 12px;
+/* Linha divisoria bem clarinha que afina nas pontas (mesmo estilo da linha do titulo "Entrar no Sistema" do login) */
+hr.hr_afinado {
+    border: 0;
+    height: 1px;
+    margin: 12px 0;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0));
 }
 
 #consulta_mapa span.info_pasto.titulo_outras_atividades {
