@@ -460,7 +460,12 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
 
         // Zoom de entrada: e' a "visao geral" da fazenda (ver modo_visao_geral)
         zoomInicial = map.getZoom();
-        aplicar_escala_zoom(zoomInicial);
+
+        if (vistaAnterior) {
+            map.setView(vistaAnterior.centro, vistaAnterior.zoom, { animate: false });
+        }
+
+        aplicar_escala_zoom(map.getZoom());
         atualizar_rotulos_zoom();
     }
 
