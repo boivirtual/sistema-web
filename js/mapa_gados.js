@@ -519,7 +519,7 @@ function exibe_opcoes_desc_lote_pasto_destino() {
         $("#novo_pasto_m").val('000000000');
 
         var pasto_origem = $("#pasto_origem").val();
-        recarregar_movimentacao_pasto(pasto_origem);
+        $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': pasto_origem});
     }
     else {
         $("#qual_pasto").val('destino');
@@ -613,7 +613,7 @@ function exibe_opcoes_desc_lote_pasto_destino_tabuleiro() {
         $("#novo_pasto_m").val('000000000');
 
         var pasto_origem = $("#pasto_origem").val();
-        recarregar_movimentacao_pasto(pasto_origem);
+        $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': pasto_origem});
     }
     else {
         $("#qual_pasto").val('origem');
@@ -1377,7 +1377,7 @@ function trocar_id_lote_pasto_origem() {
                     $("#novo_pasto_m").val('000000000');
 
                     var pasto_origem = $("#pasto_origem").val();
-                    recarregar_movimentacao_pasto(pasto_origem);
+                    $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': pasto_origem});
                 }
             }
     });
@@ -1392,7 +1392,7 @@ function fechar_mensagem_sucesso() {
     $("#novo_pasto_m").val('000000000');
 
     var pasto_origem = $("#pasto_origem").val();
-    recarregar_movimentacao_pasto(pasto_origem);
+    $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': pasto_origem});
 }
 
 function fechar_mensagem_sucesso_tabuleiro() {
@@ -4173,51 +4173,6 @@ $(document).ready(function() {
         $(".modal-body form .tab-content #dados .row .form-group input, .modal-body form .tab-content #dados .row .form-group select, .modal-body form .tab-content #dados .row .form-group button").addClass('input-lg');
     else 
         $(".modal-body form .tab-content #dados .row .form-group input, .modal-body form .tab-content #dados .row .form-group select, .modal-body form .tab-content #dados .row .form-group button").removeClass('input-lg');
-});
-
-// Tela de movimentacao do pasto: os campos de transferencia (Qual categoria, Qtde, Novo pasto e
-// Confirma) ficam atras do interruptor "Transferir Animais de Pasto?", que SEMPRE abre fechado ao
-// entrar num pasto. A unica excecao e' quando a propria tela se recarrega depois de uma transferencia
-// (ver recarregar_movimentacao_pasto): se o interruptor estava ligado, volta ligado, pois o usuario
-// ja' escolheu que esta fazendo transferencias. Desktop e celular tem cada um o seu interruptor/area.
-var CHAVE_TOGGLE_TRANSFERIR = 'mapa_gado_transferir_manter';
-
-function recarregar_movimentacao_pasto(pasto_origem) {
-    try {
-        if ($('.toggle-transferir input').first().prop('checked')) {
-            sessionStorage.setItem(CHAVE_TOGGLE_TRANSFERIR, '1');
-        }
-    } catch (e) {}
-
-    $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': pasto_origem});
-}
-
-$(document).ready(function() {
-    var $toggles = $('.toggle-transferir input');
-
-    if (!$toggles.length) {
-        return;
-    }
-
-    var celular = window.innerWidth <= 685;
-    var $area = celular ? $('#area_transferir_m') : $('#area_transferir_d');
-    var aberto = false;
-
-    try {
-        // consome o aviso: vale so' para esta recarga
-        aberto = sessionStorage.getItem(CHAVE_TOGGLE_TRANSFERIR) === '1';
-        sessionStorage.removeItem(CHAVE_TOGGLE_TRANSFERIR);
-    } catch (e) {}
-
-    $toggles.prop('checked', aberto);
-    $area.toggleClass('area-transferir-oculta', !aberto);
-
-    $toggles.on('change', function() {
-        var ligado = this.checked;
-
-        $toggles.prop('checked', ligado);
-        $area.toggleClass('area-transferir-oculta', !ligado);
-    });
 });
 
 $(document).ready(function() {

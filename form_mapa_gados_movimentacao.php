@@ -620,17 +620,13 @@
                         
                         <input type="hidden" id="dispositivo">
 
-                        <?php if ($total_animais_pasto > 0) { // pasto vazio nao tem o que transferir: sem interruptor ?>
-                        <!-- Desktop: interruptor e campos de transferencia na MESMA linha. Os campos so aparecem com o interruptor ligado -->
+                        <?php if ($total_animais_pasto > 0) { // pasto vazio nao tem o que transferir: sem campos de transferencia ?>
+                        <!-- Desktop: titulo e campos de transferencia na MESMA linha -->
                         <div class="row form-group desktop">
                             <div class="col-xs-12 col-md-12 linha-transferir">
-                                <label class="toggle-transferir">
-                                    <input type="checkbox" id="toggle_transferir">
-                                    <span class="toggle-transferir-slider"></span>
-                                    <span class="toggle-transferir-texto">Transferir Animais de Pasto?</span>
-                                </label>
+                                <span class="titulo-transferir">Transferir Animais de Pasto?</span>
 
-                                <div id="area_transferir_d" class="campos-transferir area-transferir-oculta">
+                                <div id="area_transferir_d" class="campos-transferir">
                                     <select class="form-control categoria_sexo" id="categoria_sexo_d" name="categoria_sexo_d">
                                         <option value='0'>Qual Categoria</option>
                                     </select>
@@ -647,18 +643,13 @@
                             </div>
                         </div>
 
-                        <!-- Celular: interruptor numa linha e os campos (em duas linhas) logo abaixo -->
+                        <!-- Celular: titulo numa linha e os campos (em duas linhas) logo abaixo -->
                         <div class="row form-group mobile" hidden>
                             <div class="col-xs-12 col-md-12">
-                                <label class="toggle-transferir">
-                                    <input type="checkbox" id="toggle_transferir_m">
-                                    <span class="toggle-transferir-slider"></span>
-                                    <span class="toggle-transferir-texto">Transferir Animais de Pasto?</span>
-                                </label>
+                                <span class="titulo-transferir">Transferir Animais de Pasto?</span>
                             </div>
                         </div>
 
-                        <div id="area_transferir_m" class="area-transferir-oculta">
                         <div class="row mobile" hidden>
                             <div class="col-xs-8 col-md-5">
                                 <select class="form-control categoria_sexo" id="categoria_sexo_m" name="categoria_sexo_m">
@@ -684,9 +675,8 @@
                                 </button>
                             </div>
                         </div> 
-                        </div> <!-- Fim area_transferir_m -->
 
-                        <!-- Descricao do Lote: sempre visivel, fora do interruptor -->
+                        <!-- Descricao do Lote -->
                         <div class="row form-group desktop">
                             <div class="col-xs-12 col-md-12">
                                 <label for="descricao_lote_d" class="control-label">Descrição do Lote</label>
