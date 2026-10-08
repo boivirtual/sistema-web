@@ -5704,11 +5704,16 @@ label.toggle-transferir input {
 /* Linha divisoria bem clarinha que afina nas pontas (mesmo estilo da linha do titulo "Entrar no Sistema" do login) */
 /* Topo da tela: nome do pasto mais perto do nome da fazenda e a linha total mais perto do traco */
 #consulta_mapa .linha-pasto-nome {
-    margin-top: -10px;
+    margin-top: -6px;
+}
+
+/* a coluna (float do Bootstrap) nao pode flutuar aqui: com a margem negativa ela encostaria no botao
+   Voltar da linha de cima (tambem float) e o navegador a empurraria de volta para baixo dele */
+#consulta_mapa .linha-pasto-nome > div {
+    float: none;
 }
 
 #consulta_mapa .linha-pasto-nome .info_pasto {
-    display: block;
     margin-top: 0;
 }
 
