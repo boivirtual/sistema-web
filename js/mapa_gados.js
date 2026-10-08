@@ -3410,6 +3410,25 @@ function alternar_modo_toque_tabuleiro(){
 
 }
 
+// Distingue clique simples de duplo clique: o simples so' roda depois de JANELA_DUPLO_CLIQUE ms sem um
+// segundo clique no mesmo alvo; se o segundo clique vem dentro da janela, roda so' o duplo. Usado no
+// modo "Mover por toque" (duplo clique move, clique simples abre o pasto) nos dois mapas.
+var JANELA_DUPLO_CLIQUE = 300;
+
+function clique_ou_duplo_clique(alvo, acaoSimples, acaoDupla){
+    if (alvo._timerClique) {
+        clearTimeout(alvo._timerClique);
+        alvo._timerClique = null;
+        acaoDupla();
+        return;
+    }
+
+    alvo._timerClique = setTimeout(function(){
+        alvo._timerClique = null;
+        acaoSimples();
+    }, JANELA_DUPLO_CLIQUE);
+}
+
 function selecionar_pasto_toque(elemento){
     if (elemento == null) {
         return;
