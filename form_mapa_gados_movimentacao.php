@@ -673,7 +673,7 @@
 
                         <div class="row mobile" hidden>
                             <div class="col-xs-8 col-md-5">
-                                <label class="control-label" for="categoria_sexo_m"><span class="required">*</span> Transferir Animais de Pasto?</label>
+                                <label class="control-label" for="categoria_sexo_m">&nbsp;</label>
 
                                 <select class="form-control categoria_sexo" id="categoria_sexo_m" name="categoria_sexo_m">
 
