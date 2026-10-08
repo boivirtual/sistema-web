@@ -5600,6 +5600,10 @@ div.span_centro{
     text-align: center !important;
 }
 
+div.span_esquerda{
+    text-align: left !important;
+}
+
 span.info_lote{
   font-size: 12px !important;
   font-weight: 500 !important;
