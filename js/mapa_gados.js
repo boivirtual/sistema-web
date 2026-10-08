@@ -4142,6 +4142,38 @@ $(document).ready(function() {
         $(".modal-body form .tab-content #dados .row .form-group input, .modal-body form .tab-content #dados .row .form-group select, .modal-body form .tab-content #dados .row .form-group button").removeClass('input-lg');
 });
 
+// Tela de movimentacao do pasto: os campos de transferencia ficam atras do interruptor
+// "Transferir Animais de Pasto?". O estado fica salvo no navegador, entao continua ligado depois de
+// transferir (a tela e' recarregada) e ao entrar de novo na tela.
+var CHAVE_TOGGLE_TRANSFERIR = 'mapa_gado_transferir_aberto';
+
+$(document).ready(function() {
+    var $toggle = $('#toggle_transferir');
+
+    if (!$toggle.length) {
+        return;
+    }
+
+    var aberto = false;
+
+    try {
+        aberto = localStorage.getItem(CHAVE_TOGGLE_TRANSFERIR) === '1';
+    } catch (e) {}
+
+    $toggle.prop('checked', aberto);
+    $('#area_transferir').toggle(aberto);
+
+    $toggle.on('change', function() {
+        var ligado = this.checked;
+
+        $('#area_transferir').toggle(ligado);
+
+        try {
+            localStorage.setItem(CHAVE_TOGGLE_TRANSFERIR, ligado ? '1' : '0');
+        } catch (e) {}
+    });
+});
+
 $(document).ready(function() {
     if (window.innerWidth <= 375) {
         var altura = document.querySelector(".consulta_contas");
