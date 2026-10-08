@@ -5604,6 +5604,16 @@ div.span_esquerda{
     text-align: left !important;
 }
 
+/* Topo da tela Mapa de Gado - Movimentacoes: nome do pasto sem negrito e cabecalho da tabela
+   (Machos/Femeas/Bezerros) no mesmo tamanho da linha do nome do pasto */
+#consulta_mapa span.info_pasto_topo {
+    font-weight: normal !important;
+}
+
+#tabela_animais_pasto thead th {
+    font-size: 14px;
+}
+
 span.info_lote{
   font-size: 12px !important;
   font-weight: 500 !important;
