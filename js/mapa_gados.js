@@ -4142,34 +4142,39 @@ $(document).ready(function() {
         $(".modal-body form .tab-content #dados .row .form-group input, .modal-body form .tab-content #dados .row .form-group select, .modal-body form .tab-content #dados .row .form-group button").removeClass('input-lg');
 });
 
-// Tela de movimentacao do pasto: os campos de transferencia ficam atras do interruptor
-// "Transferir Animais de Pasto?". O estado fica salvo no navegador, entao continua ligado depois de
-// transferir (a tela e' recarregada) e ao entrar de novo na tela.
+// Tela de movimentacao do pasto: os campos de transferencia (Qual categoria, Qtde, Novo pasto e
+// Confirma) ficam atras do interruptor "Transferir Animais de Pasto?", que abre FECHADO ao abrir o
+// programa. Enquanto estiver aberto o navegador lembra (sessionStorage), entao continua ligado depois
+// de transferir (a tela e' recarregada) e ao entrar de novo na tela; ao abrir o programa de novo
+// (nova aba/janela) volta fechado. Desktop e celular tem cada um o seu interruptor e a sua area.
 var CHAVE_TOGGLE_TRANSFERIR = 'mapa_gado_transferir_aberto';
 
 $(document).ready(function() {
-    var $toggle = $('#toggle_transferir');
+    var $toggles = $('.toggle-transferir input');
 
-    if (!$toggle.length) {
+    if (!$toggles.length) {
         return;
     }
 
+    var celular = window.innerWidth <= 685;
+    var $area = celular ? $('#area_transferir_m') : $('#area_transferir_d');
     var aberto = false;
 
     try {
-        aberto = localStorage.getItem(CHAVE_TOGGLE_TRANSFERIR) === '1';
+        aberto = sessionStorage.getItem(CHAVE_TOGGLE_TRANSFERIR) === '1';
     } catch (e) {}
 
-    $toggle.prop('checked', aberto);
-    $('#area_transferir').toggle(aberto);
+    $toggles.prop('checked', aberto);
+    $area.toggleClass('area-transferir-oculta', !aberto);
 
-    $toggle.on('change', function() {
+    $toggles.on('change', function() {
         var ligado = this.checked;
 
-        $('#area_transferir').toggle(ligado);
+        $toggles.prop('checked', ligado);
+        $area.toggleClass('area-transferir-oculta', !ligado);
 
         try {
-            localStorage.setItem(CHAVE_TOGGLE_TRANSFERIR, ligado ? '1' : '0');
+            sessionStorage.setItem(CHAVE_TOGGLE_TRANSFERIR, ligado ? '1' : '0');
         } catch (e) {}
     });
 });

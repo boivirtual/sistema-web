@@ -618,53 +618,46 @@
                         
                         <input type="hidden" id="dispositivo">
 
-                        <div class="row form-group">
-                            <div class="col-xs-12 col-md-12">
+                        <!-- Desktop: interruptor e campos de transferencia na MESMA linha. Os campos so aparecem com o interruptor ligado -->
+                        <div class="row form-group desktop">
+                            <div class="col-xs-12 col-md-12 linha-transferir">
                                 <label class="toggle-transferir">
                                     <input type="checkbox" id="toggle_transferir">
+                                    <span class="toggle-transferir-slider"></span>
+                                    <span class="toggle-transferir-texto">Transferir Animais de Pasto?</span>
+                                </label>
+
+                                <div id="area_transferir_d" class="campos-transferir area-transferir-oculta">
+                                    <select class="form-control categoria_sexo" id="categoria_sexo_d" name="categoria_sexo_d">
+                                        <option value='0'>Qual Categoria</option>
+                                    </select>
+
+                                    <input type="number" name="quantidade_d" id="quantidade_d" class="form-control quantidade" placeholder="Qtde">
+
+                                    <select class="form-control novo_pasto" id="novo_pasto_d" name="novo_pasto_d">
+                                    </select>
+
+                                    <button class='form-control btn btn-success confirma' type='button'
+                                    onclick='retirar_por_categoria();'>Confirma
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Celular: interruptor numa linha e os campos (em duas linhas) logo abaixo -->
+                        <div class="row form-group mobile" hidden>
+                            <div class="col-xs-12 col-md-12">
+                                <label class="toggle-transferir">
+                                    <input type="checkbox" id="toggle_transferir_m">
                                     <span class="toggle-transferir-slider"></span>
                                     <span class="toggle-transferir-texto">Transferir Animais de Pasto?</span>
                                 </label>
                             </div>
                         </div>
 
-                        <div id="area_transferir" style="display: none;">
-                        <div class="row desktop">
-                            <div class="col-xs-8 col-md-4">
-                                <label class="control-label" for="categoria_sexo_d">&nbsp;</label>
-
-                                <select class="form-control categoria_sexo" id="categoria_sexo_d" name="categoria_sexo_d">
-
-                                    <option value='0'>Qual Categoria</option>
-                                </select>                                
-                            </div>
-
-                            <div class="col-xs-4 col-md-2">
-                                <label for="quantidade_d" class="control-label">&nbsp;</label>
-
-                                <input type="number" name="quantidade_d" id="quantidade_d" class="form-control quantidade" placeholder="Qtde">
-                            </div>
-
-                            <div class="col-xs-8 col-md-4">
-                                <label for="novo_pasto_d" class="control-label">&nbsp;</label>
-
-                                <select class="form-control novo_pasto" id="novo_pasto_d" name="novo_pasto_d">
-                                </select>                     
-                            </div>
-
-                            <div class="form-group col-xs-4 col-md-2">
-                                <label class="control-label">&nbsp;</label>
-
-                                <button class='form-control btn btn-success confirma' type='button'
-                                onclick='retirar_por_categoria();'>Confirma
-                                    </button>
-                            </div>
-                        </div> 
-
+                        <div id="area_transferir_m" class="area-transferir-oculta">
                         <div class="row mobile" hidden>
                             <div class="col-xs-8 col-md-5">
-                                <label class="control-label" for="categoria_sexo_m">&nbsp;</label>
-
                                 <select class="form-control categoria_sexo" id="categoria_sexo_m" name="categoria_sexo_m">
 
                                     <option value='0'>Qual Categoria</option>
@@ -672,30 +665,23 @@
                             </div>
 
                             <div class="col-xs-4 col-md-3">
-                                <label for="quantidade_m" class="control-label">&nbsp;</label>
-
                                 <input type="number" name="quantidade_m" id="quantidade_m" class="form-control quantidade" placeholder="Qtde">
                             </div>
                         </div>
 
-                        <div class="row mobile" hidden>
+                        <div class="row form-group mobile" hidden>
                             <div class="col-xs-8 col-md-5">
-                                <label for="novo_pasto_m" class="control-label">&nbsp;</label>
-
                                 <select class="form-control novo_pasto" id="novo_pasto_m" name="novo_pasto_m">
                                 </select>                     
                             </div>
 
                             <div class="form-group col-xs-4 col-md-2">
-                                <label for="" class="control-label">&nbsp;</label>
-
                                 <button class='form-control btn btn-success confirma' type='button'
                                 onclick='retirar_por_categoria();'>Confirma
-                                    </button>
+                                </button>
                             </div>
                         </div> 
-
-                        </div> <!-- Fim area_transferir -->
+                        </div> <!-- Fim area_transferir_m -->
 
                         <!-- Descricao do Lote: sempre visivel, fora do interruptor -->
                         <div class="row form-group desktop">

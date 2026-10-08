@@ -5659,6 +5659,46 @@ label.toggle-transferir input {
 .toggle-transferir-texto {
     font-size: 14px;
     color: rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+}
+
+/* Desktop: interruptor + Qual categoria + Qtde + Novo pasto + Confirma, tudo na mesma linha */
+.linha-transferir {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+}
+
+.campos-transferir {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.campos-transferir .categoria_sexo {
+    flex: 1 1 180px;
+    min-width: 150px;
+}
+
+.campos-transferir .quantidade {
+    flex: 0 0 90px;
+    width: 90px;
+}
+
+.campos-transferir .novo_pasto {
+    flex: 1 1 180px;
+    min-width: 150px;
+}
+
+.campos-transferir .confirma {
+    flex: 0 0 110px;
+    width: 110px;
+}
+
+.area-transferir-oculta {
+    display: none !important;
 }
 
 /* Linha divisoria bem clarinha que afina nas pontas (mesmo estilo da linha do titulo "Entrar no Sistema" do login) */
