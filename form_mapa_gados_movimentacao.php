@@ -618,7 +618,6 @@
                         
                         <input type="hidden" id="dispositivo">
 
-                        <div class="card-pasto-digitacao">
                         <div class="row desktop">
                             <div class="col-xs-8 col-md-4">
                                 <label class="control-label" for="categoria_sexo_d"><span class="required">*</span> Transferir Animais de Pasto?</label>
