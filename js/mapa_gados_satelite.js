@@ -826,8 +826,15 @@ function satelite_selecionar_pasto_toque(poligono, infoAnimal) {
     }
 
     if (mapaGadoSatelite.origemToque === null) {
-        // so' pode ser origem quem tem animal - mesma regra do Tabuleiro (card sem draggable=true nao entra)
-        if (!infoAnimal || infoAnimal.tem_animal != 'S') {
+        // so' pode ser origem quem tem animal - mesma regra do Tabuleiro (card sem draggable=true nao entra).
+        // Pasto vazio nao tem o que mover, entao sem origem escolhida o toque nele entra no pasto
+        // (com origem escolhida ele segue como destino, mais abaixo).
+        if (!infoAnimal) {
+            return;
+        }
+
+        if (infoAnimal.tem_animal != 'S') {
+            mais_info_mapa_satelite('"' + infoAnimal.id_pasto + '"');
             return;
         }
 
