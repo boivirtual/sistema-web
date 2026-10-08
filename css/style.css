@@ -5925,9 +5925,18 @@ body > .bs-container {
 }
 
 .satelite-pasto-badge .linha .icone-animal img {
-  width: 12px !important;
+  width: 10px !important;
   height: auto !important;
   filter: brightness(0) invert(1);
+}
+
+/* total da categoria dentro da bolinha: menor e sem negrito */
+.satelite-pasto-badge .linha .icone-animal .qtd {
+  font-size: 9px;
+  font-weight: normal;
+  line-height: 1;
+  color: #fff;
+  text-shadow: none;
 }
 
 
