@@ -5731,9 +5731,16 @@ body {
   display: none !important;
 }
 
-#map.satelite-zoom-baixo .satelite-badge-categorias,
-#map.satelite-zoom-baixo .satelite-badge-divisor {
+/* Visao geral (zoom afastado): so' as bolinhas das categorias, sem os numeros nem o total */
+#map.satelite-zoom-baixo .satelite-pasto-badge .satelite-badge-divisor,
+#map.satelite-zoom-baixo .satelite-pasto-badge .total,
+#map.satelite-zoom-baixo .satelite-pasto-badge .linha > span:not(.icone-animal) {
   display: none;
+}
+
+#map.satelite-zoom-baixo .satelite-pasto-badge .satelite-badge-categorias {
+  flex-direction: row;
+  gap: 3px;
 }
 
 #editor_mapa.editor-sem-rotulos .editor-pasto-label {
