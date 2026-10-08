@@ -306,7 +306,7 @@
 
                 <!--<div class="col-lg-12">-->
                     <div class="row table-responsive" id="consulta_mapa">
-                        <div class="row">
+                        <div class="row linha-fazenda">
                             <div class="col-xs-10 col-md-6 ">
                                 <span class="nome_fazenda">
                                     <?php echo $desc_local;?>
