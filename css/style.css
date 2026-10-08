@@ -5624,7 +5624,11 @@ hr.hr_afinado {
 }
 
 #tabela_animais_pasto thead th {
-    font-size: 14px;
+    font-size: 16px;
+}
+
+#tabela_animais_pasto tbody tr td {
+    font-size: 13px;
 }
 
 /* faixa de idade com a palavra "meses" (ex.: 08 a 12 meses) nunca quebra em duas linhas */
