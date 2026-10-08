@@ -208,6 +208,11 @@ function mapa_satelite() {
         alternar_modo_toque_tabuleiro();
     }
 
+    // entrando no satelite pelo icone (vindo do Tabuleiro): abre sem o zoom de antes, ajustado a fazenda
+    if (typeof satelite_esquecer_vista === 'function') {
+        satelite_esquecer_vista();
+    }
+
     carregar_mapa_satelite_gado();
 
     var tipo_mapa = 'M';
