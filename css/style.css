@@ -5904,8 +5904,9 @@ body > .bs-container {
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  width: 20px;
-  height: 20px;
+  flex-direction: column;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 1.5px solid rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.85);
