@@ -451,6 +451,10 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
         mapaGadoSatelite.map.remove();
         mapaGadoSatelite.map = null;
     }
+    else {
+        // primeira desenhada desta carga da pagina: pode ser a volta da tela do pasto
+        vistaAnterior = satelite_vista_ao_voltar(local);
+    }
 
     mapaGadoSatelite.localDesenhado = local;
 
