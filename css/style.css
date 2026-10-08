@@ -5625,7 +5625,7 @@ div.span_esquerda{
 #tabela_animais_pasto thead th:nth-child(3),
 #tabela_animais_pasto tbody td:nth-child(3),
 #tabela_animais_pasto tbody td:nth-child(5) {
-    padding-left: 30px;
+    padding-left: 60px;
 }
 
 span.info_lote{
