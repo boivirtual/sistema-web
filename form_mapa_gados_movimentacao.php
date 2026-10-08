@@ -333,6 +333,7 @@
                                 <span> <?php echo preg_replace('/^(\d+ animais)/', '<strong>$1</strong>', $tempoPasto);?><?php if ($lotacao_kg_ha!='') { echo ' - Lotação ' . $lotacao_kg_ha . ' Kg/Ha'; } ?></span>
                             </div>
                         </div>
+                        </div> <!-- Fim card-pasto-topo -->
 
                         <div class="row">
                             <div class="col-xs-12 col-md-12">
