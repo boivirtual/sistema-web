@@ -5621,11 +5621,12 @@ div.span_esquerda{
 
 /* mais espaco entre os grupos (Machos | Femeas | Bezerros): o grupo seguinte comeca mais afastado,
    no cabecalho (2o e 3o titulo) e nas linhas (3a e 5a coluna) */
-#tabela_animais_pasto thead th:nth-child(2),
-#tabela_animais_pasto thead th:nth-child(3),
-#tabela_animais_pasto tbody td:nth-child(3),
-#tabela_animais_pasto tbody td:nth-child(5) {
-    padding-left: 60px;
+/* !important: a propria pagina tem um <style> com "table tbody tr td { padding-left: 0 !important }" */
+#tabela_animais_pasto thead tr th:nth-child(2),
+#tabela_animais_pasto thead tr th:nth-child(3),
+#tabela_animais_pasto tbody tr td:nth-child(3),
+#tabela_animais_pasto tbody tr td:nth-child(5) {
+    padding-left: 60px !important;
 }
 
 span.info_lote{
