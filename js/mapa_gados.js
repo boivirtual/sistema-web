@@ -514,7 +514,7 @@ function exibe_opcoes_desc_lote_pasto_destino() {
         $("#novo_pasto_m").val('000000000');
 
         var pasto_origem = $("#pasto_origem").val();
-        $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': pasto_origem});
+        recarregar_movimentacao_pasto(pasto_origem);
     }
     else {
         $("#qual_pasto").val('destino');
@@ -608,7 +608,7 @@ function exibe_opcoes_desc_lote_pasto_destino_tabuleiro() {
         $("#novo_pasto_m").val('000000000');
 
         var pasto_origem = $("#pasto_origem").val();
-        $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': pasto_origem});
+        recarregar_movimentacao_pasto(pasto_origem);
     }
     else {
         $("#qual_pasto").val('origem');
@@ -1372,7 +1372,7 @@ function trocar_id_lote_pasto_origem() {
                     $("#novo_pasto_m").val('000000000');
 
                     var pasto_origem = $("#pasto_origem").val();
-                    $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': pasto_origem});
+                    recarregar_movimentacao_pasto(pasto_origem);
                 }
             }
     });
@@ -1387,7 +1387,7 @@ function fechar_mensagem_sucesso() {
     $("#novo_pasto_m").val('000000000');
 
     var pasto_origem = $("#pasto_origem").val();
-    $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': pasto_origem});
+    recarregar_movimentacao_pasto(pasto_origem);
 }
 
 function fechar_mensagem_sucesso_tabuleiro() {
@@ -4143,11 +4143,21 @@ $(document).ready(function() {
 });
 
 // Tela de movimentacao do pasto: os campos de transferencia (Qual categoria, Qtde, Novo pasto e
-// Confirma) ficam atras do interruptor "Transferir Animais de Pasto?", que abre FECHADO ao abrir o
-// programa. Enquanto estiver aberto o navegador lembra (sessionStorage), entao continua ligado depois
-// de transferir (a tela e' recarregada) e ao entrar de novo na tela; ao abrir o programa de novo
-// (nova aba/janela) volta fechado. Desktop e celular tem cada um o seu interruptor e a sua area.
-var CHAVE_TOGGLE_TRANSFERIR = 'mapa_gado_transferir_aberto';
+// Confirma) ficam atras do interruptor "Transferir Animais de Pasto?", que SEMPRE abre fechado ao
+// entrar num pasto. A unica excecao e' quando a propria tela se recarrega depois de uma transferencia
+// (ver recarregar_movimentacao_pasto): se o interruptor estava ligado, volta ligado, pois o usuario
+// ja' escolheu que esta fazendo transferencias. Desktop e celular tem cada um o seu interruptor/area.
+var CHAVE_TOGGLE_TRANSFERIR = 'mapa_gado_transferir_manter';
+
+function recarregar_movimentacao_pasto(pasto_origem) {
+    try {
+        if ($('.toggle-transferir input').first().prop('checked')) {
+            sessionStorage.setItem(CHAVE_TOGGLE_TRANSFERIR, '1');
+        }
+    } catch (e) {}
+
+    $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': pasto_origem});
+}
 
 $(document).ready(function() {
     var $toggles = $('.toggle-transferir input');
@@ -4161,7 +4171,9 @@ $(document).ready(function() {
     var aberto = false;
 
     try {
+        // consome o aviso: vale so' para esta recarga
         aberto = sessionStorage.getItem(CHAVE_TOGGLE_TRANSFERIR) === '1';
+        sessionStorage.removeItem(CHAVE_TOGGLE_TRANSFERIR);
     } catch (e) {}
 
     $toggles.prop('checked', aberto);
@@ -4172,10 +4184,6 @@ $(document).ready(function() {
 
         $toggles.prop('checked', ligado);
         $area.toggleClass('area-transferir-oculta', !ligado);
-
-        try {
-            sessionStorage.setItem(CHAVE_TOGGLE_TRANSFERIR, ligado ? '1' : '0');
-        } catch (e) {}
     });
 });
 
