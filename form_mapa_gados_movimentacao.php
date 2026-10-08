@@ -618,9 +618,20 @@
                         
                         <input type="hidden" id="dispositivo">
 
+                        <div class="row form-group">
+                            <div class="col-xs-12 col-md-12">
+                                <label class="toggle-transferir">
+                                    <input type="checkbox" id="toggle_transferir">
+                                    <span class="toggle-transferir-slider"></span>
+                                    <span class="toggle-transferir-texto">Transferir Animais de Pasto?</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="area_transferir" style="display: none;">
                         <div class="row desktop">
                             <div class="col-xs-8 col-md-4">
-                                <label class="control-label" for="categoria_sexo_d"><span class="required">*</span> Transferir Animais de Pasto?</label>
+                                <label class="control-label" for="categoria_sexo_d">&nbsp;</label>
 
                                 <select class="form-control categoria_sexo" id="categoria_sexo_d" name="categoria_sexo_d">
 
