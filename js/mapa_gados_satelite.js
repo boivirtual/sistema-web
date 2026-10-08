@@ -244,7 +244,10 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             var limites = p.layer.getBounds();
             var a = map.latLngToContainerPoint(limites.getNorthWest());
             var b = map.latLngToContainerPoint(limites.getSouthEast());
-            medidas.push({ el: el, cabe: el.offsetWidth <= Math.abs(b.x - a.x) * 0.8 });
+            // na visao geral (zoom afastado), pasto vazio nao mostra o nome: so' os pastos com animal
+            var mostrar = el.offsetWidth <= Math.abs(b.x - a.x) * 0.8 &&
+                (map.getZoom() >= 16 || p.layer._temAnimal);
+            medidas.push({ el: el, cabe: mostrar });
         });
         medidas.forEach(function(m) {
             if (!m.cabe) { L.DomUtil.addClass(m.el, 'satelite-rotulo-oculto'); }
