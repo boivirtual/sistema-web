@@ -335,7 +335,7 @@ function carregar_mapa_satelite_gado() {
                 return;
             }
 
-            mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa);
+            mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local);
         });
     });
 }
