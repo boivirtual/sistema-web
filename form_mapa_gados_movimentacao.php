@@ -715,6 +715,7 @@
 
 
                         </div> <!-- Fim classe Mobile -->
+                        </div> <!-- Fim area_transferir -->
 
                         <div class="row form-group">
                             <div class="col-xs-12 col-md-12 span_centro">
