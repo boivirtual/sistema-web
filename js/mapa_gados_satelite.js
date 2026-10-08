@@ -861,6 +861,21 @@ function satelite_selecionar_pasto_toque(poligono, infoAnimal) {
 
 // Chamada pelo alternar_modo_toque_tabuleiro() (js/mapa_gados.js) ao ligar/desligar o modo toque, para
 // nao deixar um pasto de origem "preso" selecionado no satelite ao trocar de modo
+// Icone "Entrar no pasto" do selo (visivel so' no modo Mover por toque, em pasto com animal)
+function satelite_entrar_pasto_toque(ev, idPasto) {
+    ev.stopPropagation();
+    $('.tooltip').remove();
+    mais_info_mapa_satelite('"' + idPasto + '"');
+}
+
+$(document).on('mouseenter', '.satelite-entrar-toque', function() {
+    var $icone = $(this);
+
+    if (!$icone.data('bs.tooltip')) {
+        $icone.tooltip({ container: 'body', placement: 'top', trigger: 'hover' }).tooltip('show');
+    }
+});
+
 function satelite_cancelar_toque() {
     if (mapaGadoSatelite.origemToque) {
         mapaGadoSatelite.origemToque.setStyle(mapa_gado_satelite_estilo_padrao(mapaGadoSatelite.origemToque._nomePasto));
