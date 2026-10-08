@@ -705,8 +705,6 @@
 
                         </div> <!-- Fim classe Mobile -->
 
-                        <hr class="hr_afinado">
-
                         <div class="row form-group">
                             <div class="col-xs-12 col-md-12 span_centro">
                                 <span class="info_pasto titulo_outras_atividades">Outras Atividades</span>
