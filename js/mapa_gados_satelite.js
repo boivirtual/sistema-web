@@ -560,6 +560,10 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
         }
 
         poligono.on('click', function(ev) {
+            if (_sateliteSuprimirClique) {
+                return;
+            }
+
             // Mover por toque (alternativa ao arraste, mesma regra/tela do Tabuleiro): enquanto o modo
             // estiver ativo, o clique no pasto seleciona origem/destino em vez de entrar no pasto.
             if (typeof _tabuleiroModoToque !== 'undefined' && _tabuleiroModoToque) {
