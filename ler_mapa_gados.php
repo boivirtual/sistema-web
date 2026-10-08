@@ -564,11 +564,19 @@
     echo "<script src='js/jquery.redirect.js'></script>
             <script>
                 function mais_info(clicked_id, elemento){
+                    function entrar_no_pasto() {
+                        $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': clicked_id});
+                    }
+
+                    // Mover por toque: duplo clique seleciona origem/destino e o clique simples continua
+                    // abrindo o pasto (depois de uma janela curta, para saber se vem o segundo clique)
                     if (typeof _tabuleiroModoToque !== 'undefined' && _tabuleiroModoToque) {
-                        selecionar_pasto_toque(elemento);
+                        clique_ou_duplo_clique(elemento, entrar_no_pasto, function() {
+                            selecionar_pasto_toque(elemento);
+                        });
                         return;
                     }
-                    $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': clicked_id});
+                    entrar_no_pasto();
                 }
 
                 $(document).ready(function() {
