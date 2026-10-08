@@ -295,9 +295,11 @@ function mapa_gado_satelite_estilo_padrao(nome) {
     var termo = ($('#buscar_pasto_tabuleiro').val() || '').toUpperCase();
     var combina = termo !== '' && nome.indexOf(termo) !== -1;
 
+    // dashArray: null remove o pontilhado do pasto de origem do arraste/toque (setStyle so' mexe no que for informado)
     return {
         color: combina ? '#ffeb3b' : '#ffffff',
-        weight: combina ? 3 : 1
+        weight: combina ? 3 : 1,
+        dashArray: null
     };
 }
 
