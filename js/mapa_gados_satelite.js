@@ -151,6 +151,14 @@ function satelite_iniciar_arraste_pasto(ev, poligono) {
         return;
     }
 
+    // Como o mousedown nao chega ao Leaflet, o "mapa foi arrastado" da ultima vez que o usuario moveu o
+    // mapa nunca seria zerado, e o Leaflet engoliria o proximo clique no pasto (nao entrava no pasto).
+    var arrastoMapa = mapaGadoSatelite.map && mapaGadoSatelite.map.dragging;
+
+    if (arrastoMapa && arrastoMapa._draggable) {
+        arrastoMapa._draggable._moved = false;
+    }
+
     // sem isso o mapa comeca a se mover (pan) junto com o clique, e o navegador seleciona texto
     ev.preventDefault();
     L.DomEvent.stopPropagation(ev);
