@@ -136,6 +136,157 @@ document.addEventListener('dragover', function(ev) {
     }, true);
 });
 
+// Arraste pelo CORPO do pasto (clicar e arrastar em qualquer ponto do pasto com animais), alem do
+// arraste pelos icones. Um elemento SVG nao e' arrastavel pelo HTML5, entao aqui o arraste e' feito
+// com o mouse (mousedown/mousemove/mouseup) e, ao soltar sobre outro pasto, chama a mesma drop() do
+// Tabuleiro com um "evento" que traz o id e o nome da origem no mesmo formato do dataTransfer.
+var _sateliteArrastePasto = null;
+var _sateliteSuprimirClique = false;
+var SATELITE_DISTANCIA_INICIO_ARRASTE = 6;
+
+function satelite_iniciar_arraste_pasto(ev, poligono) {
+    // no "Mover por toque" o clique seleciona origem/destino; aqui nao ha arraste
+    if (ev.button !== 0 || (typeof _tabuleiroModoToque !== 'undefined' && _tabuleiroModoToque)) {
+        return;
+    }
+
+    // sem isso o mapa comeca a se mover (pan) junto com o clique, e o navegador seleciona texto
+    ev.preventDefault();
+    L.DomEvent.stopPropagation(ev);
+
+    _sateliteArrastePasto = {
+        origem: poligono,
+        x0: ev.clientX,
+        y0: ev.clientY,
+        x: ev.clientX,
+        y: ev.clientY,
+        ativo: false,
+        fantasma: null,
+        alvo: null
+    };
+}
+
+function _sateliteAtualizarAlvoPasto() {
+    var st = _sateliteArrastePasto;
+
+    if (!st || !st.ativo || !mapaGadoSatelite.map) {
+        return;
+    }
+
+    var map = mapaGadoSatelite.map;
+    var r = map.getContainer().getBoundingClientRect();
+    var alvo = null;
+
+    if (st.x >= r.left && st.x <= r.right && st.y >= r.top && st.y <= r.bottom) {
+        var ponto = map.containerPointToLayerPoint(L.point(st.x - r.left, st.y - r.top));
+
+        for (var i = 0; i < mapaGadoSatelite.poligonos.length; i++) {
+            var camada = mapaGadoSatelite.poligonos[i].layer;
+
+            if (camada !== st.origem && camada._elementoToque && camada._containsPoint(ponto)) {
+                alvo = camada;
+                break;
+            }
+        }
+    }
+
+    if (alvo !== st.alvo) {
+        if (st.alvo) {
+            st.alvo.setStyle(mapa_gado_satelite_estilo_padrao(st.alvo._nomePasto));
+        }
+        if (alvo) {
+            alvo.setStyle({ color: '#128cb8', weight: 4 });
+        }
+        st.alvo = alvo;
+    }
+}
+
+function _sateliteEncerrarArrastePasto() {
+    var st = _sateliteArrastePasto;
+    _sateliteArrastePasto = null;
+    _sateliteParaAutoPan();
+    document.body.classList.remove('satelite-arrastando-pasto');
+
+    if (!st) {
+        return null;
+    }
+
+    if (st.fantasma) {
+        st.fantasma.remove();
+    }
+    if (st.ativo) {
+        st.origem.setStyle(mapa_gado_satelite_estilo_padrao(st.origem._nomePasto));
+        if (st.alvo) {
+            st.alvo.setStyle(mapa_gado_satelite_estilo_padrao(st.alvo._nomePasto));
+        }
+    }
+
+    return st;
+}
+
+document.addEventListener('mousemove', function(ev) {
+    var st = _sateliteArrastePasto;
+
+    if (!st) {
+        return;
+    }
+
+    st.x = ev.clientX;
+    st.y = ev.clientY;
+
+    if (!st.ativo) {
+        if (Math.abs(st.x - st.x0) < SATELITE_DISTANCIA_INICIO_ARRASTE && Math.abs(st.y - st.y0) < SATELITE_DISTANCIA_INICIO_ARRASTE) {
+            return;
+        }
+
+        st.ativo = true;
+        st.fantasma = document.createElement('div');
+        st.fantasma.className = 'satelite-arraste-fantasma';
+        st.fantasma.textContent = st.origem._nomePasto + ' - ' + st.origem._infoAnimal.total_animais + ' animais';
+        document.body.appendChild(st.fantasma);
+        document.body.classList.add('satelite-arrastando-pasto');
+        st.origem.setStyle(SATELITE_ESTILO_ORIGEM_TOQUE);
+    }
+
+    st.fantasma.style.left = st.x + 'px';
+    st.fantasma.style.top = st.y + 'px';
+
+    _sateliteAtualizarAutoPan(st.x, st.y);
+    _sateliteAtualizarAlvoPasto();
+});
+
+document.addEventListener('mouseup', function() {
+    var st = _sateliteEncerrarArrastePasto();
+
+    if (!st || !st.ativo) {
+        return; // foi so' um clique: segue o fluxo normal (entrar no pasto)
+    }
+
+    // o navegador ainda dispara o "click" logo apos o mouseup: nao pode contar como clique no pasto
+    _sateliteSuprimirClique = true;
+    setTimeout(function() { _sateliteSuprimirClique = false; }, 0);
+
+    if (st.alvo) {
+        var origem = st.origem;
+        var dados = { text: origem._elementoToque.id, nome: origem._nomePasto };
+
+        drop({
+            preventDefault: function() {},
+            dataTransfer: { getData: function(chave) { return dados[chave] || ''; } }
+        }, st.alvo._elementoToque.id, st.alvo._elementoToque);
+    }
+});
+
+document.addEventListener('keydown', function(ev) {
+    if (ev.key === 'Escape' && _sateliteArrastePasto) {
+        var st = _sateliteEncerrarArrastePasto();
+        if (st && st.ativo) {
+            _sateliteSuprimirClique = true;
+            setTimeout(function() { _sateliteSuprimirClique = false; }, 0);
+        }
+    }
+});
+
 // Estilo do poligono considerando o termo de busca atual (usado tambem para "desfazer" o destaque de arraste)
 function mapa_gado_satelite_estilo_padrao(nome) {
     var termo = ($('#buscar_pasto_tabuleiro').val() || '').toUpperCase();
