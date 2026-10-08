@@ -864,4 +864,22 @@ function satelite_cancelar_toque() {
         mapaGadoSatelite.origemToque.setStyle(mapa_gado_satelite_estilo_padrao(mapaGadoSatelite.origemToque._nomePasto));
         mapaGadoSatelite.origemToque = null;
     }
+
+    satelite_ajustar_zoom_duplo_clique();
+}
+
+// Com o modo toque ligado o duplo clique seleciona pasto; o zoom por duplo clique do Leaflet atrapalharia
+function satelite_ajustar_zoom_duplo_clique() {
+    var map = mapaGadoSatelite.map;
+
+    if (!map) {
+        return;
+    }
+
+    if (typeof _tabuleiroModoToque !== 'undefined' && _tabuleiroModoToque) {
+        map.doubleClickZoom.disable();
+    }
+    else {
+        map.doubleClickZoom.enable();
+    }
 }
