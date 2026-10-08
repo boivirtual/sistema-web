@@ -485,6 +485,8 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
     var map = L.map('map', { zoomSnap: 0.5 }).setView([latitude, longitude], 13, { animate: false });
     mapaGadoSatelite.map = map;
 
+    satelite_ajustar_zoom_duplo_clique();
+
     map.on('moveend', satelite_agendar_salvar_vista);
 
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
