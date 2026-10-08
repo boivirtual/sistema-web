@@ -665,16 +665,23 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
                 return;
             }
 
-            // Mover por toque (alternativa ao arraste, mesma regra/tela do Tabuleiro): enquanto o modo
-            // estiver ativo, o clique no pasto seleciona origem/destino em vez de entrar no pasto.
+            function entrar_no_pasto() {
+                if (infoAnimal) {
+                    mais_info_mapa_satelite('"' + infoAnimal.id_pasto + '"');
+                }
+            }
+
+            // Mover por toque (alternativa ao arraste, mesma regra/tela do Tabuleiro): com o modo ligado,
+            // o DUPLO clique seleciona origem/destino e o clique simples continua entrando no pasto
+            // (aguarda uma janela curta para saber se vem um segundo clique).
             if (typeof _tabuleiroModoToque !== 'undefined' && _tabuleiroModoToque) {
-                satelite_selecionar_pasto_toque(poligono, infoAnimal);
+                clique_ou_duplo_clique(poligono, entrar_no_pasto, function() {
+                    satelite_selecionar_pasto_toque(poligono, infoAnimal);
+                });
                 return;
             }
 
-            if (infoAnimal) {
-                mais_info_mapa_satelite('"' + infoAnimal.id_pasto + '"');
-            }
+            entrar_no_pasto();
         });
 
         // Pasto como destino do arraste (e tambem origem/destino do "Mover por toque"): usa as mesmas
