@@ -329,7 +329,7 @@
 
                         <div class="row">
                             <div class="form-group col-xs-12 col-md-12 span_esquerda">
-                                <span> <?php echo $tempoPasto;?><?php if ($lotacao_kg_ha!='') { echo ' - Lotação ' . $lotacao_kg_ha . ' Kg/Ha'; } ?></span>
+                                <span> <?php echo preg_replace('/^(\d+ animais)/', '<strong>$1</strong>', $tempoPasto);?><?php if ($lotacao_kg_ha!='') { echo ' - Lotação ' . $lotacao_kg_ha . ' Kg/Ha'; } ?></span>
                             </div>
                         </div>
 
