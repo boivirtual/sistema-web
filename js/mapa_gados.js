@@ -3416,7 +3416,9 @@ function selecionar_pasto_toque(elemento){
 
     if (_tabuleiroOrigemToque === null) {
         if ($(elemento).attr('draggable') !== 'true') {
-            // pasto vazio nao pode ser origem, igual ao arrastar
+            // pasto vazio nao pode ser origem (igual ao arrastar) e nao tem o que mover: sem origem
+            // escolhida, o toque nele entra no pasto (com origem escolhida ele segue como destino)
+            entrar_pasto_tabuleiro_toque(elemento);
             return;
         }
         _tabuleiroOrigemToque = elemento;
