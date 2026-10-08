@@ -220,6 +220,18 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
         else {
             map.setView([latitude, longitude], 13, { animate: false });
         }
+
+        // Zoom de entrada: e' a "visao geral" da fazenda (ver modo_visao_geral)
+        zoomInicial = map.getZoom();
+        aplicar_escala_zoom(zoomInicial);
+        atualizar_rotulos_zoom();
+    }
+
+    // Visao geral = zoom afastado (abaixo do 16) ou o mesmo zoom em que o mapa abriu (vale para fazendas
+    // pequenas que abrem ja' aproximadas). Nela: sem nome dos pastos e selo so' com as bolinhas das categorias.
+    var zoomInicial = null;
+    function modo_visao_geral(zoom) {
+        return zoom < 16 || (zoomInicial !== null && zoom <= zoomInicial);
     }
 
     // Fontes (nomes dos pastos) e icones das categorias acompanham o zoom: o CSS le --sat-escala.
@@ -227,8 +239,7 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
     function aplicar_escala_zoom(zoom) {
         var escala = Math.min(1.6, Math.max(0.45, 1 + (zoom - 16) * 0.25));
         map.getContainer().style.setProperty('--sat-escala', escala);
-        // visao geral (zoom afastado): o selo mostra so' o total, sem o detalhamento por categoria
-        L.DomUtil[zoom < 16 ? 'addClass' : 'removeClass'](map.getContainer(), 'satelite-zoom-baixo');
+        L.DomUtil[modo_visao_geral(zoom) ? 'addClass' : 'removeClass'](map.getContainer(), 'satelite-zoom-baixo');
     }
 
     // Rotulo so' aparece se o nome couber dentro do proprio pasto na tela; os que nao cabem ficam
@@ -244,9 +255,9 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             var limites = p.layer.getBounds();
             var a = map.latLngToContainerPoint(limites.getNorthWest());
             var b = map.latLngToContainerPoint(limites.getSouthEast());
-            // na visao geral (zoom afastado), pasto vazio nao mostra o nome: so' os pastos com animal
-            var mostrar = el.offsetWidth <= Math.abs(b.x - a.x) * 0.8 &&
-                (map.getZoom() >= 16 || p.layer._temAnimal);
+            // na visao geral nenhum pasto mostra o nome (aparece ao passar o mouse)
+            var mostrar = !modo_visao_geral(map.getZoom()) &&
+                el.offsetWidth <= Math.abs(b.x - a.x) * 0.8;
             medidas.push({ el: el, cabe: mostrar });
         });
         medidas.forEach(function(m) {
@@ -343,8 +354,6 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             return nome + '<br>' + totalTexto + '<br>' + situacaoTexto + '<br>' + (infoAnimal ? infoAnimal.descricao_capim : '');
         }
 
-        poligono._temAnimal = !!(infoAnimal && infoAnimal.tem_animal == 'S');
-
         poligono.on('mouseover', function(ev) {
             popup.setLatLng(ev.latlng).setContent(montar_html_info()).openOn(map);
         });
@@ -430,15 +439,15 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             var ORIGEM_ANCESTOR = "this.closest('.satelite-pasto-badge')";
 
             if (infoAnimal.bezerros != 0) {
-                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal bezerro"><img src="img/bezerro.png" draggable="false"></span><span>' + infoAnimal.bezerros + '</span></div>';
+                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal bezerro"><img src="img/bezerro.png" draggable="false"><span class="qtd">' + infoAnimal.bezerros + '</span></span></div>';
             }
 
             if (infoAnimal.femeas != 0) {
-                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal femea"><img src="img/vaca.png" draggable="false"></span><span>' + infoAnimal.femeas + '</span></div>';
+                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal femea"><img src="img/vaca.png" draggable="false"><span class="qtd">' + infoAnimal.femeas + '</span></span></div>';
             }
 
             if (infoAnimal.machos != 0) {
-                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal macho"><img src="img/gado.png" draggable="false"></span><span>' + infoAnimal.machos + '</span></div>';
+                linhas += '<div class="linha" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '><span class="icone-animal macho"><img src="img/gado.png" draggable="false"><span class="qtd">' + infoAnimal.machos + '</span></span></div>';
             }
 
             // total logo apos as categorias, centralizado verticalmente - igual ao card do Tabuleiro

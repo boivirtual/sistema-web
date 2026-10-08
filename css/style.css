@@ -5734,8 +5734,18 @@ body {
 /* Visao geral (zoom afastado): so' as bolinhas das categorias, sem os numeros nem o total */
 #map.satelite-zoom-baixo .satelite-pasto-badge .satelite-badge-divisor,
 #map.satelite-zoom-baixo .satelite-pasto-badge .total,
-#map.satelite-zoom-baixo .satelite-pasto-badge .linha > span:not(.icone-animal) {
+#map.satelite-zoom-baixo .satelite-pasto-badge .linha .icone-animal .qtd {
   display: none;
+}
+
+/* sem o numero dentro, a bolinha volta ao tamanho compacto */
+#map.satelite-zoom-baixo .satelite-pasto-badge .linha .icone-animal {
+  width: 20px;
+  height: 20px;
+}
+
+#map.satelite-zoom-baixo .satelite-pasto-badge .linha .icone-animal img {
+  width: 12px !important;
 }
 
 #map.satelite-zoom-baixo .satelite-pasto-badge .satelite-badge-categorias {
