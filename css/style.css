@@ -5614,6 +5614,11 @@ div.span_esquerda{
     font-size: 14px;
 }
 
+/* faixa de idade com a palavra "meses" (ex.: 08 a 12 meses) nunca quebra em duas linhas */
+#tabela_animais_pasto tbody td {
+    white-space: nowrap;
+}
+
 span.info_lote{
   font-size: 12px !important;
   font-weight: 500 !important;

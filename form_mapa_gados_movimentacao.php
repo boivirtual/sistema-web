@@ -186,7 +186,7 @@
         $idade_ate = $fila->tab_categoria_idade_ate;
 
         if ($idade_ate==999999999){
-            array_push($desc_categoria, '> 36 m');
+            array_push($desc_categoria, '> 36 meses');
             $descricaoCategorias = [
                 "id" => $codigo_id,
                 "idade_de" => $idade_de,
@@ -195,7 +195,7 @@
             array_push($arrayCategorias, $descricaoCategorias);
         }
         else {
-            array_push($desc_categoria, $idade_de . ' a ' . $idade_ate . ' m');
+            array_push($desc_categoria, $idade_de . ' a ' . $idade_ate . ' meses');
             $descricaoCategorias = [
                 "id" => $codigo_id,
                 "idade_de" => $idade_de,
@@ -338,9 +338,9 @@
                                 <table class="table table-responsive" id="tabela_animais_pasto" style="font-size: 12px;">
                                     <thead>
                                         <tr>
-                                            <th colspan="2" style="color: blue; text-align: center;">MACHOS</th>
-                                            <th colspan="2" style="color: orange;text-align: center;">FÊMEAS</th>
-                                            <th colspan="2" style="color: gray;text-align: center;">BEZERROS</th>
+                                            <th colspan="2" style="color: blue; text-align: left;">MACHOS</th>
+                                            <th colspan="2" style="color: orange; text-align: left;">FÊMEAS</th>
+                                            <th colspan="2" style="color: gray; text-align: left;">BEZERROS</th>
                                         </tr>
                                     </thead>
 
@@ -441,7 +441,7 @@
                 $total_bezerros='';
             }
             else {
-                $des_cat_bezerro = '00 a 07 m';
+                $des_cat_bezerro = '00 a 07 meses';
                 $imprimir = 'S';
             }
 
