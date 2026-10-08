@@ -94,15 +94,17 @@ document.addEventListener('dragstart', function(ev) {
     _sateliteArrasteAtivo = !!(ev.target.closest && ev.target.closest(SATELITE_SELETOR_ARRASTAVEL));
 }, true);
 
-document.addEventListener('dragover', function(ev) {
-    if (!_sateliteArrasteAtivo || !mapaGadoSatelite.map) {
+// Liga/desliga a auto-rolagem conforme a posicao do cursor (usada pelos dois tipos de arraste: o dos
+// icones - HTML5 - e o do corpo do pasto - ver satelite_iniciar_arraste_pasto)
+function _sateliteAtualizarAutoPan(clientX, clientY) {
+    if (!mapaGadoSatelite.map) {
         return;
     }
 
     var r = mapaGadoSatelite.map.getContainer().getBoundingClientRect();
-    var dentro = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
-    var ix = dentro ? _sateliteIntensidadeBorda(ev.clientX, r.left, r.right) : 0;
-    var iy = dentro ? _sateliteIntensidadeBorda(ev.clientY, r.top, r.bottom) : 0;
+    var dentro = clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom;
+    var ix = dentro ? _sateliteIntensidadeBorda(clientX, r.left, r.right) : 0;
+    var iy = dentro ? _sateliteIntensidadeBorda(clientY, r.top, r.bottom) : 0;
 
     _sateliteAutoPanVetor = { x: ix * SATELITE_VELOCIDADE_AUTOPAN, y: iy * SATELITE_VELOCIDADE_AUTOPAN };
 
@@ -114,8 +116,16 @@ document.addEventListener('dragover', function(ev) {
         _sateliteAutoPanTimer = setInterval(function() {
             if (mapaGadoSatelite.map) {
                 mapaGadoSatelite.map.panBy([_sateliteAutoPanVetor.x, _sateliteAutoPanVetor.y], { animate: false });
+                // o mapa andou com o cursor parado: o pasto sob o cursor pode ter mudado
+                _sateliteAtualizarAlvoPasto();
             }
         }, 30);
+    }
+}
+
+document.addEventListener('dragover', function(ev) {
+    if (_sateliteArrasteAtivo) {
+        _sateliteAtualizarAutoPan(ev.clientX, ev.clientY);
     }
 }, true);
 
