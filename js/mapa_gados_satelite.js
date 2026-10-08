@@ -259,7 +259,11 @@ document.addEventListener('mouseup', function() {
     var st = _sateliteEncerrarArrastePasto();
 
     if (!st || !st.ativo) {
-        return; // foi so' um clique: segue o fluxo normal (entrar no pasto)
+        // Escape cancelou o arraste: o mouseup (e o click) que vem depois nao pode entrar no pasto
+        if (_sateliteSuprimirClique) {
+            setTimeout(function() { _sateliteSuprimirClique = false; }, 0);
+        }
+        return; // senao foi so' um clique: segue o fluxo normal (entrar no pasto)
     }
 
     // o navegador ainda dispara o "click" logo apos o mouseup: nao pode contar como clique no pasto
