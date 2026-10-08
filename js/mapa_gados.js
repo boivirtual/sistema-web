@@ -3852,6 +3852,12 @@ function voltar(){
 
     var local = $('#local_origem').val();
 
+    // ao voltar do pasto o mapa satelite reabre exatamente no zoom/posicao em que o usuario estava
+    // (ver satelite_vista_ao_voltar em mapa_gados_satelite.js); so' o icone Mapa Satelite abre "do zero"
+    try {
+        sessionStorage.setItem('mapa_gado_satelite_voltar', '1');
+    } catch (e) {}
+
     $.redirect('form_mapa_gados.php', {'mapa_local_id': local});
 }
 
