@@ -614,6 +614,14 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
 
                 drop(ev, elementoDestino.id, elementoDestino);
             });
+
+            // Clicar e arrastar em qualquer ponto de um pasto COM animais move os animais (mesma regra do
+            // Tabuleiro: pasto vazio nao e' origem de arraste).
+            if (infoAnimal.tem_animal == 'S') {
+                L.DomEvent.on(poligono._path, 'mousedown', function(ev) {
+                    satelite_iniciar_arraste_pasto(ev, poligono);
+                });
+            }
         }
 
         if (infoAnimal && infoAnimal.tem_animal == 'S') {
