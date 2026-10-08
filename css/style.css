@@ -5702,12 +5702,12 @@ label.toggle-transferir input {
 }
 
 /* Topo da tela: nome do pasto mais perto do nome da fazenda e a linha total mais perto do traco.
-   A linha da fazenda ficava com a altura do botao Voltar (34px); as colunas passam a ter 28px e o
+   A linha da fazenda ficava com a altura do botao Voltar (34px); as colunas passam a ter 24px e o
    botao "vaza" um pouco para baixo (nao ha nada ao lado dele). Nao da' para resolver com margem
    negativa no nome do pasto: as colunas do Bootstrap sao float e o navegador empurra a linha de
    baixo para depois do botao. */
 #consulta_mapa .linha-fazenda > div {
-    height: 28px;
+    height: 24px;
 }
 
 #consulta_mapa .linha-pasto-nome .info_pasto {

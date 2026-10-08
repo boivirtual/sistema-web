@@ -503,6 +503,12 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
             medidas.push({ el: el, cabe: mostrar });
         });
         medidas.forEach(function(m) {
+            // "deveOcultar" e' a decisao do zoom atual; o hover (revelado) so' a suspende temporariamente.
+            // Reavaliou o zoom = qualquer revelacao anterior perde o efeito, senao o mouseout depois
+            // escondia de novo um nome que no zoom novo cabe e deve ficar visivel.
+            delete m.el.dataset.revelado;
+            m.el.dataset.deveOcultar = m.cabe ? '' : '1';
+
             if (!m.cabe) { L.DomUtil.addClass(m.el, 'satelite-rotulo-oculto'); }
         });
     }
