@@ -5604,6 +5604,29 @@ div.span_esquerda{
     text-align: left !important;
 }
 
+/* Cartoes da tela Mapa de Gado - Movimentacoes (mesmo visual da tela do aplicativo):
+   azul claro no topo (fazenda, pasto, total) e cinza claro envolvendo os campos de digitacao.
+   As .row de dentro tem margem lateral negativa do Bootstrap, entao o padding lateral de 15px
+   do cartao faz elas ocuparem exatamente a largura dele. */
+.card-pasto-topo {
+    background: rgba(33, 150, 243, 0.1);
+    border-radius: 12px;
+    padding: 8px 15px;
+    margin-bottom: 12px;
+}
+
+.card-pasto-digitacao {
+    background: #f1f3f6;
+    border-radius: 12px;
+    padding: 12px 15px 0;
+    margin-bottom: 12px;
+}
+
+#consulta_mapa span.info_pasto.titulo_outras_atividades {
+    font-weight: normal !important;
+    font-size: 17px;
+}
+
 /* Topo da tela Mapa de Gado - Movimentacoes: nome do pasto sem negrito e cabecalho da tabela
    (Machos/Femeas/Bezerros) no mesmo tamanho da linha do nome do pasto */
 #consulta_mapa span.info_pasto_topo {
