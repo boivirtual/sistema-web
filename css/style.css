@@ -5612,7 +5612,7 @@ span.info_lote{
 
 #tabela_animais_pasto {
     width: 40% !important; /*Importante manter o !important rs */
-    margin: auto;
+    margin: 0 auto 0 0; /* alinhada a esquerda, como a descricao do pasto e o total de animais */
 }
 
 button.btn_confirma{
