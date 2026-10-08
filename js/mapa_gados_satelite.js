@@ -799,6 +799,9 @@ function buscar_pasto_satelite(termo) {
 }
 
 function mais_info_mapa_satelite(clicked_id) {
+    // guarda a vista na hora (o salvamento por movimento tem um pequeno atraso e a pagina vai sair)
+    satelite_salvar_vista_agora();
+
     $.redirect('form_mapa_gados_movimentacao.php', { 'pasto_id': clicked_id });
 }
 
