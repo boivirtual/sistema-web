@@ -319,7 +319,7 @@
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row linha-pasto-nome">
                             <div class="col-xs-12 col-md-12 span_esquerda">
                                 <span class="info_pasto info_pasto_topo"><?php echo $desc_pasto;?> - <?php echo $desc_capim;?>
                                 </span>
