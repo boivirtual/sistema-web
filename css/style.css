@@ -5708,6 +5708,7 @@ label.toggle-transferir input {
 }
 
 #consulta_mapa .linha-pasto-nome .info_pasto {
+    display: block;
     margin-top: 0;
 }
 
