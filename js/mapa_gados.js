@@ -3407,6 +3407,9 @@ function alternar_modo_toque_tabuleiro(){
         $btn.attr('title', '').attr('data-original-title', 'Alternativa ao arrastar');
         $('#aviso_modo_toque_tabuleiro').hide();
     }
+
+    atualizar_icones_entrar_toque();
+    $('#map').toggleClass('satelite-modo-toque', _tabuleiroModoToque);
 }
 
 function entrar_pasto_tabuleiro_toque(elemento){
