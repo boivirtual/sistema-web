@@ -283,8 +283,6 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
         ajustar_zoom_fazenda();
     }, 0);
 
-    // closeButton/autoPan desligados e sem receber mouse: e' so' um "tooltip" de informacao ao passar o mouse
-    var popup = L.popup({ closeButton: false, autoPan: false, offset: [0, -4], className: 'satelite-popup-hover' });
     var features = (dadosMapa.geojson && dadosMapa.geojson.features) ? dadosMapa.geojson.features : [];
 
     features.forEach(function(f) {
