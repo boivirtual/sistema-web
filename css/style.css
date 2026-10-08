@@ -5611,17 +5611,28 @@ div.span_esquerda{
 }
 
 /* Titulo "Transferir Animais de Pasto?" + Qual categoria + Qtde + Novo pasto + Confirma, tudo na mesma linha */
-.titulo-transferir {
+/* O titulo da linha de transferencia e o label da Descricao do Lote tem a mesma largura, para o campo do
+   lote comecar alinhado com o primeiro campo ("Qual Categoria") da linha de cima */
+.titulo-transferir,
+label.titulo-lote {
+    flex: 0 0 200px;
+    margin: 0;
     font-size: 14px;
+    font-weight: normal;
     color: rgba(0, 0, 0, 0.6);
     white-space: nowrap;
+}
+
+.linha-lote input.descricao_lote {
+    flex: 1 1 auto;
+    width: auto;
 }
 
 .linha-transferir {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px 24px;
+    gap: 12px 0;
 }
 
 .campos-transferir {
