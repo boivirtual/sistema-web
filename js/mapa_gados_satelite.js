@@ -286,7 +286,6 @@ document.addEventListener('keydown', function(ev) {
         var st = _sateliteEncerrarArrastePasto();
         if (st && st.ativo) {
             _sateliteSuprimirClique = true;
-            setTimeout(function() { _sateliteSuprimirClique = false; }, 0);
         }
     }
 });
