@@ -5726,6 +5726,14 @@ hr.hr_afinado {
     background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0));
 }
 
+/* Mensagem no meio da tela quando o pasto esta vazio (tela Mapa de Gado - Movimentacoes) */
+.msg-pasto-vazio {
+    padding: 40px 0;
+    font-size: 18px;
+    color: #b8b8b8;
+    text-align: center;
+}
+
 #consulta_mapa span.info_pasto.titulo_outras_atividades {
     font-weight: normal !important;
     font-size: 17px;
