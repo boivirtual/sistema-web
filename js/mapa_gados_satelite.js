@@ -378,11 +378,20 @@ function mapa_gado_satelite_centroide(anel) {
     return [cy / (6 * area), cx / (6 * area)]; // [lat, lng]
 }
 
-function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
+function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
+    // Recarga da MESMA fazenda (ex.: apos confirmar uma transferencia): guarda onde o usuario estava
+    // (centro e zoom) para devolver o mapa exatamente ali, em vez de voltar ao zoom de entrada.
+    var vistaAnterior = null;
+
     if (mapaGadoSatelite.map !== null) {
+        if (mapaGadoSatelite.localDesenhado === local) {
+            vistaAnterior = { centro: mapaGadoSatelite.map.getCenter(), zoom: mapaGadoSatelite.map.getZoom() };
+        }
         mapaGadoSatelite.map.remove();
         mapaGadoSatelite.map = null;
     }
+
+    mapaGadoSatelite.localDesenhado = local;
 
     mapaGadoSatelite.poligonos = [];
     mapaGadoSatelite.dragHoverLayer = null;
