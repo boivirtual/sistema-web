@@ -5718,6 +5718,7 @@ label.toggle-transferir input {
     margin-bottom: 0;
 }
 
+/* Linha divisoria bem clarinha que afina nas pontas (mesmo estilo da linha do titulo "Entrar no Sistema" do login) */
 hr.hr_afinado {
     border: 0;
     height: 1px;
