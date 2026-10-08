@@ -159,6 +159,9 @@ function consultar_mapa(){
             $("label#totalAnimais").html("Total de animais: "+totalAnimais);
 
             filtrar_pasto_tabuleiro();
+
+            // os cards foram refeitos: o icone "Entrar no pasto" (modo toque) precisa ser recolocado
+            atualizar_icones_entrar_toque();
         }
     });
 }
