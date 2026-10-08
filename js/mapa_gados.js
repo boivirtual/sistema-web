@@ -159,9 +159,6 @@ function consultar_mapa(){
             $("label#totalAnimais").html("Total de animais: "+totalAnimais);
 
             filtrar_pasto_tabuleiro();
-
-            // os cards foram refeitos: o icone "Entrar no pasto" (modo toque) precisa ser recolocado
-            atualizar_icones_entrar_toque();
         }
     });
 }
@@ -3411,35 +3408,6 @@ function alternar_modo_toque_tabuleiro(){
         $('#aviso_modo_toque_tabuleiro').hide();
     }
 
-    atualizar_icones_entrar_toque();
-    $('#map').toggleClass('satelite-modo-toque', _tabuleiroModoToque);
-}
-
-function entrar_pasto_tabuleiro_toque(elemento){
-    if (elemento == null) {
-        return;
-    }
-
-    $('.tooltip').remove();
-    $.redirect('form_mapa_gados_movimentacao.php', {'pasto_id': elemento.id});
-}
-
-// Icone "Entrar no pasto" nos cards com animais, so' enquanto o modo Mover por toque estiver ligado
-// (la o toque no card seleciona origem/destino). Refeito a cada recarga do Tabuleiro.
-function atualizar_icones_entrar_toque(){
-    $('.btn-entrar-pasto-toque').remove();
-
-    if (!_tabuleiroModoToque) {
-        return;
-    }
-
-    var $icones = $('<span class="btn-entrar-pasto-toque" data-toggle="tooltip" data-original-title="Entrar no pasto" onclick="event.stopPropagation(); entrar_pasto_tabuleiro_toque(this.parentNode);"><i class="fa fa-sign-in"></i></span>');
-
-    $('.item_mapa[draggable="true"]').each(function(){
-        $(this).append($icones.clone());
-    });
-
-    $('.btn-entrar-pasto-toque').tooltip({container: 'body', placement: 'top', trigger: 'hover'});
 }
 
 function selecionar_pasto_toque(elemento){
@@ -3449,9 +3417,7 @@ function selecionar_pasto_toque(elemento){
 
     if (_tabuleiroOrigemToque === null) {
         if ($(elemento).attr('draggable') !== 'true') {
-            // pasto vazio nao pode ser origem (igual ao arrastar) e nao tem o que mover: sem origem
-            // escolhida, o toque nele entra no pasto (com origem escolhida ele segue como destino)
-            entrar_pasto_tabuleiro_toque(elemento);
+            // pasto vazio nao pode ser origem, igual ao arrastar
             return;
         }
         _tabuleiroOrigemToque = elemento;

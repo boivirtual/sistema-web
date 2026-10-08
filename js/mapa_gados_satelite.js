@@ -485,9 +485,6 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
     var map = L.map('map', { zoomSnap: 0.5 }).setView([latitude, longitude], 13, { animate: false });
     mapaGadoSatelite.map = map;
 
-    // o modo Mover por toque continua ligado depois de recarregar o mapa (ex.: apos uma transferencia)
-    $('#map').toggleClass('satelite-modo-toque', typeof _tabuleiroModoToque !== 'undefined' && _tabuleiroModoToque);
-
     map.on('moveend', satelite_agendar_salvar_vista);
 
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -765,8 +762,6 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
                 '<div class="satelite-badge-categorias">' + linhas + '</div>' +
                 '<div class="satelite-badge-divisor"></div>' +
                 '<div class="total" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '>' + infoAnimal.total_animais + '</div>' +
-                // so' aparece no modo "Mover por toque" (CSS), onde o toque no pasto seleciona origem/destino
-                '<div class="satelite-entrar-toque" data-toggle="tooltip" data-original-title="Entrar no pasto" onclick="satelite_entrar_pasto_toque(event, \'' + infoAnimal.id_pasto + '\')"><i class="fa fa-sign-in"></i></div>' +
                 '</div>';
 
             L.marker(centro, {
@@ -831,15 +826,8 @@ function satelite_selecionar_pasto_toque(poligono, infoAnimal) {
     }
 
     if (mapaGadoSatelite.origemToque === null) {
-        // so' pode ser origem quem tem animal - mesma regra do Tabuleiro (card sem draggable=true nao entra).
-        // Pasto vazio nao tem o que mover, entao sem origem escolhida o toque nele entra no pasto
-        // (com origem escolhida ele segue como destino, mais abaixo).
-        if (!infoAnimal) {
-            return;
-        }
-
-        if (infoAnimal.tem_animal != 'S') {
-            mais_info_mapa_satelite('"' + infoAnimal.id_pasto + '"');
+        // so' pode ser origem quem tem animal - mesma regra do Tabuleiro (card sem draggable=true nao entra)
+        if (!infoAnimal || infoAnimal.tem_animal != 'S') {
             return;
         }
 
@@ -864,21 +852,6 @@ function satelite_selecionar_pasto_toque(poligono, infoAnimal) {
 
 // Chamada pelo alternar_modo_toque_tabuleiro() (js/mapa_gados.js) ao ligar/desligar o modo toque, para
 // nao deixar um pasto de origem "preso" selecionado no satelite ao trocar de modo
-// Icone "Entrar no pasto" do selo (visivel so' no modo Mover por toque, em pasto com animal)
-function satelite_entrar_pasto_toque(ev, idPasto) {
-    ev.stopPropagation();
-    $('.tooltip').remove();
-    mais_info_mapa_satelite('"' + idPasto + '"');
-}
-
-$(document).on('mouseenter', '.satelite-entrar-toque', function() {
-    var $icone = $(this);
-
-    if (!$icone.data('bs.tooltip')) {
-        $icone.tooltip({ container: 'body', placement: 'top', trigger: 'hover' }).tooltip('show');
-    }
-});
-
 function satelite_cancelar_toque() {
     if (mapaGadoSatelite.origemToque) {
         mapaGadoSatelite.origemToque.setStyle(mapa_gado_satelite_estilo_padrao(mapaGadoSatelite.origemToque._nomePasto));
