@@ -695,6 +695,19 @@
                             </div>
                         </div> 
 
+                        </div> <!-- Fim area_transferir -->
+
+                        <!-- Descricao do Lote: sempre visivel, fora do interruptor -->
+                        <div class="row form-group desktop">
+                            <div class="col-xs-12 col-md-12">
+                                <label for="descricao_lote_d" class="control-label">Descrição do Lote</label>
+
+                                <input type="text" name="descricao_lote_d" id="descricao_lote_d" class="form-control descricao_lote" onkeyup='maiuscula(this)' onclick='abrir_modal_descricao_lote(0)' <?php echo "value='".$descricao_lote_com_id."'";?>>
+                            </div>
+
+
+                        </div> <!-- Fim classe Desktop -->
+
                         <div class="row form-group mobile" hidden>
                             <div class="col-xs-12 col-md-12">
                                 <label for="descricao_lote_m" class="control-label">Descrição do Lote</label>
@@ -705,7 +718,6 @@
 
 
                         </div> <!-- Fim classe Mobile -->
-                        </div> <!-- Fim area_transferir -->
 
                         <div class="row form-group">
                             <div class="col-xs-12 col-md-12 span_centro">
