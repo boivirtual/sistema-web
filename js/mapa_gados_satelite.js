@@ -65,6 +65,67 @@ $(document).on('dragend', SATELITE_SELETOR_ARRASTAVEL, function() {
     }
 });
 
+// Auto-rolagem do mapa durante o arraste: com zoom aproximado o pasto de destino pode estar fora da
+// tela; segurando o icone perto da borda do mapa, ele se move naquela direcao (como o Tabuleiro faz
+// com a rolagem da pagina). Mais perto da borda = mais rapido.
+var SATELITE_BORDA_AUTOPAN = 80;
+var SATELITE_VELOCIDADE_AUTOPAN = 22;
+var _sateliteArrasteAtivo = false;
+var _sateliteAutoPanTimer = null;
+var _sateliteAutoPanVetor = { x: 0, y: 0 };
+
+function _sateliteParaAutoPan() {
+    clearInterval(_sateliteAutoPanTimer);
+    _sateliteAutoPanTimer = null;
+    _sateliteAutoPanVetor = { x: 0, y: 0 };
+}
+
+function _sateliteIntensidadeBorda(pos, inicio, fim) {
+    if (pos < inicio + SATELITE_BORDA_AUTOPAN) {
+        return -Math.min(1, (inicio + SATELITE_BORDA_AUTOPAN - pos) / SATELITE_BORDA_AUTOPAN);
+    }
+    if (pos > fim - SATELITE_BORDA_AUTOPAN) {
+        return Math.min(1, (pos - (fim - SATELITE_BORDA_AUTOPAN)) / SATELITE_BORDA_AUTOPAN);
+    }
+    return 0;
+}
+
+document.addEventListener('dragstart', function(ev) {
+    _sateliteArrasteAtivo = !!(ev.target.closest && ev.target.closest(SATELITE_SELETOR_ARRASTAVEL));
+}, true);
+
+document.addEventListener('dragover', function(ev) {
+    if (!_sateliteArrasteAtivo || !mapaGadoSatelite.map) {
+        return;
+    }
+
+    var r = mapaGadoSatelite.map.getContainer().getBoundingClientRect();
+    var dentro = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
+    var ix = dentro ? _sateliteIntensidadeBorda(ev.clientX, r.left, r.right) : 0;
+    var iy = dentro ? _sateliteIntensidadeBorda(ev.clientY, r.top, r.bottom) : 0;
+
+    _sateliteAutoPanVetor = { x: ix * SATELITE_VELOCIDADE_AUTOPAN, y: iy * SATELITE_VELOCIDADE_AUTOPAN };
+
+    if (ix === 0 && iy === 0) {
+        clearInterval(_sateliteAutoPanTimer);
+        _sateliteAutoPanTimer = null;
+    }
+    else if (_sateliteAutoPanTimer === null) {
+        _sateliteAutoPanTimer = setInterval(function() {
+            if (mapaGadoSatelite.map) {
+                mapaGadoSatelite.map.panBy([_sateliteAutoPanVetor.x, _sateliteAutoPanVetor.y], { animate: false });
+            }
+        }, 30);
+    }
+}, true);
+
+['dragend', 'drop'].forEach(function(evento) {
+    document.addEventListener(evento, function() {
+        _sateliteArrasteAtivo = false;
+        _sateliteParaAutoPan();
+    }, true);
+});
+
 // Estilo do poligono considerando o termo de busca atual (usado tambem para "desfazer" o destaque de arraste)
 function mapa_gado_satelite_estilo_padrao(nome) {
     var termo = ($('#buscar_pasto_tabuleiro').val() || '').toUpperCase();
