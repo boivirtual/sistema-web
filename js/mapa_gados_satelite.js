@@ -762,6 +762,8 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
                 '<div class="satelite-badge-categorias">' + linhas + '</div>' +
                 '<div class="satelite-badge-divisor"></div>' +
                 '<div class="total" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '>' + infoAnimal.total_animais + '</div>' +
+                // so' aparece no modo "Mover por toque" (CSS), onde o toque no pasto seleciona origem/destino
+                '<div class="satelite-entrar-toque" data-toggle="tooltip" data-original-title="Entrar no pasto" onclick="satelite_entrar_pasto_toque(event, \'' + infoAnimal.id_pasto + '\')"><i class="fa fa-sign-in"></i></div>' +
                 '</div>';
 
             L.marker(centro, {
