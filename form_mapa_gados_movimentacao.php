@@ -320,7 +320,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-xs-12 col-md-12 span_centro">
+                            <div class="col-xs-12 col-md-12 span_esquerda">
                                 <span class="info_pasto"><?php echo $desc_pasto;?> - <?php echo $desc_capim;?>
                                 </span>
 
