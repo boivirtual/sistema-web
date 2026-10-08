@@ -569,7 +569,10 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
             var el = poligono.getTooltip().getElement();
             if (el && el.dataset.revelado) {
                 delete el.dataset.revelado;
-                L.DomUtil.addClass(el, 'satelite-rotulo-oculto');
+
+                if (el.dataset.deveOcultar === '1') {
+                    L.DomUtil.addClass(el, 'satelite-rotulo-oculto');
+                }
             }
         });
 
