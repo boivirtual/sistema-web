@@ -705,10 +705,11 @@
 
 
                         </div> <!-- Fim classe Mobile -->
+                        </div> <!-- Fim card-pasto-digitacao -->
 
                         <div class="row form-group">
                             <div class="col-xs-12 col-md-12 span_centro">
-                                <span class="info_pasto">Outras Atividades</span>
+                                <span class="info_pasto titulo_outras_atividades">Outras Atividades</span>
                             </div>
                         </div>
 
