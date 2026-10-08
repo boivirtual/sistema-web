@@ -328,7 +328,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="form-group col-xs-12 col-md-12 span_esquerda">
+                            <div class="form-group col-xs-12 col-md-12 span_esquerda linha-pasto-total">
                                 <span> <?php echo preg_replace('/^(\d+ animais)/', '<strong>$1</strong>', $tempoPasto);?><?php if ($lotacao_kg_ha!='') { echo ' - Lotação ' . $lotacao_kg_ha . ' Kg/Ha'; } ?></span>
                             </div>
                         </div>
