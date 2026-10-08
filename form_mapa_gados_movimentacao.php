@@ -306,7 +306,6 @@
 
                 <!--<div class="col-lg-12">-->
                     <div class="row table-responsive" id="consulta_mapa">
-                        <div class="card-pasto-topo">
                         <div class="row">
                             <div class="col-xs-10 col-md-6 ">
                                 <span class="nome_fazenda">
