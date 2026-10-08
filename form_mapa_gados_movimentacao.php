@@ -333,7 +333,8 @@
                                 <span> <?php echo preg_replace('/^(\d+ animais)/', '<strong>$1</strong>', $tempoPasto);?><?php if ($lotacao_kg_ha!='') { echo ' - Lotação ' . $lotacao_kg_ha . ' Kg/Ha'; } ?></span>
                             </div>
                         </div>
-                        </div> <!-- Fim card-pasto-topo -->
+
+                        <hr class="hr_afinado">
 
                         <div class="row">
                             <div class="col-xs-12 col-md-12">
@@ -341,7 +342,7 @@
                                     <thead>
                                         <tr>
                                             <th colspan="2" style="color: blue; text-align: left;">MACHOS</th>
-                                            <th colspan="2" style="color: orange; text-align: left;">FÊMEAS</th>
+                                            <th colspan="2" style="color: #ed4c0c; text-align: left;">FÊMEAS</th>
                                             <th colspan="2" style="color: gray; text-align: left;">BEZERROS</th>
                                         </tr>
                                     </thead>
@@ -472,8 +473,8 @@
                         <td width="25%" style="color: blue;">'.$des_cat_macho.'</td>
                         <td align="right" width="08%" style="color: blue;">'.$qtd_macho.'</td>
                 
-                        <td width="25%"style="color: orange;">'.$des_cat_femea.'</td>
-                        <td  align="right" width="08%" style="color: orange;">'.$qtd_femea.'</td>
+                        <td width="25%"style="color: #ed4c0c;">'.$des_cat_femea.'</td>
+                        <td  align="right" width="08%" style="color: #ed4c0c;">'.$qtd_femea.'</td>
 
                         <td width="25%" style="color: gray;">'.$des_cat_bezerro.'</td>
                         <td align="right"  width="09%" style="color: gray;">'.$total_bezerros.'</td>
@@ -513,8 +514,8 @@
                         <td width="25%" style="color: blue;">'.$des_cat_macho.'</td>
                         <td align="right" width="08%" style="color: blue;">'.$qtd_macho.'</td>
                 
-                        <td width="25%"style="color: orange;">'.$des_cat_femea.'</td>
-                        <td  align="right" width="08%" style="color: orange;">'.$qtd_femea.'</td>
+                        <td width="25%"style="color: #ed4c0c;">'.$des_cat_femea.'</td>
+                        <td  align="right" width="08%" style="color: #ed4c0c;">'.$qtd_femea.'</td>
 
                         <td width="25%" style="color: gray;"></td>
                         <td align="right"  width="09%" style="color: gray;"></td>
@@ -554,8 +555,8 @@
                         <td width="25%" style="color: blue;">'.$des_cat_macho.'</td>
                         <td align="right" width="08%" style="color: blue;">'.$qtd_macho.'</td>
                 
-                        <td width="25%"style="color: orange;">'.$des_cat_femea.'</td>
-                        <td  align="right" width="08%" style="color: orange;">'.$qtd_femea.'</td>
+                        <td width="25%"style="color: #ed4c0c;">'.$des_cat_femea.'</td>
+                        <td  align="right" width="08%" style="color: #ed4c0c;">'.$qtd_femea.'</td>
                         <td width="25%" style="color: gray;"></td>
                         <td align="right"  width="09%" style="color: gray;"></td>
                     </tr>
@@ -594,8 +595,8 @@
                         <td width="25%" style="color: blue;">'.$des_cat_macho.'</td>
                         <td align="right" width="08%" style="color: blue;">'.$qtd_macho.'</td>
                 
-                        <td width="25%"style="color: orange;">'.$des_cat_femea.'</td>
-                        <td  align="right" width="08%" style="color: orange;">'.$qtd_femea.'</td>
+                        <td width="25%"style="color: #ed4c0c;">'.$des_cat_femea.'</td>
+                        <td  align="right" width="08%" style="color: #ed4c0c;">'.$qtd_femea.'</td>
 
                         <td width="25%" style="color: gray;"></td>
                         <td align="right"  width="09%" style="color: gray;"></td>
