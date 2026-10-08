@@ -485,6 +485,9 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
     var map = L.map('map', { zoomSnap: 0.5 }).setView([latitude, longitude], 13, { animate: false });
     mapaGadoSatelite.map = map;
 
+    // o modo Mover por toque continua ligado depois de recarregar o mapa (ex.: apos uma transferencia)
+    $('#map').toggleClass('satelite-modo-toque', typeof _tabuleiroModoToque !== 'undefined' && _tabuleiroModoToque);
+
     map.on('moveend', satelite_agendar_salvar_vista);
 
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
