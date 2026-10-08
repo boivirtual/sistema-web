@@ -3393,16 +3393,18 @@ function alternar_modo_toque_tabuleiro(){
 
     var $btn = $('#modo_toque_tabuleiro_btn');
 
+    // title ficou vazio de proposito: com texto nele o navegador mostra o tooltip nativo junto com o do
+    // Bootstrap (que le data-original-title) e o tooltip aparecia duplicado
     if (_tabuleiroModoToque) {
         $btn.addClass('btn-success').removeClass('btn-default');
         $btn.html('<i class="fa fa-arrows"></i> Voltar para arrastar');
-        $btn.attr('title', 'Sair do modo toque e voltar a arrastar os pastos').attr('data-original-title', 'Sair do modo toque e voltar a arrastar os pastos');
+        $btn.attr('title', '').attr('data-original-title', 'Sair do modo toque e voltar a arrastar os pastos');
         $('#aviso_modo_toque_tabuleiro').show();
     }
     else {
         $btn.addClass('btn-default').removeClass('btn-success');
         $btn.html('<i class="fa fa-hand-pointer-o"></i> Mover por toque');
-        $btn.attr('title', 'Alternativa ao arrastar').attr('data-original-title', 'Alternativa ao arrastar');
+        $btn.attr('title', '').attr('data-original-title', 'Alternativa ao arrastar');
         $('#aviso_modo_toque_tabuleiro').hide();
     }
 }
