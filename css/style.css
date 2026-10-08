@@ -5945,7 +5945,8 @@ body > .bs-container {
 }
 
 .satelite-pasto-badge .total {
-  font-size: 22px;
+  font-size: 16px;
+  font-weight: 300;
   cursor: pointer;
   pointer-events: auto;
 }
