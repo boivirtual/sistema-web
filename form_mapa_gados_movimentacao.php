@@ -333,6 +333,7 @@
                             </div>
                         </div>
 
+                        <?php if ($total_animais_pasto > 0) { // pasto vazio: sem tabela de animais ?>
                         <hr class="hr_afinado">
 
                         <div class="row">
@@ -615,9 +616,11 @@
                         </div>
 
                         <div class="row">&nbsp;</div>
+                        <?php } // fim: pasto com animais (tabela) ?>
                         
                         <input type="hidden" id="dispositivo">
 
+                        <?php if ($total_animais_pasto > 0) { // pasto vazio nao tem o que transferir: sem interruptor ?>
                         <!-- Desktop: interruptor e campos de transferencia na MESMA linha. Os campos so aparecem com o interruptor ligado -->
                         <div class="row form-group desktop">
                             <div class="col-xs-12 col-md-12 linha-transferir">
@@ -704,6 +707,15 @@
 
 
                         </div> <!-- Fim classe Mobile -->
+                        <?php } // fim: pasto com animais (toggle e lote) ?>
+
+                        <?php if ($total_animais_pasto == 0) { ?>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-12 span_centro">
+                                <div class="msg-pasto-vazio">Este Pasto está vazio</div>
+                            </div>
+                        </div>
+                        <?php } ?>
 
                         <div class="row form-group">
                             <div class="col-xs-12 col-md-12 span_centro">
