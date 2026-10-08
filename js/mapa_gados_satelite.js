@@ -340,6 +340,8 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa) {
             return nome + '<br>' + totalTexto + '<br>' + situacaoTexto + '<br>' + (infoAnimal ? infoAnimal.descricao_capim : '');
         }
 
+        poligono._temAnimal = !!(infoAnimal && infoAnimal.tem_animal == 'S');
+
         poligono.on('mouseover', function(ev) {
             popup.setLatLng(ev.latlng).setContent(montar_html_info()).openOn(map);
         });
