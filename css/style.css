@@ -5619,6 +5619,15 @@ div.span_esquerda{
     white-space: nowrap;
 }
 
+/* mais espaco entre os grupos (Machos | Femeas | Bezerros): o grupo seguinte comeca mais afastado,
+   no cabecalho (2o e 3o titulo) e nas linhas (3a e 5a coluna) */
+#tabela_animais_pasto thead th:nth-child(2),
+#tabela_animais_pasto thead th:nth-child(3),
+#tabela_animais_pasto tbody td:nth-child(3),
+#tabela_animais_pasto tbody td:nth-child(5) {
+    padding-left: 30px;
+}
+
 span.info_lote{
   font-size: 12px !important;
   font-weight: 500 !important;
