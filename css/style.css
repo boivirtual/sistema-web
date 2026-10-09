@@ -5610,7 +5610,7 @@ div.span_esquerda{
     text-align: left !important;
 }
 
-/* Titulo "Transferir Animais de Pasto?" + Qual categoria + Qtde + Novo pasto + Confirma, tudo na mesma linha */
+/* Titulo "Transferir Animais de Pasto:" + Qual categoria + Qtde + Novo pasto + Confirma, tudo na mesma linha */
 /* O titulo da linha de transferencia e o label da Descricao do Lote tem a mesma largura, para o campo do
    lote comecar alinhado com o primeiro campo ("Qual Categoria") da linha de cima */
 .titulo-transferir,
@@ -6103,6 +6103,8 @@ body > .bs-container {
 
 /* total da categoria dentro da bolinha: menor e sem negrito */
 .satelite-pasto-badge .linha .icone-animal .qtd {
+  /* mesma fonte do aplicativo (FuturaStd Light, declarada em css/bootstrap.min.css) */
+  font-family: 'Futura Std Light', 'Lato', sans-serif;
   font-size: 9px;
   font-weight: normal;
   line-height: 1;

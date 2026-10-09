@@ -624,7 +624,7 @@
                         <!-- Desktop: titulo e campos de transferencia na MESMA linha -->
                         <div class="row form-group desktop">
                             <div class="col-xs-12 col-md-12 linha-transferir">
-                                <span class="titulo-transferir">Transferir Animais de Pasto?</span>
+                                <span class="titulo-transferir">Transferir Animais de Pasto:</span>
 
                                 <div id="area_transferir_d" class="campos-transferir">
                                     <select class="form-control categoria_sexo" id="categoria_sexo_d" name="categoria_sexo_d">
@@ -646,7 +646,7 @@
                         <!-- Celular: titulo numa linha e os campos (em duas linhas) logo abaixo -->
                         <div class="row form-group mobile" hidden>
                             <div class="col-xs-12 col-md-12">
-                                <span class="titulo-transferir">Transferir Animais de Pasto?</span>
+                                <span class="titulo-transferir">Transferir Animais de Pasto:</span>
                             </div>
                         </div>
 
@@ -679,7 +679,7 @@
                         <!-- Descricao do Lote -->
                         <div class="row form-group desktop">
                             <div class="col-xs-12 col-md-12 linha-transferir linha-lote">
-                                <label for="descricao_lote_d" class="control-label titulo-lote">Descrição do Lote</label>
+                                <label for="descricao_lote_d" class="control-label titulo-lote">Descrição do Lote:</label>
 
                                 <input type="text" name="descricao_lote_d" id="descricao_lote_d" class="form-control descricao_lote" onkeyup='maiuscula(this)' onclick='abrir_modal_descricao_lote(0)' <?php echo "value='".$descricao_lote_com_id."'";?>>
                             </div>
@@ -689,7 +689,7 @@
 
                         <div class="row form-group mobile" hidden>
                             <div class="col-xs-12 col-md-12">
-                                <label for="descricao_lote_m" class="control-label">Descrição do Lote</label>
+                                <label for="descricao_lote_m" class="control-label">Descrição do Lote:</label>
 
                                 <input type="text" name="descricao_lote_m" id="descricao_lote_m" class="form-control descricao_lote" onkeyup='maiuscula(this)' onclick='abrir_modal_descricao_lote(0)' <?php echo "value='".$descricao_lote_com_id."'";?>>
 
