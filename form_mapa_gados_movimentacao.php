@@ -258,7 +258,7 @@
     <!--sidebar end-->
 
     <!--main content start-->
-    <section id="main-content">
+    <section id="main-content" class="fonte-futura">
         <section class="wrapper" style="margin-left: 5px;">
             <span class="caminho-programa">Animais <i class="fa fa-angle-right seta-direita"></i><a class="voltar-menu" href="form_mapa_gados.php"> Mapa de Gado</a> <i class="fa fa-angle-right seta-direita"></i>
             <span class="titulo">Movimentações</span></span>

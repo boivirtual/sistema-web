@@ -6129,3 +6129,17 @@ body > .bs-container {
   cursor: pointer;
   pointer-events: auto;
 }
+
+/* Fonte das telas Mapa de Gado (Tabuleiro, satelite e movimentacoes) = Futura Std Light, igual ao aplicativo.
+   A classe fica no #main-content (menu e cabecalho do sistema continuam como estao). A fonte e' declarada
+   em css/bootstrap.min.css (so' existe a versao Light: o negrito sai sintetizado pelo navegador). Os
+   elementos abaixo tem font-family proprio (Lato/Leaflet) e por isso precisam ser tratados a parte. */
+.fonte-futura,
+.fonte-futura .modal-header h4.modal-title,
+.fonte-futura .modal-body label,
+.fonte-futura fieldset legend.fonte-legend,
+.fonte-futura .editor-pasto-label,
+.fonte-futura .satelite-pasto-badge,
+.fonte-futura .leaflet-container {
+  font-family: 'Futura Std Light', 'Lato', sans-serif !important;
+}

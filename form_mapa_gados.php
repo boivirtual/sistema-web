@@ -110,7 +110,7 @@
 
     <!--main content start-->
 
-    <section id="main-content" style="overflow: hidden;">
+    <section id="main-content" class="fonte-futura" style="overflow: hidden;">
         <section class="wrapper" style="margin-left: 5px;">
             <span class="caminho-programa">Animais <i class="fa fa-angle-right seta-direita"></i>
             <span class="titulo">Mapa de Gado</span></span>
