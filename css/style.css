@@ -6140,3 +6140,10 @@ body > .bs-container {
 #map .satelite-pasto-badge {
   font-family: 'Futura Std Light', 'Lato', sans-serif !important;
 }
+
+/* A Futura so' existe na versao Light: com font-weight bold o navegador "engrossa" o desenho (negrito falso)
+   e o texto fica mais pesado que no aplicativo, onde ela aparece fina. No mapa satelite fica normal. */
+#map .editor-pasto-label,
+#map .satelite-pasto-badge {
+  font-weight: normal;
+}
