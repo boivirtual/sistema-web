@@ -6131,3 +6131,12 @@ body > .bs-container {
   cursor: pointer;
   pointer-events: auto;
 }
+
+/* Mapa satelite do Mapa de Gado (#map): nomes dos pastos, selos e totais em Futura Std Light, igual ao
+   aplicativo (fonte declarada em css/bootstrap.min.css; so' existe a versao Light, o negrito sai
+   sintetizado). O Editor de Mapa (#editor_mapa) usa as mesmas classes e continua em Lato. */
+#map,
+#map .editor-pasto-label,
+#map .satelite-pasto-badge {
+  font-family: 'Futura Std Light', 'Lato', sans-serif !important;
+}
