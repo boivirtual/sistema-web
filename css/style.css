@@ -6105,11 +6105,13 @@ body > .bs-container {
 .satelite-pasto-badge .linha .icone-animal .qtd {
   /* mesma fonte do aplicativo (FuturaStd Light, declarada em css/bootstrap.min.css) */
   font-family: 'Futura Std Light', 'Lato', sans-serif;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: normal;
   line-height: 1;
   color: #fff;
   text-shadow: none;
+  /* mais respiro entre o icone do animal e o total */
+  margin-top: 3px;
 }
 
 
