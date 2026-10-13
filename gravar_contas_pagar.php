@@ -853,7 +853,7 @@ ob_start(function($buffer) {
         if (empty($codigo_for_r))    { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Fornecedor.']); mysqli_close($conector); exit; }
         if (empty($data_emissao_r))  { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe a Data de Emissão.']); mysqli_close($conector); exit; }
         if (empty($descricao_r))     { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe a Descrição da Compra.']); mysqli_close($conector); exit; }
-        if ($vlr_r <= 0)              { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Valor.']); mysqli_close($conector); exit; }
+        if ($vlr_r < 0)               { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Valor.']); mysqli_close($conector); exit; }
         if (!$tem_rateio && empty($codigo_local_r))  { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Local.']); mysqli_close($conector); exit; }
         if (!$tem_rateio && empty($codigo_ccusto_r)) { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Centro de Custos.']); mysqli_close($conector); exit; }
         if (!$tem_rateio && (empty($codigo_conta_r) || $codigo_conta_r == '0000000')) { header('Content-type: application/json'); echo json_encode(['error'=>true,'message'=>'Informe o Código Contábil.']); mysqli_close($conector); exit; }
