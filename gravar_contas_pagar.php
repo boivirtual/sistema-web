@@ -476,7 +476,8 @@ ob_start(function($buffer) {
             echo json_encode(array('error' => true, 'message' => 'Informe a Descrição da Compra.'));
             mysqli_close($conector); exit;
         }
-        if ($vlr_total_n <= 0) {
+        // Valor = 0 é permitido; só bloqueia valor negativo
+        if ($vlr_total_n < 0) {
             header('Content-type: application/json');
             echo json_encode(array('error' => true, 'message' => 'Informe o Valor.'));
             mysqli_close($conector); exit;
