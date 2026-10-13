@@ -1678,19 +1678,21 @@ $data_sistema = date("Y-m-d");
             prosseguir_incluir();
         }
 
-        // Sim: fecha a confirmação e segue com a gravação
-        $(document).on('click', '#btn_valor_zero_sim', function () {
+        // Sim: fecha a confirmação e segue com a gravação.
+        // (Chamadas via onclick dos botões: este bloco roda antes do jQuery ser
+        // carregado, então não dá para registrar eventos com $(document).on aqui.)
+        function valor_zero_sim() {
             $('#mensagem_valor_zero').one('hidden.bs.modal', function () {
                 prosseguir_incluir();
             }).modal('hide');
-        });
+        }
 
         // Não: volta o foco para o campo Valor
-        $(document).on('click', '#btn_valor_zero_nao', function () {
+        function valor_zero_nao() {
             $('#mensagem_valor_zero').one('hidden.bs.modal', function () {
                 $('#vlr_primeira_parcela').focus();
             });
-        });
+        }
 
         // Segue com a gravação depois de todas as validações/confirmações
         function prosseguir_incluir() {
