@@ -1064,6 +1064,7 @@ while ($ln = mysqli_fetch_object($conta_parcela)) {
 <script src="js/jquery.nicescroll.js?<?php echo Versao; ?>" type="text/javascript"></script>
 <script src="js/jquery-ui-1.9.2.custom.min.js?<?php echo Versao; ?>"></script>
 <script src="js/scripts.js?<?php echo Versao; ?>"></script>
+<script src="js/sessao_inatividade.js?<?php echo Versao; ?>" charset="utf-8" type="text/javascript"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/r-2.2.6/datatables.min.js"></script>
 
 <script src="js/compra_venda.js?<?php echo Versao; ?>" charset="utf-8" type="text/javascript" ></script>
