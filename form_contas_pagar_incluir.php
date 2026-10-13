@@ -1401,7 +1401,7 @@ $data_sistema = date("Y-m-d");
             somaPerc = Math.round(somaPerc * 100) / 100;
 
             var okVlr  = Math.abs(somaVlr  - total) <= 0.02;
-            var okPerc = Math.abs(somaPerc - 100)   <= 0.02;
+            var okPerc = (total === 0) || Math.abs(somaPerc - 100) <= 0.02; // Valor = 0: sem percentual a conferir
 
             var clVlr  = okVlr  ? 'valor-ok' : 'valor-err';
             var clPerc = okPerc ? 'valor-ok' : 'valor-err';
