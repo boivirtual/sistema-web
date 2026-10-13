@@ -893,6 +893,23 @@ $data_sistema = date("Y-m-d");
                     </div>
                 </div>
 
+                <!-- Modal: Confirmação de inclusão com Valor = 0 -->
+                <div class="modal fade" id="mensagem_valor_zero" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">Contas a Pagar - Confirmação</h4>
+                            </div>
+                            <div class="modal-body">O Valor da conta está igual a zeros (0,00). Confirma a inclusão mesmo assim?</div>
+                            <div class="modal-footer">
+                                <button class="btn btn-primary" type="button" id="btn_valor_zero_sim">Sim</button>
+                                <button data-dismiss="modal" class="btn btn-default" type="button" id="btn_valor_zero_nao">Não</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Modal: Rateio — REMOVIDO (nova tela a implementar) -->
                 <div class="modal fade" id="modal_rateio" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" style="display:none!important">
                     <div class="modal-dialog" style="width:92%;max-width:860px;" role="document">
