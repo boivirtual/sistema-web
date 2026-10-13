@@ -903,8 +903,8 @@ $data_sistema = date("Y-m-d");
                             </div>
                             <div class="modal-body">O Valor da conta está igual a zeros (0,00). Confirma a inclusão mesmo assim?</div>
                             <div class="modal-footer">
-                                <button class="btn btn-primary" type="button" id="btn_valor_zero_sim">Sim</button>
-                                <button data-dismiss="modal" class="btn btn-default" type="button" id="btn_valor_zero_nao">Não</button>
+                                <button class="btn btn-primary" type="button" id="btn_valor_zero_sim" onclick="valor_zero_sim()">Sim</button>
+                                <button data-dismiss="modal" class="btn btn-default" type="button" id="btn_valor_zero_nao" onclick="valor_zero_nao()">Não</button>
                             </div>
                         </div>
                     </div>
