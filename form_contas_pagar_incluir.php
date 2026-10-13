@@ -2281,14 +2281,7 @@ $data_sistema = date("Y-m-d");
             var $local = $('#codigo_fazenda');
 
             if (on) {
-                // Valida se o valor foi digitado antes de habilitar o rateio
-                var vlrTotal = ctpGetValorTotal();
-                if (!vlrTotal || vlrTotal <= 0) {
-                    $(this).prop('checked', false);
-                    alert('Digite o Valor da conta antes de habilitar o Rateio.');
-                    $('#vlr_primeira_parcela').focus();
-                    return;
-                }
+                // Valor = 0 é permitido: o rateio pode ser habilitado mesmo sem valor digitado
                 // Rateio ON → oculta Local (label + select), CC e Conta Contábil da linha 2;
                 // o select Local é movido para dentro do fieldset "Distribuir Rateio" abaixo
                 $('#col_local').hide();
