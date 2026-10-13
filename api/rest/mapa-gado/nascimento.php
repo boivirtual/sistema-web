@@ -32,6 +32,15 @@ switch ((string) ($dados['acao'] ?? '')) {
     case 'listas':
         echo json_encode($service->listas($dados));
         break;
+    case 'parametros':
+        echo json_encode($service->parametros($dados));
+        break;
+    case 'mae':
+        echo json_encode($service->mae($dados));
+        break;
+    case 'ultimo_nascimento':
+        echo json_encode($service->ultimoNascimento($dados));
+        break;
     default:
         echo json_encode(["success" => false, "message" => "Ação não informada."]);
 }
