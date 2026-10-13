@@ -1669,6 +1669,31 @@ $data_sistema = date("Y-m-d");
         function confirmar_incluir() {
             if (!validarCamposObrigatoriosPagar()) return;
             if (!validarParcelamento()) return;
+
+            // Valor = 0 é permitido, mas pede confirmação (Sim/Não) antes de gravar
+            if (ctpGetValorTotal() === 0) {
+                $('#mensagem_valor_zero').modal();
+                return;
+            }
+            prosseguir_incluir();
+        }
+
+        // Sim: fecha a confirmação e segue com a gravação
+        $(document).on('click', '#btn_valor_zero_sim', function () {
+            $('#mensagem_valor_zero').one('hidden.bs.modal', function () {
+                prosseguir_incluir();
+            }).modal('hide');
+        });
+
+        // Não: volta o foco para o campo Valor
+        $(document).on('click', '#btn_valor_zero_nao', function () {
+            $('#mensagem_valor_zero').one('hidden.bs.modal', function () {
+                $('#vlr_primeira_parcela').focus();
+            });
+        });
+
+        // Segue com a gravação depois de todas as validações/confirmações
+        function prosseguir_incluir() {
             // Se rateio novo estiver ativo, vai direto gravar (sem modal de fazendas)
             // Se rateio desligado com 1 só fazenda, também vai direto
             var rateioAtivo = $('#habilitar_rateio').is(':checked');
