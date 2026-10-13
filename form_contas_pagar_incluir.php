@@ -1563,9 +1563,8 @@ $data_sistema = date("Y-m-d");
             if (!$('#descricao_compra').val().trim()) {
                 return erro('Informe a Descrição da Compra.', $('#descricao_compra'));
             }
-            if (ctpGetValorTotal() <= 0) {
-                return erro('Informe o Valor.', $('#vlr_primeira_parcela'));
-            }
+            // Valor NÃO é mais obrigatório: é permitido incluir conta com Valor = 0
+            // (campo em branco é tratado como 0,00).
 
             // Rateio habilitado mas a distribuição ainda não foi confirmada (rateio_json
             // vazio) — sem isso o backend não tem como saber que há rateio e cai na
