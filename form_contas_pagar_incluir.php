@@ -1523,7 +1523,8 @@ $data_sistema = date("Y-m-d");
                 return false;
             }
 
-            if (Math.abs(somaPerc - 100) > 0.02) {
+            // Com Valor = 0 não há percentual a conferir (todas as parcelas ficam 0,00)
+            if (total > 0 && Math.abs(somaPerc - 100) > 0.02) {
                 $('#mensagem_erro').modal();
                 $('#mensagem_erro .modal-body').html(
                     'A soma dos percentuais (' + ctpFormatMoney(somaPerc) + '%) deve ser igual a 100%.'
