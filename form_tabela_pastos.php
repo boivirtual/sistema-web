@@ -489,6 +489,7 @@
 
                 <div class="row" id="editor_barra_ferramentas">
                     <div class="form-group col-md-12">
+                        <button type="button" class="btn btn-default" id="editor_btn_refazer_local" onclick="editor_refazer_localizacao()" style="display: none;"><i class="fa fa-map-marker-alt"></i> Refazer localização</button>
                         <button type="button" class="btn btn-primary" id="editor_btn_novo" onclick="editor_novo_pasto()" disabled><i class="fa fa-plus"></i> Novo pasto</button>
                         <button type="button" class="btn btn-default" id="editor_btn_tracado" onclick="editor_alternar_tracado()" disabled><i class="fa fa-draw-polygon"></i> Editar traçado</button>
                         <button type="button" class="btn btn-default" id="editor_btn_cancelar_tracado" onclick="editor_cancelar_tracado()" style="display: none;"><i class="fa fa-undo"></i> Descartar edição do traçado</button>
