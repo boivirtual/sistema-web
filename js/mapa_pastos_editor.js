@@ -706,12 +706,15 @@ document.addEventListener('click', function(ev) {
 
 function editor_preparar_mapa(sucesso) {
     editor_carregar_bibliotecas(function() {
-        if (editorMapa.map === null) {
-            editor_iniciar_mapa();
-        }
+        // so a primeira vez: tenta carregar os nomes vetoriais antes de montar o mapa
+        editor_carregar_rotulos_vetoriais(function() {
+            if (editorMapa.map === null) {
+                editor_iniciar_mapa();
+            }
 
-        editorMapa.map.invalidateSize();
-        sucesso();
+            editorMapa.map.invalidateSize();
+            sucesso();
+        });
     });
 }
 
