@@ -635,6 +635,33 @@ function editor_iniciar_mapa() {
 
     mapa.on('zoomend', ajustarRotulos);
     ajustarRotulos();
+
+    mapa.on('click', function(ev) {
+        editor_escolher_coordenada_no_mapa(ev.latlng);
+    });
+}
+
+// Novo Mapa: enquanto os campos de latitude e longitude estao na tela, clicar no mapa preenche os dois com o
+// ponto clicado (e marca o ponto); o usuario vai aproximando e clicando de novo ate achar o lugar certo
+// e entao clica em Aplicar.
+function editor_escolher_coordenada_no_mapa(latlng) {
+    if (editorMapa.modo != 'novo' || editorMapa.coordOk || editorMapa.local == '' || !$("#editor_painel_coord").is(':visible')) {
+        return;
+    }
+
+    var ponto = latlng.wrap();
+
+    $("#editor_lat").val(ponto.lat.toFixed(6).replace('.', ','));
+    $("#editor_lng").val(ponto.lng.toFixed(6).replace('.', ','));
+
+    if (editorMapa.marcador) {
+        editorMapa.map.removeLayer(editorMapa.marcador);
+    }
+
+    // marcador provisorio (laranja): o definitivo (amarelo/azul) so aparece depois de Aplicar
+    editorMapa.marcador = L.circleMarker(ponto, {
+        radius: 8, color: '#ffffff', weight: 2, fillColor: '#ff8f00', fillOpacity: 0.95, interactive: false
+    }).addTo(editorMapa.map);
 }
 
 function editor_ha(anel) {
