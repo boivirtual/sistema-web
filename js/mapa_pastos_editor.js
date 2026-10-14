@@ -210,6 +210,7 @@ function editor_limpar_tudo() {
     editorMapa.modoNome = '';
     editorMapa.coordOk = false;
     editorMapa.coordenadas = null;
+    editorMapa.coordenadasAnteriores = null;
 
     if (editorMapa.marcador && editorMapa.map) {
         editorMapa.map.removeLayer(editorMapa.marcador);
