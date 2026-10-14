@@ -161,6 +161,12 @@ function editor_confirmar_saida(aoConfirmar, aoCancelar) {
     $("#modal_editor_sair").modal('show');
 }
 
+// O "Nao" (continuar editando) e' a opcao segura: fica em destaque e com o foco, para um Enter sem querer
+// nao descartar o trabalho
+$(document).on('shown.bs.modal', '#modal_editor_sair', function() {
+    $('#btn_editor_sair_nao').trigger('focus');
+});
+
 function editor_sair_sim() {
     var acao = editorAcaoSair;
 
