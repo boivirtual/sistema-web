@@ -367,6 +367,7 @@ function editor_definir_localizacao(lat, lng, digitadas, aviso) {
     editorMapa.coordenadas = { lat: lat, lng: lng, digitadas: digitadas };
 
     $("#editor_painel_coord").hide();
+    $("#editor_mapa").removeClass('editor-escolhendo-coord');
     editor_ajustar_altura();
     editor_atualizar_botoes();
 
