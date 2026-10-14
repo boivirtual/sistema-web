@@ -575,8 +575,8 @@
                             <p style="font-weight: bold;">Deseja sair mesmo assim?</p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" onclick="editor_sair_sim()">Sim</button>
-                            <button type="button" class="btn btn-default" onclick="editor_sair_nao()">Não</button>
+                            <button type="button" class="btn btn-default" onclick="editor_sair_sim()">Sim</button>
+                            <button type="button" class="btn btn-primary" id="btn_editor_sair_nao" onclick="editor_sair_nao()">Não</button>
                         </div>
                     </div>
                 </div>
