@@ -345,6 +345,7 @@ function editor_pedir_coordenadas(texto) {
     $("#editor_texto_coord").text(texto);
     $("#editor_lat, #editor_lng").val('');
     $("#editor_painel_coord").show();
+    $("#editor_mapa").addClass('editor-escolhendo-coord');
     $("#editor_lat").trigger('focus');
 
     editor_ajustar_altura();
