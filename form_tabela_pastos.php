@@ -487,7 +487,7 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row" id="editor_barra_ferramentas">
                     <div class="form-group col-md-12">
                         <button type="button" class="btn btn-primary" id="editor_btn_novo" onclick="editor_novo_pasto()" disabled><i class="fa fa-plus"></i> Novo pasto</button>
                         <button type="button" class="btn btn-default" id="editor_btn_tracado" onclick="editor_alternar_tracado()" disabled><i class="fa fa-draw-polygon"></i> Editar traçado</button>
