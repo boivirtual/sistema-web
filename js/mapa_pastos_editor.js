@@ -49,6 +49,159 @@ function editor_carregar_bibliotecas(sucesso) {
     }, erro);
 }
 
+// ---- Nomes (cidades, rios, estradas) sobre o satelite, como vetor ----
+// Texto desenhado no navegador (MapLibre GL) a partir dos dados do OpenStreetMap servidos pelo OpenFreeMap
+// (gratuito, sem chave): fica nitido e no mesmo tamanho em qualquer zoom, ao contrario das imagens de
+// nomes da Esri. Se a biblioteca nao carregar ou o navegador nao tiver WebGL, o editor usa as imagens da Esri.
+var editorRotulosVetoriais = null; // null = ainda nao tentou carregar; true/false = resultado
+
+function editor_tem_webgl() {
+    try {
+        var c = document.createElement('canvas');
+        return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    }
+    catch (e) {
+        return false;
+    }
+}
+
+function editor_carregar_rotulos_vetoriais(depois) {
+    if (editorRotulosVetoriais !== null) {
+        depois();
+        return;
+    }
+
+    if (!editor_tem_webgl()) {
+        editorRotulosVetoriais = false;
+        depois();
+        return;
+    }
+
+    var terminou = false;
+    var terminar = function(ok) {
+        if (terminou) {
+            return;
+        }
+
+        terminou = true;
+        clearTimeout(limite);
+        editorRotulosVetoriais = ok && !!window.maplibregl && !!L.maplibreGL;
+        depois();
+    };
+    var limite = setTimeout(function() { terminar(false); }, 8000);
+
+    var css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css';
+    document.head.appendChild(css);
+
+    editor_carregar_script('https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js', function() {
+        editor_carregar_script('https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js',
+            function() { terminar(true); },
+            function() { terminar(false); });
+    }, function() { terminar(false); });
+}
+
+// Estilo so com nomes e linhas de estrada (sem mapa-base: o fundo e' o satelite da Esri)
+function editor_estilo_rotulos() {
+    var tamanho = function(pares) {
+        return ['interpolate', ['linear'], ['zoom']].concat(pares);
+    };
+
+    var pintura = {
+        'text-color': '#ffffff',
+        'text-halo-color': 'rgba(0, 0, 0, 0.85)',
+        'text-halo-width': 1.6,
+        'text-halo-blur': 0.4
+    };
+
+    var lugar = function(id, filtro, fonte, tamanhos, extra) {
+        return {
+            id: id,
+            type: 'symbol',
+            source: 'omt',
+            'source-layer': 'place',
+            filter: filtro,
+            minzoom: (extra && extra.minzoom) || 0,
+            layout: {
+                'text-field': ['get', 'name'],
+                'text-font': [fonte],
+                'text-size': tamanho(tamanhos),
+                'text-max-width': 8,
+                'text-padding': 3,
+                'symbol-sort-key': ['get', 'rank']
+            },
+            paint: pintura
+        };
+    };
+
+    return {
+        version: 8,
+        glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
+        sources: { omt: { type: 'vector', url: 'https://tiles.openfreemap.org/planet' } },
+        layers: [
+            {
+                id: 'estradas-linha',
+                type: 'line',
+                source: 'omt',
+                'source-layer': 'transportation',
+                filter: ['in', ['get', 'class'], ['literal', ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']]],
+                layout: { 'line-cap': 'round', 'line-join': 'round' },
+                paint: {
+                    'line-color': '#ffe2b0',
+                    'line-opacity': 0.75,
+                    'line-width': tamanho([8, 0.6, 12, 1.6, 16, 4])
+                }
+            },
+            lugar('estados', ['==', ['get', 'class'], 'state'], 'Noto Sans Bold', [3, 11, 8, 15], { minzoom: 3 }),
+            lugar('cidades', ['==', ['get', 'class'], 'city'], 'Noto Sans Bold', [4, 13, 10, 18, 14, 22]),
+            lugar('vilas', ['in', ['get', 'class'], ['literal', ['town', 'village']]], 'Noto Sans Bold', [8, 12, 12, 16, 14, 19]),
+            lugar('povoados', ['in', ['get', 'class'], ['literal', ['hamlet', 'suburb', 'neighbourhood', 'quarter', 'isolated_dwelling']]],
+                'Noto Sans Regular', [11, 12, 14, 15], { minzoom: 11 }),
+            {
+                id: 'agua-nomes',
+                type: 'symbol',
+                source: 'omt',
+                'source-layer': 'water_name',
+                layout: { 'text-field': ['get', 'name'], 'text-font': ['Noto Sans Italic'], 'text-size': 14, 'text-max-width': 8 },
+                paint: Object.assign({}, pintura, { 'text-color': '#d4ecff' })
+            },
+            {
+                id: 'rios-nomes',
+                type: 'symbol',
+                source: 'omt',
+                'source-layer': 'waterway',
+                minzoom: 9,
+                filter: ['==', ['get', 'class'], 'river'],
+                layout: {
+                    'symbol-placement': 'line',
+                    'symbol-spacing': 320,
+                    'text-field': ['get', 'name'],
+                    'text-font': ['Noto Sans Italic'],
+                    'text-size': tamanho([9, 12, 14, 15])
+                },
+                paint: Object.assign({}, pintura, { 'text-color': '#d4ecff' })
+            },
+            {
+                id: 'estradas-nomes',
+                type: 'symbol',
+                source: 'omt',
+                'source-layer': 'transportation_name',
+                minzoom: 9,
+                filter: ['in', ['get', 'class'], ['literal', ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']]],
+                layout: {
+                    'symbol-placement': 'line',
+                    'symbol-spacing': 360,
+                    'text-field': ['coalesce', ['get', 'ref'], ['get', 'name']],
+                    'text-font': ['Noto Sans Bold'],
+                    'text-size': tamanho([9, 11, 14, 14])
+                },
+                paint: Object.assign({}, pintura, { 'text-color': '#ffe9c0' })
+            }
+        ]
+    };
+}
+
 function editor_mostrar_erro(mensagem) {
     $("#mensagem_erro").modal();
     $("#mensagem_erro .modal-body").html(mensagem);
