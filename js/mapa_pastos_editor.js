@@ -574,20 +574,27 @@ function editor_iniciar_mapa() {
 
     // Nomes de cidades, rios e estradas sobre o satelite (camadas de referencia da Esri, sem chave).
     // Na regiao das fazendas so ha conteudo ate o zoom ~14; acima disso a camada e ampliada ate o 17/16.
+    // tileSize 512 + zoomOffset -1: cada quadro do nivel anterior e mostrado com o dobro do tamanho, entao os
+    // nomes saem sempre maiores e legiveis (antes, ao aproximar, os nomes menores do proximo nivel ficavam
+    // minusculos). O limite nativo sobe 1 nivel por causa do offset.
     mapa.createPane('rotulos');
     mapa.getPane('rotulos').style.zIndex = 450;
     mapa.getPane('rotulos').style.pointerEvents = 'none';
 
     var lugares = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
         pane: 'rotulos',
-        maxNativeZoom: 15,
+        tileSize: 512,
+        zoomOffset: -1,
+        maxNativeZoom: 16,
         maxZoom: 17,
         attribution: 'Nomes &copy; Esri'
     });
 
     var estradas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', {
         pane: 'rotulos',
-        maxNativeZoom: 14,
+        tileSize: 512,
+        zoomOffset: -1,
+        maxNativeZoom: 15,
         maxZoom: 16
     });
 
