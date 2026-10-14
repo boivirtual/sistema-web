@@ -314,12 +314,6 @@ function editor_confirmar_saida(aoConfirmar, aoCancelar) {
     $("#modal_editor_sair").modal('show');
 }
 
-// O "Nao" (continuar editando) e' a opcao segura: fica em destaque e com o foco, para um Enter sem querer
-// nao descartar o trabalho
-$(document).on('shown.bs.modal', '#modal_editor_sair', function() {
-    $('#btn_editor_sair_nao').trigger('focus');
-});
-
 function editor_sair_sim() {
     var acao = editorAcaoSair;
 
@@ -630,6 +624,12 @@ function editor_preencher_fazendas() {
 // Este script e carregado antes do jQuery (rodape.php), entao o registro espera o load da pagina
 window.addEventListener('load', function() {
     $(window).on('resize', editor_ajustar_altura);
+
+    // O "Nao" (continuar editando) e' a opcao segura: fica em destaque e com o foco, para um Enter sem querer
+    // nao descartar o trabalho
+    $(document).on('shown.bs.modal', '#modal_editor_sair', function() {
+        $('#btn_editor_sair_nao').trigger('focus');
+    });
 
     // Ao digitar ENTRADA ou SAIDA num pasto novo, o modulo vai sozinho para 999 (ENTRADA/SAIDA) e trava
     $(document).on('input', '#editor_nome_pasto', function() {
