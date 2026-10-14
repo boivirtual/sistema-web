@@ -3,10 +3,13 @@
 function cor_padrao_modulo_pasto($id) {
     $id = (int)$id;
 
+    // Familias de cor com variacao forte de luminosidade (um bem escuro e outro bem claro), para os modulos
+    // nunca ficarem parecidos no mapa: vermelho 1 escuro / 5 rosa claro; verde 2 escuro / 10 menta claro;
+    // azul 3 escuro / 6 celeste claro; roxo 7 escuro / 11 lilas claro; mais laranja, amarelo e marrom.
     $fixas = array(
-        1 => '#E53935', 2 => '#43A047', 3 => '#1E88E5', 4 => '#FB8C00', 5 => '#D81B60',
-        6 => '#00ACC1', 7 => '#8E24AA', 8 => '#FDD835', 9 => '#6D4C41', 10 => '#7CB342',
-        999 => '#BDBDBD', 1000 => '#3949AB', 1001 => '#F4511E', 1002 => '#00897B',
+        1 => '#B71C1C', 2 => '#2E7D32', 3 => '#0D47A1', 4 => '#F57C00', 5 => '#F48FB1',
+        6 => '#81D4FA', 7 => '#4A148C', 8 => '#FFEE58', 9 => '#6D4C41', 10 => '#69F0AE',
+        999 => '#BDBDBD', 1000 => '#CE93D8', 1001 => '#F4511E', 1002 => '#00897B',
         1003 => '#C0CA33', 1004 => '#5E35B1', 1005 => '#039BE5', 1006 => '#616161', 1007 => '#F8BBD0'
     );
 
