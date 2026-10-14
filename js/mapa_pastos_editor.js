@@ -1140,6 +1140,9 @@ function editor_atualizar_botoes() {
 
     $("#editor_barra_ferramentas, #editor_btn_salvar").toggle(ferramentasVisiveis);
 
+    // Refazer a localizacao: so no Novo Mapa, depois de aplicada e antes de desenhar qualquer pasto
+    $("#editor_btn_refazer_local").toggle(editorMapa.modo == 'novo' && editorMapa.coordOk && editorMapa.itens.length === 0 && !ocupado);
+
     $("#editor_btn_novo").prop('disabled', !pronto || ocupado || editorMapa.editando);
     $("#editor_btn_tracado").prop('disabled', !item || ocupado);
     $("#editor_btn_renomear").prop('disabled', !item || ocupado || editorMapa.editando);
