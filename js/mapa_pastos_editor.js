@@ -1305,10 +1305,10 @@ function editor_atualizar_botoes() {
     $("#editor_total_pastos").text(pronto ? editorMapa.itens.length + ' pasto(s) no mapa' : '');
     editor_atualizar_legenda();
 
-    // No Novo Mapa, as ferramentas (Novo pasto, Editar tracado, Renomear, Excluir, Localizar e Salvar) so
-    // aparecem depois de informada a localizacao da fazenda (Aplicar); antes disso a tela mostra so os
-    // campos de latitude e longitude
-    var ferramentasVisiveis = editorMapa.modo != 'novo' || editorMapa.coordOk;
+    // As ferramentas (Novo pasto, Editar tracado, Renomear, Excluir, Localizar e Salvar) so aparecem depois de
+    // escolhida a fazenda; no Novo Mapa, so depois de informada tambem a localizacao (Aplicar), e antes disso
+    // a tela mostra so os campos de latitude e longitude
+    var ferramentasVisiveis = editorMapa.local != '' && (editorMapa.modo != 'novo' || editorMapa.coordOk);
 
     $("#editor_barra_ferramentas, #editor_btn_salvar").toggle(ferramentasVisiveis);
 
