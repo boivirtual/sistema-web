@@ -754,11 +754,27 @@ function editor_iniciar_mapa() {
     });
 
     satelite.addTo(mapa);
-    lugares.addTo(mapa);
-    estradas.addTo(mapa);
 
-    L.control.layers({ 'Satélite': satelite, 'Ruas': ruas },
-        { 'Nomes de lugares': lugares, 'Estradas': estradas }, { position: 'topright' }).addTo(mapa);
+    var camadasNomes;
+
+    if (editorRotulosVetoriais) {
+        // Nomes e estradas vetoriais (nitidos, mesmo tamanho em qualquer zoom); no lugar das imagens da Esri
+        var rotulos = L.maplibreGL({
+            pane: 'rotulos',
+            style: editor_estilo_rotulos(),
+            attribution: '<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> &copy; OpenMapTiles, dados &copy; OpenStreetMap'
+        });
+
+        rotulos.addTo(mapa);
+        camadasNomes = { 'Nomes e estradas': rotulos };
+    }
+    else {
+        lugares.addTo(mapa);
+        estradas.addTo(mapa);
+        camadasNomes = { 'Nomes de lugares': lugares, 'Estradas': estradas };
+    }
+
+    L.control.layers({ 'Satélite': satelite, 'Ruas': ruas }, camadasNomes, { position: 'topright' }).addTo(mapa);
 
     editorMapa.grupo = L.featureGroup().addTo(mapa);
     editorMapa.map = mapa;
