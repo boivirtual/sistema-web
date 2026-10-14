@@ -6154,3 +6154,10 @@ body > .bs-container {
 #map .satelite-pasto-badge {
   text-shadow: 0 0 1.5px #000;
 }
+
+/* Novo Mapa (editor de pastos): enquanto o usuario escolhe a localizacao clicando no mapa, o cursor vira mira */
+#editor_mapa.editor-escolhendo-coord,
+#editor_mapa.editor-escolhendo-coord .leaflet-grab,
+#editor_mapa.editor-escolhendo-coord .leaflet-interactive {
+  cursor: crosshair;
+}
