@@ -410,9 +410,30 @@ function editor_aplicar_coordenadas() {
     });
 }
 
-// Desistiu de informar as coordenadas: volta o editor ao inicio, sem fazenda selecionada
+// Desistiu de informar as coordenadas: volta o editor ao inicio, sem fazenda selecionada. Se estava
+// refazendo a localizacao (ver editor_refazer_localizacao), volta para a localizacao que ja tinha.
 function editor_cancelar_coordenadas() {
+    var anterior = editorMapa.coordenadasAnteriores;
+
+    if (anterior) {
+        editor_definir_localizacao(anterior.lat, anterior.lng, anterior.digitadas, '');
+        return;
+    }
+
     editor_limpar_tudo();
+}
+
+// Novo Mapa: errou o lugar ao Aplicar? Reabre a escolha da localizacao (clicar no mapa ou digitar).
+// So enquanto nenhum pasto foi desenhado; Cancelar devolve a localizacao anterior.
+function editor_refazer_localizacao() {
+    editorMapa.coordenadasAnteriores = editorMapa.coordenadas;
+
+    if (editorMapa.marcador) {
+        editorMapa.map.removeLayer(editorMapa.marcador);
+        editorMapa.marcador = null;
+    }
+
+    editor_pedir_coordenadas('Refazendo a localização da fazenda: clique no mapa ou digite a latitude e a longitude.');
 }
 
 function editor_fazenda(id) {
