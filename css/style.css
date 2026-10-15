@@ -6170,3 +6170,21 @@ body > .bs-container {
 #editor_mapa.editor-escolhendo-coord .leaflet-interactive {
   cursor: crosshair;
 }
+
+/* Selo de animais pelo espaco do pasto (ver atualizar_selos_zoom no JS): "vaca" = so' o boi azul, igual a visao
+   geral; "medio" = so' as bolinhas com os totais por categoria (sem a barra e o total geral) */
+#map .satelite-pasto-badge[data-nivel="vaca"] .satelite-badge-categorias,
+#map .satelite-pasto-badge[data-nivel="vaca"] .satelite-badge-divisor,
+#map .satelite-pasto-badge[data-nivel="vaca"] .total,
+#map .satelite-pasto-badge[data-nivel="medio"] .satelite-badge-divisor,
+#map .satelite-pasto-badge[data-nivel="medio"] .total {
+  display: none;
+}
+
+#map .satelite-pasto-badge[data-nivel="vaca"] {
+  transform: translate(-50%, -50%);
+}
+
+#map .satelite-pasto-badge[data-nivel="vaca"] .satelite-boi-azul {
+  display: block;
+}

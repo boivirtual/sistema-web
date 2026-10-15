@@ -630,6 +630,7 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
 
         aplicar_escala_zoom(map.getZoom());
         atualizar_rotulos_zoom();
+        atualizar_selos_zoom();
     }
 
     // Visao geral = zoom afastado (abaixo do 16) ou o mesmo zoom em que o mapa abriu (vale para fazendas
@@ -687,6 +688,50 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
         });
     }
 
+    // Selo de animais por pasto, no maior nivel que CABE no pasto (alem do zoom): "cheio" (bolinhas + barra +
+    // total), "medio" (so' as bolinhas com os totais por categoria) ou "vaca" (so' o boi azul). Mede o selo de
+    // verdade em cada nivel e exige que o canto mais distante dele fique dentro do maior circulo inscrito
+    // no pasto. O boi azul e' sempre aceito: e' o minimo para indicar que ha animais.
+    function atualizar_selos_zoom() {
+        var caixa = map.getContainer().getBoundingClientRect();
+        var geral = modo_visao_geral(map.getZoom());
+
+        mapaGadoSatelite.poligonos.forEach(function(p) {
+            var marcador = p.selo;
+            var elSelo = marcador && marcador.getElement() ? marcador.getElement().querySelector('.satelite-pasto-badge') : null;
+
+            if (!elSelo) { return; }
+
+            if (geral || !p.raio) {
+                // visao geral: o CSS ja mostra so' o boi; sem raio (poligono degenerado): selo cheio
+                elSelo.removeAttribute('data-nivel');
+                return;
+            }
+
+            var centro = map.latLngToContainerPoint(p.ponto);
+            var px = caixa.left + centro.x, py = caixa.top + centro.y;
+            var raioPx = Math.abs(map.latLngToContainerPoint([p.ponto[0] + p.raio, p.ponto[1]]).y - centro.y);
+            var escolhido = 'vaca';
+            var niveis = ['cheio', 'medio'];
+
+            for (var i = 0; i < niveis.length; i++) {
+                elSelo.setAttribute('data-nivel', niveis[i]);
+                var r = elSelo.getBoundingClientRect();
+                var distancia = Math.max(
+                    Math.hypot(r.left - px, r.top - py), Math.hypot(r.right - px, r.top - py),
+                    Math.hypot(r.left - px, r.bottom - py), Math.hypot(r.right - px, r.bottom - py)
+                );
+
+                if (distancia <= raioPx * 1.15) {
+                    escolhido = niveis[i];
+                    break;
+                }
+            }
+
+            elSelo.setAttribute('data-nivel', escolhido);
+        });
+    }
+
     // zoomanim traz o zoom de destino: ja' troca o tamanho no inicio da animacao em vez de so' no fim
     map.on('zoomanim', function(ev) {
         aplicar_escala_zoom(ev.zoom);
@@ -696,6 +741,7 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
     map.on('zoomend', function() {
         aplicar_escala_zoom(map.getZoom());
         atualizar_rotulos_zoom();
+        atualizar_selos_zoom();
     });
 
     // O container pode ainda nao ter o tamanho definitivo no instante da criacao (troca de aba,
@@ -734,7 +780,8 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
         var interno = mapa_gado_satelite_ponto_interno(anel);
         poligono.getTooltip().setLatLng([interno[0], interno[1]]);
 
-        mapaGadoSatelite.poligonos.push({ nome: nome, layer: poligono, ponto: [interno[0], interno[1]], raio: interno[2] || 0 });
+        var entradaPoligono = { nome: nome, layer: poligono, ponto: [interno[0], interno[1]], raio: interno[2] || 0, selo: null };
+        mapaGadoSatelite.poligonos.push(entradaPoligono);
 
         // rotulo oculto por nao caber no pasto (ver atualizar_rotulos_zoom) aparece enquanto o mouse estiver sobre ele
         poligono.on('mouseover', function() {
@@ -881,7 +928,7 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
                 '<div class="total" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '>' + infoAnimal.total_animais + '</div>' +
                 '</div>';
 
-            L.marker(centro, {
+            entradaPoligono.selo = L.marker(centro, {
                 icon: L.divIcon({
                     className: 'satelite-pasto-badge-wrap',
                     html: html,
@@ -895,6 +942,7 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
     ajustar_zoom_fazenda();
     aplicar_escala_zoom(map.getZoom());
     atualizar_rotulos_zoom();
+    atualizar_selos_zoom();
 
     // reaplica o termo de busca (se houver) nos poligonos recem desenhados
     if (typeof filtrar_pasto_tabuleiro === 'function') {
