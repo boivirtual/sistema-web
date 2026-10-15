@@ -854,6 +854,8 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
             // total logo apos as categorias, centralizado verticalmente - igual ao card do Tabuleiro
             var html = '<div class="satelite-pasto-badge">' +
                 '<strong style="display:none">' + nome + '</strong>' +
+                // visao geral (zoom afastado): so' o boi azul indicando que o pasto tem animais (ver CSS)
+                '<div class="satelite-boi-azul"><span></span></div>' +
                 '<div class="satelite-badge-categorias">' + linhas + '</div>' +
                 '<div class="satelite-badge-divisor"></div>' +
                 '<div class="total" draggable="true" ondragstart="drag(event, ' + ORIGEM_ANCESTOR + ')" ' + idOrigem + '>' + infoAnimal.total_animais + '</div>' +
