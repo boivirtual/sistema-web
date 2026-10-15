@@ -420,6 +420,92 @@ function mapa_gado_satelite_modulo(dadosMapa, id) {
 }
 
 // Centro geometrico do poligono (formula do "shoelace"). anel: lista de [lng, lat, alt].
+// Ponto DENTRO do pasto o mais afastado possivel das bordas (o "centro visual"), onde o selo/icone fica
+// bem em cima do pasto a que pertence. O centroide comum cai fora de pastos em forma de "L" ou "U", e e'
+// por isso que o icone aparecia longe do pasto. Busca em grade com refinamento (ideia do polylabel).
+// anel = [[lng, lat], ...]; devolve [lat, lng].
+function mapa_gado_satelite_ponto_interno(anel) {
+    var qtd = anel.length - 1; // o ultimo ponto repete o primeiro
+    var lat0 = 0;
+
+    for (var i = 0; i < qtd; i++) {
+        lat0 += anel[i][1];
+    }
+
+    lat0 = lat0 / qtd;
+
+    // plano local: x em "graus de longitude" corrigidos pela latitude (o pasto e' pequeno, basta isso)
+    var k = Math.cos(lat0 * Math.PI / 180);
+    var pts = [];
+    var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+
+    for (var j = 0; j < qtd; j++) {
+        var x = anel[j][0] * k, y = anel[j][1];
+        pts.push([x, y]);
+        minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+    }
+
+    function dentro(px, py) {
+        var d = false;
+
+        for (var a = 0, b = qtd - 1; a < qtd; b = a++) {
+            if (((pts[a][1] > py) !== (pts[b][1] > py)) &&
+                (px < (pts[b][0] - pts[a][0]) * (py - pts[a][1]) / (pts[b][1] - pts[a][1]) + pts[a][0])) {
+                d = !d;
+            }
+        }
+
+        return d;
+    }
+
+    function distanciaBorda(px, py) {
+        var menor = Infinity;
+
+        for (var a = 0, b = qtd - 1; a < qtd; b = a++) {
+            var ax = pts[a][0], ay = pts[a][1], bx = pts[b][0], by = pts[b][1];
+            var dx = bx - ax, dy = by - ay;
+            var t = (dx === 0 && dy === 0) ? 0 : Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)));
+            menor = Math.min(menor, Math.hypot(px - (ax + t * dx), py - (ay + t * dy)));
+        }
+
+        return menor;
+    }
+
+    var melhor = null;
+    var passo = Math.max(maxX - minX, maxY - minY) / 12;
+    var x0 = minX, x1 = maxX, y0 = minY, y1 = maxY;
+
+    for (var volta = 0; volta < 4 && passo > 0; volta++) {
+        for (var gx = x0; gx <= x1; gx += passo) {
+            for (var gy = y0; gy <= y1; gy += passo) {
+                if (dentro(gx, gy)) {
+                    var dist = distanciaBorda(gx, gy);
+
+                    if (melhor === null || dist > melhor.dist) {
+                        melhor = { x: gx, y: gy, dist: dist };
+                    }
+                }
+            }
+        }
+
+        if (melhor === null) {
+            break;
+        }
+
+        // refina em volta do melhor ponto encontrado
+        x0 = melhor.x - passo; x1 = melhor.x + passo;
+        y0 = melhor.y - passo; y1 = melhor.y + passo;
+        passo = passo / 4;
+    }
+
+    if (melhor === null) {
+        return mapa_gado_satelite_centroide(anel);
+    }
+
+    return [melhor.y, melhor.x / k];
+}
+
 function mapa_gado_satelite_centroide(anel) {
     var area = 0, cx = 0, cy = 0;
 
