@@ -25,6 +25,72 @@ class MapaGadoNascimentoService{
         ];
     }
 
+    /** Campos do formulário #form_gravar_animal do web (o que o
+     *  $('#form_gravar_animal').serialize() envia). */
+    const CAMPOS_FORMULARIO = [
+        'grupo_usuario', 'tipo_gravacao', 'num_mov_nascimento', 'codigo_mae_animal',
+        'dias_nascimento', 'cobertura_id', 'item_cobertura', 'tipo_cobertura',
+        'data_prenhes', 'estacao_monta_id', 'data_inseminacao', 'local_id', 'pasto_id',
+        'opcao_nascimento', 'nascimento_animal', 'codigo_mae_consulta', 'codigo_pai_animal',
+        'alfa_animal', 'codigo_animal_id', 'codigo_numerico_animal', 'qtd_animal',
+        'sexo_animal', 'raca_id', 'pelagem_id', 'peso_animal',
+    ];
+
+    /**
+     * Confirmar do Nascimento: roda o PRÓPRIO script de gravação do web
+     * (gravar_nascimento.php ou gravar_nascimento_aborto_natimorto.php), com
+     * os mesmos campos que o formulário do web envia e a sessão que o login
+     * do web monta — assim a gravação é exatamente a do web (são umas 2.400
+     * linhas de regras de estação de monta, monta natural, estoque,
+     * fechamento mensal...). O script responde o JSON dele e encerra.
+     *
+     * $script: 'nascimento' ou 'aborto_natimorto'.
+     */
+    public function gravarPeloWeb($dados, $script){
+        $bd = trim((string) ($dados['bd'] ?? ''));
+        $campos = $dados['campos'] ?? null;
+        $usuario = trim((string) ($dados['usuario'] ?? ''));
+        if ($bd === '' || !is_array($campos) || $usuario === '') {
+            echo json_encode(["error" => true, "message" => "Informe bd, usuario e campos."]);
+            return;
+        }
+
+        // Sessão do web só para esta chamada (sem cookie), apagada no fim.
+        ini_set('session.use_cookies', '0');
+        ini_set('session.use_only_cookies', '0');
+        session_id('app' . bin2hex(random_bytes(12)));
+        session_start();
+        register_shutdown_function(function () {
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                session_destroy();
+            }
+        });
+        $_SESSION['id_cliente'] = $bd;
+        $_SESSION['nome_usuario'] = $usuario;
+        $_SESSION['controle_estoque'] = (new MorteDao($bd))->controleEstoque($bd);
+        $_SESSION['grupo_usuario'] = (string) ($campos['grupo_usuario'] ?? '');
+        $_SESSION['ultima_atividade'] = time();
+
+        $_POST = [];
+        foreach (self::CAMPOS_FORMULARIO as $campo) {
+            // campo ausente = não enviado (ex.: sexo sem escolher), como no web
+            if (array_key_exists($campo, $campos) && $campos[$campo] !== null) {
+                $_POST[$campo] = (string) $campos[$campo];
+            }
+        }
+        // local e pasto vão com 9 dígitos, como nos campos escondidos do web
+        foreach (['local_id', 'pasto_id'] as $campo) {
+            if (isset($_POST[$campo]) && ctype_digit($_POST[$campo])) {
+                $_POST[$campo] = str_pad($_POST[$campo], 9, '0', STR_PAD_LEFT);
+            }
+        }
+
+        chdir(__DIR__ . '/../..');
+        include $script === 'nascimento'
+            ? 'gravar_nascimento.php'
+            : 'gravar_nascimento_aborto_natimorto.php';
+    }
+
     /** Dias entre duas datas (DateTime::diff->days, como no web). Data
      *  vazia vale "agora", que é o que o PHP faz com new DateTime(''). */
     private function intervalo($de, $ate){

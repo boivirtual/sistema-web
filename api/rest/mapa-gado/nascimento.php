@@ -13,9 +13,18 @@
  *          "machos":   [ {id, alfa, numerico, raca} ],
  *          "racas":    [ {id, descricao} ],
  *          "pelagens": [ {id, descricao} ] }
+ *
+ *   "parametros", "mae", "ultimo_nascimento": ver MapaGadoNascimentoService.
+ *
+ *   "gravar_nascimento" / "gravar_aborto_natimorto" (Confirmar):
+ *     bd, usuario, campos {os campos do formulário do web}
+ *     -> a resposta do próprio script do web: { "error", "message" } ou
+ *        { "success", "message", "id_pasto", "descricao_pasto",
+ *          "descricao_lote" }
  */
 
 require_once __DIR__ . "/../../dao/NascimentoDao.php";
+require_once __DIR__ . "/../../dao/MorteDao.php";
 require_once __DIR__ . "/../../service/MapaGadoNascimentoService.php";
 
 header('Content-Type: application/json; charset=utf-8');
@@ -37,6 +46,12 @@ switch ((string) ($dados['acao'] ?? '')) {
         break;
     case 'mae':
         echo json_encode($service->mae($dados));
+        break;
+    case 'gravar_nascimento':
+        $service->gravarPeloWeb($dados, 'nascimento');
+        break;
+    case 'gravar_aborto_natimorto':
+        $service->gravarPeloWeb($dados, 'aborto_natimorto');
         break;
     case 'ultimo_nascimento':
         echo json_encode($service->ultimoNascimento($dados));
