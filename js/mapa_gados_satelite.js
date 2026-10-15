@@ -722,7 +722,7 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
                     Math.hypot(r.left - px, r.bottom - py), Math.hypot(r.right - px, r.bottom - py)
                 );
 
-                if (distancia <= raioPx * 1.15) {
+                if (distancia <= raioPx * 1.4) {
                     escolhido = niveis[i];
                     break;
                 }
