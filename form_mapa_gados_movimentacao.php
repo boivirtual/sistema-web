@@ -624,7 +624,7 @@
                         <!-- Desktop: titulo e campos de transferencia na MESMA linha -->
                         <div class="row form-group desktop">
                             <div class="col-xs-12 col-md-12 linha-transferir">
-                                <span class="titulo-transferir">Transferir Animais de Pasto:</span>
+                                <span class="titulo-transferir">Mudar Animais de Pasto:</span>
 
                                 <div id="area_transferir_d" class="campos-transferir">
                                     <select class="form-control categoria_sexo" id="categoria_sexo_d" name="categoria_sexo_d">
@@ -646,7 +646,7 @@
                         <!-- Celular: titulo numa linha e os campos (em duas linhas) logo abaixo -->
                         <div class="row form-group mobile" hidden>
                             <div class="col-xs-12 col-md-12">
-                                <span class="titulo-transferir">Transferir Animais de Pasto:</span>
+                                <span class="titulo-transferir">Mudar Animais de Pasto:</span>
                             </div>
                         </div>
 
