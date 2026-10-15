@@ -821,7 +821,7 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
         }
 
         if (infoAnimal && infoAnimal.tem_animal == 'S') {
-            var centro = mapa_gado_satelite_centroide(anel);
+            var centro = mapa_gado_satelite_ponto_interno(anel);
             var linhas = '';
 
             // id no mesmo formato usado pelo Tabuleiro (com aspas literais - drag()/drop() dependem disso)
