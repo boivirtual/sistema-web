@@ -503,7 +503,7 @@ function mapa_gado_satelite_ponto_interno(anel) {
         return mapa_gado_satelite_centroide(anel);
     }
 
-    return [melhor.y, melhor.x / k];
+    return [melhor.y, melhor.x / k, melhor.dist]; // [lat, lng, raio inscrito em graus de latitude]
 }
 
 function mapa_gado_satelite_centroide(anel) {
@@ -656,13 +656,24 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
             var el = tooltip ? tooltip.getElement() : null;
             if (!el) { return; }
             L.DomUtil.removeClass(el, 'satelite-rotulo-oculto');
+            // reafirma o ponto do nome (o Leaflet volta a usar o centro do poligono se reabrir o tooltip)
+            tooltip.setLatLng(p.ponto);
             tooltip.update();
             var limites = p.layer.getBounds();
             var a = map.latLngToContainerPoint(limites.getNorthWest());
             var b = map.latLngToContainerPoint(limites.getSouthEast());
             // na visao geral nenhum pasto mostra o nome (aparece ao passar o mouse)
+            // o nome tambem precisa caber no maior circulo inscrito no pasto (nao so' na caixa que o envolve):
+            // pastos finos ou em "L" tem caixa grande mas pouco espaco de verdade
+            var raioPx = Infinity;
+
+            if (p.raio) {
+                raioPx = Math.abs(map.latLngToContainerPoint([p.ponto[0] + p.raio, p.ponto[1]]).y - map.latLngToContainerPoint(p.ponto).y);
+            }
+
             var mostrar = !modo_visao_geral(map.getZoom()) &&
-                el.offsetWidth <= Math.abs(b.x - a.x) * 0.8;
+                el.offsetWidth <= Math.abs(b.x - a.x) * 0.8 &&
+                el.offsetWidth <= raioPx * 2 * 1.2;
             medidas.push({ el: el, cabe: mostrar });
         });
         medidas.forEach(function(m) {
@@ -718,7 +729,12 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
 
         poligono.bindTooltip(nome, { permanent: true, direction: 'center', className: 'editor-pasto-label' });
 
-        mapaGadoSatelite.poligonos.push({ nome: nome, layer: poligono });
+        // O nome e o selo de animais ficam no MESMO ponto (o mais interno do pasto); antes o nome ficava no
+        // centro do poligono e o selo em outro lugar, e os dois se sobrepunham ao aproximar o zoom.
+        var interno = mapa_gado_satelite_ponto_interno(anel);
+        poligono.getTooltip().setLatLng([interno[0], interno[1]]);
+
+        mapaGadoSatelite.poligonos.push({ nome: nome, layer: poligono, ponto: [interno[0], interno[1]], raio: interno[2] || 0 });
 
         // rotulo oculto por nao caber no pasto (ver atualizar_rotulos_zoom) aparece enquanto o mouse estiver sobre ele
         poligono.on('mouseover', function() {
@@ -746,6 +762,10 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
                 infoAnimal = pastosAnimais[i];
                 break;
             }
+        }
+
+        if (infoAnimal && infoAnimal.tem_animal == 'S') {
+            poligono.getTooltip().options.offset = L.point(0, -8);
         }
 
         poligono.on('click', function(ev) {
@@ -821,7 +841,7 @@ function mapa_gado_satelite_desenhar(pastosAnimais, dadosMapa, local) {
         }
 
         if (infoAnimal && infoAnimal.tem_animal == 'S') {
-            var centro = mapa_gado_satelite_ponto_interno(anel);
+            var centro = interno;
             var linhas = '';
 
             // id no mesmo formato usado pelo Tabuleiro (com aspas literais - drag()/drop() dependem disso)
