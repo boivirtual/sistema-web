@@ -5899,26 +5899,35 @@ body.satelite-arrastando-pasto * {
   display: none !important;
 }
 
-/* Visao geral (zoom afastado): so' as bolinhas das categorias, sem os numeros nem o total */
+/* Visao geral (zoom afastado): no lugar das bolinhas, so' o boi azul indicando que o pasto tem animais,
+   centralizado no ponto do pasto (sem o deslocamento do selo), e sem escala; as bolinhas voltam com o zoom */
+#map.satelite-zoom-baixo .satelite-pasto-badge .satelite-badge-categorias,
 #map.satelite-zoom-baixo .satelite-pasto-badge .satelite-badge-divisor,
-#map.satelite-zoom-baixo .satelite-pasto-badge .total,
-#map.satelite-zoom-baixo .satelite-pasto-badge .linha .icone-animal .qtd {
+#map.satelite-zoom-baixo .satelite-pasto-badge .total {
   display: none;
 }
 
-/* sem o numero dentro, a bolinha volta ao tamanho compacto */
-#map.satelite-zoom-baixo .satelite-pasto-badge .linha .icone-animal {
-  width: 20px;
-  height: 20px;
+#map.satelite-zoom-baixo .satelite-pasto-badge {
+  transform: translate(-50%, -50%);
 }
 
-#map.satelite-zoom-baixo .satelite-pasto-badge .linha .icone-animal img {
-  width: 12px !important;
+.satelite-boi-azul {
+  display: none;
+  /* contorno branco para o boi aparecer sobre o satelite (o filtro e' aplicado antes da mascara, por isso fica no pai) */
+  filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff);
 }
 
-#map.satelite-zoom-baixo .satelite-pasto-badge .satelite-badge-categorias {
-  flex-direction: row;
-  gap: 3px;
+.satelite-boi-azul span {
+  display: block;
+  width: 26px;
+  height: 18px;
+  background: #1a237e;
+  -webkit-mask: url(../img/vaca.png) center / contain no-repeat;
+  mask: url(../img/vaca.png) center / contain no-repeat;
+}
+
+#map.satelite-zoom-baixo .satelite-boi-azul {
+  display: block;
 }
 
 #editor_mapa.editor-sem-rotulos .editor-pasto-label {
