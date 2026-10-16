@@ -14,7 +14,8 @@
  *          "racas":    [ {id, descricao} ],
  *          "pelagens": [ {id, descricao} ] }
  *
- *   "parametros", "mae", "ultimo_nascimento": ver MapaGadoNascimentoService.
+ *   "parametros", "mae", "ultimo_nascimento", "registros_hoje" (bd,
+ *   fazenda): ver MapaGadoNascimentoService.
  *
  *   "gravar_nascimento" / "gravar_aborto_natimorto" (Confirmar):
  *     bd, usuario, campos {os campos do formulário do web}
@@ -52,6 +53,9 @@ switch ((string) ($dados['acao'] ?? '')) {
         break;
     case 'gravar_aborto_natimorto':
         $service->gravarPeloWeb($dados, 'aborto_natimorto');
+        break;
+    case 'registros_hoje':
+        echo json_encode($service->registrosHoje($dados));
         break;
     case 'ultimo_nascimento':
         echo json_encode($service->ultimoNascimento($dados));

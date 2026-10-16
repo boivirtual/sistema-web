@@ -91,6 +91,50 @@ class MapaGadoNascimentoService{
             : 'gravar_nascimento_aborto_natimorto.php';
     }
 
+    /**
+     * "Registros de Hoje": eventos do dia (nascimento, aborto, absorção,
+     * natimorto) da fazenda, prontos para a tabela do aplicativo:
+     * {id, animal ("B-2175", "Aborto", "Absorção" ou "Natimorto"), data
+     * (Y-m-d), sexo (M/F), mae ("B-986"), pasto}.
+     */
+    public function registrosHoje($dados){
+        $bd = trim((string) ($dados['bd'] ?? ''));
+        $local = (int) ($dados['fazenda'] ?? 0);
+        if ($bd === '' || $local <= 0) {
+            return ["success" => false, "message" => "Informe bd e fazenda."];
+        }
+        $codigo = function ($alfa, $numerico) {
+            $numero = ltrim((string) $numerico, '0');
+            if ($numero === '') {
+                $numero = '0';
+            }
+            return trim((string) $alfa) !== '' ? trim($alfa) . '-' . $numero : $numero;
+        };
+        $hoje = date('Y-m-d');
+        $registros = [];
+        foreach ((new NascimentoDao($bd))->registrosDoDia($local, $hoje) as $r) {
+            if ($r['tipo'] === 'A') {
+                $animal = 'Aborto';
+            } else if ($r['tipo'] === 'B') {
+                $animal = 'Absorção';
+            } else if ((int) $r['animal'] === 999999999 || $r['numerico'] === null) {
+                $animal = 'Natimorto';
+            } else {
+                $animal = $codigo($r['alfa'], $r['numerico']);
+            }
+            $sexo = $r['sexo_animal'] !== null ? $r['sexo_animal'] : $r['sexo_mov'];
+            $registros[] = [
+                "id"     => (string) $r['id'],
+                "animal" => $animal,
+                "data"   => (string) $r['data'],
+                "sexo"   => in_array($sexo, ['M', 'F'], true) ? $sexo : '',
+                "mae"    => $r['mae_numerico'] !== null ? $codigo($r['mae_alfa'], $r['mae_numerico']) : '',
+                "pasto"  => (string) ($r['pasto'] ?? ''),
+            ];
+        }
+        return ["success" => true, "data" => $hoje, "registros" => $registros];
+    }
+
     /** Dias entre duas datas (DateTime::diff->days, como no web). Data
      *  vazia vale "agora", que é o que o PHP faz com new DateTime(''). */
     private function intervalo($de, $ate){
