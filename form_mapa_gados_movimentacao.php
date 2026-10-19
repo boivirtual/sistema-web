@@ -2058,6 +2058,12 @@
     });
 
     function askConfirm() {
+        // Pasto vazio: a tela nao tem os campos de transferencia (nao ha o que digitar), entao nunca pergunta.
+        // Sem isso, .val() devolvia undefined, nao batia com '000000000' e a pergunta aparecia sempre.
+        if ($("#categoria_sexo_d, #categoria_sexo_m").length == 0) {
+            return;
+        }
+
         var dispositivo = $("#dispositivo").val();
 
         if (dispositivo=='D') {
