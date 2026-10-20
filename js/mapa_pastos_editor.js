@@ -1634,6 +1634,9 @@ function editor_remover_novo() {
     editorMapa.itens.splice(editorMapa.itens.indexOf(item), 1);
     editorMapa.selecionado = null;
     editor_atualizar_botoes();
+
+    // volta ao estado de "nenhum pasto selecionado": mostra de novo a dica de clicar em um pasto
+    editor_mostrar_dica();
 }
 
 function editor_pedir_exclusao() {
