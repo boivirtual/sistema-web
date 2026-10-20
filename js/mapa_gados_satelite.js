@@ -93,6 +93,20 @@ function _sateliteIntensidadeBorda(pos, inicio, fim) {
 
 document.addEventListener('dragstart', function(ev) {
     _sateliteArrasteAtivo = !!(ev.target.closest && ev.target.closest(SATELITE_SELETOR_ARRASTAVEL));
+
+    // A funcao move TODOS os animais do pasto, nao so' a categoria clicada: a imagem que acompanha o cursor
+    // passa a ser o selo inteiro (bolinhas + total), nao apenas a bolinha ou o total que recebeu o clique.
+    if (_sateliteArrasteAtivo && ev.dataTransfer && ev.dataTransfer.setDragImage) {
+        var selo = ev.target.closest('.satelite-pasto-badge');
+
+        if (selo) {
+            var r = selo.getBoundingClientRect();
+            var dx = Math.min(Math.max(ev.clientX - r.left, 0), r.width);
+            var dy = Math.min(Math.max(ev.clientY - r.top, 0), r.height);
+
+            ev.dataTransfer.setDragImage(selo, dx, dy);
+        }
+    }
 }, true);
 
 // Liga/desliga a auto-rolagem conforme a posicao do cursor (usada pelos dois tipos de arraste: o dos
