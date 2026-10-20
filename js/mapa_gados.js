@@ -159,6 +159,13 @@ function consultar_mapa(){
             $("label#totalAnimais").html("Total de animais: "+totalAnimais);
 
             filtrar_pasto_tabuleiro();
+
+            // voltando de dentro de um pasto: reativa o Mover por toque se estava ligado
+            try {
+                if (!_tabuleiroModoToque && sessionStorage.getItem('mapa_gado_modo_toque') === '1') {
+                    alternar_modo_toque_tabuleiro();
+                }
+            } catch (e) {}
         }
     });
 }
