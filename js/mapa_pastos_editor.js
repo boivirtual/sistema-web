@@ -231,8 +231,8 @@ function editor_aviso(tipo, html, segundos) {
             $("#editor_mapa_aviso").hide();
             editor_ajustar_altura();
 
-            // Depois de uma mensagem de sucesso (salvar, excluir), volta a dica de selecao
-            if (tipo == 'success' && editorMapa.selecionado === null) {
+            // Depois de uma mensagem de sucesso (salvar, excluir), volta a dica de marcar/desmarcar
+            if (tipo == 'success') {
                 editor_mostrar_dica();
             }
         }, segundos * 1000);
@@ -251,7 +251,7 @@ function editor_mostrar_dica() {
         return;
     }
 
-    editor_aviso('info', 'Clique em um pasto no mapa para selecioná-lo, ou clique no pasto selecionado para desmarcá-lo.');
+    editor_aviso('info', 'Clique em um pasto no mapa para selecioná-lo ou desmarcá-lo.');
     editorAvisoEhDica = true;
 }
 
@@ -1028,7 +1028,7 @@ function editor_montar(data, local) {
         }
     });
 
-    var dica = 'Clique em um pasto no mapa para selecioná-lo.';
+    var dica = 'Clique em um pasto no mapa para selecioná-lo ou desmarcá-lo.';
 
     if (editorMapa.itens.length == 0) {
         editor_aviso('info', 'Essa fazenda ainda não tem mapa. Use <strong>Novo pasto</strong> para desenhar o primeiro (comece por ENTRADA e SAIDA).');
