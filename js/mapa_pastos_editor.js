@@ -251,7 +251,7 @@ function editor_mostrar_dica() {
         return;
     }
 
-    editor_aviso('info', 'Clique em um pasto no mapa para selecioná-lo.');
+    editor_aviso('info', 'Clique em um pasto no mapa para selecioná-lo, ou clique no pasto selecionado para desmarcá-lo.');
     editorAvisoEhDica = true;
 }
 
@@ -1049,7 +1049,13 @@ function editor_vincular_layer(item) {
     item.layer.on('click', function(ev) {
         L.DomEvent.stopPropagation(ev);
         if (editorMapa.desenho === null && editorMapa.novoPendente === null) {
-            editor_selecionar(item);
+            // clicar de novo no pasto ja selecionado desmarca (a menos que esteja editando o traçado dele)
+            if (editorMapa.selecionado === item && !editorMapa.editando) {
+                editor_selecionar(null);
+            }
+            else {
+                editor_selecionar(item);
+            }
         }
     });
     item.layer.on('edit', function() {
@@ -1222,13 +1228,6 @@ function editor_selecionar(item) {
         editor_cancelar_exclusao();
     }
 
-    // A dica de "clique em um pasto" some assim que o primeiro pasto e selecionado
-    if (item && editorAvisoEhDica) {
-        editorAvisoEhDica = false;
-        $("#editor_mapa_aviso").hide();
-        editor_ajustar_altura();
-    }
-
     if (anterior) {
         editor_estilizar(anterior);
     }
@@ -1238,6 +1237,11 @@ function editor_selecionar(item) {
     }
 
     editor_atualizar_botoes();
+
+    // Sem outra mensagem na tela, mostra a dica (a mesma com ou sem pasto selecionado: marcar e desmarcar)
+    if (!$("#editor_mapa_aviso").is(':visible')) {
+        editor_mostrar_dica();
+    }
 }
 
 function editor_buscar_pasto() {
@@ -1512,9 +1516,7 @@ function editor_cancelar_nome() {
     editor_ajustar_altura();
     editor_atualizar_botoes();
 
-    if (editorMapa.selecionado === null) {
-        editor_mostrar_dica();
-    }
+    editor_mostrar_dica();
 }
 
 function editor_alternar_tracado() {
