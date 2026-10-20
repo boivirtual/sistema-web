@@ -6188,3 +6188,25 @@ body > .bs-container {
 #map .satelite-pasto-badge[data-nivel="vaca"] .satelite-boi-azul {
   display: block;
 }
+
+/* Mensagens azuis do editor de mapa (dicas): pulsam devagar para chamar a atencao do usuario */
+@keyframes editor-aviso-pulsar {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(18, 140, 184, 0.55);
+  }
+  50% {
+    opacity: 0.75;
+    box-shadow: 0 0 0 7px rgba(18, 140, 184, 0);
+  }
+}
+
+.editor-aviso-sobre-mapa.alert-info {
+  animation: editor-aviso-pulsar 2.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor-aviso-sobre-mapa.alert-info {
+    animation: none;
+  }
+}
