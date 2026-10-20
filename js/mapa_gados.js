@@ -3408,6 +3408,15 @@ function alternar_modo_toque_tabuleiro(){
         $('#aviso_modo_toque_tabuleiro').hide();
     }
 
+    // lembra o estado para reativar ao voltar de dentro de um pasto (a pagina e' recarregada)
+    try {
+        if (_tabuleiroModoToque) {
+            sessionStorage.setItem('mapa_gado_modo_toque', '1');
+        }
+        else {
+            sessionStorage.removeItem('mapa_gado_modo_toque');
+        }
+    } catch (e) {}
 }
 
 // Distingue clique simples de duplo clique: o simples so' roda depois de JANELA_DUPLO_CLIQUE ms sem um
