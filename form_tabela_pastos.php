@@ -571,12 +571,12 @@
                             <h4 class="modal-title">Editor de Mapa - Mensagem</h4>
                         </div>
                         <div class="modal-body">
-                            <p>Existem ajustes no mapa que ainda não foram salvos. Se sair agora, você vai perder esses ajustes.</p>
-                            <p style="font-weight: bold;">Deseja sair mesmo assim?</p>
+                            <p style="font-weight: bold;">Alterações não salvas no mapa!</p>
+                            <p>Se sair agora, você <strong>perderá</strong> esses ajustes.</p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" onclick="editor_sair_sim()">Sim</button>
-                            <button type="button" class="btn btn-success" id="btn_editor_sair_nao" onclick="editor_sair_nao()">Não</button>
+                            <button type="button" class="btn btn-default" onclick="editor_sair_sim()">Sair sem salvar</button>
+                            <button type="button" class="btn btn-success" id="btn_editor_sair_nao" onclick="editor_sair_nao()">Continuar editando</button>
                         </div>
                     </div>
                 </div>
