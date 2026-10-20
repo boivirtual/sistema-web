@@ -1672,7 +1672,7 @@ function editor_alternar_tracado() {
         var sobrepostos = editor_sobreposicoes_novas(item);
 
         if (sobrepostos.length) {
-            editor_aviso('warning', editor_texto_sobreposicao(item.nome, sobrepostos) +
+            editor_aviso('danger', editor_texto_sobreposicao(item.nome, sobrepostos) +
                 ' Ajuste o traçado para não ficar por cima de outro pasto, ou clique em <strong>Descartar edição do traçado</strong> para voltar como estava.');
             return;
         }
@@ -1909,7 +1909,7 @@ function editor_salvar() {
         var sobrepostos = emEdicao ? editor_sobreposicoes_novas(emEdicao) : [];
 
         if (sobrepostos.length) {
-            editor_aviso('warning', editor_texto_sobreposicao(emEdicao.nome, sobrepostos) +
+            editor_aviso('danger', editor_texto_sobreposicao(emEdicao.nome, sobrepostos) +
                 ' Ajuste o traçado antes de salvar, ou clique em <strong>Descartar edição do traçado</strong>.');
             return;
         }

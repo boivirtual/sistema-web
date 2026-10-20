@@ -6229,3 +6229,40 @@ body > .bs-container .dropdown-menu {
     animation: none;
   }
 }
+
+/* Alertas de erro (vermelhos) do editor de mapa, ex.: pasto sobreposto a outro: fundo vermelho, letras brancas e
+   as mesmas ondas das outras mensagens, com anel vermelho */
+.editor-aviso-sobre-mapa.alert-danger {
+  background-color: rgba(198, 40, 40, 0.92);
+  border-color: #8e1b1b;
+  color: #ffffff;
+}
+
+.editor-aviso-sobre-mapa.alert-danger strong {
+  color: #ffffff;
+}
+
+.editor-aviso-sobre-mapa.alert-danger .close {
+  color: #ffffff;
+  opacity: 0.9;
+  text-shadow: none;
+}
+
+@keyframes editor-aviso-ondas-vermelho {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.65), 0 0 0 0 rgba(198, 40, 40, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 0 9px rgba(255, 255, 255, 0), 0 0 0 20px rgba(198, 40, 40, 0);
+  }
+}
+
+.editor-aviso-sobre-mapa.alert-danger {
+  animation: editor-aviso-ondas-vermelho 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor-aviso-sobre-mapa.alert-danger {
+    animation: none;
+  }
+}
