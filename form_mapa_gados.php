@@ -164,7 +164,7 @@
                     <div class="row" id="aviso_modo_toque_tabuleiro" style="display: none;">
                         <div class="col-lg-12">
                             <div class="alert alert-info" style="padding: 6px 12px; margin-bottom: 5px;">
-                                Modo toque ativado: dê <strong>duplo clique</strong> no pasto de <strong>origem</strong> (fica com borda laranja), depois <strong>duplo clique</strong> no pasto de <strong>destino</strong>. O clique simples continua abrindo o pasto.
+                                <strong>Mover animais por toque:</strong> Tocar 2x no pasto Origem e 2x no pasto Destino.
                             </div>
                         </div>
                     </div>
