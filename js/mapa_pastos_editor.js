@@ -1527,16 +1527,10 @@ function editor_alternar_tracado() {
     if (editorMapa.editando) {
         editor_parar_edicao();
 
-        if (editor_tem_alteracoes()) {
-            editor_aviso('info', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 6);
-        }
-        else {
-            clearTimeout(editorTemporizadorAviso);
-            $("#editor_mapa_aviso").hide();
-            editor_ajustar_altura();
-        }
-
-        editor_atualizar_botoes();
+        // Concluiu o traçado: volta ao inicio (nenhum pasto selecionado) com a dica de clicar em um pasto.
+        // Os botoes que ajustam o pasto somem; Novo pasto, Localizar e Salvar (se houver ajustes) ficam.
+        editor_selecionar(null);
+        editor_mostrar_dica();
         return;
     }
 
