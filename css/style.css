@@ -6233,7 +6233,7 @@ body > .bs-container .dropdown-menu {
 /* Alertas de erro (vermelhos) do editor de mapa, ex.: pasto sobreposto a outro: fundo vermelho, letras brancas e
    as mesmas ondas das outras mensagens, com anel vermelho */
 .editor-aviso-sobre-mapa.alert-danger {
-  background-color: rgba(198, 40, 40, 0.92);
+  background-color: rgba(198, 40, 40, 0.55);
   border-color: #8e1b1b;
   color: #ffffff;
 }
