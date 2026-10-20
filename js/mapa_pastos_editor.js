@@ -1529,7 +1529,7 @@ function editor_confirmar_nome() {
     }
 
     $("#modal_editor_nome").modal('hide');
-    editor_aviso('info', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 6);
+    editor_aviso('success', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 6);
     editor_atualizar_botoes();
 }
 
@@ -1562,7 +1562,7 @@ function editor_alternar_tracado() {
         editor_selecionar(null);
 
         if (editor_tem_alteracoes()) {
-            editor_aviso('info', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 8);
+            editor_aviso('success', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 8);
         }
         else {
             editor_mostrar_dica();
@@ -1628,7 +1628,7 @@ function editor_cancelar_tracado() {
     editor_estilizar(item);
 
     if (editor_tem_alteracoes()) {
-        editor_aviso('info', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 6);
+        editor_aviso('success', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 6);
     }
     else {
         editor_mostrar_dica();
