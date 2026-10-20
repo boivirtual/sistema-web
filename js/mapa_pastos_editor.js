@@ -380,7 +380,8 @@ function editor_limpar_tudo() {
     $("#editor_busca").val('');
     $("#editor_lista_pastos").empty();
     $("#editor_nome_pasto, #editor_senha_excluir").val('');
-    $("#editor_painel_nome, #editor_painel_excluir").hide();
+    $("#modal_editor_nome").modal('hide');
+    $("#editor_painel_excluir").hide();
     $("#editor_btn_novo").removeClass('active');
 
     clearTimeout(editorTemporizadorAviso);
@@ -624,6 +625,25 @@ function editor_preencher_fazendas() {
 // Este script e carregado antes do jQuery (rodape.php), entao o registro espera o load da pagina
 window.addEventListener('load', function() {
     $(window).on('resize', editor_ajustar_altura);
+
+    // Modal de nome/modulo: vai para o body (no modo tela cheia o editor tem z-index 1030 e esconderia o modal
+    // atras do fundo escuro); foco no nome ao abrir, Enter confirma, e o erro some ao digitar
+    $('#modal_editor_nome').appendTo('body');
+
+    $(document).on('shown.bs.modal', '#modal_editor_nome', function() {
+        $('#editor_nome_pasto').trigger('focus');
+    });
+
+    $(document).on('keydown', '#editor_nome_pasto', function(ev) {
+        if (ev.key === 'Enter') {
+            ev.preventDefault();
+            editor_confirmar_nome();
+        }
+    });
+
+    $(document).on('input', '#editor_nome_pasto', function() {
+        $('#editor_erro_nome').hide();
+    });
 
     // Ao digitar ENTRADA ou SAIDA num pasto novo, o modulo vai sozinho para 999 (ENTRADA/SAIDA) e trava
     $(document).on('input', '#editor_nome_pasto', function() {
@@ -960,7 +980,7 @@ function editor_montar(data, local) {
     editorMapa.modulos = data.modulos;
     editor_preencher_modulos();
 
-    $("#editor_painel_nome").hide();
+    $("#modal_editor_nome").modal('hide');
 
     var features = data.geojson.features;
 
@@ -1394,7 +1414,10 @@ function editor_abrir_painel_nome(valor, titulo) {
     editorAvisoEhDica = false;
     $("#editor_mapa_aviso").hide();
 
-    $("#editor_painel_nome label").first().text(titulo);
+    // titulo = rotulo do campo; o titulo do modal diz se e' pasto novo ou renomear
+    $("#editor_label_nome").text(titulo);
+    $("#editor_titulo_modal_nome").text(editorMapa.modoNome == 'renomear' ? 'Renomear pasto' : 'Novo pasto');
+    $("#editor_erro_nome").hide().text('');
     var moduloAtual = '';
     var reservado = false;
 
@@ -1414,22 +1437,26 @@ function editor_abrir_painel_nome(valor, titulo) {
     }
 
     $("#editor_nome_pasto").val(valor);
-    $("#editor_painel_nome").show();
-    $("#editor_nome_pasto").trigger('focus');
+    $("#modal_editor_nome").modal('show');
     editor_ajustar_altura();
     editor_atualizar_botoes();
+}
+
+// Erro de validacao do nome/modulo: aparece dentro do modal (as mensagens sobre o mapa ficam atras dele)
+function editor_erro_nome(mensagem) {
+    $("#editor_erro_nome").text(mensagem).show();
 }
 
 function editor_confirmar_nome() {
     var nome = $("#editor_nome_pasto").val().trim().replace(/\s+/g, ' ');
 
     if (nome == '') {
-        editor_aviso('warning', 'Informe o nome do pasto.');
+        editor_erro_nome('Informe o nome do pasto.');
         return;
     }
 
     if (nome.length > 60) {
-        editor_aviso('warning', 'O nome do pasto pode ter no máximo 60 caracteres.');
+        editor_erro_nome('O nome do pasto pode ter no máximo 60 caracteres.');
         return;
     }
 
@@ -1437,7 +1464,7 @@ function editor_confirmar_nome() {
 
     for (var i = 0; i < editorMapa.itens.length; i++) {
         if (editorMapa.itens[i] !== atual && editorMapa.itens[i].nome.toUpperCase() == nome.toUpperCase()) {
-            editor_aviso('warning', 'Já existe um pasto chamado "' + nome + '" nesse mapa.');
+            editor_erro_nome('Já existe um pasto chamado "' + nome + '" nesse mapa.');
             return;
         }
     }
@@ -1460,7 +1487,7 @@ function editor_confirmar_nome() {
         }
 
         if (!reservado && !cadastrado && isNaN(moduloEscolhido)) {
-            editor_aviso('warning', 'Selecione o módulo do novo pasto.');
+            editor_erro_nome('Selecione o módulo do novo pasto.');
             return;
         }
 
@@ -1501,7 +1528,7 @@ function editor_confirmar_nome() {
         editor_estilizar(atual);
     }
 
-    $("#editor_painel_nome").hide();
+    $("#modal_editor_nome").modal('hide');
     editor_aviso('info', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 6);
     editor_atualizar_botoes();
 }
@@ -1512,7 +1539,7 @@ function editor_cancelar_nome() {
         editorMapa.novoPendente = null;
     }
 
-    $("#editor_painel_nome").hide();
+    $("#modal_editor_nome").modal('hide');
     editor_ajustar_altura();
     editor_atualizar_botoes();
 

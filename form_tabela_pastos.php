@@ -536,30 +536,40 @@
                     </div>
                 </div>
 
-                <div id="editor_painel_nome" class="row">
-                    <div class="form-group col-md-4">
-                        <label for="editor_nome_pasto" class="control-label">Nome do pasto</label>
-                        <input type="text" class="form-control" id="editor_nome_pasto" maxlength="60" autocomplete="off" list="editor_lista_cadastrados">
-                        <datalist id="editor_lista_cadastrados"></datalist>
-                    </div>
-                    <div class="form-group col-md-3" id="editor_grupo_modulo">
-                        <label for="editor_modulo_pasto" class="control-label"><span class="required">*</span> Módulo</label>
-                        <select class="form-control selectpicker" id="editor_modulo_pasto" data-live-search="true" data-size="8" data-container="body" data-none-selected-text="Selecione...">
-                            <option value="">Selecione...</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label class="control-label">&nbsp;</label><br>
-                        <button type="button" class="btn btn-primary" onclick="editor_confirmar_nome()">Confirmar</button>
-                        <button type="button" class="btn btn-default" onclick="editor_cancelar_nome()">Cancelar</button>
-                    </div>
-                </div>
-
                 <div id="editor_mapa_area" style="position: relative;">
                     <div id="editor_mapa_aviso" class="alert alert-info editor-aviso-sobre-mapa">Selecione a Fazenda para carregar o mapa.</div>
 
                     <div id="editor_mapa" style="height: 500px; min-height: 300px;"></div>
 
+                </div>
+            </div>
+
+            <div class="modal fade" id="modal_editor_nome" tabindex="-1" role="dialog"
+             aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="editor_titulo_modal_nome">Novo pasto</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="editor_nome_pasto" class="control-label" id="editor_label_nome">Nome do pasto</label>
+                                <input type="text" class="form-control" id="editor_nome_pasto" maxlength="60" autocomplete="off" list="editor_lista_cadastrados">
+                                <datalist id="editor_lista_cadastrados"></datalist>
+                            </div>
+                            <div class="form-group" id="editor_grupo_modulo">
+                                <label for="editor_modulo_pasto" class="control-label"><span class="required">*</span> Módulo</label>
+                                <select class="form-control selectpicker" id="editor_modulo_pasto" data-live-search="true" data-size="8" data-container="body" data-none-selected-text="Selecione...">
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
+                            <p id="editor_erro_nome" style="display: none; color: #b94a48; font-weight: bold; margin: 0;"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" onclick="editor_cancelar_nome()">Cancelar</button>
+                            <button type="button" class="btn btn-primary" onclick="editor_confirmar_nome()">Confirmar</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 

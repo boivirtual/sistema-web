@@ -5934,11 +5934,6 @@ body.satelite-arrastando-pasto * {
   display: none;
 }
 
-#editor_painel_nome {
-  display: none;
-  margin-bottom: 10px;
-}
-
 /* Legenda de cores dos modulos no editor de mapa */
 .editor-legenda {
   background: rgba(0, 0, 0, 0.28);
@@ -6208,4 +6203,9 @@ body > .bs-container {
   .editor-aviso-sobre-mapa.alert-info {
     animation: none;
   }
+}
+
+/* Modal de nome/modulo do editor de mapa: a lista do seletor de modulo (aberta no body) precisa ficar acima do modal */
+body > .bs-container .dropdown-menu {
+  z-index: 1100 !important;
 }
