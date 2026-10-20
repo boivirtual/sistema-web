@@ -1310,7 +1310,16 @@ function editor_atualizar_botoes() {
     // a tela mostra so os campos de latitude e longitude
     var ferramentasVisiveis = editorMapa.local != '' && (editorMapa.modo != 'novo' || editorMapa.coordOk);
 
-    $("#editor_barra_ferramentas, #editor_btn_salvar").toggle(ferramentasVisiveis);
+    $("#editor_barra_ferramentas").toggle(ferramentasVisiveis);
+
+    var alteracoes = editor_tem_alteracoes();
+
+    // Editar tracado, Renomear e Excluir so aparecem com um pasto selecionado (clicando nele ou buscando no
+    // Localizar pasto) e nunca durante a inclusao de um pasto novo (desenhando ou escolhendo nome e modulo).
+    // O Salvar aparece com um pasto selecionado ou com ajustes pendentes (ex.: pasto novo ja confirmado),
+    // tambem nunca durante a inclusao.
+    $("#editor_btn_tracado, #editor_btn_renomear, #editor_btn_excluir").toggle(ferramentasVisiveis && !!item && !ocupado);
+    $("#editor_btn_salvar").toggle(ferramentasVisiveis && !ocupado && (!!item || alteracoes));
 
     // Refazer a localizacao: so no Novo Mapa, depois de aplicada e antes de desenhar qualquer pasto
     $("#editor_btn_refazer_local").toggle(editorMapa.modo == 'novo' && editorMapa.coordOk && editorMapa.itens.length === 0 && !ocupado);
@@ -1323,7 +1332,7 @@ function editor_atualizar_botoes() {
         .prop('disabled', !item || !item.novo || ocupado || editorMapa.editando);
 
     $("#editor_btn_excluir").prop('disabled', !item || item.novo || ocupado || editorMapa.editando);
-    $("#editor_btn_salvar").prop('disabled', !pronto || ocupado || editorMapa.editando || !editor_tem_alteracoes());
+    $("#editor_btn_salvar").prop('disabled', !pronto || ocupado || editorMapa.editando || !alteracoes);
 
     if (item) {
         var ha = editor_ha(editor_coordenadas(item));

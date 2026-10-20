@@ -571,7 +571,7 @@
                             <h4 class="modal-title">Editor de Mapa - Mensagem</h4>
                         </div>
                         <div class="modal-body">
-                            <p style="font-weight: bold;">Alterações não salvas no mapa!</p>
+                            <p style="font-weight: bold;">Existem ajustes no mapa que ainda não foram salvos no banco de dados!</p>
                             <p>Se sair agora, você <strong>perderá</strong> esses ajustes.</p>
                         </div>
                         <div class="modal-footer">
