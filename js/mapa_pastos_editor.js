@@ -720,14 +720,16 @@ document.addEventListener('click', function(ev) {
 
 function editor_preparar_mapa(sucesso) {
     editor_carregar_bibliotecas(function() {
-        // so a primeira vez: tenta carregar os nomes vetoriais antes de montar o mapa
-        editor_carregar_rotulos_vetoriais(function() {
-            if (editorMapa.map === null) {
-                editor_iniciar_mapa();
-            }
+        // so a primeira vez: tenta carregar os nomes vetoriais e a biblioteca de sobreposicao antes de montar o mapa
+        editor_carregar_clipping(function() {
+            editor_carregar_rotulos_vetoriais(function() {
+                if (editorMapa.map === null) {
+                    editor_iniciar_mapa();
+                }
 
-            editorMapa.map.invalidateSize();
-            sucesso();
+                editorMapa.map.invalidateSize();
+                sucesso();
+            });
         });
     });
 }
@@ -1276,6 +1278,109 @@ function editor_buscar_pasto() {
     }
 }
 
+// ---- Sobreposicao de pastos ----
+// Intersecao calculada com a biblioteca polygon-clipping (carregada de um CDN). Se ela nao carregar, a
+// verificacao e' ignorada (o editor continua funcionando, so' sem o alerta).
+var EDITOR_SOBREPOSICAO_MIN_HA = 0.1;      // ignora lascas de borda entre pastos vizinhos
+var EDITOR_SOBREPOSICAO_MIN_PERCENTUAL = 1; // e exige mais de 1% do menor dos dois pastos
+
+var editorClippingCarregado = null;
+
+function editor_carregar_clipping(depois) {
+    if (editorClippingCarregado !== null || window.polygonClipping) {
+        depois();
+        return;
+    }
+
+    editorClippingCarregado = false;
+    editor_carregar_script('https://cdn.jsdelivr.net/npm/polygon-clipping@0.15.7/dist/polygon-clipping.umd.min.js', function() {
+        editorClippingCarregado = !!window.polygonClipping;
+        depois();
+    }, depois);
+}
+
+function editor_anel_de_latlngs(latlngs) {
+    var anel = latlngs.map(function(p) { return [p.lng, p.lat]; });
+    anel.push(anel[0]);
+    return anel;
+}
+
+// Area (ha) de um resultado do polygon-clipping (MultiPolygon: lista de [anelExterno, ...furos])
+function editor_ha_multipoligono(multi) {
+    var total = 0;
+
+    multi.forEach(function(poligono) {
+        total += editor_ha(poligono[0]);
+
+        for (var i = 1; i < poligono.length; i++) {
+            total -= editor_ha(poligono[i]);
+        }
+    });
+
+    return total;
+}
+
+// Sobreposicoes de um contorno (lista de LatLng) com os outros pastos do mapa: [{item, ha}], so' as relevantes
+function editor_sobreposicoes_de(latlngs, ignorar) {
+    var resultado = [];
+
+    if (!window.polygonClipping) {
+        return resultado;
+    }
+
+    var anelA = editor_anel_de_latlngs(latlngs);
+    var haA = editor_ha(anelA);
+    var limitesA = L.latLngBounds(latlngs);
+
+    editorMapa.itens.forEach(function(outro) {
+        if (outro === ignorar || !limitesA.intersects(outro.layer.getBounds())) {
+            return;
+        }
+
+        var anelB = editor_anel_de_latlngs(outro.layer.getLatLngs()[0]);
+
+        try {
+            var inter = polygonClipping.intersection([anelA], [anelB]);
+            var ha = editor_ha_multipoligono(inter);
+            var menor = Math.min(haA, editor_ha(anelB));
+
+            if (ha > EDITOR_SOBREPOSICAO_MIN_HA && ha > menor * EDITOR_SOBREPOSICAO_MIN_PERCENTUAL / 100) {
+                resultado.push({ item: outro, ha: ha });
+            }
+        }
+        catch (e) {}
+    });
+
+    return resultado;
+}
+
+// Texto do alerta: quais pastos estao sobrepostos e quantos hectares
+function editor_texto_sobreposicao(nome, lista) {
+    var partes = lista.map(function(o) {
+        return '<strong>' + $('<div>').text(o.item.nome).html() + '</strong> (cerca de ' + o.ha.toFixed(2).replace('.', ',') + ' ha)';
+    });
+
+    return 'O pasto <strong>' + $('<div>').text(nome).html() + '</strong> está sobre ' + partes.join(', ') + '.';
+}
+
+// Pasto em edicao de tracado: sobreposicoes NOVAS (alem das que ja existiam antes da edicao, para nao
+// travar mapas antigos que ja tinham pastos encostados)
+function editor_sobreposicoes_novas(item) {
+    var agora = editor_sobreposicoes_de(item.layer.getLatLngs()[0], item);
+    var antes = {};
+
+    if (editorMapa.tracadoAntes && editorMapa.tracadoAntes.item === item && agora.length) {
+        editor_sobreposicoes_de(editorMapa.tracadoAntes.latlngs, item).forEach(function(o) {
+            antes[editorMapa.itens.indexOf(o.item)] = o.ha;
+        });
+    }
+
+    return agora.filter(function(o) {
+        var anterior = antes[editorMapa.itens.indexOf(o.item)] || 0;
+        return o.ha - anterior > EDITOR_SOBREPOSICAO_MIN_HA;
+    });
+}
+
 function editor_coordenadas(item) {
     var latlngs = item.layer.getLatLngs()[0];
     var anel = [];
@@ -1469,6 +1574,16 @@ function editor_confirmar_nome() {
         }
     }
 
+    if (editorMapa.modoNome == 'novo' && editorMapa.novoPendente) {
+        var sobrepostosNovo = editor_sobreposicoes_de(editorMapa.novoPendente.getLatLngs()[0], null);
+
+        if (sobrepostosNovo.length) {
+            editor_erro_nome(editor_texto_sobreposicao(nome, sobrepostosNovo).replace(/<[^>]+>/g, '') +
+                ' Clique em Cancelar e desenhe de novo sem ficar por cima de outro pasto.');
+            return;
+        }
+    }
+
     if (editorMapa.modoNome == 'novo') {
         var nomeMaiusculo = nome.toUpperCase();
         var reservado = (nomeMaiusculo == 'ENTRADA' || nomeMaiusculo == 'SAIDA' || nomeMaiusculo == 'SAÍDA');
@@ -1554,6 +1669,14 @@ function editor_alternar_tracado() {
     }
 
     if (editorMapa.editando) {
+        var sobrepostos = editor_sobreposicoes_novas(item);
+
+        if (sobrepostos.length) {
+            editor_aviso('warning', editor_texto_sobreposicao(item.nome, sobrepostos) +
+                ' Ajuste o traçado para não ficar por cima de outro pasto, ou clique em <strong>Descartar edição do traçado</strong> para voltar como estava.');
+            return;
+        }
+
         editor_parar_edicao();
 
         // Concluiu o traçado: volta ao inicio (nenhum pasto selecionado). Os botoes que ajustam o pasto somem;
@@ -1782,6 +1905,15 @@ function editor_confirmar_exclusao() {
 
 function editor_salvar() {
     if (editorMapa.editando) {
+        var emEdicao = editorMapa.selecionado;
+        var sobrepostos = emEdicao ? editor_sobreposicoes_novas(emEdicao) : [];
+
+        if (sobrepostos.length) {
+            editor_aviso('warning', editor_texto_sobreposicao(emEdicao.nome, sobrepostos) +
+                ' Ajuste o traçado antes de salvar, ou clique em <strong>Descartar edição do traçado</strong>.');
+            return;
+        }
+
         editor_parar_edicao();
     }
 
