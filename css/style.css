@@ -6189,23 +6189,32 @@ body > .bs-container {
   display: block;
 }
 
-/* Mensagens azuis do editor de mapa (dicas): dois aneis (branco e azul) se expandem em volta da mensagem, como
-   um sinal, para chamar a atencao do usuario */
-@keyframes editor-aviso-ondas {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.9), 0 0 0 0 rgba(18, 140, 184, 0.9);
+/* Mensagens azuis do editor de mapa (dicas) - TESTE "holofote": o mapa escurece em volta e so a mensagem fica
+   clara, com borda branca e pulso leve. O escurecimento e um box-shadow enorme da propria mensagem, cortado
+   pela area do mapa (#editor_mapa_area); nao captura clique. Para voltar as ondas ou o pulso, ver o historico. */
+#editor_mapa_area {
+  overflow: hidden;
+}
+
+@keyframes editor-aviso-holofote {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.35);
   }
-  100% {
-    box-shadow: 0 0 0 12px rgba(255, 255, 255, 0), 0 0 0 26px rgba(18, 140, 184, 0);
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.55);
   }
 }
 
 .editor-aviso-sobre-mapa.alert-info {
-  animation: editor-aviso-ondas 1.8s ease-out infinite;
+  border: 2px solid #ffffff;
+  animation: editor-aviso-holofote 1.8s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .editor-aviso-sobre-mapa.alert-info {
     animation: none;
+    box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.45);
   }
 }
