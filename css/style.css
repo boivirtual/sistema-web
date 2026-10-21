@@ -6266,3 +6266,40 @@ body > .bs-container .dropdown-menu {
     animation: none;
   }
 }
+
+/* Alertas de atencao (amarelos/laranja) do editor de mapa, ex.: fazenda sem mapa liberada: fundo ambar transparente,
+   letras brancas e as mesmas ondas das outras mensagens, com anel ambar */
+.editor-aviso-sobre-mapa.alert-warning {
+  background-color: rgba(224, 150, 10, 0.6);
+  border-color: #b87500;
+  color: #ffffff;
+}
+
+.editor-aviso-sobre-mapa.alert-warning strong {
+  color: #ffffff;
+}
+
+.editor-aviso-sobre-mapa.alert-warning .close {
+  color: #ffffff;
+  opacity: 0.9;
+  text-shadow: none;
+}
+
+@keyframes editor-aviso-ondas-ambar {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.65), 0 0 0 0 rgba(224, 150, 10, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 0 9px rgba(255, 255, 255, 0), 0 0 0 20px rgba(224, 150, 10, 0);
+  }
+}
+
+.editor-aviso-sobre-mapa.alert-warning {
+  animation: editor-aviso-ondas-ambar 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor-aviso-sobre-mapa.alert-warning {
+    animation: none;
+  }
+}
