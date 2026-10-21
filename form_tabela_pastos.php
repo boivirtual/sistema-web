@@ -519,7 +519,7 @@
                 <div id="editor_painel_coord" class="row" style="display: none;">
                     <div class="col-md-12">
                         <p id="editor_texto_coord" style="font-weight: bold; color: #b94a48;"></p>
-                        <p class="text-muted" style="margin-top: -5px;"><i class="fa fa-map-marker-alt"></i> Ou clique no mapa para preencher a latitude e a longitude: aproxime e clique de novo para ajustar o ponto, e depois clique em Aplicar.</p>
+                        <p class="text-muted" style="margin-top: -5px; color: #4d4d4d;"><i class="fa fa-map-marker-alt"></i> Ou clique no mapa para preencher a latitude e a longitude: aproxime e clique de novo para ajustar o ponto, e depois clique em Aplicar.</p>
                     </div>
                     <div class="form-group col-md-3">
                         <label for="editor_lat" class="control-label">Latitude</label>
