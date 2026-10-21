@@ -12,6 +12,10 @@
  *
  * Saída: { "success": true|false, "message": "...", "ignorado": bool,
  *          "movimentacao": "000000875" }
+ *
+ * Com "acao": "registros_hoje" (bd, fazenda): as mortes lançadas hoje na
+ * fazenda — { "success", "data", "registros": [ {id, animal, data, sexo,
+ * motivo, pasto} ] } (ver MapaGadoService::morteRegistrosHoje).
  */
 
 require_once __DIR__ . "/../../entitie/CategoriaIdade.php";
@@ -30,4 +34,8 @@ if (!is_array($dados)) {
 }
 
 $service = new MapaGadoService();
+if (($dados['acao'] ?? '') === 'registros_hoje') {
+    echo json_encode($service->morteRegistrosHoje($dados));
+    exit;
+}
 echo json_encode($service->gravarMorte($dados));

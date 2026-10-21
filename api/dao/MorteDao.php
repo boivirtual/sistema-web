@@ -303,6 +303,42 @@ class MorteDao{
         return $row !== null && $row !== false;
     }
 
+    /**
+     * "Registros de Hoje" do modal da Morte: mortes (movimentação 888, fora
+     * da lixeira) da fazenda INCLUÍDAS no sistema em $data, em ordem de
+     * lançamento — a data mostrada é a da morte.
+     */
+    public function registrosDoDia($local, $data){
+        $local = (int) $local;
+        $data = $this->esc($data);
+        $a = [];
+        $r = mysqli_query($this->con, "SELECT m.tbl_movimentacao_id AS id,
+                i.tbl_ite_movimentacao_codigo_animal AS codigo,
+                a.tbl_animal_codigo_alfa AS alfa,
+                a.tbl_animal_codigo_numerico AS numerico,
+                i.tbl_ite_movimentacao_data_emissao AS data,
+                i.tbl_ite_movimentacao_sexo AS sexo,
+                c.tab_descricao_causa_morte AS motivo,
+                p.tbl_pasto_descricao AS pasto
+            FROM tbl_movimentacao m
+            INNER JOIN tbl_item_movimentacao i ON i.tbl_ite_movimentacao_numero_id = m.tbl_movimentacao_id
+            LEFT JOIN tbl_animais a ON a.tbl_animal_codigo_id = i.tbl_ite_movimentacao_codigo_id_animal
+            LEFT JOIN tabela_causa_morte c ON c.tab_codigo_causa_morte = i.tbl_ite_movimentacao_motivo_morte
+            LEFT JOIN tbl_pasto p ON p.tbl_pasto_id = i.tbl_ite_movimentacao_codigo_pasto
+            WHERE m.tbl_movimentacao_tipo = 888
+              AND m.tbl_movimentacao_lixeira = 0
+              AND m.tbl_movimentacao_codigo_local_origem = {$local}
+              AND m.tbl_movimentacao_incluido_em >= '$data 00:00:00'
+              AND m.tbl_movimentacao_incluido_em <= '$data 23:59:59'
+            ORDER BY m.tbl_movimentacao_incluido_em ASC, m.tbl_movimentacao_id ASC");
+        if ($r) {
+            while ($row = mysqli_fetch_assoc($r)) {
+                $a[] = $row;
+            }
+        }
+        return $a;
+    }
+
     /** Cabeçalho da movimentação; devolve também "id". */
     public function incluirMovimentacao($local, $dataMorte, $usuario, $dataHora){
         $local = (int) $local;

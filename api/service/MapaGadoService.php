@@ -709,6 +709,40 @@ class MapaGadoService{
      *
      * O controle por lote ('L') ainda não é atendido pelo aplicativo.
      */
+    /**
+     * "Registros de Hoje" do modal da Morte: {id, animal ("B-1053"), data
+     * (Y-m-d da morte), sexo (M/F), motivo, pasto} das mortes lançadas hoje
+     * na fazenda.
+     */
+    public function morteRegistrosHoje($dados){
+        $bd = trim((string) ($dados['bd'] ?? ''));
+        $local = (int) ($dados['fazenda'] ?? 0);
+        if ($bd === '' || $local <= 0) {
+            return ["success" => false, "message" => "Informe bd e fazenda."];
+        }
+        $hoje = date('Y-m-d');
+        $registros = [];
+        foreach ((new MorteDao($bd))->registrosDoDia($local, $hoje) as $r) {
+            if ($r['numerico'] !== null) {
+                $numero = ltrim((string) $r['numerico'], '0');
+                $numero = $numero === '' ? '0' : $numero;
+                $animal = trim((string) $r['alfa']) !== '' ? trim($r['alfa']) . '-' . $numero : $numero;
+            } else {
+                $animal = (string) $r['codigo'];
+            }
+            $sexo = strtoupper(substr((string) $r['sexo'], 0, 1));
+            $registros[] = [
+                "id"     => (string) $r['id'],
+                "animal" => $animal,
+                "data"   => (string) $r['data'],
+                "sexo"   => in_array($sexo, ['M', 'F'], true) ? $sexo : '',
+                "motivo" => (string) ($r['motivo'] ?? ''),
+                "pasto"  => (string) ($r['pasto'] ?? ''),
+            ];
+        }
+        return ["success" => true, "data" => $hoje, "registros" => $registros];
+    }
+
     public function gravarMorte($dados){
         $bd = trim((string) ($dados['bd'] ?? ''));
         $local = (int) ($dados['fazenda'] ?? 0);
