@@ -310,33 +310,44 @@ class NascimentoDao{
 
     /**
      * "Registros de Hoje" da tela do Nascimento: nascimentos, abortos,
-     * absorções e natimortos da fazenda com a data (do nascimento ou da
-     * ocorrência) igual a $data — mesma seleção da lista de nascimentos do
-     * web (form_lista_nascimento.php, tipos N, A e B; natimorto = N com o
-     * animal 999999999), em ordem de lançamento.
+     * absorções e natimortos da fazenda INCLUÍDOS no sistema em $data (o
+     * que foi lançado hoje, mesmo com nascimento em data anterior):
+     *   - nascimento: pela inclusão do animal (tbl_animal_incluido_em);
+     *   - aborto, absorção e natimorto (não criam animal): pela data de
+     *     lançamento da movimentação (tbl_mov_estoque_data_emissao).
+     * A data mostrada é a do nascimento do animal (ou da ocorrência).
+     * Mesmos tipos da lista de nascimentos do web (N, A e B; natimorto = N
+     * com o animal 999999999), em ordem de lançamento.
      */
     public function registrosDoDia($local, $data){
         $local = $this->esc($local);
         $data = $this->esc($data);
         return $this->linhas("SELECT m.tbl_mov_estoque_numero_id AS id,
                 m.tbl_mov_estoque_codigo_id_animal AS animal,
-                m.tbl_mov_estoque_nascimento AS data,
+                COALESCE(a.tbl_animal_data_nascimento, m.tbl_mov_estoque_nascimento) AS data,
                 m.tbl_mov_estoque_tipo_movimentacao AS tipo,
                 m.tbl_mov_estoque_sexo AS sexo_mov,
                 a.tbl_animal_codigo_alfa AS alfa,
                 a.tbl_animal_codigo_numerico AS numerico,
                 a.tbl_animal_sexo AS sexo_animal,
+                a.tbl_animal_ativo AS ativo,
                 COALESCE(ma.tbl_animal_codigo_alfa, mm.tbl_animal_codigo_alfa) AS mae_alfa,
                 COALESCE(ma.tbl_animal_codigo_numerico, mm.tbl_animal_codigo_numerico) AS mae_numerico,
                 p.tbl_pasto_descricao AS pasto
             FROM tbl_movimentacao_estoque m
             LEFT JOIN tbl_animais a ON a.tbl_animal_codigo_id = m.tbl_mov_estoque_codigo_id_animal
+                AND m.tbl_mov_estoque_codigo_id_animal <> 999999999
             LEFT JOIN tbl_animais ma ON ma.tbl_animal_codigo_id = a.tbl_animal_codigo_mae
             LEFT JOIN tbl_animais mm ON mm.tbl_animal_codigo_id = m.tbl_mov_estoque_codigo_mae
             LEFT JOIN tbl_pasto p ON p.tbl_pasto_id = m.tbl_mov_estoque_codigo_pasto
-            WHERE m.tbl_mov_estoque_nascimento = '$data'
-              AND m.tbl_mov_estoque_local = '$local'
+            WHERE m.tbl_mov_estoque_local = '$local'
               AND m.tbl_mov_estoque_tipo_movimentacao IN ('N', 'A', 'B')
+              AND ((a.tbl_animal_codigo_id IS NOT NULL
+                    AND a.tbl_animal_incluido_em >= '$data 00:00:00'
+                    AND a.tbl_animal_incluido_em <= '$data 23:59:59')
+                OR (a.tbl_animal_codigo_id IS NULL
+                    AND m.tbl_mov_estoque_data_emissao = '$data'))
             ORDER BY m.tbl_mov_estoque_data_emissao ASC, m.tbl_mov_estoque_numero_id ASC");
     }
+
 }

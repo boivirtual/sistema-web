@@ -95,7 +95,8 @@ class MapaGadoNascimentoService{
      * "Registros de Hoje": eventos do dia (nascimento, aborto, absorção,
      * natimorto) da fazenda, prontos para a tabela do aplicativo:
      * {id, animal ("B-2175", "Aborto", "Absorção" ou "Natimorto"), data
-     * (Y-m-d), sexo (M/F), mae ("B-986"), pasto}.
+     * (Y-m-d, do nascimento ou da ocorrência), sexo (M/F), mae ("B-986"),
+     * pasto, baixado (o animal já morreu ou foi vendido — inativo)}.
      */
     public function registrosHoje($dados){
         $bd = trim((string) ($dados['bd'] ?? ''));
@@ -130,6 +131,7 @@ class MapaGadoNascimentoService{
                 "sexo"   => in_array($sexo, ['M', 'F'], true) ? $sexo : '',
                 "mae"    => $r['mae_numerico'] !== null ? $codigo($r['mae_alfa'], $r['mae_numerico']) : '',
                 "pasto"  => (string) ($r['pasto'] ?? ''),
+                "baixado" => $r['ativo'] === 'N',
             ];
         }
         return ["success" => true, "data" => $hoje, "registros" => $registros];
