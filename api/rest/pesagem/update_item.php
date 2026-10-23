@@ -17,7 +17,11 @@
             $numero_item, 
             $dados['peso'], 
             $dados['obs'],
-            $dados['criterio_apartacao']
+            $dados['criterio_apartacao'],
+            // uuid_app e id_animal (app novo): localizam o item certo mesmo
+            // se a web tiver renumerado os itens da pesagem
+            $dados['uuid_app'] ?? '',
+            $dados['id_animal'] ?? 0
         );
         
         if ($sucesso && $criterios_lista && is_array($criterios_lista)) {
