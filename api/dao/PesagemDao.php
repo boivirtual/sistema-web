@@ -551,21 +551,36 @@ class PesagemDao {
             return true;
         } catch (Exception $e) {
             mysqli_rollback($this->con);
+            $this->mensagem = $e->getMessage();
             error_log("excluirItem: " . $e->getMessage());
             return false;
         }
     }
 
-    public function alterarItem($pesagemId, $numeroItem, $novoPeso, $novaObs, $novoCriterio) {
+    public function alterarItem($pesagemId, $numeroItem, $novoPeso, $novaObs, $novoCriterio, $uuid = '', $idAnimalApp = 0) {
         mysqli_begin_transaction($this->con);
         try {
+            $pesagemId = (int)$pesagemId;
+            $this->mensagem = '';
+
             if (!$this->pesagemPermiteAcessoApp($pesagemId)) {
                 throw new Exception("Pesagem não encontrada ou não pertence ao aplicativo.");
             }
 
+            $item = $this->localizarItemDoApp($pesagemId, $numeroItem, $uuid, $idAnimalApp);
+            if ($item['ambiguo']) {
+                throw new Exception("O animal aparece mais de uma vez nesta pesagem no servidor. Altere pela web.");
+            }
+            if ($item['numero'] === null) {
+                throw new Exception("Este peso não está mais no servidor (pode ter sido excluído pela web).");
+            }
+            $numeroItem = $item['numero'];
+
             // peso pode chegar com vírgula ("194,5"): a coluna é decimal com ponto
             $novoPeso = (float) str_replace(',', '.', (string) $novoPeso);
             $arroba = $novoPeso / 30;
+            $novaObs = $this->escapar($novaObs);
+            $novoCriterio = $this->escapar($novoCriterio);
 
             $sql = "UPDATE tbl_item_pesagem SET
                     tbl_ite_pesagem_peso = '$novoPeso',
