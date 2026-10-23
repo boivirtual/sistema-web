@@ -265,4 +265,35 @@ class UsuarioDao{
     public function getUserById($id){
         return $this->fillField(mysqli_fetch_object(mysqli_query($this->con, "SELECT * FROM usuario WHERE id_usuario = {$id}")));
     }
+
+    /**
+     * Usuários ativos da empresa ($bd = CNPJ/CPF) que têm a fazenda no
+     * local_usuario (lista "000000056, 000000057, ..."). Usado no select
+     * Responsável do Tratamento (Resumo Diário do app).
+     */
+    public function responsaveisDaFazenda($bd, $fazenda){
+        $fazenda = (int) $fazenda;
+        // a coluna é latin1 mas guarda os bytes em UTF-8: lê sem conversão
+        mysqli_set_charset($this->con, 'latin1');
+        $st = mysqli_prepare($this->con, "SELECT id_usuario, nome_usuario, local_usuario
+            FROM usuario
+            WHERE cnpj_cpf_empresa_usuario = ? AND lixeira_usuario = 0
+              AND situacao_usuario = 'A'
+            ORDER BY nome_usuario");
+        if (!$st) {
+            return [];
+        }
+        mysqli_stmt_bind_param($st, 's', $bd);
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $id, $nome, $local);
+        $lista = [];
+        while (mysqli_stmt_fetch($st)) {
+            $locais = array_map('intval', explode(',', (string) $local));
+            if ($fazenda > 0 && in_array($fazenda, $locais, true)) {
+                $lista[] = ["id" => (string) $id, "nome" => trim((string) $nome)];
+            }
+        }
+        mysqli_stmt_close($st);
+        return $lista;
+    }
 }
