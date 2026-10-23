@@ -489,6 +489,8 @@ class PesagemDao {
                 throw new Exception("Pesagem não encontrada ou não pertence ao aplicativo.");
             }
 
+            // peso pode chegar com vírgula ("194,5"): a coluna é decimal com ponto
+            $novoPeso = (float) str_replace(',', '.', (string) $novoPeso);
             $arroba = $novoPeso / 30;
 
             $sql = "UPDATE tbl_item_pesagem SET

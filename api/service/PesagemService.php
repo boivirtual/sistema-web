@@ -58,11 +58,17 @@ class PesagemService {
             $p->setCriteriosApartacao('');
         }
 
+        // O teclado do app tem vírgula: o peso pode chegar como "194,5", que o
+        // MySQL recusa na coluna decimal (o item nunca gravava, nem no
+        // "Tentar de novo"). Converte para número com ponto.
+        $peso = (float) str_replace(',', '.', (string) ($json['item']['peso'] ?? 0));
+        $ultimoPeso = (float) str_replace(',', '.', (string) ($json['item']['ultimo_peso'] ?? 0));
+
         $i = new ItemPesagem();
         $i->setIdAnimal($json['item']['id_animal']);
         $i->setAnimal($json['item']['codigo_animal']);
-        $i->setPeso($json['item']['peso']);
-        $i->setUltimoPeso($json['item']['ultimo_peso'] ?? 0);
+        $i->setPeso($peso);
+        $i->setUltimoPeso($ultimoPeso);
         
         $sexoOriginal = $json['item']['sexo'];
         $sexoFormatado = ($sexoOriginal == 'M' || $sexoOriginal == 'Macho') ? 'Macho' : 'Fêmea';
@@ -82,9 +88,9 @@ class PesagemService {
         $i->setMensItemRepetido($json['item']['mens_repetido'] ?? '');
         $i->setIdPesagemItemRepetido((int)($json['item']['id_pesagem_repetido'] ?? 0));
         $i->setCriterioApartacao($json['item']['criterio_apartacao'] ?? '');
-        $i->setArroba($json['item']['peso'] / 30);
-        $i->setPesoMedio($json['item']['peso']);
-        $i->setArrobaMedio($json['item']['peso'] / 30);
+        $i->setArroba($peso / 30);
+        $i->setPesoMedio($peso);
+        $i->setArrobaMedio($peso / 30);
 
         $pesagemUuid = $json['uuid_app'] ?? null;
         $itemUuid = $json['item']['uuid_app'] ?? null;
