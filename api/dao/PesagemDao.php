@@ -602,6 +602,8 @@ class PesagemDao {
             return true;
         } catch (Exception $e) {
             mysqli_rollback($this->con);
+            $this->mensagem = $e->getMessage();
+            error_log("alterarItem: " . $e->getMessage());
             return false;
         }
     }
