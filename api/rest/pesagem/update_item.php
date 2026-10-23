@@ -32,7 +32,11 @@
             mysqli_query($dao->getConexao(), $sqlP);
         }
         
-        echo json_encode(["success" => $sucesso]);
+        $resposta = ["success" => $sucesso];
+        if (!$sucesso && $dao->mensagem !== '') {
+            $resposta["message"] = $dao->mensagem;
+        }
+        echo json_encode($resposta);
     } else {
         echo json_encode([
             "success" => false, 
