@@ -429,36 +429,110 @@ class PesagemDao {
         }
     }
 
-    public function excluirItem($pesagemId, $numeroItem) {
+    /**
+     * Acha no servidor o item que o app quer excluir/alterar. O número do
+     * item guardado no celular pode estar velho (a web regrava os itens com
+     * numeração nova), então procura nesta ordem:
+     *   1. pelo código interno do item (uuid_app) gerado no app;
+     *   2. pelo número do item, se o animal bater;
+     *   3. pelo animal, se houver um só item dele sem uuid de outro envio.
+     * Um item com uuid de OUTRO envio do app nunca é escolhido.
+     *
+     * Retorna ['numero' => int|null, 'id_animal' => string, 'ambiguo' => bool].
+     */
+    private function localizarItemDoApp($pesagemId, $numeroItem, $uuid, $idAnimal) {
+        $pesagemId = (int)$pesagemId;
+        $numeroItem = (int)$numeroItem;
+        $uuid = trim((string)$uuid);
+        $idAnimal = (int)$idAnimal;
+        $nada = ['numero' => null, 'id_animal' => '', 'ambiguo' => false];
+
+        // é deste envio? (animal igual, quando informado; uuid vazio ou igual)
+        $ehDoEnvio = function ($row) use ($uuid, $idAnimal) {
+            $uuidItem = trim((string)$row['tbl_ite_pesagem_uuid_app']);
+            if ($idAnimal > 0 && (int)$row['tbl_ite_pesagem_codigo_id_animal'] !== $idAnimal) {
+                return false;
+            }
+            return $uuid === '' || $uuidItem === '' || $uuidItem === $uuid;
+        };
+        $achado = function ($row) {
+            return [
+                'numero' => (int)$row['tbl_ite_pesagem_numero_item'],
+                'id_animal' => trim((string)$row['tbl_ite_pesagem_codigo_id_animal']),
+                'ambiguo' => false,
+            ];
+        };
+        $campos = "tbl_ite_pesagem_numero_item, tbl_ite_pesagem_codigo_id_animal, tbl_ite_pesagem_uuid_app";
+
+        if ($uuid !== '') {
+            $uuidSql = $this->escapar($uuid);
+            $res = mysqli_query($this->con, "SELECT $campos FROM tbl_item_pesagem
+                WHERE tbl_ite_pesagem_numero_id = $pesagemId
+                  AND tbl_ite_pesagem_uuid_app = '$uuidSql' LIMIT 1");
+            if ($res && ($row = mysqli_fetch_assoc($res))) {
+                return $achado($row);
+            }
+        }
+
+        if ($numeroItem > 0) {
+            $res = mysqli_query($this->con, "SELECT $campos FROM tbl_item_pesagem
+                WHERE tbl_ite_pesagem_numero_id = $pesagemId
+                  AND tbl_ite_pesagem_numero_item = $numeroItem LIMIT 1");
+            if ($res && ($row = mysqli_fetch_assoc($res)) && $ehDoEnvio($row)) {
+                // sem animal nem uuid para conferir (pendência antiga): só o número
+                return $achado($row);
+            }
+        }
+
+        if ($idAnimal > 0) {
+            $res = mysqli_query($this->con, "SELECT $campos FROM tbl_item_pesagem
+                WHERE tbl_ite_pesagem_numero_id = $pesagemId
+                  AND tbl_ite_pesagem_codigo_id_animal = $idAnimal");
+            $candidatos = [];
+            while ($res && ($row = mysqli_fetch_assoc($res))) {
+                if ($ehDoEnvio($row)) {
+                    $candidatos[] = $row;
+                }
+            }
+            if (count($candidatos) === 1) {
+                return $achado($candidatos[0]);
+            }
+            if (count($candidatos) > 1) {
+                return ['numero' => null, 'id_animal' => '', 'ambiguo' => true];
+            }
+        }
+
+        return $nada;
+    }
+
+    /** Motivo da última recusa de excluirItem/alterarItem (vai para o app). */
+    public $mensagem = '';
+
+    public function excluirItem($pesagemId, $numeroItem, $uuid = '', $idAnimalApp = 0) {
         mysqli_begin_transaction($this->con);
 
         try {
             $pesagemId = (int)$pesagemId;
-            $numeroItem = (int)$numeroItem;
+            $this->mensagem = '';
 
             if (!$this->pesagemPermiteAcessoApp($pesagemId)) {
                 throw new Exception("Pesagem não encontrada ou não pertence ao aplicativo.");
             }
 
-            $sqlBuscaAnimal = "
-                SELECT tbl_ite_pesagem_codigo_id_animal
-                FROM tbl_item_pesagem
-                WHERE tbl_ite_pesagem_numero_id = $pesagemId
-                  AND tbl_ite_pesagem_numero_item = $numeroItem
-                LIMIT 1
-            ";
-
-            $resBuscaAnimal = mysqli_query($this->con, $sqlBuscaAnimal);
-            if (!$resBuscaAnimal) {
-                throw new Exception("Erro ao buscar animal do item: " . mysqli_error($this->con));
+            $item = $this->localizarItemDoApp($pesagemId, $numeroItem, $uuid, $idAnimalApp);
+            if ($item['ambiguo']) {
+                throw new Exception("O animal aparece mais de uma vez nesta pesagem no servidor. Exclua pela web.");
+            }
+            if ($item['numero'] === null) {
+                // já não está no servidor (excluído pela web, por exemplo):
+                // o objetivo da exclusão já foi alcançado
+                mysqli_commit($this->con);
+                error_log("excluirItem: item $numeroItem da pesagem $pesagemId já não existe (tratado como excluído).");
+                return true;
             }
 
-            $rowAnimal = mysqli_fetch_assoc($resBuscaAnimal);
-            if (!$rowAnimal) {
-                throw new Exception("Item não encontrado para exclusão.");
-            }
-
-            $idAnimal = trim((string)$rowAnimal['tbl_ite_pesagem_codigo_id_animal']);
+            $numeroItem = $item['numero'];
+            $idAnimal = $item['id_animal'];
 
             $sql = "DELETE FROM tbl_item_pesagem
                     WHERE tbl_ite_pesagem_numero_id = $pesagemId
