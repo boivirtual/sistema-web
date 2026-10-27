@@ -1994,7 +1994,16 @@ if ($situacoes!='') {
     $total_peso_desmama = 0;
     $qtd_peso_desmama = 0;
 
+    $total_animais_planilha = count($animais);
+    $animais_planilha = 0;
+    gravar_progresso(65, 'Montando a planilha...');
+
     foreach ($animais as $animal) {
+        $animais_planilha++;
+        if ($animais_planilha % 200 == 0) {
+            gravar_progresso(65 + 25 * $animais_planilha / max($total_animais_planilha, 1), 'Montando a planilha (' . $animais_planilha . ' de ' . $total_animais_planilha . ')...');
+        }
+
         if ($filtro_reproducao == 'S') {
             if ($filtro_negativas=='S' && $filtro_positivas=='S') {
                 if ($filtro_vacas_paridas=='N' && $filtro_vacas_solteiras=='N' && 
