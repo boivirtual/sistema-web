@@ -32,3 +32,4 @@ teste_style.html
 
 # Backups gerados pelo Editor de Mapa dos pastos
 mapa/*/backup/
+api/error.log*
