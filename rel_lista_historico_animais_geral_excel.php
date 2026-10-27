@@ -4183,6 +4183,11 @@ $spreadsheet->getActiveSheet()->setTitle('Simple');
 $spreadsheet->setActiveSheetIndex(0);
 
 // Redirect output to a client’s web browser (Xlsx)
+// Avisa a tela que o arquivo está pronto, para fechar o "Aguarde" (ver iniciar_aguarde_excel no js)
+if (isset($_GET['download_token']) && ctype_digit($_GET['download_token'])) {
+    setcookie('download_token', $_GET['download_token'], 0, '/');
+}
+
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 header('Content-Disposition: attachment;filename="historico_animais.xlsx"');
 header('Cache-Control: max-age=0');
