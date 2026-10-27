@@ -485,10 +485,13 @@ else {
 		$id_animal = mysqli_insert_id($conector);
 		$id_animal = str_pad($id_animal, 9, "0", STR_PAD_LEFT);
 	      
-	    $numero++;
-		$sql = ("UPDATE tbl_parametro_nascimento SET 
-			    tbl_par_codigo_numerico='$numero'
-	 	        WHERE tbl_par_codigo_local ='$local'");
+	    // Só avança o parâmetro quando o número usado for >= ao próximo indicado;
+	    // se o usuário digitou um número menor, o parâmetro fica como está
+	    $proximo_numero = (int)$numero + 1;
+		$sql = ("UPDATE tbl_parametro_nascimento SET
+			    tbl_par_codigo_numerico='$proximo_numero'
+	 	        WHERE tbl_par_codigo_local ='$local' AND
+	 	              CAST(tbl_par_codigo_numerico AS UNSIGNED) < '$proximo_numero'");
 
 		$resultado = mysqli_query($conector,$sql);
 		$erro_mysql = mysqli_error($conector);
@@ -498,7 +501,7 @@ else {
 			echo json_encode(array('error' => $erro_mysql, 'message' => 'Ocorreu um erro na alteração do número no parametro de nascimento' . $erro_mysql));
 			mysqli_close($conector);
 			exit;
-		} 
+		}
 	}
 	else {
 		$id_animal = 0;
