@@ -2,21 +2,6 @@
     // Relatório pode trazer milhares de animais; 128M (padrão) não é suficiente
     ini_set('memory_limit', '512M');
     set_time_limit(600);
-
-// Barra de progresso: grava o andamento num arquivo temporário que a tela consulta (ler_progresso_excel.php)
-$token_progresso = (isset($_GET['download_token']) && ctype_digit($_GET['download_token'])) ? $_GET['download_token'] : '';
-
-function gravar_progresso($percentual, $etapa) {
-    global $token_progresso;
-
-    if ($token_progresso != '') {
-        $arquivo = sys_get_temp_dir() . '/boivirtual_progresso_' . $token_progresso . '.json';
-        @file_put_contents($arquivo, json_encode(['percentual' => (int) $percentual, 'etapa' => $etapa]));
-    }
-}
-
-gravar_progresso(2, 'Consultando animais...');
-
 // 		Começa Excel
 require 'vendor/autoload.php';
 
@@ -578,8 +563,6 @@ if ($situacoes!='') {
 
     $tbl_animais = mysqli_query($conector, $sql); 
     $num_rows_animais = mysqli_num_rows($tbl_animais);
-
-    gravar_progresso(5, 'Consultando dados de reprodução...');
 
     $codigos_pais = [];
     $codigos_maes = [];
@@ -1191,15 +1174,7 @@ if ($situacoes!='') {
     // Retornar a consulta para o início para poder reutilizar os dados
     mysqli_data_seek($tbl_animais, 0);
 
-    $animais_processados = 0;
-    gravar_progresso(15, 'Processando animais...');
-
     while ($reg_animal = mysqli_fetch_object($tbl_animais)){
-        $animais_processados++;
-        if ($animais_processados % 200 == 0) {
-            gravar_progresso(15 + 50 * $animais_processados / max($num_rows_animais, 1), 'Processando animais (' . $animais_processados . ' de ' . $num_rows_animais . ')...');
-        }
-
         $codigo_fazenda = $reg_animal->tbl_animal_codigo_fazenda;
         $desc_local = $reg_animal->tbl_pessoa_nome;
         $codigo_mae_id = $reg_animal->tbl_animal_codigo_mae; 
@@ -1994,16 +1969,7 @@ if ($situacoes!='') {
     $total_peso_desmama = 0;
     $qtd_peso_desmama = 0;
 
-    $total_animais_planilha = count($animais);
-    $animais_planilha = 0;
-    gravar_progresso(65, 'Montando a planilha...');
-
     foreach ($animais as $animal) {
-        $animais_planilha++;
-        if ($animais_planilha % 200 == 0) {
-            gravar_progresso(65 + 25 * $animais_planilha / max($total_animais_planilha, 1), 'Montando a planilha (' . $animais_planilha . ' de ' . $total_animais_planilha . ')...');
-        }
-
         if ($filtro_reproducao == 'S') {
             if ($filtro_negativas=='S' && $filtro_positivas=='S') {
                 if ($filtro_vacas_paridas=='N' && $filtro_vacas_solteiras=='N' && 
@@ -4216,8 +4182,6 @@ $spreadsheet->getActiveSheet()->setTitle('Simple');
 // Set active sheet index to the first sheet, so Excel opens this as the first sheet
 $spreadsheet->setActiveSheetIndex(0);
 
-gravar_progresso(95, 'Gerando o arquivo Excel...');
-
 // Redirect output to a client’s web browser (Xlsx)
 // Avisa a tela que o arquivo está pronto, para fechar o "Aguarde" (ver iniciar_aguarde_excel no js)
 if (isset($_GET['download_token']) && ctype_digit($_GET['download_token'])) {
@@ -4238,11 +4202,6 @@ header('Pragma: public'); // HTTP/1.0
 
 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 $writer->save('php://output');
-
-// Remove o arquivo temporário da barra de progresso
-if ($token_progresso != '') {
-    @unlink(sys_get_temp_dir() . '/boivirtual_progresso_' . $token_progresso . '.json');
-}
 
 mysqli_close($conector);
 exit;

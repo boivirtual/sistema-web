@@ -2107,7 +2107,7 @@ function listar_historico_animais(opcao){
             limpar_filtros();
         }
         else {
-            location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_excel(true) + '&descricao_filtro=' + descricao_filtro + 
+            location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_excel() + '&descricao_filtro=' + descricao_filtro + 
             '&tipo_rel=' + tipo_rel + 
             '&local=' + array_local + 
             '&origem=' + array_origem + 
@@ -2221,7 +2221,7 @@ function lista_historico_animais_excel(){
 
     $("#aguardar").modal();
 
-    location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_excel(true) + '&descricao_filtro=' + descricao_filtro + 
+    location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_excel() + '&descricao_filtro=' + descricao_filtro + 
             '&tipo_rel=' + tipo_rel + 
             '&local=' + array_local + 
             '&origem=' + array_origem + 
@@ -2289,30 +2289,14 @@ function limpar_tela(){
 
 // Mantém o "Aguarde" aberto até o Excel ficar pronto.
 // O PHP devolve o cookie download_token=<token> junto com o arquivo; quando ele aparece, fecha o aguarde.
-// Com com_progresso=true, troca a bolinha do aguarde por uma barra de progresso alimentada por ler_progresso_excel.php.
 var timer_aguarde_excel = null;
-var html_original_aguardar = null;
 
-function iniciar_aguarde_excel(com_progresso) {
+function iniciar_aguarde_excel() {
     var token = new Date().getTime();
     var tentativas = 0;
 
     document.cookie = 'download_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
     clearInterval(timer_aguarde_excel);
-
-    if (com_progresso) {
-        if (html_original_aguardar === null) {
-            html_original_aguardar = $("#aguardar .modal-body").html();
-        }
-
-        $("#aguardar .modal-body").html(
-            '<p id="progresso_excel_etapa" style="margin-bottom: 8px;">Iniciando...</p>' +
-            '<div class="progress" style="margin-bottom: 0;">' +
-                '<div id="progresso_excel_barra" class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0%; min-width: 2em;">0%</div>' +
-            '</div>'
-        );
-    }
-
     $("#aguardar").modal();
 
     timer_aguarde_excel = setInterval(function() {
@@ -2322,29 +2306,7 @@ function iniciar_aguarde_excel(com_progresso) {
         if (document.cookie.indexOf('download_token=' + token) >= 0 || tentativas > 1200) {
             clearInterval(timer_aguarde_excel);
             document.cookie = 'download_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-
-            if (com_progresso) {
-                $("#progresso_excel_barra").css('width', '100%').text('100%');
-                setTimeout(function() {
-                    limpar_tela();
-                    $("#aguardar .modal-body").html(html_original_aguardar);
-                }, 400);
-            }
-            else {
-                limpar_tela();
-            }
-            return;
-        }
-
-        // Consulta o andamento a cada 1 segundo
-        if (com_progresso && tentativas % 2 == 0) {
-            $.getJSON('ler_progresso_excel.php', { token: token }, function(progresso) {
-                var percentual = Math.min(parseInt(progresso.percentual, 10) || 0, 100);
-                $("#progresso_excel_barra").css('width', percentual + '%').text(percentual + '%');
-                if (progresso.etapa) {
-                    $("#progresso_excel_etapa").text(progresso.etapa);
-                }
-            });
+            limpar_tela();
         }
     }, 500);
 
