@@ -2107,7 +2107,7 @@ function listar_historico_animais(opcao){
             limpar_filtros();
         }
         else {
-            location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_excel() + '&descricao_filtro=' + descricao_filtro + 
+            location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_excel(true) + '&descricao_filtro=' + descricao_filtro + 
             '&tipo_rel=' + tipo_rel + 
             '&local=' + array_local + 
             '&origem=' + array_origem + 
@@ -2221,7 +2221,7 @@ function lista_historico_animais_excel(){
 
     $("#aguardar").modal();
 
-    location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_excel() + '&descricao_filtro=' + descricao_filtro + 
+    location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_excel(true) + '&descricao_filtro=' + descricao_filtro + 
             '&tipo_rel=' + tipo_rel + 
             '&local=' + array_local + 
             '&origem=' + array_origem + 
