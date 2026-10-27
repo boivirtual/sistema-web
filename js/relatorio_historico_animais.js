@@ -2103,12 +2103,11 @@ function listar_historico_animais(opcao){
     }
     else {
         if (tipo_rel=='I') {
-            location.href='rel_lista_historico_animais_individual_excel.php?codigo_alfa_numerico=' + codigo_alfa_numerico;
+            location.href='rel_lista_historico_animais_individual_excel.php?download_token=' + iniciar_aguarde_excel() + '&codigo_alfa_numerico=' + codigo_alfa_numerico;
             limpar_filtros();
-            tout = setTimeout('limpar_tela()', 2000);
         }
         else {
-            location.href='rel_lista_historico_animais_geral_excel.php?descricao_filtro=' + descricao_filtro + 
+            location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_excel() + '&descricao_filtro=' + descricao_filtro + 
             '&tipo_rel=' + tipo_rel + 
             '&local=' + array_local + 
             '&origem=' + array_origem + 
@@ -2156,7 +2155,6 @@ function listar_historico_animais(opcao){
             '&origem_relatorio=' + origem_relatorio;
 
             limpar_filtros();
-            tout = setTimeout('limpar_tela()', 4000);
         }
     }
 }
@@ -2166,9 +2164,8 @@ function lista_historico_animais_individual_excel() {
 
     $("#aguardar").modal();
 
-    location.href='rel_lista_historico_animais_individual_excel.php?codigo_alfa_numerico=' + codigo_alfa_numerico;
+    location.href='rel_lista_historico_animais_individual_excel.php?download_token=' + iniciar_aguarde_excel() + '&codigo_alfa_numerico=' + codigo_alfa_numerico;
     
-    tout = setTimeout('limpar_tela()', 3000);
 }
 
 function lista_historico_animais_excel(){
@@ -2224,7 +2221,7 @@ function lista_historico_animais_excel(){
 
     $("#aguardar").modal();
 
-    location.href='rel_lista_historico_animais_geral_excel.php?descricao_filtro=' + descricao_filtro + 
+    location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_excel() + '&descricao_filtro=' + descricao_filtro + 
             '&tipo_rel=' + tipo_rel + 
             '&local=' + array_local + 
             '&origem=' + array_origem + 
@@ -2270,7 +2267,6 @@ function lista_historico_animais_excel(){
             '&situacao_morte=' + situacao_morte +
             '&situacao_outra=' + situacao_outra + 
             '&origem_relatorio=' + origem_relatorio;
-    tout = setTimeout('limpar_tela()', 6000);
 }
 
 function exibir_filtro(){
@@ -2289,6 +2285,32 @@ function esconder_filtro(){
 
 function limpar_tela(){
     $('#aguardar').modal('hide');
+}
+
+// Mantém o "Aguarde" aberto até o Excel ficar pronto.
+// O PHP devolve o cookie download_token=<token> junto com o arquivo; quando ele aparece, fecha o aguarde.
+var timer_aguarde_excel = null;
+
+function iniciar_aguarde_excel() {
+    var token = new Date().getTime();
+    var tentativas = 0;
+
+    document.cookie = 'download_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    clearInterval(timer_aguarde_excel);
+    $("#aguardar").modal();
+
+    timer_aguarde_excel = setInterval(function() {
+        tentativas++;
+
+        // Fecha quando o arquivo chegou, ou após 10 minutos como segurança
+        if (document.cookie.indexOf('download_token=' + token) >= 0 || tentativas > 1200) {
+            clearInterval(timer_aguarde_excel);
+            document.cookie = 'download_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+            limpar_tela();
+        }
+    }, 500);
+
+    return token;
 }
 
 function voltar_filtro() {
