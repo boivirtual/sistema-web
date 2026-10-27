@@ -4216,6 +4216,8 @@ $spreadsheet->getActiveSheet()->setTitle('Simple');
 // Set active sheet index to the first sheet, so Excel opens this as the first sheet
 $spreadsheet->setActiveSheetIndex(0);
 
+gravar_progresso(95, 'Gerando o arquivo Excel...');
+
 // Redirect output to a client’s web browser (Xlsx)
 // Avisa a tela que o arquivo está pronto, para fechar o "Aguarde" (ver iniciar_aguarde_excel no js)
 if (isset($_GET['download_token']) && ctype_digit($_GET['download_token'])) {
