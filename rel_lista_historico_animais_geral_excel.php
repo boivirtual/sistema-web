@@ -1191,7 +1191,15 @@ if ($situacoes!='') {
     // Retornar a consulta para o início para poder reutilizar os dados
     mysqli_data_seek($tbl_animais, 0);
 
+    $animais_processados = 0;
+    gravar_progresso(15, 'Processando animais...');
+
     while ($reg_animal = mysqli_fetch_object($tbl_animais)){
+        $animais_processados++;
+        if ($animais_processados % 200 == 0) {
+            gravar_progresso(15 + 50 * $animais_processados / max($num_rows_animais, 1), 'Processando animais (' . $animais_processados . ' de ' . $num_rows_animais . ')...');
+        }
+
         $codigo_fazenda = $reg_animal->tbl_animal_codigo_fazenda;
         $desc_local = $reg_animal->tbl_pessoa_nome;
         $codigo_mae_id = $reg_animal->tbl_animal_codigo_mae; 
