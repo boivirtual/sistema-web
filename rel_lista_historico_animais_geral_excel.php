@@ -2,6 +2,21 @@
     // Relatório pode trazer milhares de animais; 128M (padrão) não é suficiente
     ini_set('memory_limit', '512M');
     set_time_limit(600);
+
+// Barra de progresso: grava o andamento num arquivo temporário que a tela consulta (ler_progresso_excel.php)
+$token_progresso = (isset($_GET['download_token']) && ctype_digit($_GET['download_token'])) ? $_GET['download_token'] : '';
+
+function gravar_progresso($percentual, $etapa) {
+    global $token_progresso;
+
+    if ($token_progresso != '') {
+        $arquivo = sys_get_temp_dir() . '/boivirtual_progresso_' . $token_progresso . '.json';
+        @file_put_contents($arquivo, json_encode(['percentual' => (int) $percentual, 'etapa' => $etapa]));
+    }
+}
+
+gravar_progresso(2, 'Consultando animais...');
+
 // 		Começa Excel
 require 'vendor/autoload.php';
 
