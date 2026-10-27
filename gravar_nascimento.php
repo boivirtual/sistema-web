@@ -245,15 +245,19 @@ else {
 	$descricao_lote = '';
 }
 
-if ($tipo_gravacao==0 && $controle_estoque=='I') {
-	$tbl_animal = mysqli_query($conector, "SELECT * FROM tbl_animais
-	    WHERE tbl_animal_codigo_alfa='$alfa' AND tbl_animal_codigo_numerico='$numero' AND 
-	        	tbl_animal_codigo_mae='$codigo_mae'");
-	$num_rows = mysqli_num_rows($tbl_animal);	
+// Não deixa nascer com Letra + Número que já exista no cadastro de animais (qualquer fazenda/mãe)
+if ($tipo_gravacao!=1 && $controle_estoque=='I' && $numero!='') {
+	$alfa_busca = mysqli_real_escape_string($conector, $alfa);
+	$numero_busca = mysqli_real_escape_string($conector, $numero);
+
+	$tbl_animal = mysqli_query($conector, "SELECT tbl_animal_codigo_id FROM tbl_animais
+	    WHERE tbl_animal_codigo_alfa='$alfa_busca' AND tbl_animal_codigo_numerico='$numero_busca'
+	    LIMIT 1");
+	$num_rows = mysqli_num_rows($tbl_animal);
 
 	if ($num_rows!=0) {
 		header('Content-type: application/json');
-		echo json_encode(array('error' => true, 'message' => 'O código '. $alfa.$numero.' já existe cadastrado no sistema para essa Mãe.'));
+		echo json_encode(array('error' => true, 'message' => 'O código '. $alfa.$numero.' já existe no cadastro de animais. Informe outro Nº Animal.'));
 		mysqli_close($conector);
 	    exit;
 	}
