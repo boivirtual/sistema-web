@@ -4239,6 +4239,11 @@ header('Pragma: public'); // HTTP/1.0
 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 $writer->save('php://output');
 
+// Remove o arquivo temporário da barra de progresso
+if ($token_progresso != '') {
+    @unlink(sys_get_temp_dir() . '/boivirtual_progresso_' . $token_progresso . '.json');
+}
+
 mysqli_close($conector);
 exit;
 
