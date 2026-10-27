@@ -1,4 +1,7 @@
 <?php
+    // Listagem pode trazer milhares de animais; 128M (padrão) não é suficiente
+    ini_set('memory_limit', '512M');
+    set_time_limit(600);
     include "conecta_mysql.inc";
 
 $lidos = 0; 
@@ -481,7 +484,11 @@ if (isset($_POST['categoria'])) {
 
         $idade = $idade_acompanhamento_mostra_anos+$idade_acompanhamento_mostra_meses;
 
-        $dados_animais[] = $reg_animal;
+        // Guarda só os campos usados adiante (o registro inteiro estourava a memória com milhares de animais)
+        $dados_animais[] = (object) [
+            'tbl_animal_codigo_id' => $reg_animal->tbl_animal_codigo_id,
+            'tbl_animal_sexo' => $reg_animal->tbl_animal_sexo
+        ];
 
         if ($reg_animal->tbl_animal_codigo_mae) {
             $codigos_maes[] = $reg_animal->tbl_animal_codigo_mae;
@@ -1741,6 +1748,10 @@ if (isset($_POST['categoria'])) {
             }
         }
     }
+
+    // Libera memória que não será mais usada antes de gerar o HTML
+    unset($dados_animais);
+    mysqli_free_result($tbl_animais);
 
     // Geração do HTML (fora do loop)
     echo '<section class="panel">';
