@@ -36,14 +36,13 @@
         responder_reautenticacao(false, 'Não foi possível conectar ao banco de dados. Tente novamente.');
     }
 
-    $st = mysqli_prepare($conector_acesso, "SELECT id_usuario, cpf_usuario, cnpj_cpf_empresa_usuario, nome_usuario,
-                                                   email_usuario, grupo_usuario, senha_usuario, foto_usuario, situacao_usuario
-                                              FROM usuario
-                                             WHERE id_usuario = ?");
-    mysqli_stmt_bind_param($st, 'i', $id_usuario);
-    mysqli_stmt_execute($st);
-    $usuario = mysqli_fetch_object(mysqli_stmt_get_result($st));
-    mysqli_stmt_close($st);
+    // $id_usuario já validado como só dígitos; consulta sem prepared statement de propósito,
+    // para o id vir como texto com zeros à esquerda ("00000005"), igual ao login
+    $tblUsuario = mysqli_query($conector_acesso, "SELECT id_usuario, cpf_usuario, cnpj_cpf_empresa_usuario, nome_usuario,
+                                                         email_usuario, grupo_usuario, senha_usuario, foto_usuario, situacao_usuario
+                                                    FROM usuario
+                                                   WHERE id_usuario = '$id_usuario'");
+    $usuario = mysqli_fetch_object($tblUsuario);
     mysqli_close($conector_acesso);
 
     if (!$usuario) {
