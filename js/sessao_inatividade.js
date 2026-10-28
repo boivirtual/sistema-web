@@ -98,7 +98,7 @@
                                 '<input type="password" class="form-control" id="modal_sessao_senha_campo" maxlength="8" autocomplete="current-password">' +
                             '</div>' +
                             '<div class="alert alert-danger" id="modal_sessao_senha_erro" style="display:none; margin-bottom:0;"></div>' +
-                            '<p class="text-muted" style="margin-top:10px; margin-bottom:0;">' +
+                            '<p style="margin-top:10px; margin-bottom:0; color:#444;">' +
                                 '<small>Ao clicar em <strong>Ir para o Login</strong>, os dados digitados nesta tela serão perdidos.</small>' +
                             '</p>' +
                         '</div>' +
