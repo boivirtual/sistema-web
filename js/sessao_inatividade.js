@@ -200,7 +200,8 @@
             document.activeElement.blur();
         }
 
-        $('#modal_sessao_senha_mensagem').text(mensagem || 'Sua sessão expirou. Faça login novamente.');
+        // a mensagem do servidor termina com "Faça login novamente.", que aqui não se aplica
+        $('#modal_sessao_senha_mensagem').text((mensagem || 'Sua sessão expirou.').replace(/\s*Faça login novamente\.?\s*$/, ''));
         $('#modal_sessao_senha_usuario').val(nomeUsuario);
         $('#modal_sessao_senha_campo').val('');
         $('#modal_sessao_senha_erro').hide();
