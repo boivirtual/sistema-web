@@ -260,7 +260,8 @@ class UsuarioDao{
     }
     
     public function getUserByCpf($usuario){
-        $sql = "SELECT * FROM usuario WHERE cpf_usuario = '{$usuario}' OR email_usuario = '{$usuario}'";
+        $u = $this->esc($usuario);
+        $sql = "SELECT * FROM usuario WHERE cpf_usuario = '{$u}' OR email_usuario = '{$u}'";
         $uObj = mysqli_query($this->con, $sql);
         if(mysqli_num_rows($uObj) > 0){
             return $this->fillField(mysqli_fetch_object($uObj));
