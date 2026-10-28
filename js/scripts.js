@@ -481,6 +481,13 @@ function maskCNPJ(CNPJ){
 var _sessaoExpiradaExibida = false;
 
 function exibirModalSessaoExpirada(mensagem) {
+    // telas que renovam a sessão na própria tela (js/sessao_inatividade.js) pedem a senha
+    // em vez de mandar para o login, para não perder o que já foi digitado
+    if (typeof window.exibirModalSenhaSessaoExpirada === 'function') {
+        window.exibirModalSenhaSessaoExpirada(mensagem);
+        return;
+    }
+
     if (_sessaoExpiradaExibida) {
         return;
     }
