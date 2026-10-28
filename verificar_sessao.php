@@ -28,7 +28,7 @@
     echo json_encode(array(
         'ativa'    => true,
         'usuario'  => $_SESSION['id_usuario'],     // usados no modal de senha quando a sessão expirar
-        'nome'     => $_SESSION['nome_usuario'],
+        'nome'     => mb_check_encoding($_SESSION['nome_usuario'], 'UTF-8') ? $_SESSION['nome_usuario'] : utf8_encode($_SESSION['nome_usuario']),
         'limite'   => TEMPO_LIMITE_INATIVIDADE_SEGUNDOS,
         'restante' => max(0, $restante)
     ));
