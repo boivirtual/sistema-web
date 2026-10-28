@@ -274,7 +274,7 @@ class UsuarioDao{
     }
 
     public function getUserById($id){
-        return $this->fillField(mysqli_fetch_object(mysqli_query($this->con, "SELECT * FROM usuario WHERE id_usuario = {$id}")));
+        return $this->fillField(mysqli_fetch_object(mysqli_query($this->con, "SELECT * FROM usuario WHERE id_usuario = " . (int)$id)));
     }
 
     /**
