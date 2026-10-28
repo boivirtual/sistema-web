@@ -242,7 +242,8 @@ class UsuarioDao{
     }
 
     public function allowPassChange($usuario){
-        $sql = "UPDATE usuario SET autoriza_redefinir_senha_usuario = 'S' WHERE cpf_usuario = '{$usuario}' OR email_usuario = '{$usuario}'";
+        $u = $this->esc($usuario);
+        $sql = "UPDATE usuario SET autoriza_redefinir_senha_usuario = 'S' WHERE cpf_usuario = '{$u}' OR email_usuario = '{$u}'";
         $o = mysqli_query($this->con, $sql);
         $e = mysqli_error($this->con);
         if(!$o){
