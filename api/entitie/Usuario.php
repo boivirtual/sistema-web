@@ -37,7 +37,11 @@ class Usuario implements JsonSerializable{
 	}
 
 	public function jsonSerialize() {
-        return (object) get_object_vars($this);
+        // a senha nunca sai na resposta da API (o app não usa, e ela aparecia
+        // em texto puro para quem olhasse a resposta do login)
+        $dados = get_object_vars($this);
+        unset($dados['senha']);
+        return (object) $dados;
     }
 
 	/**
