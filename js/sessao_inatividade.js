@@ -95,7 +95,9 @@
                             '</div>' +
                             '<div class="form-group">' +
                                 '<label class="control-label" for="modal_sessao_senha_campo">Senha</label>' +
-                                '<input type="password" class="form-control" id="modal_sessao_senha_campo" maxlength="8" autocomplete="current-password">' +
+                                // readonly até o foco: o navegador não preenche sozinho a senha salva
+                                '<input type="password" class="form-control" id="modal_sessao_senha_campo" maxlength="8" autocomplete="off" readonly ' +
+                                       'onfocus="this.removeAttribute(\'readonly\');">' +
                             '</div>' +
                             '<div class="alert alert-danger" id="modal_sessao_senha_erro" style="display:none; margin-bottom:0;"></div>' +
                             '<p style="margin-top:10px; margin-bottom:0; color:#444;">' +
