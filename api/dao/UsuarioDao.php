@@ -175,7 +175,8 @@ class UsuarioDao{
 
     public function getUser($user, $pass){
         // Busca simples do usuário
-        $sql = "SELECT * FROM usuario WHERE (cpf_usuario = '$user' OR email_usuario = '$user')";
+        $u = $this->esc($user);
+        $sql = "SELECT * FROM usuario WHERE (cpf_usuario = '$u' OR email_usuario = '$u')";
         $result = mysqli_query($this->con, $sql);
 
         if(mysqli_num_rows($result) > 0){
