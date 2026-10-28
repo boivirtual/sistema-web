@@ -65,6 +65,7 @@
     $_SESSION['ultima_atividade'] = time();
 
     include "conecta_mysql.inc";
+    header('Content-Type: application/json; charset=utf-8');   // conecta_mysql.inc troca para text/html
 
     $cnpj = mysqli_real_escape_string($conector, $usuario->cnpj_cpf_empresa_usuario);
     $tblEmpresa = mysqli_query($conector, "SELECT tbl_empresa_nome_fantasia, tbl_empresa_controle_pesagem
