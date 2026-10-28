@@ -208,6 +208,7 @@ class UsuarioDao{
     }
 
     public function editUser($u){
+        $u = array_map(array($this, 'esc'), $u);
         $user = new Usuario();
         $user->setId($u["codigo_usuario"]);
         $user->setCpf(preg_replace("/[^0-9]/", "", $u["cpf_usuario"]));
