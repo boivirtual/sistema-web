@@ -27,6 +27,8 @@
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(array(
         'ativa'    => true,
+        'usuario'  => $_SESSION['id_usuario'],     // usados no modal de senha quando a sessão expirar
+        'nome'     => $_SESSION['nome_usuario'],
         'limite'   => TEMPO_LIMITE_INATIVIDADE_SEGUNDOS,
         'restante' => max(0, $restante)
     ));
