@@ -11,6 +11,12 @@ class UsuarioDao{
         $this->data = date("Y-m-d H:i:s");
     }
 
+    // Trata o texto antes de colocá-lo no SQL: o que o usuário digita é lido
+    // só como valor, nunca como parte do comando (proteção contra SQL injection)
+    private function esc($valor){
+        return mysqli_real_escape_string($this->con, (string)$valor);
+    }
+
     public function fillFields($param){
         $aObj = [];
 
