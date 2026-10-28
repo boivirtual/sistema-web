@@ -4015,6 +4015,12 @@ function gravar_compra(){
 }
 // FIM COMPRAS
 
+// Sessão renovada pela senha no modal "Sessão Expirada" (js/sessao_inatividade.js):
+// se a gravação foi barrada pela expiração, libera o botão para gravar de novo
+$(document).on('sessaoRenovada', function () {
+    $(".gravar_compra, .gravar_venda").attr("disabled", false);
+});
+
 // RELATORIO
 function listar_compra_venda_tela(opcao){
     var data_inicial = $("#data_inicial").val();
