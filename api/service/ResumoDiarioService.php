@@ -10,12 +10,22 @@ class ResumoDiarioService{
      * já tem algum resumo mais antigo que ele (sem nenhum resumo anterior —
      * ex.: tabela vazia — não cobra nada).
      *
-     * Devolve { success, pendente, dia } (dia = o dia anterior conferido).
+     * Também informa se a própria $data já tem registro da fazenda
+     * (tipo_no_dia: 'R' = Resumo, 'F' = Folga, null = livre) — o app não
+     * deixa escolher no calendário um dia já registrado.
+     *
+     * Devolve { success, pendente, dia, tipo_no_dia } (dia = o dia anterior
+     * conferido).
      */
     public function diaAnteriorPendente($bd, $fazenda, DateTime $data){
         $dao = new ResumoDiarioDao($bd);
         if (!$dao->conectado()) {
             return ["success" => false, "message" => "Não foi possível conectar ao banco."];
+        }
+
+        $tipoNoDia = $dao->tipoNoDia($fazenda, $data->format('Y-m-d'));
+        if ($tipoNoDia === false) {
+            return ["success" => false, "message" => "Erro ao consultar os resumos."];
         }
 
         // tbl_resumo_diario_data = dia a que o resumo se refere (sem hora);
