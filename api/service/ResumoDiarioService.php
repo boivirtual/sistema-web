@@ -48,8 +48,9 @@ class ResumoDiarioService{
 
         return [
             "success"  => true,
-            "pendente" => $pendente,
-            "dia"      => $anterior,
+            "pendente"    => $pendente,
+            "dia"         => $anterior,
+            "tipo_no_dia" => $tipoNoDia,
         ];
     }
 
