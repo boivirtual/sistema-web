@@ -42,6 +42,35 @@ class ResumoDiarioDao{
         );
     }
 
+    // Grava um registro (Resumo ou Folga). Devolve 'ok', 'duplicado' (a
+    // fazenda já tem registro nessa data — índice único fazenda + data) ou
+    // 'erro'.
+    public function incluir(ResumoDiario $r){
+        $st = mysqli_prepare(
+            $this->con,
+            "INSERT INTO tbl_resumo_diario (tbl_resumo_diario_fazenda, tbl_resumo_diario_usuario,
+                tbl_resumo_diario_data, tbl_resumo_diario_tipo, tbl_resumo_diario_incluido_em)
+             VALUES (?, ?, ?, ?, ?)"
+        );
+        if (!$st) {
+            return 'erro';
+        }
+        $fazenda = (int) $r->getFazenda();
+        $usuario = $r->getUsuario();
+        $data = $r->getData();
+        $tipo = $r->getTipo();
+        $incluidoEm = $r->getIncluidoEm();
+        mysqli_stmt_bind_param($st, 'issss', $fazenda, $usuario, $data, $tipo, $incluidoEm);
+        $ok = mysqli_stmt_execute($st);
+        $codigoErro = mysqli_stmt_errno($st);
+        mysqli_stmt_close($st);
+        if ($ok) {
+            return 'ok';
+        }
+        // 1062 = Duplicate entry
+        return $codigoErro === 1062 ? 'duplicado' : 'erro';
+    }
+
     private function contar($sql, $fazenda, $dia){
         $fazenda = (int) $fazenda;
         $st = mysqli_prepare($this->con, $sql);
