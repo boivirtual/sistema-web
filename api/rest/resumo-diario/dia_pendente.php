@@ -44,22 +44,21 @@ if (!$con) {
 }
 mysqli_set_charset($con, "utf8");
 
+// tbl_resumo_diario_data = dia a que o resumo se refere (sem hora); o
+// momento da gravação fica em tbl_resumo_diario_incluido_em.
 $anterior = (clone $data)->modify('-1 day')->format('Y-m-d');
-$inicio   = $anterior . ' 00:00:00';
-$fim      = $data->format('Y-m-d') . ' 00:00:00';
 
 // Resumo do usuário no dia anterior
 $stmt = mysqli_prepare(
     $con,
     "SELECT COUNT(tbl_resumo_diario_id) FROM tbl_resumo_diario
-      WHERE tbl_resumo_diario_usuario = ?
-        AND tbl_resumo_diario_data_hora >= ? AND tbl_resumo_diario_data_hora < ?"
+      WHERE tbl_resumo_diario_usuario = ? AND tbl_resumo_diario_data = ?"
 );
 if (!$stmt) {
     echo json_encode(["success" => false, "message" => "Erro ao consultar os resumos."]);
     exit;
 }
-mysqli_stmt_bind_param($stmt, 'sss', $usuario, $inicio, $fim);
+mysqli_stmt_bind_param($stmt, 'ss', $usuario, $anterior);
 mysqli_stmt_execute($stmt);
 mysqli_stmt_bind_result($stmt, $noDia);
 mysqli_stmt_fetch($stmt);
