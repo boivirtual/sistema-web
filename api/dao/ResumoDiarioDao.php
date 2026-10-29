@@ -20,8 +20,8 @@ class ResumoDiarioDao{
         return (bool) $this->con;
     }
 
-    /// Quantos resumos a fazenda tem exatamente no dia (AAAA-MM-DD).
-    /// null se a consulta falhar.
+    // Quantos resumos a fazenda tem exatamente no dia (AAAA-MM-DD).
+    // null se a consulta falhar.
     public function contarNoDia($fazenda, $dia){
         return $this->contar(
             "SELECT COUNT(tbl_resumo_diario_id) FROM tbl_resumo_diario
@@ -31,8 +31,8 @@ class ResumoDiarioDao{
         );
     }
 
-    /// Quantos resumos a fazenda tem antes do dia (AAAA-MM-DD).
-    /// null se a consulta falhar.
+    // Quantos resumos a fazenda tem antes do dia (AAAA-MM-DD).
+    // null se a consulta falhar.
     public function contarAntesDe($fazenda, $dia){
         return $this->contar(
             "SELECT COUNT(tbl_resumo_diario_id) FROM tbl_resumo_diario
