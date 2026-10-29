@@ -53,6 +53,9 @@ class ResumoDiarioService{
      * Devolve { success, message?, ja_registrado? }
      */
     public function registrarFolga($bd, $fazenda, $usuario, DateTime $dia){
+        // horário de Brasília para o "hoje" e o incluido_em (igual ao
+        // ChuvaService)
+        date_default_timezone_set('America/Sao_Paulo');
         if ($dia > new DateTime('today')) {
             return ["success" => false, "message" => "Não é possível registrar folga em data futura."];
         }
