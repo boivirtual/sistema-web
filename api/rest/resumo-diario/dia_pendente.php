@@ -10,8 +10,9 @@
  *   fazenda -> código da fazenda (tbl_pessoa_id) (obrigatório)
  *   data    -> data escolhida, AAAA-MM-DD (obrigatório)
  *
- * Saída: { "success": true, "pendente": true|false, "dia": "AAAA-MM-DD" }
- *   (dia = o dia anterior conferido)
+ * Saída: { "success": true, "pendente": true|false, "dia": "AAAA-MM-DD",
+ *          "tipo_no_dia": "R"|"F"|null }
+ *   (dia = o dia anterior conferido; tipo_no_dia = registro da própria data)
  */
 
 require_once __DIR__ . "/../../dao/ResumoDiarioDao.php";
