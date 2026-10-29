@@ -70,9 +70,9 @@ if ((int) $noDia === 0) {
     $stmt = mysqli_prepare(
         $con,
         "SELECT COUNT(tbl_resumo_diario_id) FROM tbl_resumo_diario
-          WHERE tbl_resumo_diario_usuario = ? AND tbl_resumo_diario_data_hora < ?"
+          WHERE tbl_resumo_diario_usuario = ? AND tbl_resumo_diario_data < ?"
     );
-    mysqli_stmt_bind_param($stmt, 'ss', $usuario, $inicio);
+    mysqli_stmt_bind_param($stmt, 'ss', $usuario, $anterior);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_bind_result($stmt, $antes);
     mysqli_stmt_fetch($stmt);
