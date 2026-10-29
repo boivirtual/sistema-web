@@ -42,6 +42,27 @@ class ResumoDiarioDao{
         );
     }
 
+    // Tipo do registro da fazenda no dia (AAAA-MM-DD): 'R' (Resumo),
+    // 'F' (Folga), null se o dia está livre, false se a consulta falhar.
+    public function tipoNoDia($fazenda, $dia){
+        $fazenda = (int) $fazenda;
+        $st = mysqli_prepare(
+            $this->con,
+            "SELECT tbl_resumo_diario_tipo FROM tbl_resumo_diario
+              WHERE tbl_resumo_diario_fazenda = ? AND tbl_resumo_diario_data = ?
+              LIMIT 1"
+        );
+        if (!$st) {
+            return false;
+        }
+        mysqli_stmt_bind_param($st, 'is', $fazenda, $dia);
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $tipo);
+        $achou = mysqli_stmt_fetch($st);
+        mysqli_stmt_close($st);
+        return $achou ? (string) $tipo : null;
+    }
+
     // Grava um registro (Resumo ou Folga). Devolve 'ok', 'duplicado' (a
     // fazenda já tem registro nessa data — índice único fazenda + data) ou
     // 'erro'.
