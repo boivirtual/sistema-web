@@ -63,6 +63,26 @@ class ResumoDiarioDao{
         return $achou ? (string) $tipo : null;
     }
 
+    // Volume de chuva (mm) registrado no programa Chuva para a fazenda no dia
+    // (AAAA-MM-DD). null se não há registro, false se a consulta falhar.
+    public function chuvaNoDia($fazenda, $dia){
+        $fazenda = (int) $fazenda;
+        $st = mysqli_prepare(
+            $this->con,
+            "SELECT SUM(tbl_chuva_volume_chuva) FROM tbl_chuva
+              WHERE tbl_chuva_local = ? AND tbl_chuva_data = ?"
+        );
+        if (!$st) {
+            return false;
+        }
+        mysqli_stmt_bind_param($st, 'is', $fazenda, $dia);
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $volume);
+        mysqli_stmt_fetch($st);
+        mysqli_stmt_close($st);
+        return $volume === null ? null : (float) $volume;
+    }
+
     // Grava um registro (Resumo ou Folga). Devolve 'ok', 'duplicado' (a
     // fazenda já tem registro nessa data — índice único fazenda + data) ou
     // 'erro'.
