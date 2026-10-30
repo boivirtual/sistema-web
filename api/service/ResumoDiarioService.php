@@ -56,10 +56,11 @@ class ResumoDiarioService{
 
     /**
      * Seção 1 do Resumo: atividades já registradas no sistema para a fazenda
-     * no dia $dia (DateTime). Por enquanto só a chuva: chuva_mm = volume
-     * registrado, null se não choveu (sem registro ou volume zero).
+     * no dia $dia (DateTime): chuva_mm = volume registrado, null se não
+     * choveu (sem registro ou volume zero); mudou_pasto = houve transferência
+     * de animais entre pastos no dia (tbl_animal_pasto_alterado_em).
      *
-     * Devolve { success, chuva_mm }
+     * Devolve { success, chuva_mm, mudou_pasto }
      */
     public function atividadesDoDia($bd, $fazenda, DateTime $dia){
         $dao = new ResumoDiarioDao($bd);
