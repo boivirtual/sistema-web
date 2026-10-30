@@ -83,6 +83,30 @@ class ResumoDiarioDao{
         return $volume === null ? null : (float) $volume;
     }
 
+    // A fazenda tem animal com tbl_animal_pasto_alterado_em no dia
+    // (AAAA-MM-DD)? (as transferências entre pastos gravam esse campo)
+    // true/false, null se a consulta falhar.
+    public function mudouPastoNoDia($fazenda, $dia){
+        $fazenda = (int) $fazenda;
+        $inicio = $dia . ' 00:00:00';
+        $fim = $dia . ' 23:59:59';
+        $st = mysqli_prepare(
+            $this->con,
+            "SELECT COUNT(tbl_animal_pasto_numero_item) FROM tbl_animal_pasto
+              WHERE tbl_animal_pasto_local = ?
+                AND tbl_animal_pasto_alterado_em BETWEEN ? AND ?"
+        );
+        if (!$st) {
+            return null;
+        }
+        mysqli_stmt_bind_param($st, 'iss', $fazenda, $inicio, $fim);
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $total);
+        mysqli_stmt_fetch($st);
+        mysqli_stmt_close($st);
+        return (int) $total > 0;
+    }
+
     // Grava um registro (Resumo ou Folga). Devolve 'ok', 'duplicado' (a
     // fazenda já tem registro nessa data — índice único fazenda + data) ou
     // 'erro'.
