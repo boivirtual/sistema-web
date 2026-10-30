@@ -1,7 +1,7 @@
 <?php
 /**
  * Resumo Diário da Fazenda (aplicativo) — atividades já registradas no
- * sistema para a fazenda no dia (Seção 1). Por enquanto só a chuva. Regras em
+ * sistema para a fazenda no dia (Seção 1): chuva e mudança de pasto. Regras em
  * ResumoDiarioService::atividadesDoDia().
  *
  * Entrada — JSON no corpo do POST:
@@ -9,7 +9,7 @@
  *   fazenda -> código da fazenda (tbl_pessoa_id) (obrigatório)
  *   data    -> dia do resumo, AAAA-MM-DD (obrigatório)
  *
- * Saída: { "success": true, "chuva_mm": 30.5|null }
+ * Saída: { "success": true, "chuva_mm": 30.5|null, "mudou_pasto": true|false }
  */
 
 require_once __DIR__ . "/../../dao/ResumoDiarioDao.php";
