@@ -69,13 +69,15 @@ class ResumoDiarioService{
         }
 
         $chuva = $dao->chuvaNoDia($fazenda, $dia->format('Y-m-d'));
-        if ($chuva === false) {
+        $mudouPasto = $dao->mudouPastoNoDia($fazenda, $dia->format('Y-m-d'));
+        if ($chuva === false || $mudouPasto === null) {
             return ["success" => false, "message" => "Erro ao consultar as atividades do dia."];
         }
 
         return [
-            "success"  => true,
-            "chuva_mm" => $chuva !== null && $chuva > 0 ? $chuva : null,
+            "success"     => true,
+            "chuva_mm"    => $chuva !== null && $chuva > 0 ? $chuva : null,
+            "mudou_pasto" => $mudouPasto,
         ];
     }
 
