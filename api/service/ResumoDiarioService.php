@@ -55,6 +55,30 @@ class ResumoDiarioService{
     }
 
     /**
+     * Seção 1 do Resumo: atividades já registradas no sistema para a fazenda
+     * no dia $dia (DateTime). Por enquanto só a chuva: chuva_mm = volume
+     * registrado, null se não choveu (sem registro ou volume zero).
+     *
+     * Devolve { success, chuva_mm }
+     */
+    public function atividadesDoDia($bd, $fazenda, DateTime $dia){
+        $dao = new ResumoDiarioDao($bd);
+        if (!$dao->conectado()) {
+            return ["success" => false, "message" => "Não foi possível conectar ao banco."];
+        }
+
+        $chuva = $dao->chuvaNoDia($fazenda, $dia->format('Y-m-d'));
+        if ($chuva === false) {
+            return ["success" => false, "message" => "Erro ao consultar as atividades do dia."];
+        }
+
+        return [
+            "success"  => true,
+            "chuva_mm" => $chuva !== null && $chuva > 0 ? $chuva : null,
+        ];
+    }
+
+    /**
      * "Registrar Folga" do modal do dia sem resumo: grava o dia $dia
      * (DateTime) da fazenda como Folga, com o usuário que registrou.
      * Data futura não pode. Se a fazenda já tem registro nesse dia (ex.:
