@@ -6,9 +6,10 @@ class ResumoDiarioService{
 
     /**
      * Confere se o dia anterior a $data (DateTime) ficou sem resumo da
-     * fazenda: pendente quando não tem registro no dia anterior E a fazenda
-     * já tem algum resumo mais antigo que ele (sem nenhum resumo anterior —
-     * ex.: tabela vazia — não cobra nada).
+     * fazenda: pendente quando a fazenda não tem registro no dia anterior E
+     * a empresa já tem algum resumo/folga (de qualquer fazenda) até esse dia
+     * — assim toda fazenda é cobrada depois que a empresa começou a fazer o
+     * resumo (tabela vazia não cobra nada).
      *
      * Também informa se a própria $data já tem registro da fazenda
      * (tipo_no_dia: 'R' = Resumo, 'F' = Folga, null = livre) — o app não
