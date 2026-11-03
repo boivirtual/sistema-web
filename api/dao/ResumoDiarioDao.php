@@ -20,6 +20,32 @@ class ResumoDiarioDao{
         return (bool) $this->con;
     }
 
+    // Conexão aberta, para os DAOs de Nascimento e Morte usarem a mesma.
+    public function getConexao(){
+        return $this->con;
+    }
+
+    // A fazenda teve nutrição no dia (AAAA-MM-DD, data da nutrição; sem as
+    // excluídas)? true/false, null se a consulta falhar.
+    public function nutricaoNoDia($fazenda, $dia){
+        $fazenda = (int) $fazenda;
+        $st = mysqli_prepare(
+            $this->con,
+            "SELECT COUNT(tbl_nutricao_id) FROM tbl_nutricao
+              WHERE tbl_nutricao_codigo_local = ? AND tbl_nutricao_data = ?
+                AND tbl_nutricao_lixeira = 0"
+        );
+        if (!$st) {
+            return null;
+        }
+        mysqli_stmt_bind_param($st, 'is', $fazenda, $dia);
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $total);
+        mysqli_stmt_fetch($st);
+        mysqli_stmt_close($st);
+        return (int) $total > 0;
+    }
+
     // Quantos resumos a fazenda tem exatamente no dia (AAAA-MM-DD).
     // null se a consulta falhar.
     public function contarNoDia($fazenda, $dia){
