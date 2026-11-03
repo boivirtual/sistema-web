@@ -40,7 +40,7 @@ class ResumoDiarioService{
 
         $pendente = false;
         if ($noDia === 0) {
-            $antes = $dao->contarAntesDe($fazenda, $anterior);
+            $antes = $dao->contarEmpresaAte($anterior);
             if ($antes === null) {
                 return ["success" => false, "message" => "Erro ao consultar os resumos."];
             }
