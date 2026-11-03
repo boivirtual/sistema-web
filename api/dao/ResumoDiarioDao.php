@@ -31,15 +31,23 @@ class ResumoDiarioDao{
         );
     }
 
-    // Quantos resumos a fazenda tem antes do dia (AAAA-MM-DD).
-    // null se a consulta falhar.
-    public function contarAntesDe($fazenda, $dia){
-        return $this->contar(
+    // Quantos resumos/folgas a empresa tem (de qualquer fazenda) até o dia
+    // (AAAA-MM-DD), inclusive. null se a consulta falhar.
+    public function contarEmpresaAte($dia){
+        $st = mysqli_prepare(
+            $this->con,
             "SELECT COUNT(tbl_resumo_diario_id) FROM tbl_resumo_diario
-              WHERE tbl_resumo_diario_fazenda = ? AND tbl_resumo_diario_data < ?",
-            $fazenda,
-            $dia
+              WHERE tbl_resumo_diario_data <= ?"
         );
+        if (!$st) {
+            return null;
+        }
+        mysqli_stmt_bind_param($st, 's', $dia);
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $total);
+        mysqli_stmt_fetch($st);
+        mysqli_stmt_close($st);
+        return (int) $total;
     }
 
     // Tipo do registro da fazenda no dia (AAAA-MM-DD): 'R' (Resumo),
