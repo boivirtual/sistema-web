@@ -59,26 +59,52 @@ class ResumoDiarioService{
      * Seção 1 do Resumo: atividades já registradas no sistema para a fazenda
      * no dia $dia (DateTime): chuva_mm = volume registrado, null se não
      * choveu (sem registro ou volume zero); mudou_pasto = houve transferência
-     * de animais entre pastos no dia (tbl_animal_pasto_alterado_em).
+     * de animais entre pastos no dia (tbl_animal_pasto_alterado_em);
+     * nutricao = teve nutrição no dia; nascimentos, abortos (Aborto, Absorção
+     * e Natimorto) e mortes = quantos registros foram lançados no dia — as
+     * mesmas consultas dos "Registros de Hoje" do Nascimento e da Morte
+     * (NascimentoDao/MorteDao::registrosDoDia).
      *
-     * Devolve { success, chuva_mm, mudou_pasto }
+     * Devolve { success, chuva_mm, mudou_pasto, nutricao, nascimentos,
+     *           abortos, mortes }
      */
     public function atividadesDoDia($bd, $fazenda, DateTime $dia){
         $dao = new ResumoDiarioDao($bd);
         if (!$dao->conectado()) {
             return ["success" => false, "message" => "Não foi possível conectar ao banco."];
         }
+        $d = $dia->format('Y-m-d');
 
-        $chuva = $dao->chuvaNoDia($fazenda, $dia->format('Y-m-d'));
-        $mudouPasto = $dao->mudouPastoNoDia($fazenda, $dia->format('Y-m-d'));
-        if ($chuva === false || $mudouPasto === null) {
+        $chuva = $dao->chuvaNoDia($fazenda, $d);
+        $mudouPasto = $dao->mudouPastoNoDia($fazenda, $d);
+        $nutricao = $dao->nutricaoNoDia($fazenda, $d);
+        if ($chuva === false || $mudouPasto === null || $nutricao === null) {
             return ["success" => false, "message" => "Erro ao consultar as atividades do dia."];
         }
+
+        // Nascimento x Aborto/Absorção/Natimorto: mesma separação do
+        // MapaGadoNascimentoService::registrosHoje()
+        $nascimentos = 0;
+        $abortos = 0;
+        $con = $dao->getConexao();
+        foreach ((new NascimentoDao($bd, $con))->registrosDoDia((int) $fazenda, $d) as $r) {
+            $natimorto = (int) $r['animal'] === 999999999 || $r['numerico'] === null;
+            if ($r['tipo'] === 'A' || $r['tipo'] === 'B' || $natimorto) {
+                $abortos++;
+            } else {
+                $nascimentos++;
+            }
+        }
+        $mortes = count((new MorteDao($bd, $con))->registrosDoDia((int) $fazenda, $d));
 
         return [
             "success"     => true,
             "chuva_mm"    => $chuva !== null && $chuva > 0 ? $chuva : null,
             "mudou_pasto" => $mudouPasto,
+            "nutricao"    => $nutricao,
+            "nascimentos" => $nascimentos,
+            "abortos"     => $abortos,
+            "mortes"      => $mortes,
         ];
     }
 
