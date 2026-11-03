@@ -1,7 +1,8 @@
 <?php
 /**
  * Resumo Diário da Fazenda (aplicativo) — atividades já registradas no
- * sistema para a fazenda no dia (Seção 1): chuva e mudança de pasto. Regras em
+ * sistema para a fazenda no dia (Seção 1): chuva, mudança de pasto, nutrição,
+ * nascimentos, abortos/absorções/natimortos e mortes. Regras em
  * ResumoDiarioService::atividadesDoDia().
  *
  * Entrada — JSON no corpo do POST:
@@ -9,10 +10,13 @@
  *   fazenda -> código da fazenda (tbl_pessoa_id) (obrigatório)
  *   data    -> dia do resumo, AAAA-MM-DD (obrigatório)
  *
- * Saída: { "success": true, "chuva_mm": 30.5|null, "mudou_pasto": true|false }
+ * Saída: { "success": true, "chuva_mm": 30.5|null, "mudou_pasto": bool,
+ *          "nutricao": bool, "nascimentos": 2, "abortos": 0, "mortes": 1 }
  */
 
 require_once __DIR__ . "/../../dao/ResumoDiarioDao.php";
+require_once __DIR__ . "/../../dao/NascimentoDao.php";
+require_once __DIR__ . "/../../dao/MorteDao.php";
 require_once __DIR__ . "/../../service/ResumoDiarioService.php";
 
 header('Content-Type: application/json; charset=utf-8');
