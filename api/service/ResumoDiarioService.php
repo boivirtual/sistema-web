@@ -59,7 +59,8 @@ class ResumoDiarioService{
      * Seção 1 do Resumo: atividades já registradas no sistema para a fazenda
      * no dia $dia (DateTime): chuva_mm = volume registrado, null se não
      * choveu (sem registro ou volume zero); mudou_pasto = houve transferência
-     * de animais entre pastos no dia (tbl_animal_pasto_alterado_em);
+     * de animais entre pastos no dia (data de alteração do animal ou datas
+     * com/sem animais do pasto — ver ResumoDiarioDao::mudouPastoNoDia);
      * nutricao = teve nutrição no dia; nascimentos, abortos (Aborto, Absorção
      * e Natimorto) e mortes = quantos registros foram lançados no dia — as
      * mesmas consultas dos "Registros de Hoje" do Nascimento e da Morte
