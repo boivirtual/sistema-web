@@ -117,28 +117,50 @@ class ResumoDiarioDao{
         return $volume === null ? null : (float) $volume;
     }
 
-    // A fazenda tem animal com tbl_animal_pasto_alterado_em no dia
-    // (AAAA-MM-DD)? (as transferências entre pastos gravam esse campo)
+    // Teve transferência de animais entre pastos da fazenda no dia
+    // (AAAA-MM-DD)? Confere as duas marcas que a transferência grava:
+    //  - tbl_animal_pasto_alterado_em do animal movido (some se o animal
+    //    morre depois: a Morte apaga a linha dele do pasto);
+    //  - tbl_pasto_data_sem_animais (origem esvaziada) ou
+    //    tbl_pasto_data_com_animais (destino que recebeu) — só as
+    //    transferências gravam essas datas.
     // true/false, null se a consulta falhar.
     public function mudouPastoNoDia($fazenda, $dia){
         $fazenda = (int) $fazenda;
         $inicio = $dia . ' 00:00:00';
         $fim = $dia . ' 23:59:59';
-        $st = mysqli_prepare(
-            $this->con,
+        $animais = $this->contarNoPeriodo(
             "SELECT COUNT(tbl_animal_pasto_numero_item) FROM tbl_animal_pasto
               WHERE tbl_animal_pasto_local = ?
-                AND tbl_animal_pasto_alterado_em BETWEEN ? AND ?"
+                AND tbl_animal_pasto_alterado_em BETWEEN ? AND ?",
+            $fazenda, $inicio, $fim
         );
+        if ($animais === null || $animais > 0) {
+            return $animais === null ? null : true;
+        }
+        $pastos = $this->contarNoPeriodo(
+            "SELECT COUNT(tbl_pasto_id) FROM tbl_pasto
+              WHERE tbl_pasto_codigo_local = ? AND tbl_pasto_lixeira = 0
+                AND (tbl_pasto_data_sem_animais BETWEEN ? AND ?
+                     OR tbl_pasto_data_com_animais BETWEEN ? AND ?)",
+            $fazenda, $inicio, $fim, $inicio, $fim
+        );
+        return $pastos === null ? null : $pastos > 0;
+    }
+
+    // COUNT com a fazenda (int) e as datas (strings) na ordem do SQL.
+    private function contarNoPeriodo($sql, $fazenda, ...$datas){
+        $st = mysqli_prepare($this->con, $sql);
         if (!$st) {
             return null;
         }
-        mysqli_stmt_bind_param($st, 'iss', $fazenda, $inicio, $fim);
+        $tipos = 'i' . str_repeat('s', count($datas));
+        mysqli_stmt_bind_param($st, $tipos, $fazenda, ...$datas);
         mysqli_stmt_execute($st);
         mysqli_stmt_bind_result($st, $total);
         mysqli_stmt_fetch($st);
         mysqli_stmt_close($st);
-        return (int) $total > 0;
+        return (int) $total;
     }
 
     // Grava um registro (Resumo ou Folga). Devolve 'ok', 'duplicado' (a
