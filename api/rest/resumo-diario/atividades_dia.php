@@ -11,7 +11,8 @@
  *   data    -> dia do resumo, AAAA-MM-DD (obrigatório)
  *
  * Saída: { "success": true, "chuva_mm": 30.5|null, "mudou_pasto": bool,
- *          "nutricao": bool, "nascimentos": 2, "abortos": 0, "mortes": 1 }
+ *          "nutricao": bool, "nascimentos": 2, "abortos": 0, "mortes": 1,
+ *          "pesados": 59 }
  */
 
 require_once __DIR__ . "/../../dao/ResumoDiarioDao.php";

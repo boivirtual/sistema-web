@@ -64,10 +64,11 @@ class ResumoDiarioService{
      * nutricao = teve nutrição no dia; nascimentos, abortos (Aborto, Absorção
      * e Natimorto) e mortes = quantos registros foram lançados no dia — as
      * mesmas consultas dos "Registros de Hoje" do Nascimento e da Morte
-     * (NascimentoDao/MorteDao::registrosDoDia).
+     * (NascimentoDao/MorteDao::registrosDoDia); pesados = quantos animais a
+     * fazenda pesou no dia (Seção 4, Atividades do Curral).
      *
      * Devolve { success, chuva_mm, mudou_pasto, nutricao, nascimentos,
-     *           abortos, mortes }
+     *           abortos, mortes, pesados }
      */
     public function atividadesDoDia($bd, $fazenda, DateTime $dia){
         $dao = new ResumoDiarioDao($bd);
@@ -79,7 +80,9 @@ class ResumoDiarioService{
         $chuva = $dao->chuvaNoDia($fazenda, $d);
         $mudouPasto = $dao->mudouPastoNoDia($fazenda, $d);
         $nutricao = $dao->nutricaoNoDia($fazenda, $d);
-        if ($chuva === false || $mudouPasto === null || $nutricao === null) {
+        $pesados = $dao->animaisPesadosNoDia($fazenda, $d);
+        if ($chuva === false || $mudouPasto === null || $nutricao === null
+            || $pesados === null) {
             return ["success" => false, "message" => "Erro ao consultar as atividades do dia."];
         }
 
@@ -106,6 +109,7 @@ class ResumoDiarioService{
             "nascimentos" => $nascimentos,
             "abortos"     => $abortos,
             "mortes"      => $mortes,
+            "pesados"     => $pesados,
         ];
     }
 
