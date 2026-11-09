@@ -1,14 +1,15 @@
 <?php
 /**
  * Resumo Diário da Fazenda (aplicativo) — animais ativos da fazenda, no total
- * e por pasto (Seção 3, "Animais Esperados"). Regras em
+ * e por pasto (Seção 3, "Animais Esperados"), e as vacas prenhas. Regras em
  * ResumoDiarioService::animaisDaFazenda().
  *
  * Entrada — JSON no corpo do POST:
  *   bd      -> nome do banco da conta (obrigatório)
  *   fazenda -> código da fazenda (tbl_pessoa_id) (obrigatório)
  *
- * Saída: { "success": true, "total": 680, "pastos": { "31": 70, "47": 1 } }
+ * Saída: { "success": true, "total": 680, "prenhas": 140,
+ *          "pastos": { "31": 70, "47": 1 } }
  */
 
 require_once __DIR__ . "/../../dao/ResumoDiarioDao.php";
