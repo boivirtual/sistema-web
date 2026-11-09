@@ -148,6 +148,34 @@ class ResumoDiarioDao{
         return $pastos === null ? null : $pastos > 0;
     }
 
+    // Animais ativos (situação 'A') em cada pasto da fazenda, sem os pastos
+    // excluídos: [id do pasto => quantidade] (só os pastos com animais).
+    // null se a consulta falhar.
+    public function animaisPorPasto($fazenda){
+        $fazenda = (int) $fazenda;
+        $st = mysqli_prepare(
+            $this->con,
+            "SELECT tbl_pasto_id, COUNT(tbl_animal_pasto_numero_item)
+               FROM tbl_animal_pasto
+               JOIN tbl_pasto ON tbl_pasto_id = tbl_animal_pasto_id
+              WHERE tbl_pasto_codigo_local = ? AND tbl_pasto_lixeira = 0
+                AND tbl_animal_pasto_situacao = 'A'
+              GROUP BY tbl_pasto_id"
+        );
+        if (!$st) {
+            return null;
+        }
+        mysqli_stmt_bind_param($st, 'i', $fazenda);
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $pasto, $total);
+        $animais = [];
+        while (mysqli_stmt_fetch($st)) {
+            $animais[(int) $pasto] = (int) $total;
+        }
+        mysqli_stmt_close($st);
+        return $animais;
+    }
+
     // COUNT com a fazenda (int) e as datas (strings) na ordem do SQL.
     private function contarNoPeriodo($sql, $fazenda, ...$datas){
         $st = mysqli_prepare($this->con, $sql);
