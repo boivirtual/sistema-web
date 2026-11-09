@@ -113,9 +113,11 @@ class ResumoDiarioService{
      * Seção 3 do Resumo (Conferência de Rebanho): animais ativos da fazenda,
      * no total e por pasto — "Animais Esperados" do Gado Todo (total) e da
      * Parte do Gado (soma dos pastos conferidos). O total é a soma dos
-     * pastos, igual aos ativos do cadastro de animais da fazenda.
+     * pastos, igual aos ativos do cadastro de animais da fazenda. Também
+     * quantas vacas prenhas a fazenda tem (a pergunta "Conferiu as Vacas
+     * Prenhas?" só aparece com alguma).
      *
-     * Devolve { success, total, pastos: { "id do pasto": quantidade } }
+     * Devolve { success, total, prenhas, pastos: { "id do pasto": quantidade } }
      */
     public function animaisDaFazenda($bd, $fazenda){
         $dao = new ResumoDiarioDao($bd);
@@ -123,12 +125,14 @@ class ResumoDiarioService{
             return ["success" => false, "message" => "Não foi possível conectar ao banco."];
         }
         $porPasto = $dao->animaisPorPasto($fazenda);
-        if ($porPasto === null) {
+        $prenhas = $dao->vacasPrenhas($fazenda);
+        if ($porPasto === null || $prenhas === null) {
             return ["success" => false, "message" => "Erro ao consultar os animais da fazenda."];
         }
         return [
             "success" => true,
             "total"   => array_sum($porPasto),
+            "prenhas" => $prenhas,
             // objeto JSON mesmo sem pastos (array vazio viraria [])
             "pastos"  => (object) $porPasto,
         ];
