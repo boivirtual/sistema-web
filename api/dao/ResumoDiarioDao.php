@@ -176,6 +176,41 @@ class ResumoDiarioDao{
         return $animais;
     }
 
+    // Vacas prenhas da fazenda: diagnóstico Positivo (IATF ou Monta) sem
+    // nascimento, aborto, natimorto ou absorção registrado (nascido vazio) —
+    // o "Positivas / Não Nascidos" do Diagnóstico do sistema web
+    // (form_lista_femeas_servidas_iatf/_monta.php). Só animais ativos.
+    // null se a consulta falhar.
+    public function vacasPrenhas($fazenda){
+        $fazenda = (int) $fazenda;
+        $st = mysqli_prepare(
+            $this->con,
+            "SELECT COUNT(DISTINCT IC.tbl_ite_cobertura_codigo_id_animal)
+               FROM tbl_item_cobertura AS IC
+               JOIN tbl_cobertura AS C
+                 ON IC.tbl_ite_cobertura_numero_id = C.tbl_cobertura_id
+               JOIN tbl_animais AS A
+                 ON A.tbl_animal_codigo_id = IC.tbl_ite_cobertura_codigo_id_animal
+              WHERE C.tbl_cobertura_lixeira = 0
+                AND C.tbl_cobertura_codigo_local = ?
+                AND C.tbl_cobertura_controle IN ('C', 'M')
+                AND IC.tbl_ite_cobertura_resultado_diagnostico = 'P'
+                AND (IC.tbl_ite_cobertura_nascido IS NULL
+                     OR TRIM(IC.tbl_ite_cobertura_nascido) = '')
+                AND A.tbl_animal_ativo = 'S'
+                AND IFNULL(A.tbl_animal_lixeira, 0) = 0"
+        );
+        if (!$st) {
+            return null;
+        }
+        mysqli_stmt_bind_param($st, 'i', $fazenda);
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $total);
+        mysqli_stmt_fetch($st);
+        mysqli_stmt_close($st);
+        return (int) $total;
+    }
+
     // COUNT com a fazenda (int) e as datas (strings) na ordem do SQL.
     private function contarNoPeriodo($sql, $fazenda, ...$datas){
         $st = mysqli_prepare($this->con, $sql);
