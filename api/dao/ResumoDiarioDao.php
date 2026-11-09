@@ -176,6 +176,32 @@ class ResumoDiarioDao{
         return $animais;
     }
 
+    // Quantos animais a fazenda pesou no dia (AAAA-MM-DD, data da pesagem;
+    // sem as excluídas): soma dos itens — o item da pesagem individual é 1
+    // animal; o do lote traz a quantidade. null se a consulta falhar.
+    public function animaisPesadosNoDia($fazenda, $dia){
+        $fazenda = (int) $fazenda;
+        $st = mysqli_prepare(
+            $this->con,
+            "SELECT SUM(CASE WHEN I.tbl_ite_pesagem_qtd_animais > 0
+                             THEN I.tbl_ite_pesagem_qtd_animais ELSE 1 END)
+               FROM tbl_pesagem AS P
+               JOIN tbl_item_pesagem AS I
+                 ON I.tbl_ite_pesagem_numero_id = P.tbl_pesagem_id
+              WHERE P.tbl_pesagem_codigo_local = ? AND P.tbl_pesagem_data = ?
+                AND IFNULL(P.tbl_pesagem_lixeira, 0) = 0"
+        );
+        if (!$st) {
+            return null;
+        }
+        mysqli_stmt_bind_param($st, 'is', $fazenda, $dia);
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $total);
+        mysqli_stmt_fetch($st);
+        mysqli_stmt_close($st);
+        return (int) $total;
+    }
+
     // Vacas prenhas da fazenda: diagnóstico Positivo (IATF ou Monta) sem
     // nascimento, aborto, natimorto ou absorção registrado (nascido vazio) —
     // o "Positivas / Não Nascidos" do Diagnóstico do sistema web
