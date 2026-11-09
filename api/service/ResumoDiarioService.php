@@ -110,6 +110,31 @@ class ResumoDiarioService{
     }
 
     /**
+     * Seção 3 do Resumo (Conferência de Rebanho): animais ativos da fazenda,
+     * no total e por pasto — "Animais Esperados" do Gado Todo (total) e da
+     * Parte do Gado (soma dos pastos conferidos). O total é a soma dos
+     * pastos, igual aos ativos do cadastro de animais da fazenda.
+     *
+     * Devolve { success, total, pastos: { "id do pasto": quantidade } }
+     */
+    public function animaisDaFazenda($bd, $fazenda){
+        $dao = new ResumoDiarioDao($bd);
+        if (!$dao->conectado()) {
+            return ["success" => false, "message" => "Não foi possível conectar ao banco."];
+        }
+        $porPasto = $dao->animaisPorPasto($fazenda);
+        if ($porPasto === null) {
+            return ["success" => false, "message" => "Erro ao consultar os animais da fazenda."];
+        }
+        return [
+            "success" => true,
+            "total"   => array_sum($porPasto),
+            // objeto JSON mesmo sem pastos (array vazio viraria [])
+            "pastos"  => (object) $porPasto,
+        ];
+    }
+
+    /**
      * "Registrar Folga" do modal do dia sem resumo: grava o dia $dia
      * (DateTime) da fazenda como Folga, com o usuário que registrou.
      * Data futura não pode. Se a fazenda já tem registro nesse dia (ex.:
