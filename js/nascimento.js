@@ -616,7 +616,7 @@ function incluir_novo() {
                 // Casa pelo código da fazenda: a tela só mostra as fazendas do usuário,
                 // e o parâmetro traz todas as fazendas (quantidade/ordem diferentes)
                 for (var i = 0; i < codigo_fazenda.length; i++) {
-                    var pos = array_fazendas.indexOf(codigo_fazenda[i].value);
+                    var pos = array_fazendas.indexOf(String(parseInt(codigo_fazenda[i].value, 10)));
 
                     if (pos!=-1 && array_numerico[pos]!='' && array_numerico[pos]!=undefined) {
                         codigo_alfa[i].value=array_alfa[pos];
