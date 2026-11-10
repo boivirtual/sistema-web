@@ -11,6 +11,7 @@
  *   data    -> dia do resumo, AAAA-MM-DD (obrigatório)
  *
  * Saída: { "success": true, "chuva_mm": 30.5|null, "mudou_pasto": bool,
+ *          "pastos_alterados": [ "MANGA 07 A", "SAIDA" ],
  *          "nutricao": bool, "nascimentos": 2, "abortos": 0, "mortes": 1,
  *          "pesados": 59, "nutricoes": [ { "pasto": "FUNDACA 01",
  *          "produto": "SAL MINERAL", "quantidade": 10, "unidade": "KG" } ] }

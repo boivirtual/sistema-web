@@ -66,10 +66,12 @@ class ResumoDiarioService{
      * mesmas consultas dos "Registros de Hoje" do Nascimento e da Morte
      * (NascimentoDao/MorteDao::registrosDoDia); pesados = quantos animais a
      * fazenda pesou no dia (Seção 4, Atividades do Curral); nutricoes = o que
-     * foi distribuído no dia, por pasto e produto (lista do card da Nutrição).
+     * foi distribuído no dia, por pasto e produto (lista do card da Nutrição);
+     * pastos_alterados = nomes dos pastos com troca de animais no dia (lista
+     * do card "Trocamos animais de pasto").
      *
-     * Devolve { success, chuva_mm, mudou_pasto, nutricao, nutricoes,
-     *           nascimentos, abortos, mortes, pesados }
+     * Devolve { success, chuva_mm, mudou_pasto, pastos_alterados, nutricao,
+     *           nutricoes, nascimentos, abortos, mortes, pesados }
      */
     public function atividadesDoDia($bd, $fazenda, DateTime $dia){
         $dao = new ResumoDiarioDao($bd);
@@ -82,9 +84,11 @@ class ResumoDiarioService{
         $mudouPasto = $dao->mudouPastoNoDia($fazenda, $d);
         $nutricao = $dao->nutricaoNoDia($fazenda, $d);
         $nutricoes = $dao->nutricoesDoDia($fazenda, $d);
+        $pastosAlterados = $dao->pastosAlteradosNoDia($fazenda, $d);
         $pesados = $dao->animaisPesadosNoDia($fazenda, $d);
         if ($chuva === false || $mudouPasto === null || $nutricao === null
-            || $pesados === null || $nutricoes === null) {
+            || $pesados === null || $nutricoes === null
+            || $pastosAlterados === null) {
             return ["success" => false, "message" => "Erro ao consultar as atividades do dia."];
         }
 
@@ -107,6 +111,7 @@ class ResumoDiarioService{
             "success"     => true,
             "chuva_mm"    => $chuva !== null && $chuva > 0 ? $chuva : null,
             "mudou_pasto" => $mudouPasto,
+            "pastos_alterados" => $pastosAlterados,
             "nutricao"    => $nutricao,
             "nutricoes"   => $nutricoes,
             "nascimentos" => $nascimentos,
