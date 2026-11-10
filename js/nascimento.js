@@ -605,15 +605,21 @@ function incluir_novo() {
             var grupo_usuario = $("#grupo_usuario").val();
             if (grupo_usuario==01 || grupo_usuario==02) {
 
+                var array_fazendas = php[2].split('!');
                 var array_alfa = php[3].split('!');
                 var array_numerico = php[4].split('!');
+                var codigo_fazenda = document.getElementsByName("codigo_fazenda");
                 var codigo_alfa = document.getElementsByName("cod_alfa");
                 var codigo_numerico = document.getElementsByName("cod_numerico");
 
-                for (var i = 0; i < array_numerico.length; i++) {
-                    if (array_numerico[i]!='' && array_numerico[i]!=undefined) {
-                        codigo_alfa[i].value=array_alfa[i];
-                        codigo_numerico[i].value=array_numerico[i];
+                // Casa pelo código da fazenda: a tela só mostra as fazendas do usuário,
+                // e o parâmetro traz todas as fazendas (quantidade/ordem diferentes)
+                for (var i = 0; i < codigo_fazenda.length; i++) {
+                    var pos = array_fazendas.indexOf(codigo_fazenda[i].value);
+
+                    if (pos!=-1 && array_numerico[pos]!='' && array_numerico[pos]!=undefined) {
+                        codigo_alfa[i].value=array_alfa[pos];
+                        codigo_numerico[i].value=array_numerico[pos];
                     }
                 }
             }
