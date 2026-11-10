@@ -65,10 +65,11 @@ class ResumoDiarioService{
      * e Natimorto) e mortes = quantos registros foram lançados no dia — as
      * mesmas consultas dos "Registros de Hoje" do Nascimento e da Morte
      * (NascimentoDao/MorteDao::registrosDoDia); pesados = quantos animais a
-     * fazenda pesou no dia (Seção 4, Atividades do Curral).
+     * fazenda pesou no dia (Seção 4, Atividades do Curral); nutricoes = o que
+     * foi distribuído no dia, por pasto e produto (lista do card da Nutrição).
      *
-     * Devolve { success, chuva_mm, mudou_pasto, nutricao, nascimentos,
-     *           abortos, mortes, pesados }
+     * Devolve { success, chuva_mm, mudou_pasto, nutricao, nutricoes,
+     *           nascimentos, abortos, mortes, pesados }
      */
     public function atividadesDoDia($bd, $fazenda, DateTime $dia){
         $dao = new ResumoDiarioDao($bd);
@@ -80,9 +81,10 @@ class ResumoDiarioService{
         $chuva = $dao->chuvaNoDia($fazenda, $d);
         $mudouPasto = $dao->mudouPastoNoDia($fazenda, $d);
         $nutricao = $dao->nutricaoNoDia($fazenda, $d);
+        $nutricoes = $dao->nutricoesDoDia($fazenda, $d);
         $pesados = $dao->animaisPesadosNoDia($fazenda, $d);
         if ($chuva === false || $mudouPasto === null || $nutricao === null
-            || $pesados === null) {
+            || $pesados === null || $nutricoes === null) {
             return ["success" => false, "message" => "Erro ao consultar as atividades do dia."];
         }
 
@@ -106,6 +108,7 @@ class ResumoDiarioService{
             "chuva_mm"    => $chuva !== null && $chuva > 0 ? $chuva : null,
             "mudou_pasto" => $mudouPasto,
             "nutricao"    => $nutricao,
+            "nutricoes"   => $nutricoes,
             "nascimentos" => $nascimentos,
             "abortos"     => $abortos,
             "mortes"      => $mortes,

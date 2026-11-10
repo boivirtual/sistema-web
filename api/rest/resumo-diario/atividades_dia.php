@@ -12,7 +12,8 @@
  *
  * Saída: { "success": true, "chuva_mm": 30.5|null, "mudou_pasto": bool,
  *          "nutricao": bool, "nascimentos": 2, "abortos": 0, "mortes": 1,
- *          "pesados": 59 }
+ *          "pesados": 59, "nutricoes": [ { "pasto": "FUNDACA 01",
+ *          "produto": "SAL MINERAL", "quantidade": 10, "unidade": "KG" } ] }
  */
 
 require_once __DIR__ . "/../../dao/ResumoDiarioDao.php";
