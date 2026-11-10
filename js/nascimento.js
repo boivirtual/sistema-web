@@ -605,7 +605,8 @@ function incluir_novo() {
             var grupo_usuario = $("#grupo_usuario").val();
             if (grupo_usuario==01 || grupo_usuario==02) {
 
-                var array_fazendas = php[2].split('!');
+                // Compara como número para não depender dos zeros à esquerda
+                var array_fazendas = php[2].split('!').map(function(f){ return String(parseInt(f, 10)); });
                 var array_alfa = php[3].split('!');
                 var array_numerico = php[4].split('!');
                 var codigo_fazenda = document.getElementsByName("codigo_fazenda");
