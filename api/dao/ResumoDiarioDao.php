@@ -276,6 +276,44 @@ class ResumoDiarioDao{
         return (int) $total;
     }
 
+    // Nomes dos pastos da fazenda que tiveram troca de animais no dia
+    // (AAAA-MM-DD), em ordem alfabética — as mesmas marcas do
+    // mudouPastoNoDia: pasto atual dos animais alterados no dia, e pastos
+    // esvaziados ou que receberam animais no dia. null se a consulta falhar.
+    public function pastosAlteradosNoDia($fazenda, $dia){
+        $fazenda = (int) $fazenda;
+        $inicio = $dia . ' 00:00:00';
+        $fim = $dia . ' 23:59:59';
+        $st = mysqli_prepare(
+            $this->con,
+            "SELECT DISTINCT tbl_pasto_descricao
+               FROM tbl_pasto
+              WHERE tbl_pasto_codigo_local = ? AND tbl_pasto_lixeira = 0
+                AND (tbl_pasto_data_sem_animais BETWEEN ? AND ?
+                     OR tbl_pasto_data_com_animais BETWEEN ? AND ?
+                     OR tbl_pasto_id IN (
+                        SELECT tbl_animal_pasto_id FROM tbl_animal_pasto
+                         WHERE tbl_animal_pasto_local = ?
+                           AND tbl_animal_pasto_alterado_em BETWEEN ? AND ?))
+              ORDER BY tbl_pasto_descricao"
+        );
+        if (!$st) {
+            return null;
+        }
+        mysqli_stmt_bind_param(
+            $st, 'issssiss',
+            $fazenda, $inicio, $fim, $inicio, $fim, $fazenda, $inicio, $fim
+        );
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $nome);
+        $nomes = [];
+        while (mysqli_stmt_fetch($st)) {
+            $nomes[] = (string) $nome;
+        }
+        mysqli_stmt_close($st);
+        return $nomes;
+    }
+
     // COUNT com a fazenda (int) e as datas (strings) na ordem do SQL.
     private function contarNoPeriodo($sql, $fazenda, ...$datas){
         $st = mysqli_prepare($this->con, $sql);
