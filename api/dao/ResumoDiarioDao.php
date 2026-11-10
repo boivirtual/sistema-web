@@ -176,6 +176,45 @@ class ResumoDiarioDao{
         return $animais;
     }
 
+    // Nutrições da fazenda no dia (AAAA-MM-DD; sem as excluídas), por pasto
+    // e produto: [{ pasto, produto, quantidade, unidade }], na ordem do
+    // pasto e do produto. null se a consulta falhar.
+    public function nutricoesDoDia($fazenda, $dia){
+        $fazenda = (int) $fazenda;
+        $st = mysqli_prepare(
+            $this->con,
+            "SELECT tbl_pasto_descricao, tbl_produto_descricao,
+                    SUM(tbl_nutricao_quantidade_produto), tab_codigo_unidade_produtos
+               FROM tbl_nutricao
+               JOIN tbl_pasto ON tbl_pasto_id = tbl_nutricao_codigo_pasto
+               JOIN tbl_produto ON tbl_produto_codigo_id = tbl_nutricao_codigo_produto
+               LEFT JOIN tabela_unidade_produtos
+                      ON tab_codigo_unidade_id = tbl_produto_unidade
+              WHERE tbl_nutricao_codigo_local = ? AND tbl_nutricao_data = ?
+                AND tbl_nutricao_lixeira = 0
+              GROUP BY tbl_pasto_descricao, tbl_produto_descricao,
+                       tab_codigo_unidade_produtos
+              ORDER BY tbl_pasto_descricao, tbl_produto_descricao"
+        );
+        if (!$st) {
+            return null;
+        }
+        mysqli_stmt_bind_param($st, 'is', $fazenda, $dia);
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $pasto, $produto, $quantidade, $unidade);
+        $lista = [];
+        while (mysqli_stmt_fetch($st)) {
+            $lista[] = [
+                "pasto"      => (string) $pasto,
+                "produto"    => (string) $produto,
+                "quantidade" => (float) $quantidade,
+                "unidade"    => (string) $unidade,
+            ];
+        }
+        mysqli_stmt_close($st);
+        return $lista;
+    }
+
     // Quantos animais a fazenda pesou no dia (AAAA-MM-DD, data da pesagem;
     // sem as excluídas): soma dos itens — o item da pesagem individual é 1
     // animal; o do lote traz a quantidade. null se a consulta falhar.
