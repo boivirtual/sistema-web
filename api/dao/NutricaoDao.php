@@ -61,7 +61,8 @@ class NutricaoDao{
     }
 
     /** Opções de "Produto" (ler_produto_nutricao.php) com a unidade
-     *  (ler_unidade_produto.php). */
+     *  (ler_unidade_produto.php). Só os produtos ativos (Ativo = "N" no
+     *  cadastro fica de fora; vazio conta como ativo). */
     public function listarProdutos(){
         $a = [];
         mysqli_set_charset($this->con, "utf8");
@@ -69,7 +70,8 @@ class NutricaoDao{
                 tab_codigo_unidade_produtos
             FROM tbl_produto
             LEFT JOIN tabela_unidade_produtos ON tbl_produto_unidade = tab_codigo_unidade_id
-            WHERE tbl_produto_lixeira = 0");
+            WHERE tbl_produto_lixeira = 0
+              AND IFNULL(tbl_produto_ativo, 'S') <> 'N'");
         if ($r) {
             while ($row = mysqli_fetch_assoc($r)) {
                 $a[] = [
