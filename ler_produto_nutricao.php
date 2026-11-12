@@ -2,8 +2,11 @@
 
 include "conecta_mysql.inc";
 
-$objProduto = mysqli_query($conector, "SELECT * FROM tbl_produto
-    WHERE tbl_produto_lixeira=0");
+// Só os produtos ativos (Ativo = "N" no cadastro fica de fora; vazio conta
+// como ativo).
+$objProduto = mysqli_query($conector, "SELECT tbl_produto_codigo_id, tbl_produto_descricao
+    FROM tbl_produto
+    WHERE tbl_produto_lixeira=0 AND IFNULL(tbl_produto_ativo, 'S') <> 'N'");
 
 echo "<option value='000000000'>...</option>";
 
