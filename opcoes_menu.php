@@ -284,11 +284,8 @@
           }
           if ($menu_versao_texto !== '') :
           ?>
-            <li class="menu-versao-sistema" style="padding: 12px 5px 12px 8px; text-align: left; white-space: nowrap;">
-              <a href="controle_versao.php" target="_blank" title=""
-                 style="display: inline; padding: 0; margin: 0; background: none; color: #c4c4c4; font-weight: 600; font-size: 11px; text-align: left;">
-                <?php echo $menu_versao_texto; ?>
-              </a>
+            <li class="menu-versao-sistema" style="padding: 12px 5px 12px 8px; text-align: left; white-space: nowrap; color: #c4c4c4; font-weight: 600; font-size: 11px; cursor: default;">
+              <?php echo $menu_versao_texto; ?>
             </li>
           <?php endif; ?>
 
