@@ -62,7 +62,8 @@ class NutricaoDao{
 
     /** Opções de "Produto" (ler_produto_nutricao.php) com a unidade
      *  (ler_unidade_produto.php). Só os produtos ativos (Ativo = "N" no
-     *  cadastro fica de fora; vazio conta como ativo). */
+     *  cadastro fica de fora; vazio conta como ativo), em ordem alfabética
+     *  (o app mostra na ordem em que chegam). */
     public function listarProdutos(){
         $a = [];
         mysqli_set_charset($this->con, "utf8");
