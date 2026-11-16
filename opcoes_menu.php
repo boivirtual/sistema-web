@@ -264,6 +264,31 @@
             </ul>
           </li>
 
+          <?php
+          // Última versão registrada em tbl_versao (exibida no rodapé do menu)
+          $menu_versao_texto = '';
+          if (isset($conector) && $conector) {
+            $sql_menu_versao = "SELECT tbl_versao_numero, tbl_versao_data
+                                FROM tbl_versao
+                                WHERE tbl_versao_lixeira = 0 OR tbl_versao_lixeira IS NULL
+                                ORDER BY tbl_versao_codigo_id DESC
+                                LIMIT 1";
+            $res_menu_versao = @mysqli_query($conector, $sql_menu_versao);
+            if ($res_menu_versao && ($row_menu_versao = mysqli_fetch_assoc($res_menu_versao))) {
+              $menu_versao_data = !empty($row_menu_versao['tbl_versao_data'])
+                ? date('d/m/Y', strtotime($row_menu_versao['tbl_versao_data']))
+                : '';
+              $menu_versao_texto = 'Versão ' . htmlspecialchars($row_menu_versao['tbl_versao_numero'], ENT_QUOTES, 'UTF-8')
+                . ($menu_versao_data !== '' ? ' - ' . $menu_versao_data : '');
+            }
+          }
+          if ($menu_versao_texto !== '') :
+          ?>
+            <li class="menu-versao-sistema" style="padding: 14px 15px 14px 20px; color: #e6e6e6; font-weight: 600; font-size: 13px; cursor: default;">
+              <?php echo $menu_versao_texto; ?>
+            </li>
+          <?php endif; ?>
+
         </ul>
         <!-- sidebar menu end-->
       </div>
