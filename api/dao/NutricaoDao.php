@@ -72,7 +72,8 @@ class NutricaoDao{
             FROM tbl_produto
             LEFT JOIN tabela_unidade_produtos ON tbl_produto_unidade = tab_codigo_unidade_id
             WHERE tbl_produto_lixeira = 0
-              AND IFNULL(tbl_produto_ativo, 'S') <> 'N'");
+              AND IFNULL(tbl_produto_ativo, 'S') <> 'N'
+            ORDER BY tbl_produto_descricao");
         if ($r) {
             while ($row = mysqli_fetch_assoc($r)) {
                 $a[] = [
