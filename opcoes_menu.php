@@ -284,7 +284,7 @@
           }
           if ($menu_versao_texto !== '') :
           ?>
-            <li class="menu-versao-sistema" style="padding: 12px 5px 12px 8px; text-align: left; white-space: nowrap; color: #c4c4c4; font-weight: 600; font-size: 11px; cursor: default;">
+            <li class="menu-versao-sistema" style="padding: 12px 5px 12px 8px; text-align: left; white-space: nowrap; color: #8a8f94; font-weight: 600; font-size: 11px; cursor: default;">
               <?php echo $menu_versao_texto; ?>
             </li>
           <?php endif; ?>
