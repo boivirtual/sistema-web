@@ -1,0 +1,385 @@
+<?php
+$data_sistema = date("d/m/Y");
+
+//      Começa Excel
+require 'vendor/autoload.php';
+
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+
+// Instanciamos a classe
+$spreadsheet = new Spreadsheet();
+
+// O banco tem registros antigos gravados em Latin1 misturados com registros em UTF-8.
+// Se already for UTF-8 válido, mantém como está; senão, converte de Latin1 para UTF-8.
+// (Aplicar utf8_encode()/mb_convert_encoding() sempre, sem essa checagem, corrompe os
+// registros que já estão em UTF-8 - vira dupla-codificação, tipo "Ã­" no lugar de "í").
+function corrigir_utf8($valor) {
+    if ($valor === null || $valor === '') {
+        return $valor;
+    }
+
+    if (mb_check_encoding($valor, 'UTF-8')) {
+        return $valor;
+    }
+
+    return mb_convert_encoding($valor, 'UTF-8', 'ISO-8859-1');
+}
+
+// Credenciais isoladas em arquivo próprio (fora do Git, coberto pelo .gitignore).
+// Não usamos o conecta_mysql.inc aqui porque ele tem um BOM gravado antes do "<?php"
+// e chama ob_start()/header() - em uma página HTML normal isso passa despercebido,
+// mas corrompe um binário exato como o .xlsx (que precisa começar com a assinatura do ZIP).
+include "conecta_mysql_credenciais.inc";
+
+@ session_start();
+$banco = $_SESSION['id_cliente'];
+
+$conector = mysqli_connect($servidor, $usuario_bd, $senha_bd, $banco);
+
+if (mysqli_connect_error()) {
+    print_r("Falha na conexão: " . mysqli_connect_error());
+    exit;
+}
+
+$pesagem_id = $_REQUEST["pesagem_id"];
+
+$tbl_pesagem = mysqli_query($conector, "SELECT * FROM tbl_pesagem
+        INNER JOIN tbl_pessoa
+                ON tbl_pessoa_id = tbl_pesagem_codigo_local
+        INNER JOIN tabela_epoca_pesagem
+                ON tab_codigo_epoca_pesagem = tbl_pesagem_codigo_epoca
+             WHERE tbl_pesagem_id='$pesagem_id'");
+
+$num_rows = mysqli_num_rows($tbl_pesagem);
+
+if ($num_rows != 0) {
+    $reg_pesagem = mysqli_fetch_object($tbl_pesagem);
+
+    $desc_local = $reg_pesagem->tbl_pessoa_nome;
+    $codigo_local = $reg_pesagem->tbl_pesagem_codigo_local;
+    $desc_motivo = corrigir_utf8($reg_pesagem->tab_descricao_epoca_pesagem);
+    $desc_filtro = corrigir_utf8($reg_pesagem->tbl_pesagem_filtros);
+    $desc_lote = corrigir_utf8($reg_pesagem->tbl_pesagem_lote);
+    $animais_pesados = intval($reg_pesagem->tbl_pesagem_qtd_animais_pesados);
+    $peso_kg = $reg_pesagem->tbl_pesagem_peso_kg;
+    $peso_arroba = $reg_pesagem->tbl_pesagem_peso_arroba;
+    $peso_medio_kg = $reg_pesagem->tbl_pesagem_peso_medio_kg;
+    $peso_medio_arroba = $reg_pesagem->tbl_pesagem_peso_medio_arroba;
+    $num_movimentacao = $reg_pesagem->tbl_pesagem_codigo_movimentacao;
+
+    $data_pesagem = new DateTime($reg_pesagem->tbl_pesagem_data);
+    $data_pesagem_edi = $data_pesagem->format('d/m/Y');
+
+    $nome_inclusao = corrigir_utf8($reg_pesagem->tbl_pesagem_incluido_por);
+    $data_inclusao = new DateTime($reg_pesagem->tbl_pesagem_incluido_em);
+    $incluido_por = $nome_inclusao . ' em ' . $data_inclusao->format('d/m/Y');
+}
+else {
+    print_r("Pesagem não encontrada.");
+    exit;
+}
+
+$nome_relatorio = "Pesagem Finalizada";
+
+$spreadsheet->getActiveSheet()->mergeCells('A1:I1');
+$spreadsheet->getActiveSheet()->mergeCells('J1:K1');
+$spreadsheet->getActiveSheet()->mergeCells('B2:C2');
+$spreadsheet->getActiveSheet()->mergeCells('E2:F2');
+$spreadsheet->getActiveSheet()->mergeCells('B3:C3');
+$spreadsheet->getActiveSheet()->mergeCells('E3:F3');
+$spreadsheet->getActiveSheet()->mergeCells('B4:K4');
+$spreadsheet->getActiveSheet()->mergeCells('B5:K5');
+
+$spreadsheet->setActiveSheetIndex(0)
+    ->setCellValue('A1', $nome_relatorio)
+    ->setCellValue('J1', 'Data: ' . $data_sistema)
+    ->setCellValue('A2', 'Nº do Documento: ')
+    ->setCellValue('B2', $pesagem_id)
+    ->setCellValue('D2', 'Data da Pesagem: ')
+    ->setCellValue('E2', $data_pesagem_edi)
+    ->setCellValue('A3', 'Lote: ')
+    ->setCellValue('B3', $desc_lote)
+    ->setCellValue('D3', 'Motivo: ')
+    ->setCellValue('E3', $desc_motivo)
+    ->setCellValue('G3', 'Nº da Movimentação: ')
+    ->setCellValue('H3', $num_movimentacao)
+    ->setCellValue('A4', 'Incluído por: ')
+    ->setCellValue('B4', $incluido_por)
+    ->setCellValue('A5', 'Filtros: ')
+    ->setCellValue('B5', $desc_filtro)
+    ->setCellValue('B6', 'Animais Pesados: ' . $animais_pesados)
+    ->setCellValue('D6', 'Peso Total Kg: ' . number_format($peso_kg, 2, ',', '.'))
+    ->setCellValue('F6', 'Peso Total Arrobas: ' . number_format($peso_arroba, 2, ',', '.'))
+    ->setCellValue('H6', 'Peso Médio Kg: ' . number_format($peso_medio_kg, 2, ',', '.'))
+    ->setCellValue('J6', 'Peso Médio Arrobas: ' . number_format($peso_medio_arroba, 2, ',', '.'));
+
+$spreadsheet->setActiveSheetIndex(0)
+    ->setCellValue("A8", "Id")
+    ->setCellValue("B8", "Pesagem")
+    ->setCellValue("C8", "Ganho de Peso")
+    ->setCellValue("D8", "Último Peso")
+    ->setCellValue("E8", "Data Último Peso")
+    ->setCellValue("F8", "Sexo")
+    ->setCellValue("G8", "Nascimento")
+    ->setCellValue("H8", "Apartação")
+    ->setCellValue("I8", "Observação da Pesagem")
+    ->setCellValue("J8", "Mãe")
+    ->setCellValue("K8", "Categoria")
+    ->setCellValue("L8", "Idade em Meses")
+    ->setCellValue("M8", "Raça")
+    ->setCellValue("N8", "Pelagem")
+    ->setCellValue("O8", "Pai")
+    ->setCellValue("P8", "Observação");
+
+$spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(22);
+$spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(12);
+$spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(14);
+$spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(20);
+$spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(16);
+$spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(10);
+$spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(22);
+$spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(16);
+$spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(24);
+$spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(13);
+$spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(16);
+$spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(15);
+$spreadsheet->getActiveSheet()->getColumnDimension('M')->setWidth(14);
+$spreadsheet->getActiveSheet()->getColumnDimension('N')->setWidth(14);
+$spreadsheet->getActiveSheet()->getColumnDimension('O')->setWidth(16);
+$spreadsheet->getActiveSheet()->getColumnDimension('P')->setWidth(24);
+
+$spreadsheet->getActiveSheet()->getStyle('A1:I1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+$spreadsheet->getActiveSheet()->getStyle('J1:K1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+$spreadsheet->getActiveSheet()->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+$spreadsheet->getActiveSheet()->getStyle('D2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+$spreadsheet->getActiveSheet()->getStyle('A3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+$spreadsheet->getActiveSheet()->getStyle('D3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+$spreadsheet->getActiveSheet()->getStyle('G3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+$spreadsheet->getActiveSheet()->getStyle('A4:A5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+$spreadsheet->getActiveSheet()->getStyle('A8:P8')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+$spreadsheet->getActiveSheet()->getStyle('A8:P8')->getFill()->setFillType(Fill::FILL_SOLID);
+$spreadsheet->getActiveSheet()->getStyle('A8:P8')->getFill()->getStartColor()->setARGB('D6DBDF');
+
+$spreadsheet->getActiveSheet()->getStyle('B5:K5')->getFont()->setColor(new Color(Color::COLOR_GRAY));
+$spreadsheet->getActiveSheet()->getStyle('B5:K5')->getFont()->setSize(10);
+
+$spreadsheet->getActiveSheet()->setShowGridlines(true);
+
+// Faixas de categoria por idade (mesma lógica de ler_pesagem_consulta.php)
+$arrayCategorias = [];
+
+$tab_categoria = mysqli_query($conector, "SELECT * FROM tabela_categoria_idade
+    WHERE tab_registro_lixeira_categoria_idade='0'");
+
+while ($reg_categoria = mysqli_fetch_object($tab_categoria)) {
+    $arrayCategorias[] = [
+        "idade_de" => $reg_categoria->tab_categoria_idade_de,
+        "idade_ate" => $reg_categoria->tab_categoria_idade_ate,
+    ];
+}
+
+// Lookup do Pai (mesma lógica de ler_pesagem_consulta.php)
+$codigos_pais = [];
+
+$tbl_animais_local = mysqli_query($conector, "SELECT * FROM tbl_animais
+    WHERE tbl_animal_codigo_fazenda = '$codigo_local' AND
+          tbl_animal_ativo = 'S'");
+
+while ($reg_animal = mysqli_fetch_object($tbl_animais_local)) {
+    if ($reg_animal->tbl_animal_codigo_pai) {
+        $codigos_pais[] = $reg_animal->tbl_animal_codigo_pai;
+    }
+}
+
+$dados_pais_semem = [];
+$dados_pais_animal = [];
+
+if (!empty($codigos_pais)) {
+    $sql_pais_semem = "SELECT tbl_semem_codigo_id, tbl_semem_nome FROM tbl_semem WHERE tbl_semem_codigo_id IN (" . implode(',', $codigos_pais) . ")";
+    $rs_pais_semem = mysqli_query($conector, $sql_pais_semem);
+
+    while ($reg_pai_semem = mysqli_fetch_object($rs_pais_semem)) {
+        $dados_pais_semem[$reg_pai_semem->tbl_semem_codigo_id] = corrigir_utf8($reg_pai_semem->tbl_semem_nome);
+    }
+
+    $sql_pais_animal = "SELECT tbl_animal_codigo_id, tbl_animal_codigo_alfa, tbl_animal_codigo_numerico FROM tbl_animais WHERE tbl_animal_codigo_id IN (" . implode(',', $codigos_pais) . ")";
+    $rs_pais_animal = mysqli_query($conector, $sql_pais_animal);
+
+    while ($reg_pai_animal = mysqli_fetch_object($rs_pais_animal)) {
+        $dados_pais_animal[$reg_pai_animal->tbl_animal_codigo_id] = $reg_pai_animal->tbl_animal_codigo_alfa . ' ' . intval($reg_pai_animal->tbl_animal_codigo_numerico);
+    }
+}
+
+$tbl_itens = mysqli_query($conector, "SELECT * FROM tbl_item_pesagem
+    INNER JOIN tbl_animais
+            ON tbl_animal_codigo_id = tbl_ite_pesagem_codigo_id_animal
+    WHERE tbl_ite_pesagem_numero_id='$pesagem_id'
+    ORDER BY CAST(tbl_ite_pesagem_numero_item AS UNSIGNED) ASC");
+
+$num_rows = mysqli_num_rows($tbl_itens);
+
+if ($num_rows != 0) {
+    $linha = 8;
+
+    while ($reg_itens = mysqli_fetch_object($tbl_itens)) {
+        // O código do animal pode ser alfanumérico (ex.: "B-978"); usar intval() aqui
+        // zerava esses códigos. Mantém texto quando alfanumérico e número quando puramente numérico.
+        $codigo_animal = corrigir_utf8($reg_itens->tbl_ite_pesagem_codigo_animal);
+        if (is_numeric($codigo_animal)) {
+            $codigo_animal = intval($codigo_animal);
+        }
+        $peso = intval($reg_itens->tbl_ite_pesagem_peso);
+        $sexo = corrigir_utf8($reg_itens->tbl_ite_pesagem_sexo);
+        $apartacao = corrigir_utf8($reg_itens->tbl_ite_pesagem_criterio_apartacao);
+        $observacao = corrigir_utf8($reg_itens->tbl_ite_pesagem_observacao);
+        $mae = $reg_itens->tbl_ite_pesagem_mae;
+        $raca = corrigir_utf8($reg_itens->tbl_ite_pesagem_raca);
+        $pelagem = corrigir_utf8($reg_itens->tbl_ite_pesagem_pelagem);
+        $observacao_animal = corrigir_utf8($reg_itens->tbl_animal_observacao);
+
+        $id_pai_animal = $reg_itens->tbl_animal_codigo_pai;
+        $codigo_pai_alfa_numerico = '';
+
+        if (isset($dados_pais_semem[$id_pai_animal])) {
+            $codigo_pai_alfa_numerico = $dados_pais_semem[$id_pai_animal];
+        }
+        elseif (isset($dados_pais_animal[$id_pai_animal])) {
+            $codigo_pai_alfa_numerico = $dados_pais_animal[$id_pai_animal];
+        }
+
+        $data_nasc = $reg_itens->tbl_ite_pesagem_nascimento;
+        $data_nasc = str_replace("/", "-", $data_nasc);
+        $data_nasc = date('Y-m-d', strtotime($data_nasc));
+        $nascimento_edi = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($data_nasc);
+
+        // Ganho de peso / último peso, mesma cascata de ler_pesagem_consulta.php
+        $ultimo_peso = 0;
+        $data_ultimo_peso = 0;
+
+        if ($reg_itens->tbl_ite_pesagem_ultimo_peso == '' || $reg_itens->tbl_ite_pesagem_ultimo_peso == 0) {
+            $diferenca_peso = (int)$reg_itens->tbl_ite_pesagem_peso - (int)$reg_itens->tbl_animal_ultimo_peso;
+
+            if ($reg_itens->tbl_animal_ultimo_peso != 0 && $reg_itens->tbl_animal_ultimo_peso != '') {
+                $ultimo_peso = (int)$reg_itens->tbl_animal_ultimo_peso;
+                $data_ultimo_peso = $reg_itens->tbl_animal_data_ultimo;
+            }
+            else if ($reg_itens->tbl_animal_peso_desmama != 0 && $reg_itens->tbl_animal_peso_desmama != '') {
+                $ultimo_peso = (int)$reg_itens->tbl_animal_peso_desmama;
+                $data_ultimo_peso = $reg_itens->tbl_animal_data_desmama;
+            }
+            else if ($reg_itens->tbl_animal_primeiro_peso != 0 && $reg_itens->tbl_animal_primeiro_peso != '') {
+                $ultimo_peso = (int)$reg_itens->tbl_animal_primeiro_peso;
+                $data_ultimo_peso = $reg_itens->tbl_animal_data_primeiro_peso;
+            }
+        }
+        else {
+            $diferenca_peso = (int)$reg_itens->tbl_ite_pesagem_peso - (int)$reg_itens->tbl_ite_pesagem_ultimo_peso;
+            $ultimo_peso = (int)$reg_itens->tbl_ite_pesagem_ultimo_peso;
+            $data_ultimo_peso = $reg_itens->tbl_ite_pesagem_data_emissao;
+        }
+
+        if ($data_ultimo_peso != 0 && $data_ultimo_peso != '') {
+            $data_ultimo_peso_dt = new DateTime($data_ultimo_peso);
+            $data_ultimo_peso_edi = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($data_ultimo_peso_dt->format('Y-m-d'));
+        }
+        else {
+            $data_ultimo_peso_edi = '';
+        }
+
+        // Categoria por idade em meses
+        $descricao_categoria = '';
+        $idade_meses = 0;
+
+        if ($data_nasc && $data_nasc != '0000-00-00') {
+            $nascimento = new DateTime($data_nasc);
+            $hoje = new DateTime();
+            $intervalo = $hoje->diff($nascimento);
+            $idade_meses = ($intervalo->y * 12) + $intervalo->m;
+        }
+
+        foreach ($arrayCategorias as $categoria) {
+            if ($idade_meses >= $categoria['idade_de'] && $idade_meses <= $categoria['idade_ate']) {
+                if ($categoria['idade_ate'] == 999999999) {
+                    $descricao_categoria = '> 36 meses';
+                }
+                else {
+                    $descricao_categoria = $categoria['idade_de'] . ' a ' . $categoria['idade_ate'] . ' meses';
+                }
+            }
+        }
+
+        $linha++;
+
+        $spreadsheet->getActiveSheet()->getStyle('B' . $linha)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2);
+        $spreadsheet->getActiveSheet()->getStyle('C' . $linha)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2);
+        $spreadsheet->getActiveSheet()->getStyle('D' . $linha)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2);
+        $spreadsheet->getActiveSheet()->getStyle('E' . $linha)->getNumberFormat()->setFormatCode('DD/MM/YYYY');
+        $spreadsheet->getActiveSheet()->getStyle('G' . $linha)->getNumberFormat()->setFormatCode('DD/MM/YYYY');
+
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $linha, $codigo_animal);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $linha, $peso);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(3, $linha, $diferenca_peso);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(4, $linha, $ultimo_peso);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(5, $linha, $data_ultimo_peso_edi);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(6, $linha, $sexo);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(7, $linha, $nascimento_edi);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(8, $linha, $apartacao);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(9, $linha, $observacao);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(10, $linha, $mae);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(11, $linha, $descricao_categoria);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(12, $linha, $idade_meses);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(13, $linha, $raca);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(14, $linha, $pelagem);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(15, $linha, $codigo_pai_alfa_numerico);
+        $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(16, $linha, $observacao_animal);
+
+        $spreadsheet->getActiveSheet()->getStyle('A' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        $spreadsheet->getActiveSheet()->getStyle('B' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        $spreadsheet->getActiveSheet()->getStyle('C' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        $spreadsheet->getActiveSheet()->getStyle('D' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        $spreadsheet->getActiveSheet()->getStyle('E' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('F' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('G' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('H' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $spreadsheet->getActiveSheet()->getStyle('I' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $spreadsheet->getActiveSheet()->getStyle('J' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('K' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $spreadsheet->getActiveSheet()->getStyle('L' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('M' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $spreadsheet->getActiveSheet()->getStyle('N' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $spreadsheet->getActiveSheet()->getStyle('O' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $spreadsheet->getActiveSheet()->getStyle('P' . $linha)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+    }
+}
+
+// Rename worksheet
+$spreadsheet->getActiveSheet()->setTitle('Pesagem');
+
+// Set active sheet index to the first sheet, so Excel opens this as the first sheet
+$spreadsheet->setActiveSheetIndex(0);
+
+// Redirect output to a client's web browser (Xlsx)
+header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+header('Content-Disposition: attachment;filename="pesagem_' . $pesagem_id . '.xlsx"');
+header('Cache-Control: max-age=0');
+// If you're serving to IE 9, then the following may be needed
+header('Cache-Control: max-age=1');
+
+// If you're serving to IE over SSL, then the following may be needed
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+header('Pragma: public'); // HTTP/1.0
+
+$writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+$writer->save('php://output');
+
+mysqli_close($conector);
+exit;
+?>

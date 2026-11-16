@@ -1,0 +1,781 @@
+<?php
+    include "valida_sessao.inc";
+    include "conecta_mysql.inc";
+
+    $data_sistema = date("Y-m-d");
+
+    if (isset($_REQUEST['local']) && $_REQUEST['local']!='') {
+        $codigo_local = $_REQUEST['local'];
+        @ session_start(); 
+        $_SESSION['local_pastos'] = $codigo_local;
+    }
+    else {
+        $codigo_local = '';
+    }
+
+?>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="img/boi_virtual_preto.ico">
+  <title>Boi Virtual</title>
+
+  <!-- Bootstrap CSS 
+  <link href="css/jquery-ui.css" rel="stylesheet" />-->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/elegant-icons-style.css" rel="stylesheet" />
+  <link href="css/bootstrap-theme.css" rel="stylesheet">
+  <link href="css/style.css?<?php echo Versao; ?>" rel="stylesheet">
+  <link href="css/style-responsive.css" rel="stylesheet" />
+
+  <script src="https://kit.fontawesome.com/30604bf5d3.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.22/r-2.2.6/datatables.min.css"/>
+
+  <link rel="stylesheet" href="css/select-1.13.14.css">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
+
+</head>
+
+<body>
+
+  <?php
+
+    @ session_start();
+
+    if(isset($_SESSION['menu_parametros'])) {
+        $array_gestao_adm = explode("!",$_SESSION['menu_parametros']);
+
+        if ($array_gestao_adm[3] == 0){
+            echo '<div class="alert alert-danger alert_erro" id="alert_erro" >';
+            echo '<strong class="negrito">Atenção! </strong><span>Você não tem acesso a esse programa!</span>';  
+            echo '</div>';         
+            exit;
+        }
+    }
+    else {
+        echo '<div class="alert alert-danger alert_erro" id="alert_erro" >';
+        echo '<strong class="negrito">Atenção! </strong><span>Você não efetuol o login!</span>';  
+        echo '</div>';         
+        exit;
+    }
+
+    $local_filtro = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0"); 
+
+    $local = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0"); 
+
+    $local_importar = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0");
+
+    $local_editor = mysqli_query($conector, "select tbl_pessoa_id, tbl_pessoa_nome, tbl_pessoa_latitude_fazenda, tbl_pessoa_longitude_fazenda from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0 order by tbl_pessoa_id");
+
+    $tbl_modulo = mysqli_query($conector, "select * from tbl_modulo_pasto where tbl_modulo_lixeira=0 order by tbl_modulo_descricao ASC"); 
+
+    $tbl_capim = mysqli_query($conector, "select * from tbl_tipo_capim where tbl_tipo_capim_lixeira=0"); 
+
+    $array_local = $_SESSION['local_pastos'];
+    $controle_estoque = $_SESSION['controle_estoque'];
+
+    $codigo_usuario = $_SESSION['id_usuario'];
+
+    $tbl_usuario = "SELECT * FROM usuario 
+        WHERE id_usuario = '$codigo_usuario' AND 
+              lixeira_usuario=0 ";  
+    $query = mysqli_query($conector_acesso, $tbl_usuario);
+
+    $num_rows_usuario = mysqli_num_rows($query);
+
+    if ($num_rows_usuario!=0){
+        $reg_usuario = mysqli_fetch_assoc($query);
+
+        $array_locais_usuario = explode(',', $reg_usuario['local_usuario']);
+        $qtd_locais_usuario = count($array_locais_usuario);
+
+        if ($qtd_locais_usuario==0) {
+            $array_locais_usuario='';
+        }
+    }
+    else {
+        $array_locais_usuario='';
+    }
+?>
+
+<!-- container section start -->
+<section id="container" class="">
+
+    <!--sidebar start-->
+    <?php
+        include "cabecalho.php";
+        include "opcoes_menu.php"; include "limpar_secao_selecao_matrizes.php"; include "limpar_secao_compra_venda.php"; include "limpar_secao_ctp.php"; include "limpar_secao_ctr.php"; include "limpar_secao_pesagem.php"; include "limpar_secao_movimentacao.php"; include "limpar_secao_nutricao.php"; include "limpar_secao_nascimento.php";
+    ?>
+    <!--sidebar end-->
+
+    <!--main content start-->
+    <section id="main-content">
+        <section class="wrapper" style="margin-left: 5px;">
+            <span class="caminho-programa">Parametros <i class="fa fa-angle-right seta-direita"></i>
+            <span class="titulo">Mapa/Pastos</span></span>
+
+            <div class="row" id="pastos_cabecalho">
+                <div class="col-lg-12">
+                    <h3 class="page-header"><i class="fa fa-map-o"></i> Mapa/Pastos</h3>
+                </div>
+            </div>
+            <div class="row" id="pastos_conteudo">
+                <div class="col-lg-12">
+
+                    <div  class="form-group">
+                        <input type="button" class="btn btn-primary" value="Novo Mapa" onclick="abrir_editor_mapa('novo')"/>
+                        <input type="button" class="btn btn-info" value="Editar Mapa" onclick="abrir_editor_mapa('editar')" style="margin-left: 5px;"/>
+                        <!-- Importacao de KML oculta por enquanto (o codigo continua no sistema): para voltar, tire o display:none -->
+                        <a href="#" id="btn_importar_kml" style="display: none; margin-left: 5px;">
+                            <input type="button" class="btn btn-default" aria-label="Left Align" value="Importar KML" onclick="incluir_novo()"/>
+                        </a>
+                    </div> 
+
+                    <div class="row col-md-12" id="consulta_contas">
+                        <form method="GET" action="form_contas.php" enctype="multipart/form-data" >
+                            
+                            <div class="tab-panel">
+                                <div class="tab-pane active">
+                                    <fieldset class="scheduler-border" id="dados_consulta">
+                                        <legend class="scheduler-border fonte-legend">Dados para Consultar</legend>
+
+                                        <div class="row">    
+                                            <div class="form-group col-md-6">
+                                                <input type="hidden" name="controle_estoque" id="controle_estoque"
+                                                <?php echo "value='".$controle_estoque."'";?>>
+
+                                                <label for="codigo_local_filtro" class="control-label"><span class="required">*</span> Selecione a Fazenda</label>
+                                                <select class="form-control" id="codigo_local_filtro"  name="codigo_local_filtro">
+
+                                                <option value="000000000">...</option>    
+
+                                                <?php
+                                                    while($reg_local = mysqli_fetch_object($local_filtro)) {
+                                                        foreach ($array_locais_usuario as $value_filtro) {
+                                                            $value_filtro = trim($value_filtro);
+
+                                                            if ($value_filtro!=$reg_local->tbl_pessoa_id) {
+                                                                continue;
+                                                            }
+
+                                                            $selecionado_filtro = '';
+
+                                                            if ($array_local!="") {
+                                                                if ($array_local==$reg_local->tbl_pessoa_id) {
+                                                                    $selecionado_filtro = "selected";
+                                                                }
+                                                            }
+                                                            else if ($codigo_local==$reg_local->tbl_pessoa_id) {
+                                                                $selecionado_filtro = "selected";
+                                                            }
+
+                                                            echo '<option value="'.$reg_local->tbl_pessoa_id.'" '.$selecionado_filtro.'>'.$reg_local->tbl_pessoa_nome.'</option>';
+                                                        }
+                                                    }
+                                                ?>
+
+                                                </select>
+                                            </div>
+
+                                                <div class="form-group col-md-2">
+                                                    <label class="control-label">&nbsp;</label>
+                                                    <button type="button" class="form-control btn btn-info pull-right" onclick="listar_pastos()">Consultar</button>
+                                                </div>
+
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="lista_pastos">
+                    </div>
+
+                </div>
+            </div>
+            <!-- page end-->
+
+
+            <div class="modal fade" id="modal_incluir" tabindex="-1" role="dialog" 
+             aria-labelledby="modal_incluirCenterTitle" aria-hidden="true"  data-backdrop="static">
+
+                <div class="modal-lg modal-dialog modal-dialog-centered" role="document" style="width: 100%;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modal_incluirLabel">Pastos - Incluir</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <form method="POST" action="gravar_pastos.php" enctype="multipart/form-data" id="form_gravar_pasto">
+                                <input name="codigo_conta" type="hidden" id="codigo_conta">
+                                <input type="hidden" name="tipo_gravacao" id="tipo_gravacao" value="0">
+
+                                <ul class="nav nav-tabs m-bot15">
+                                    <li class="active">
+                                        <a data-toggle="tab" href="#dados">Dados</a>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content">
+                                    <div id="dados" class="tab-pane active">
+                                        <div class="row">  
+                                            <div class="form-group col-md-12">
+                                                <button type="button" class="btn btn-primary confirma_gravar" onClick="gravar_pasto()">Confirmar Inclusão</button>
+
+                                                <button type="button" class="btn btn-info pull-right voltar_inclusao" onClick="voltar_inclusao()">Voltar</button>
+
+                                                <button type="button" class="btn btn-info pull-right voltar" data-dismiss="modal">Voltar</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group col-md-6">
+                                                <label for="codigo_local" class="control-label"><span class="required">*</span> Fazenda</label>
+                                                <select class="form-control" id="codigo_local"name="codigo_local">
+                                                <option value="000000000">...</option>
+
+                                                <?php 
+                                                    while($reg_local = mysqli_fetch_object($local)) { 
+                                                    
+                                                        foreach ($array_locais_usuario as $value) {
+                                                            $value = ltrim($value);
+                                                            $value = rtrim($value);
+                                                            if ($value==$reg_local->tbl_pessoa_id) {
+                                                                echo '<option value="'.$value.'">' .$reg_local->tbl_pessoa_nome. '</option>'; 
+                                                            }
+                                                        }
+                                                    } 
+                                                 ?>
+                                                </select>
+
+                                                <input type="text" class="form-control" id="local_readonly" readonly>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="modulo" class="control-label"><span class="required">*</span> Módulo</label>
+                                                <select class="form-control" id="modulo"name="modulo">
+                                                <option value="000">...</option>
+
+                                                <?php while($reg_mod = mysqli_fetch_object($tbl_modulo)) { ?>
+
+                                                    <option value="<?php 
+                                                       echo $reg_mod->tbl_modulo_id ?>">
+                                                        
+                                                    <?php 
+                                                        echo $reg_mod->tbl_modulo_descricao;
+                                                    ?>
+                                                    </option>
+                                                <?php } ?>
+
+                                                </select>
+
+                                                <input type="text" class="form-control" id="modulo_readonly" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group col-md-4">
+                                                <label for="descricao" class="control-label"><span class="required">*</span> Descrição</label>
+                                                 <input name="descricao" type="text" class="form-control" id="descricao" onkeyup="maiuscula(this)">
+                                            </div>
+
+                                            <div class="form-group col-md-4">
+                                                <label for="capim" class="control-label">Tipo de Forragem</label>
+                                                <select class="form-control" id="capim"name="capim">
+                                                <option value="000">...</option>
+
+                                                <?php while($reg_capim = mysqli_fetch_object($tbl_capim)) { ?>
+
+                                                    <option value="<?php 
+                                                       echo $reg_capim->tbl_tipo_capim_id  ?>">
+                                                        
+                                                    <?php 
+                                                        echo $reg_capim->tbl_tipo_capim_descricao;
+                                                    ?>
+                                                    </option>
+                                                <?php } ?>
+
+                                                </select>
+
+                                                <input type="text" class="form-control" id="capim_readonly" readonly>
+                                            </div>
+
+                                            <div class="form-group col-md-4">
+                                                <label for="area" class="control-label">Área (ha)</label>
+                                                <input name="area" type="text" class="form-control" id="area" placeholder="0,00" onkeypress="digita_valor()" onblur="exibe_valor_area()">
+
+                                                <input type="text" class="form-control" id="area_readonly" readonly>
+                                            </div>
+                                        </div>
+
+                                                
+                                        <!--<div class="row" >        
+                                           <div class="form-group col-md-4">
+                                                <label for="latitude" class="control-label">Latitude</label>
+                                                <input name="latitude" type="text" class="form-control" id="latitude">
+                                            </div>
+
+                                            <div class="form-group col-md-4">
+                                                <label for="logitude" class="control-label">Longitude</label>
+                                                <input name="logitude" type="text" class="form-control" id="logitude">
+                                            </div>
+
+                                            <div class="form-group col-md-4">
+                                                <label for="area" class="control-label">Área (ha)</label>
+                                                <input name="area" type="text" class="form-control" id="area" placeholder="0,00" onkeypress="digita_valor()" onblur="exibe_valor_area()">
+                                            </div>
+                                        </div>-->
+
+                                        <fieldset class="scheduler-border" id="servico_propriedade"> 
+                                            <legend class="scheduler-border fonte-legend">Categoria/Qtd Animais</legend>
+
+
+                                            <div class="row">        
+                                                <div class="form-group col-md-3">
+                                                    <label for="descricao_categoria" class="control-label">Categoria</label>
+                                                </div>
+
+                                                <div class="form-group col-md-3 label-center">
+                                                    <label for="qtd_categoria">Quantidade</label>
+                                                </div>
+
+                                                <?php
+                                                    if ($controle_estoque == 'I') {
+                                                        echo '<div class="form-group col-md-3 text-center">
+                                                            <label class="control-label">Machos
+                                                            </label>
+                                                            </div>
+
+                                                            <div class="form-group col-md-3 text-center">
+                                                            <label class="control-label" style="text-align: center">Fêmeas</label>
+                                                            </div>';
+                                                    }
+                                                    else {
+                                                        echo '<div class="form-group col-md-3 text-center">
+                                                            <label for="idade_qtde" class="control-label">Idade em meses/Qtde</label>
+                                                            </div>
+
+                                                            <div class="form-group col-md-3 text-center">
+                                                            <label for="qtd_categoria" class="control-label" style="text-align: center">Nascimento/Sexo</label>
+                                                            </div>';
+                                                    }
+                                                ?>
+                                            </div> 
+                            
+                                            <?php
+                                                $ssql = "SELECT * FROM tabela_categoria_idade 
+                                                    WHERE tab_registro_lixeira_categoria_idade='0'"; 
+                                                $rs = mysqli_query($conector,$ssql); 
+                                                while ($fila = mysqli_fetch_object($rs)){
+                                                    $codigo_id = $fila->tab_codigo_categoria_idade ;
+                                                    $idade_de = $fila->tab_categoria_idade_de;
+                                                    $idade_ate = $fila->tab_categoria_idade_ate;
+
+                                                    if ($idade_ate==999999999){
+                                                        $desc_categoria = '> 36 meses';
+                                                    }
+                                                    else {
+                                                        $desc_categoria= $idade_de . ' a ' . $idade_ate . ' meses';
+                                                    }
+                                                    echo "
+                                                        <div class='row'>
+                                                            <div class = 'form-group col-md-3'>
+                                                                <input name='codigo_categoria' type='hidden' value='{$codigo_id}'>
+                                                                <span>{$desc_categoria}</span>
+                                                            </div>
+                                                            <div class = 'form-group col-md-3'>
+                                                                <span name='qtdeAnimaisPasto'>0</span>
+                                                            </div>";
+
+                                                    if ($controle_estoque=='I') {
+                                                        echo "<div class = 'form-group col-md-3'>
+<input name='qtd_categoria_macho' type='text' class='form-control qtd_categoria' onkeypress = 'return numeros(this, event)'>
+<input name='qtd_macho_anterior' type='hidden'>
+                                                            </div>
+
+                                                            <div class = 'form-group col-md-3'>
+<input name='qtd_categoria_femea' type='text' class='form-control qtd_categoria' onkeypress = 'return numeros(this, event)'>
+<input name='qtd_femea_anterior' type='hidden'>
+                                                            </div>
+                                                        </div>
+                                                        ";
+                                                    }   
+                                                    else {
+                                                        echo "<div class = 'form-group col-md-3'>
+                                                                <select class='form-control' id='selectIdade{$codigo_id}' onchange='preencherNascimento(this.id, this.value);'>
+                                                                    <option value='N'>...</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class = 'form-group col-md-3'>
+                                                                <select class='form-control' id='selectNascimento{$codigo_id}' onchange='editarAnimal(this.value);'>
+                                                                    <option value='0'>...</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        ";
+                                                    }     
+                                                }
+                                            ?> 
+
+                                            <div class="row">
+                                                <div class="form-group col-md-12">
+                                                    <label for="observacao" class="control-label">Observação</label>
+                                                     <input name="observacao" type="text" class="form-control" id="observacao" onkeyup="maiuscula(this)" maxlength="200">
+                                                </div>
+                                            </div>
+
+                                            <input name="array_codigo_categoria" type="hidden" id="array_codigo_categoria" >
+
+                                            <input name="array_qtd_categoria_macho" type="hidden" id="array_qtd_categoria_macho" >
+
+                                            <input name="array_qtd_macho_anterior" type="hidden" id="array_qtd_macho_anterior" >
+
+                                            <input name="array_qtd_categoria_femea" type="hidden" id="array_qtd_categoria_femea" >
+
+                                            <input name="array_qtd_femea_anterior" type="hidden" id="array_qtd_femea_anterior" >
+
+                                            <input name="descricao_anterior" type="hidden" id="descricao_anterior" >
+
+                                        </fieldset>
+
+                                        <div class="row">  
+                                            <div class="form-group col-md-12">
+                                                <button type="button" class="btn btn-primary confirma_gravar" onClick="gravar_pasto()">Confirmar Inclusão</button>
+
+                                                <button type="button" class="btn btn-info pull-right voltar_inclusao" onClick="voltar_inclusao()">Voltar</button>
+
+                                                <button type="button" class="btn btn-info pull-right voltar" data-dismiss="modal">Voltar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="editor_mapa_tela" style="display: none;">
+                <div class="row">
+                    <div class="form-group col-md-3">
+                        <label for="editor_local" class="control-label"><span class="required">*</span> <span id="editor_rotulo_fazenda">Fazenda</span></label>
+                        <select class="form-control" id="editor_local" onchange="editor_carregar_mapa()">
+                            <option value="">...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label class="control-label">&nbsp;</label>
+                        <div style="padding-top: 8px; font-weight: bold; color: #555;">
+                            <span id="editor_total_pastos"></span><span id="editor_info" style="display: none; margin-left: 15px; padding-left: 15px; border-left: 2px solid #bbb; color: #333;"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-3 text-right">
+                        <label class="control-label">&nbsp;</label><br>
+                        <button type="button" class="btn btn-primary" id="editor_btn_salvar" onclick="editor_salvar()" disabled>Salvar alterações</button>
+                        <button type="button" class="btn btn-info" onclick="fechar_editor_mapa()">Voltar</button>
+                    </div>
+                </div>
+
+                <div class="row" id="editor_barra_ferramentas">
+                    <div class="form-group col-md-12">
+                        <button type="button" class="btn btn-default" id="editor_btn_refazer_local" onclick="editor_refazer_localizacao()" style="display: none;"><i class="fa fa-map-marker-alt"></i> Refazer localização</button>
+                        <button type="button" class="btn btn-primary" id="editor_btn_novo" onclick="editor_novo_pasto()" disabled><i class="fa fa-plus"></i> Novo pasto</button>
+                        <button type="button" class="btn btn-default" id="editor_btn_tracado" onclick="editor_alternar_tracado()" disabled><i class="fa fa-draw-polygon"></i> Editar traçado</button>
+                        <button type="button" class="btn btn-default" id="editor_btn_cancelar_tracado" onclick="editor_cancelar_tracado()" style="display: none;"><i class="fa fa-undo"></i> Descartar edição do traçado</button>
+                        <button type="button" class="btn btn-default" id="editor_btn_renomear" onclick="editor_renomear()" disabled><i class="fa fa-pen"></i> Renomear</button>
+                        <button type="button" class="btn btn-default" id="editor_btn_remover" onclick="editor_remover_novo()" disabled style="display: none;"><i class="fa fa-trash"></i> Descartar desenho novo</button>
+                        <button type="button" class="btn btn-danger" id="editor_btn_excluir" onclick="editor_pedir_exclusao()" disabled><i class="fa fa-trash"></i> Excluir pasto</button>
+                        <input type="text" class="form-control" id="editor_busca" list="editor_lista_pastos" autocomplete="off" placeholder="Localizar pasto..." onchange="editor_buscar_pasto()" style="width: 220px; display: inline-block; vertical-align: middle; margin-left: 10px;">
+                        <datalist id="editor_lista_pastos"></datalist>
+                    </div>
+                </div>
+
+                <div id="editor_painel_excluir" class="row" style="display: none;">
+                    <div class="col-md-12">
+                        <p id="editor_texto_excluir" style="color: red; font-weight: bold;"></p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="editor_senha_excluir" class="control-label">Sua senha</label>
+                        <input type="password" class="form-control" id="editor_senha_excluir" autocomplete="new-password">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">&nbsp;</label><br>
+                        <button type="button" class="btn btn-danger" onclick="editor_confirmar_exclusao()">Confirmar exclusão</button>
+                        <button type="button" class="btn btn-default" onclick="editor_cancelar_exclusao()">Cancelar</button>
+                    </div>
+                </div>
+
+                <div id="editor_painel_coord" class="row" style="display: none;">
+                    <div class="col-md-12">
+                        <p id="editor_texto_coord" style="font-weight: bold; color: #b94a48;"></p>
+                        <p class="text-muted" style="margin-top: -5px; color: #4d4d4d;"><i class="fa fa-map-marker-alt"></i> Ou clique no mapa para preencher a latitude e a longitude: aproxime e clique de novo para ajustar o ponto, e depois clique em Aplicar.</p>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="editor_lat" class="control-label">Latitude</label>
+                        <input type="text" class="form-control" id="editor_lat" placeholder="Ex.: -19,9611" autocomplete="off">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="editor_lng" class="control-label">Longitude</label>
+                        <input type="text" class="form-control" id="editor_lng" placeholder="Ex.: -42,5952" autocomplete="off">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">&nbsp;</label><br>
+                        <button type="button" class="btn btn-primary" id="editor_btn_coord" onclick="editor_aplicar_coordenadas()">Aplicar</button>
+                        <button type="button" class="btn btn-default" onclick="editor_cancelar_coordenadas()">Cancelar</button>
+                    </div>
+                </div>
+
+                <div id="editor_mapa_area" style="position: relative;">
+                    <div id="editor_mapa_aviso" class="alert alert-info editor-aviso-sobre-mapa">Selecione a Fazenda para carregar o mapa.</div>
+
+                    <div id="editor_mapa" style="height: 500px; min-height: 300px;"></div>
+
+                </div>
+            </div>
+
+            <div class="modal fade" id="modal_editor_nome" tabindex="-1" role="dialog"
+             aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="editor_titulo_modal_nome">Novo pasto</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="editor_nome_pasto" class="control-label" id="editor_label_nome">Nome do pasto</label>
+                                <input type="text" class="form-control" id="editor_nome_pasto" maxlength="60" autocomplete="off" list="editor_lista_cadastrados">
+                                <datalist id="editor_lista_cadastrados"></datalist>
+                            </div>
+                            <div class="form-group" id="editor_grupo_modulo">
+                                <label for="editor_modulo_pasto" class="control-label"><span class="required">*</span> Módulo</label>
+                                <select class="form-control selectpicker" id="editor_modulo_pasto" data-live-search="true" data-size="8" data-container="body" data-none-selected-text="Selecione...">
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
+                            <p id="editor_erro_nome" style="display: none; color: #b94a48; font-weight: bold; margin: 0;"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" onclick="editor_cancelar_nome()">Cancelar</button>
+                            <button type="button" class="btn btn-primary" onclick="editor_confirmar_nome()">Confirmar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modal_editor_sair" tabindex="-1" role="dialog"
+             aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Editor de Mapa - Mensagem</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p style="font-weight: bold;">Existem ajustes no mapa que ainda não foram salvos no banco de dados!</p>
+                            <p>Se sair agora, você <strong>perderá</strong> esses ajustes.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" onclick="editor_sair_sim()">Sair sem salvar</button>
+                            <button type="button" class="btn btn-success" id="btn_editor_sair_nao" onclick="editor_sair_nao()">Continuar editando</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modal_importar_mapa" tabindex="-1" role="dialog"
+             aria-labelledby="modal_incluirCenterTitle" aria-hidden="true"  data-backdrop="static">
+
+                <div class="modal-lg modal-dialog modal-dialog-centered" role="document" style="width: 100%;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modal_incluirLabel">Pastos - Importar Mapa</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <form method="POST" action="importar_pastos.php" enctype="multipart/form-data" id="gravar_mapa">
+
+                                <div class="tab-content">
+                                    <div id="dados" class="tab-pane active">
+                                        <div class="row">  
+                                            <div class="form-group col-md-12">
+                                                <button type="button" class="btn btn-info pull-right voltar_inclusao" onClick="voltar_inclusao()">Voltar</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group col-md-6">
+                                                <label for="codigo_local_importar" class="control-label"><span class="required">*</span> Fazenda</label>
+                                                <select class="form-control" id="codigo_local_importar"name="codigo_local_importar" required>
+                                                <option value="">...</option>
+
+                                                <?php 
+                                                    while($reg_local = mysqli_fetch_object($local_importar)) { 
+                                                    
+                                                        foreach ($array_locais_usuario as $value) {
+                                                            $value = ltrim($value);
+                                                            $value = rtrim($value);
+                                                            if ($value==$reg_local->tbl_pessoa_id) {
+                                                                echo '<option value="'.$value.'">' .$reg_local->tbl_pessoa_nome. '</option>'; 
+                                                            }
+                                                        }
+                                                    } 
+                                                 ?>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="arquivo_excel"><span class="required">*</span> Selecione o arquivo kml</label>
+                                                <input type="file" class="form-control-file" name="arquivo_kml" required>       
+                                            </div>
+                                        </div>
+
+                                        <div class="row">  
+                                            <div class="form-group col-md-12">
+                                                <button type="submit" class="btn btn-primary gravar" id="botao_gravar">Confirmar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="mensagem_retorno" tabindex="-1" role="dialog" 
+                aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Pastos </h4>
+                        </div>
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button data-dismiss="modal" class="btn btn-default" type="button" onclick="location.reload();">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="mensagem_retorno_inclusao" tabindex="-1" role="dialog" 
+                aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Pastos </h4>
+                        </div>
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button data-dismiss="modal" class="btn btn-default" type="button" onclick="incluir_novo();">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="mensagem_erro" tabindex="-1" role="dialog" 
+                aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Pastos - Mensagem</h4>
+                        </div>
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button data-dismiss="modal" class="btn btn-default" type="button" >Fechar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalEditarAnimal" tabindex="-1" role="dialog" 
+                aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Pastos - Editar Animal</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <input type="hidden" name="idAnimal" id="idAnimal">
+                                <div class="form-group col-md-6">
+                                    <label for="nascimentoAnimal" class="control-label">Data de nascimento:</label>
+                                    <input type="date" name="nascimentoAnimal" id="nascimentoAnimal" class='form-control'>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label for="sexoAnimal">Sexo:</label>
+                                    <select name="sexoAnimal" id="sexoAnimal" class='form-control'>
+                                        <option value='0'>...</option>
+                                        <option value="F">F</option>
+                                        <option value="M">M</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">  
+                                <div class="form-group col-md-12">
+                                    <button type="button" class="btn btn-primary confirma_gravar" onClick="gravarAnimal()">Confirmar Inclusão</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button data-dismiss="modal" class="btn btn-default" type="button">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+
+<?php
+    // Fazendas liberadas para o usuario, com a localizacao cadastrada e se ja tem mapa desenhado
+    include_once "funcao_mapa_fazenda.php";
+
+    $fazendas_editor = array();
+    $locais_permitidos = is_array($array_locais_usuario) ? array_map('trim', $array_locais_usuario) : array();
+
+    while ($reg_faz = mysqli_fetch_object($local_editor)) {
+        if (!in_array(trim($reg_faz->tbl_pessoa_id), $locais_permitidos)) {
+            continue;
+        }
+
+        $leitura_faz = mapa_ler($conector, $_SESSION['id_cliente'], $reg_faz->tbl_pessoa_id);
+        $itens_faz = 0;
+
+        if ($leitura_faz['json'] !== '') {
+            $dados_faz = json_decode($leitura_faz['json'], true);
+            $itens_faz = isset($dados_faz['features']) ? count($dados_faz['features']) : 0;
+        }
+
+        $fazendas_editor[] = array(
+            'id' => $reg_faz->tbl_pessoa_id,
+            'nome' => $reg_faz->tbl_pessoa_nome,
+            'lat' => is_null($reg_faz->tbl_pessoa_latitude_fazenda) ? null : (float)$reg_faz->tbl_pessoa_latitude_fazenda,
+            'lng' => is_null($reg_faz->tbl_pessoa_longitude_fazenda) ? null : (float)$reg_faz->tbl_pessoa_longitude_fazenda,
+            'semMapa' => ($itens_faz == 0)
+        );
+    }
+?>
+<script>var editorFazendas = <?php echo json_encode($fazendas_editor, JSON_UNESCAPED_UNICODE); ?>;</script>
+<script src="js/mapa_pastos_editor.js?<?php echo Versao; ?>" charset="utf-8" type="text/javascript"></script>
+
+<?php
+  $javascript_file_name = 'tabela_pastos.js';
+  require 'rodape.php';
+?>

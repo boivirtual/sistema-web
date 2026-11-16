@@ -1,0 +1,11 @@
+    th, td { white-space: nowrap; 
+    }
+    
+    div.dataTables_wrapper {
+        width: 1125px;
+        margin: 0 auto;
+    }
+
+    .DTFC_LeftBodyLiner {
+		overflow-x: hidden;
+}

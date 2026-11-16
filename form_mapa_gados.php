@@ -1,0 +1,562 @@
+<?php
+    include "valida_sessao.inc";
+    include "conecta_mysql.inc";
+?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="img/boi_virtual_preto.ico">
+  <title>Boi Virtual</title>
+
+  <!-- Bootstrap CSS 
+  <link href="css/jquery-ui.css" rel="stylesheet" />-->
+  <link href="css/bootstrap.min.css?<?php echo Versao; ?>" rel="stylesheet">
+  <link href="css/bootstrap-theme.css?<?php echo Versao; ?>" rel="stylesheet">
+  <link href="css/elegant-icons-style.css" rel="stylesheet" />
+  <link href="css/style.css?<?php echo Versao; ?>" rel="stylesheet">
+  <link href="css/style-responsive.css?<?php echo Versao; ?>" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/30604bf5d3.js" crossorigin="anonymous"></script>
+
+  <link href="https://cdn.datatables.net/v/bs4/dt-1.10.22/r-2.2.6/datatables.min.css" rel="stylesheet" type="text/css" />
+
+  <link href="css/select-1.13.14.css" rel="stylesheet" > 
+  <link href="css/style-busca.css?<?php echo Versao; ?>" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script src="js/DragDropTouch.js"></script>
+
+
+<!--    <link href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" rel="stylesheet" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="assets/materialize/css/materialize.css?<?php echo Versao; ?>" rel="stylesheet" media="screen,projection" />
+
+    <link href="css/select-1.13.14.css" rel="stylesheet">
+    <link href="css/fullcalendarmain.css" rel="stylesheet">
+    <script src="js/fullcalendarmain.js"></script>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
+</head>
+
+<body>
+
+  <?php
+
+    @ session_start();
+
+    if(isset($_SESSION['menu_manejo_animais'])) {
+        $array_manejo = explode("!",$_SESSION['menu_manejo_animais']);
+
+        if ($array_manejo[0] == 0){
+            echo '<div class="alert alert-danger alert_erro" id="alert_erro" >';
+            echo '<strong class="negrito">Atenção! </strong><span>Você não tem acesso a esse programa!</span>';  
+            echo '</div>';         
+            exit;
+        }
+    }
+    else {
+        echo '<div class="alert alert-danger alert_erro" id="alert_erro" >';
+        echo '<strong class="negrito">Atenção! </strong><span>Você não efetuol o login!</span>';  
+        echo '</div>';         
+        exit;
+    }
+
+
+    $tbl_local = mysqli_query($conector, "select * from tbl_pessoa where tbl_pessoa_classe=4 and tbl_pessoa_lixeira=0"); 
+
+    $codigo_usuario = $_SESSION['id_usuario'];
+
+    $tbl_usuario = "SELECT * FROM usuario WHERE id_usuario = '$codigo_usuario' AND 
+                                           lixeira_usuario=0 ";  
+    $query = mysqli_query($conector_acesso, $tbl_usuario);
+
+    $num_rows_usuario = mysqli_num_rows($query);
+
+    if ($num_rows_usuario!=0){
+        $reg_usuario = mysqli_fetch_assoc($query);
+
+        $array_locais_usuario = explode(',', $reg_usuario['local_usuario']);
+        $qtd_locais_usuario = count($array_locais_usuario);
+
+        if ($qtd_locais_usuario==0) {
+            $array_locais_usuario='';
+        }
+    }
+    else {
+        $array_locais_usuario='';
+    }
+?>
+
+<!-- container section start -->
+<section id="container" class="">
+
+    <!--sidebar start-->
+    <?php
+        include "cabecalho.php"; include "limpar_secao_ctp_aceite.php";
+        include "opcoes_menu.php"; 
+        include "limpar_secao_selecao_matrizes.php";
+        include "limpar_secao_compra_venda.php"; 
+        include "limpar_secao_ctp.php"; 
+        include "limpar_secao_ctr.php"; 
+        include "limpar_secao_pesagem.php"; 
+        include "limpar_secao_movimentacao.php"; 
+        include "limpar_secao_nutricao.php"; 
+        include "limpar_secao_nascimento.php";
+    ?>
+    <!--sidebar end-->
+
+    <!--main content start-->
+
+    <section id="main-content" style="overflow: hidden;">
+        <section class="wrapper" style="margin-left: 5px;">
+            <span class="caminho-programa">Animais <i class="fa fa-angle-right seta-direita"></i>
+            <span class="titulo">Mapa de Gado</span></span>
+
+            <a href="#" style="color: gray; margin-left: 10px;" data-toggle='tooltip' data-placement='right' title="Orientações de uso" onclick="informacoes_uso()"><i class="far fa-question-circle"></i></a>
+
+           <div class="row">
+                <div class="col-lg-12">
+                    <h3 class="page-header"><i class="fa fa-map-o"></i> Mapa de Gado</h3>
+                    <ol class="breadcrumb breadcrumb-mapa-gado">
+
+                        <li id="fazendas-select">
+                            <label>Fazendas:</label>
+                            <select class="select-empresa-menu-control custom-select" id="codigo_local" name="codigo_local" onchange="consultar_mapa();">
+                                <option value="0">...</option>
+                            </select>
+
+                            <input type="hidden" name="local_sessao" id="local_sessao" <?php if(isset($_POST["mapa_local_id"])){echo "value='".$_POST["mapa_local_id"]."'";}?>>
+
+                            <input type="hidden" id="tipo_mapa_gado" 
+                            <?php echo "value='".$_SESSION['tipo_mapa_gado']."'";?>>
+
+                            <input type="hidden" id="id_cliente" 
+                            <?php echo "value='".$_SESSION['id_cliente']."'";?>>
+
+
+                        </li>
+
+                        <li class="no-before total-animais-li" style="margin-left: 20px;"><label id='totalAnimais'></label></li>
+
+                        <li id="mapa_satelite" class="no-before mapa-tipo-centro">
+                            <a href="#" style="color: gray;" data-toggle='tooltip' data-placement='bottom' title="Mapa Satelite" onclick="mapa_satelite()"><i class="fa fa-map-o" style="font-size:20px;"></i></a>
+                        </li>
+
+                        <li id="mapa_tabuleiro" class="no-before mapa-tipo-centro">
+                            <a href="#" style="color: gray;" data-toggle='tooltip' data-placement='bottom' title="Mapa Tabuleiro" onclick="mapa_tabuleiro()"><i class="fa fa-object-group" style="font-size:20px;"></i></a>
+                        </li>
+
+                        <li id="modo_toque_tabuleiro_li" class="no-before pull-right">
+                            <button type="button" id="modo_toque_tabuleiro_btn" class="btn btn-default btn-sm" style="vertical-align: middle;" data-toggle="tooltip" data-trigger="hover" data-container="body" data-placement="bottom" title="Alternativa ao arrastar" onclick="alternar_modo_toque_tabuleiro()"><i class="fa fa-hand-pointer-o"></i> Mover por toque</button>
+                        </li>
+
+                        <li id="busca_pasto_tabuleiro_li" class="no-before pull-right">
+                            <span class="busca-pasto-wrap">
+                                <input type="text" class="form-control input-sm" id="buscar_pasto_tabuleiro" placeholder="Buscar pasto..." autocomplete="off" oninput="filtrar_pasto_tabuleiro()">
+                                <a href="#" id="limpar_busca_pasto" class="busca-pasto-limpar" style="display: none;" onclick="limpar_busca_pasto_tabuleiro(); return false;"><i class="fa fa-times-circle"></i></a>
+                            </span>
+                        </li>
+                    </ol>
+
+                    <div class="row" id="aviso_modo_toque_tabuleiro" style="display: none;">
+                        <div class="col-lg-12">
+                            <div class="alert alert-info" style="padding: 6px 12px; margin-bottom: 5px;">
+                                <strong>Mover animais por toque:</strong> Tocar 2x no pasto Origem e 2x no pasto Destino.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12" id="divTotalAnimais" style="background-color: white; text-align: center;" hidden><label id='totalAnimais'></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12 esconder" hidden="true">
+
+                    <div id="consulta_contas" class="consulta_contas" style="color: black; overflow-y: auto !important;
+                        overflow-x: hidden; height: 400px;" hidden="true">
+                    </div>
+ 
+                    <div id="map" style="width: 100%; height: 400px; margin-top: 10px;">
+                    </div>
+                </div>
+            </div>
+
+	        <!-- page end-->
+
+            <div class="modal fade" id="modal_composicao_descricao_lote" tabindex="-1" role="dialog" 
+             aria-labelledby="modal_incluirCenterTitle myLargeModalLabel"  data-backdrop="static">
+                <div class="modal-lg modal-dialog modal-dialog-centered" role="document" style="width: 100%;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Composição da Descrição do Lote
+                            </h4>
+
+                            <input type="hidden" name="numero_item" id="numero_item">
+
+                            <input type="hidden" name="edicao" id="edicao">
+                            <input type='hidden' id='descricao_lote'>
+                            <input type="hidden" id="id_pasto_destino">
+                            <input type="hidden" id="desc_pasto_destino">
+                            <input type="hidden" id="desc_lote_destino">
+                            <input type="hidden" id="qual_pasto">
+                            <input type="hidden" id="qual_programa" value="tabuleiro">
+                            <input type="hidden" id="descricao_lote_montada">
+                            <input type="hidden" id="pasto_destino_estava_vazio">
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="container">
+
+                            <div class='row'>
+                                <div class="col-xs-12 col-md-12 span_centro">
+                                     <span class="info_pasto desc_pasto">
+                                    </span>
+                                </div>                             
+                            </div>
+
+                            <div class='row'>
+                                <div class="col-xs-12 col-md-12 span_centro">
+                                    <span class="info_lote desc_lote">
+                                    </span>
+                                </div>                             
+                            </div>
+
+                            <div class='row opcoes_descricao_lote' hidden>
+                                <div class='col-xs-12 col-md-12'>
+                                    <div class="form-check manter_lote">
+                                        <input class="form-check-input opcao_lote" type="radio" name="opcao_lote" id="manter_lote" value="M">
+                                        <label class="form-check-label" for="manter_lote"> Manter a Descrição do Lote
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check novo_lote">
+                                        <input class="form-check-input opcao_lote" type="radio" name="opcao_lote" id="novo_lote" value="N">
+                                        <label class="form-check-label" for="novo_lote"> Criar nova Descrição do Lote
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check levar_lote">
+                                        <input class="form-check-input opcao_lote" type="radio" name="opcao_lote" id="levar_lote" value="L">
+                                        <label class="form-check-label" for="levar_lote"> Levar a Descrição do Lote
+                                        </label>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <hr class="linha_hr">
+
+                            <div class="monta_descricao_lote" hidden>
+                            <div class='row'>
+                                <div class="form-group col-md-3 descricao_principal">
+                                    <label class="control-label"><span class="required">*</span> Descrição do Lote</label>
+                                    <select class="form-control" name="descricao_principal" id="descricao_principal" onchange="popular_situacao()">
+                                    </select>
+                                </div>
+
+                                <div class='form-group col-md-3 exibir_parametro_2' hidden>
+                                    <label class="control-label label_parametro_2">Situação</label>
+                                    <select class="form-control" name="situacao_principal" id="situacao_principal" onchange="exibir_parametro_3()">
+                                    </select>
+                                </div>
+
+                                <div class='form-group col-md-4 exibir_parametro_3' hidden>
+                                    <label class="control-label label_parametro_3">Informar Data da Parição? </label>
+
+                                    <div class="clearfix"></div>
+                                    
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="com_data" name="data_paricao" value="S"> Sim
+                                    </label>
+                                </div>
+
+                                <div class='form-group col-md-3 exibir_parametro_4' hidden>
+                                    <label class="control-label label_parametro_4">Mês/Ano da Parição</label>
+
+                                    <input type="month" class="form-control" name="data_paricao_principal" id="data_paricao_principal" onchange="exibe_descricao_lote()">
+                                </div>
+
+                                <div class='form-group col-md-3 exibir_parametro_4_data_mais' hidden>
+                                    <label class="control-label label_parametro_4_mais">Mês/Ano da Parição</label>
+
+                                    <input type="month" class="form-control" name="data_paricao_principal_mais" id="data_paricao_principal_mais" onchange="exibe_descricao_lote_mais_data()">
+                                </div>
+
+                                <div class='col-md-3 exibir_parametro_4_mais' hidden>
+                                    <label class="control-label">&nbsp;</label>
+
+                                    <a class='btn' href='#' style="font-size: 0.8em; font-weight: 500; color: #128cb8; float: right;" onclick="incluir_mais_data(1)"><i class="fa fa-plus" data-toggle='tooltip' data-placement='left' title='Informar mais datas'></i> Incluir mais Data</a>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 exibir_incluir_mais">
+                                    <div class='btn-group'>
+                                        <a class='btn' href='#' style="font-size: 0.8em; font-weight: 500; text-align: right; color: #128cb8;" onclick="incluir_mais_lote()"><i class="fa fa-plus" data-toggle='tooltip' data-placement='left' title=''></i> Incluir mais lote</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-10 col-md-11 exibir_descricao">
+                                    <input type="text" id='descricao_novo_lote' class="form-control" readonly style="border: none; background-color: transparent;">
+                                </div>
+                                <div class="col-md-1 exibir_opcoes">
+                                    <div class='btn-group'>
+                                        <a class='btn' href='#' style="font-size: 0.9em; text-align: right; color: #128cb8;" onclick="excluir_lote(1)"><i class="fa fa-trash-o" data-toggle='tooltip' data-placement='left' title='Excluir esse lote'></i></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-10 col-md-11 exibir_descricao2" hidden> 
+                                    <input type="text" id='descricao_novo_lote2' class="form-control" readonly style="border: none; background-color: transparent;">
+                                </div>
+
+                                <div class="col-md-1 exibir_opcoes2" hidden>
+                                    <div class='btn-group'>
+                                        <a class='btn' href='#' style="font-size: 0.9em; text-align: right; color: #128cb8;" onclick="excluir_lote(2)"><i class="fa fa-trash-o" data-toggle='tooltip' data-placement='left' title='Excluir esse lote'></i></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-10 col-md-11 exibir_descricao3" hidden> 
+                                    <input type="text" id='descricao_novo_lote3' class="form-control" readonly style="border: none; background-color: transparent;">
+                                    
+                                </div>
+
+                                <div class="col-md-1 exibir_opcoes3" hidden>
+                                    <div class='btn-group'>
+                                        <a class='btn' href='#' style="font-size: 0.9em; text-align: right; color: #128cb8;" onclick="excluir_lote(3)"><i class="fa fa-trash-o" data-toggle='tooltip' data-placement='left' title='Excluir esse lote'></i></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-10 col-md-11 exibir_descricao4" hidden> 
+                                    <input type="text" id='descricao_novo_lote4' class="form-control" readonly style="border: none; background-color: transparent;">
+                                    
+                                </div>
+
+                                <div class="col-md-1 exibir_opcoes4" hidden>
+                                    <div class='btn-group'>
+                                        <a class='btn' href='#' style="font-size: 0.9em; text-align: right; color: #128cb8;" onclick="excluir_lote(4)"><i class="fa fa-trash-o" data-toggle='tooltip' data-placement='left' title='Excluir esse lote'></i></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-10 col-md-11 exibir_descricao5" hidden> 
+                                    <input type="text" id='descricao_novo_lote5' class="form-control" readonly style="border: none; background-color: transparent;">
+                                </div>
+
+                                <div class="col-md-1 exibir_opcoes5" hidden>
+                                    <div class='btn-group'>
+                                        <a class='btn' href='#' style="font-size: 0.9em; text-align: right; color: #128cb8;" onclick="excluir_lote(5)"><i class="fa fa-trash-o" data-toggle='tooltip' data-placement='left' title='Excluir esse lote'></i></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-10 col-md-11 exibir_descricao6" hidden> 
+                                    <input type="text" id='descricao_novo_lote6' class="form-control" readonly style="border: none; background-color: transparent;">
+                                    
+                                </div>
+
+                                <div class="col-md-1 exibir_opcoes6" hidden>
+                                    <div class='btn-group'>
+                                        <a class='btn' href='#' style="font-size: 0.9em; text-align: right; color: #128cb8;" onclick="excluir_lote(6)"><i class="fa fa-trash-o" data-toggle='tooltip' data-placement='left' title='Excluir esse lote'></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            </div> <!--Fim monta descricao lote -->
+                        </div> <!-- Fim container --> 
+                        </div> <!-- Fim modal-body-->
+
+                        <div class="modal-footer">
+                            <div class=" monta_descricao_lote" hidden>
+                                <button type="button" class="btn btn-primary confirma_composicao" onclick="confirma_composicao_descricao_lote()">Confirmar
+                                </button>
+
+                                <button type='button' class='btn btn-info pull-right voltar_descricao_lote' data-dismiss='modal'>Voltar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class='modal' id='modal_mover_todos_tabuleiro' tabindex='-1' role='dialog'
+                aria-labelledby='myModalLabel' aria-hidden='true' data-backdrop='static'>
+                <div class='modal-dialog modal-dialog-centered' role='document'>
+                    <div class='modal-content'>
+                        <div class='modal-header'>
+                            <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                            <h4 class='modal-title'>Mapa de Gado - Mensagem</h4>
+                        </div>
+                        <div class='modal-body'>
+                            <p id="primeira_mensagem"></p>
+                            <p id="segunda_mensagem"></p>
+                        </div>
+
+                        <div class='modal-footer'>
+                            <input type="hidden" id="id_entrada">
+                            <input type="hidden" id="id_saida">
+                            <button id="btn_confirmar_mover_todos_tabuleiro" class='btn btn-success' type='button' onclick='gravar_retirar_tudo_tabuleiro();'>Sim</button>
+
+                            <button data-dismiss='modal' class='btn btn-default' type='button'>Não</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="mensagem_sucesso_mover_animais" tabindex="-1" role="dialog" 
+                aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Mapa de Gado - Mensagem</h4>
+                        </div>
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button class="btn btn-default" type="button" onclick="exibe_opcoes_desc_lote_pasto_destino_tabuleiro()">Fechar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="mensagem_sucesso_descricao_novo_lote_destino" tabindex="-1" role="dialog" 
+                aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Composição da Descrição do Lote - Mensagem</h4>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" onclick="fechar_mensagem_sucesso_tabuleiro();">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="modal fade" id="mensagem_retorno" tabindex="-1" role="dialog" 
+                aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Mapa de Gados</h4>
+                        </div>
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button data-dismiss="modal" class="btn btn-default" type="button" onclick="location.reload();">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="mensagem_erro" tabindex="-1" role="dialog" 
+                aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Mapa de Gados - Mensagem</h4>
+                        </div>
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button data-dismiss="modal" class="btn btn-default" type="button" >Fechar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class='modal fade' id='mensagem_manter_desc_pasto_destino' tabindex='-1' role='dialog' 
+                aria-labelledby='myModalLabel' aria-hidden='true' data-backdrop='static'>
+                <div class='modal-dialog modal-dialog-centered' role='document'>
+                    <div class='modal-content'>
+                        <div class='modal-header'>
+                            <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                            <h4 class='modal-title'>Composição da Descrição do Lote</h4>
+                        </div>
+                        <div class='modal-body'>
+                        </div>
+
+                        <div class='modal-footer'>
+                            <button class='btn btn-success' type='button' onclick='fechar_mensagem_sucesso_tabuleiro();'>Sim</button>
+
+                            <button data-dismiss='modal' class='btn btn-default' type='button' onclick='retorna_composicao_descricao_lote();'>Não</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <?php
+                    include "ajuda.php";
+                ?>
+            </div>
+
+        </section>
+        
+    </section>
+ <!--main content end-->
+ <div class="text-center">
+     <div class="credits">
+         <font size="2"><p style="color:#C0C0C0">Copyright &copy; Boi Virtual 2024</p></font>
+     </div>
+ </div>
+
+</section> <!-- container section start end -->
+  
+<!-- javascripts -->
+<script src="js/jquery.js?<?php echo Versao; ?>"></script>
+<script src="js/jquery.scrollTo.min.js?<?php echo Versao; ?>"></script>
+<script src="js/jquery.nicescroll.js?<?php echo Versao; ?>" type="text/javascript"></script>
+<script src="js/jquery-ui-1.9.2.custom.min.js?<?php echo Versao; ?>"></script>
+<script src="js/ga.js?<?php echo Versao; ?>" type="text/javascript" ></script>
+<script src="js/bootstrap-switch.js?<?php echo Versao; ?>"></script>
+<script src="js/jquery.tagsinput.js?<?php echo Versao; ?>"></script>
+<script src="js/jquery.hotkeys.js?<?php echo Versao; ?>"></script>
+<script src="js/bootstrap-wysiwyg.js?<?php echo Versao; ?>"></script>
+<script src="js/bootstrap-wysiwyg-custom.js?<?php echo Versao; ?>"></script>
+<script src="js/moment.js?<?php echo Versao; ?>"></script>
+<script src="js/scripts.js?<?php echo Versao; ?>"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/r-2.2.6/datatables.min.js"></script>
+
+<script src="https://igorescobar.github.io/jQuery-Mask-Plugin/js/jquery.mask.min.js?<?php echo Versao; ?>"></script> 
+
+<script src="js/opcoes_menu.js?<?php echo Versao; ?>"></script>
+<script src="js/mapa_gados.js?<?php echo Versao; ?>" charset="utf-8" type="text/javascript" ></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js?<?php echo Versao; ?>"></script>
+
+<script src="js/select-1.13.14.js?<?php echo Versao;?>"></script>
+
+<script>
+    $(document).ready(function(){
+ 	   $('[data-toggle="tooltip"]').tooltip();   
+    });
+
+</script>
+
+<script src='js/jquery.redirect.js'></script>
+
+<script src="js/mapa_gados_satelite.js?<?php echo Versao; ?>" charset="utf-8" type="text/javascript"></script>
+
+</body>
+
+</html>

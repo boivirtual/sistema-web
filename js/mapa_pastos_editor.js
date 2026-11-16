@@ -1,0 +1,2068 @@
+/** EDITOR DE MAPA DOS PASTOS (Leaflet + Leaflet.Draw) */
+var editorMapa = {
+    map: null,
+    grupo: null,
+    itens: [],
+    pontos: [],
+    pastosSistema: {},
+    modulos: [],
+    legenda: null,
+    versao: '',
+    local: '',
+    selecionado: null,
+    editando: false,
+    novoPendente: null,
+    modoNome: '',
+    snapshot: '',
+    desenho: null,
+    modo: 'editar',
+    tracadoAntes: null,
+    coordOk: false,
+    coordenadas: null,
+    marcador: null
+};
+
+var EDITOR_COR_OK = '#2E8B57';
+var EDITOR_COR_SEM_CADASTRO = '#ff8f00';
+var EDITOR_COR_NOVO = '#128cb8';
+
+function editor_carregar_script(url, sucesso, erro) {
+    var s = document.createElement('script');
+    s.src = url;
+    s.onload = sucesso;
+    s.onerror = erro;
+    document.head.appendChild(s);
+}
+
+function editor_carregar_bibliotecas(sucesso) {
+    if (window.L && L.Draw) {
+        sucesso();
+        return;
+    }
+
+    var erro = function() {
+        editor_mostrar_erro('Não foi possível carregar a biblioteca de mapas. Verifique a conexão com a internet.');
+    };
+
+    editor_carregar_script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', function() {
+        editor_carregar_script('https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js', sucesso, erro);
+    }, erro);
+}
+
+// ---- Nomes (cidades, rios, estradas) sobre o satelite, como vetor ----
+// Texto desenhado no navegador (MapLibre GL) a partir dos dados do OpenStreetMap servidos pelo OpenFreeMap
+// (gratuito, sem chave): fica nitido e no mesmo tamanho em qualquer zoom, ao contrario das imagens de
+// nomes da Esri. Se a biblioteca nao carregar ou o navegador nao tiver WebGL, o editor usa as imagens da Esri.
+var editorRotulosVetoriais = null; // null = ainda nao tentou carregar; true/false = resultado
+
+function editor_tem_webgl() {
+    try {
+        var c = document.createElement('canvas');
+        return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    }
+    catch (e) {
+        return false;
+    }
+}
+
+function editor_carregar_rotulos_vetoriais(depois) {
+    if (editorRotulosVetoriais !== null) {
+        depois();
+        return;
+    }
+
+    if (!editor_tem_webgl()) {
+        editorRotulosVetoriais = false;
+        depois();
+        return;
+    }
+
+    var terminou = false;
+    var terminar = function(ok) {
+        if (terminou) {
+            return;
+        }
+
+        terminou = true;
+        clearTimeout(limite);
+        editorRotulosVetoriais = ok && !!window.maplibregl && !!L.maplibreGL;
+        depois();
+    };
+    var limite = setTimeout(function() { terminar(false); }, 8000);
+
+    var css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css';
+    document.head.appendChild(css);
+
+    editor_carregar_script('https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js', function() {
+        editor_carregar_script('https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js',
+            function() { terminar(true); },
+            function() { terminar(false); });
+    }, function() { terminar(false); });
+}
+
+// Estilo so com nomes e linhas de estrada (sem mapa-base: o fundo e' o satelite da Esri)
+function editor_estilo_rotulos() {
+    var tamanho = function(pares) {
+        return ['interpolate', ['linear'], ['zoom']].concat(pares);
+    };
+
+    var pintura = {
+        'text-color': '#ffffff',
+        'text-halo-color': 'rgba(0, 0, 0, 0.85)',
+        'text-halo-width': 1.6,
+        'text-halo-blur': 0.4
+    };
+
+    var lugar = function(id, filtro, fonte, tamanhos, extra) {
+        return {
+            id: id,
+            type: 'symbol',
+            source: 'omt',
+            'source-layer': 'place',
+            filter: filtro,
+            minzoom: (extra && extra.minzoom) || 0,
+            layout: {
+                'text-field': ['get', 'name'],
+                'text-font': [fonte],
+                'text-size': tamanho(tamanhos),
+                'text-max-width': 8,
+                'text-padding': 3,
+                'symbol-sort-key': ['get', 'rank']
+            },
+            paint: pintura
+        };
+    };
+
+    return {
+        version: 8,
+        glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
+        sources: { omt: { type: 'vector', url: 'https://tiles.openfreemap.org/planet' } },
+        layers: [
+            {
+                id: 'estradas-linha',
+                type: 'line',
+                source: 'omt',
+                'source-layer': 'transportation',
+                filter: ['in', ['get', 'class'], ['literal', ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']]],
+                layout: { 'line-cap': 'round', 'line-join': 'round' },
+                paint: {
+                    'line-color': '#ffe2b0',
+                    'line-opacity': 0.75,
+                    'line-width': tamanho([8, 0.6, 12, 1.6, 16, 4])
+                }
+            },
+            lugar('estados', ['==', ['get', 'class'], 'state'], 'Noto Sans Bold', [3, 11, 8, 15], { minzoom: 3 }),
+            lugar('cidades', ['==', ['get', 'class'], 'city'], 'Noto Sans Bold', [4, 13, 10, 18, 14, 22]),
+            lugar('vilas', ['in', ['get', 'class'], ['literal', ['town', 'village']]], 'Noto Sans Bold', [8, 12, 12, 16, 14, 19]),
+            lugar('povoados', ['in', ['get', 'class'], ['literal', ['hamlet', 'suburb', 'neighbourhood', 'quarter', 'isolated_dwelling']]],
+                'Noto Sans Regular', [11, 12, 14, 15], { minzoom: 11 }),
+            {
+                id: 'agua-nomes',
+                type: 'symbol',
+                source: 'omt',
+                'source-layer': 'water_name',
+                layout: { 'text-field': ['get', 'name'], 'text-font': ['Noto Sans Italic'], 'text-size': 14, 'text-max-width': 8 },
+                paint: Object.assign({}, pintura, { 'text-color': '#d4ecff' })
+            },
+            {
+                id: 'rios-nomes',
+                type: 'symbol',
+                source: 'omt',
+                'source-layer': 'waterway',
+                minzoom: 9,
+                filter: ['==', ['get', 'class'], 'river'],
+                layout: {
+                    'symbol-placement': 'line',
+                    'symbol-spacing': 320,
+                    'text-field': ['get', 'name'],
+                    'text-font': ['Noto Sans Italic'],
+                    'text-size': tamanho([9, 12, 14, 15])
+                },
+                paint: Object.assign({}, pintura, { 'text-color': '#d4ecff' })
+            },
+            {
+                id: 'estradas-nomes',
+                type: 'symbol',
+                source: 'omt',
+                'source-layer': 'transportation_name',
+                minzoom: 9,
+                filter: ['in', ['get', 'class'], ['literal', ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']]],
+                layout: {
+                    'symbol-placement': 'line',
+                    'symbol-spacing': 360,
+                    'text-field': ['coalesce', ['get', 'ref'], ['get', 'name']],
+                    'text-font': ['Noto Sans Bold'],
+                    'text-size': tamanho([9, 11, 14, 14])
+                },
+                paint: Object.assign({}, pintura, { 'text-color': '#ffe9c0' })
+            }
+        ]
+    };
+}
+
+function editor_mostrar_erro(mensagem) {
+    $("#mensagem_erro").modal();
+    $("#mensagem_erro .modal-body").html(mensagem);
+}
+
+var editorTemporizadorAviso = null;
+var editorAvisoEhDica = false;
+
+// Mensagens de sucesso somem sozinhas; segundos pode ser informado para outros tipos
+function editor_aviso(tipo, html, segundos) {
+    clearTimeout(editorTemporizadorAviso);
+    editorAvisoEhDica = false;
+
+    // A mensagem aparece sobre o mapa; o "x" permite fecha-la antes do tempo
+    $("#editor_mapa_aviso").removeClass("alert-info alert-success alert-warning alert-danger")
+        .addClass("alert-" + tipo)
+        .html('<button type="button" class="close" onclick="editor_ocultar_aviso()">&times;</button>' + html)
+        .show();
+    editor_ajustar_altura();
+
+    if (tipo == 'success' && !segundos) {
+        segundos = 5;
+    }
+
+    if (segundos) {
+        editorTemporizadorAviso = setTimeout(function() {
+            $("#editor_mapa_aviso").hide();
+            editor_ajustar_altura();
+
+            // Depois de uma mensagem de sucesso (salvar, excluir) ou de aviso temporario, volta a dica de marcar/desmarcar
+            if (tipo == 'success' || tipo == 'info') {
+                editor_mostrar_dica();
+            }
+        }, segundos * 1000);
+    }
+}
+
+function editor_ocultar_aviso() {
+    clearTimeout(editorTemporizadorAviso);
+    editorAvisoEhDica = false;
+    $("#editor_mapa_aviso").hide();
+}
+
+// Dica padrao do editor com o mapa carregado; some quando um pasto e selecionado
+function editor_mostrar_dica() {
+    if (editorMapa.local == '') {
+        return;
+    }
+
+    editor_aviso('info', 'Clique em um pasto no mapa para selecioná-lo ou desmarcá-lo.');
+    editorAvisoEhDica = true;
+}
+
+function editor_alternar_tela_cheia() {
+    var ativa = !$("#editor_mapa_tela").hasClass('editor-tela-cheia');
+
+    $("#editor_mapa_tela").toggleClass('editor-tela-cheia', ativa);
+    $("body").toggleClass('editor-sem-rolagem', ativa);
+
+    var $botao = $(".editor-btn-tela-cheia");
+
+    $botao.html(ativa ? '<i class="fa fa-compress"></i>' : '<i class="fa fa-expand"></i>');
+    $botao.attr('data-original-title', ativa ? 'Sair da tela cheia' : 'Tela cheia').tooltip('hide');
+
+    editor_ajustar_altura();
+}
+
+function editor_sair_tela_cheia() {
+    if ($("#editor_mapa_tela").hasClass('editor-tela-cheia')) {
+        editor_alternar_tela_cheia();
+    }
+}
+
+// O mapa ocupa todo o espaco vertical que sobra na tela de trabalho
+function editor_ajustar_altura() {
+    var $mapa = $("#editor_mapa");
+
+    if (!$("#editor_mapa_tela").is(':visible')) {
+        return;
+    }
+
+    var topo = $mapa[0].getBoundingClientRect().top;
+    var altura = Math.max(300, window.innerHeight - topo - 8);
+
+    $mapa.css('height', altura + 'px');
+
+    // A legenda nao pode cobrir os botoes de zoom e tela cheia (canto superior esquerdo)
+    if (editorMapa.legenda !== null) {
+        $(editorMapa.legenda.getContainer()).css('max-height', Math.max(80, altura - 150) + 'px');
+    }
+
+    if (editorMapa.map !== null) {
+        editorMapa.map.invalidateSize();
+    }
+}
+
+var editorSaindo = false;
+var editorAcaoSair = null;
+var editorAcaoNaoSair = null;
+
+// Se houver ajustes nao salvos, pergunta antes de executar a acao que descartaria o trabalho
+function editor_confirmar_saida(aoConfirmar, aoCancelar) {
+    if (!editor_tem_alteracoes()) {
+        aoConfirmar();
+        return;
+    }
+
+    editorAcaoSair = aoConfirmar;
+    editorAcaoNaoSair = aoCancelar || null;
+    $("#modal_editor_sair").modal('show');
+}
+
+function editor_sair_sim() {
+    var acao = editorAcaoSair;
+
+    editorAcaoSair = null;
+    editorAcaoNaoSair = null;
+    $("#modal_editor_sair").modal('hide');
+
+    if (acao) {
+        acao();
+    }
+}
+
+function editor_sair_nao() {
+    var acao = editorAcaoNaoSair;
+
+    editorAcaoSair = null;
+    editorAcaoNaoSair = null;
+    $("#modal_editor_sair").modal('hide');
+
+    if (acao) {
+        acao();
+    }
+}
+
+// Volta o editor ao estado inicial, sem nada carregado
+function editor_limpar_tudo() {
+    editor_sair_tela_cheia();
+    editor_parar_edicao();
+
+    if (editorMapa.desenho) {
+        editorMapa.desenho.disable();
+        editorMapa.desenho = null;
+    }
+
+    if (editorMapa.grupo) {
+        editorMapa.grupo.clearLayers();
+    }
+
+    editorMapa.itens = [];
+    editorMapa.pontos = [];
+    editorMapa.pastosSistema = {};
+    editorMapa.selecionado = null;
+    editorMapa.novoPendente = null;
+    editorMapa.local = '';
+    editorMapa.versao = '';
+    editorMapa.snapshot = '';
+    editorMapa.modoNome = '';
+    editorMapa.coordOk = false;
+    editorMapa.coordenadas = null;
+    editorMapa.coordenadasAnteriores = null;
+
+    if (editorMapa.marcador && editorMapa.map) {
+        editorMapa.map.removeLayer(editorMapa.marcador);
+    }
+
+    editorMapa.marcador = null;
+
+    $("#editor_painel_coord").hide();
+    $("#editor_mapa").removeClass('editor-escolhendo-coord');
+    $("#editor_lat, #editor_lng").val('');
+    $("#editor_lista_cadastrados").empty();
+
+    $("#editor_local").val('');
+    $("#editor_busca").val('');
+    $("#editor_lista_pastos").empty();
+    $("#editor_nome_pasto, #editor_senha_excluir").val('');
+    $("#modal_editor_nome").modal('hide');
+    $("#editor_painel_excluir").hide();
+    $("#editor_btn_novo").removeClass('active');
+
+    clearTimeout(editorTemporizadorAviso);
+    editor_aviso('info', 'Selecione a Fazenda para carregar o mapa.');
+    editor_atualizar_botoes();
+
+    if (editorMapa.map !== null) {
+        editorMapa.map.setView([-15.8, -47.9], 4);
+    }
+}
+
+// modo 'editar' (fazendas com mapa) ou 'novo' (fazendas sem mapa, liberadas para o usuario)
+function abrir_editor_mapa(modo) {
+    editorMapa.modo = (modo == 'novo') ? 'novo' : 'editar';
+
+    $("#pastos_cabecalho, #pastos_conteudo").hide();
+    $("#editor_mapa_tela").show();
+    editor_limpar_tudo();
+    editor_preencher_fazendas();
+    editor_ajustar_altura();
+    editor_preparar_mapa(function() {
+        editor_ajustar_altura();
+    });
+}
+
+// ---- Novo Mapa: localizacao da fazenda (latitude/longitude) ----
+
+// Formato valido: numeros dentro do intervalo do planeta e diferentes de 0,0
+function editor_coordenada_valida(lat, lng) {
+    return typeof lat == 'number' && typeof lng == 'number' && isFinite(lat) && isFinite(lng) &&
+        Math.abs(lat) <= 90 && Math.abs(lng) <= 180 && !(lat === 0 && lng === 0);
+}
+
+// Aceita ponto ou virgula como decimal; devolve NaN se nao for numero
+function editor_numero(texto) {
+    texto = String(texto).trim().replace(',', '.');
+
+    return /^-?\d+(\.\d+)?$/.test(texto) ? parseFloat(texto) : NaN;
+}
+
+function editor_buscar_json(url) {
+    return new Promise(function(resolve) {
+        var controle = new AbortController();
+        var limite = setTimeout(function() { controle.abort(); }, 8000);
+
+        fetch(url, { signal: controle.signal })
+            .then(function(r) { return r.json(); })
+            .then(function(j) { clearTimeout(limite); resolve(j); })
+            .catch(function() { clearTimeout(limite); resolve(null); });
+    });
+}
+
+// Confere pela internet se o ponto esta em terra (nao no mar) e nao e topo de montanha.
+// Se o servico de verificacao estiver fora do ar, aceita o ponto e avisa que nao conseguiu confirmar.
+function editor_verificar_terra(lat, lng, retorno) {
+    var urlLugar = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=5&lat=' + lat + '&lon=' + lng;
+    var urlAltitude = 'https://api.open-meteo.com/v1/elevation?latitude=' + lat + '&longitude=' + lng;
+
+    Promise.all([editor_buscar_json(urlLugar), editor_buscar_json(urlAltitude)]).then(function(r) {
+        var lugar = r[0];
+        var altitude = (r[1] && r[1].elevation) ? r[1].elevation[0] : null;
+
+        if (lugar && lugar.error) {
+            retorno({ ok: false, motivo: 'esse ponto está no mar/oceano (fora de qualquer território).' });
+            return;
+        }
+
+        if (altitude !== null && altitude > 3500) {
+            retorno({ ok: false, motivo: 'a altitude nesse ponto é de ' + Math.round(altitude) + ' m (parece topo de montanha).' });
+            return;
+        }
+
+        retorno({
+            ok: true,
+            aviso: (lugar === null || altitude === null) ? 'Não foi possível confirmar pela internet se essa localização está em terra.' : ''
+        });
+    });
+}
+
+function editor_iniciar_localizacao(local) {
+    var f = editor_fazenda(local);
+
+    editorMapa.coordOk = false;
+    editor_atualizar_botoes();
+
+    if (f && f.lat !== null && f.lng !== null && editor_coordenada_valida(f.lat, f.lng)) {
+        editor_aviso('info', 'Verificando a localização da fazenda...');
+
+        editor_verificar_terra(f.lat, f.lng, function(res) {
+            if (editorMapa.local != local) {
+                return;
+            }
+
+            if (res.ok) {
+                editor_definir_localizacao(f.lat, f.lng, false, res.aviso);
+            }
+            else {
+                editor_pedir_coordenadas('As coordenadas cadastradas (' + f.lat + ' / ' + f.lng + ') não servem: ' + res.motivo + ' Digite a latitude e a longitude da fazenda.');
+            }
+        });
+
+        return;
+    }
+
+    if (f && f.lat !== null && f.lng !== null && (f.lat !== 0 || f.lng !== 0)) {
+        editor_pedir_coordenadas('As coordenadas cadastradas (' + f.lat + ' / ' + f.lng + ') não são válidas. Digite a latitude e a longitude da fazenda.');
+    }
+    else {
+        editor_pedir_coordenadas('Essa fazenda não tem latitude e longitude cadastradas. Digite a latitude e a longitude da fazenda.');
+    }
+}
+
+function editor_pedir_coordenadas(texto) {
+    editor_ocultar_aviso();
+    editorMapa.coordOk = false;
+
+    $("#editor_texto_coord").text(texto);
+    $("#editor_lat, #editor_lng").val('');
+    $("#editor_painel_coord").show();
+    $("#editor_mapa").addClass('editor-escolhendo-coord');
+    $("#editor_lat").trigger('focus');
+
+    editor_ajustar_altura();
+    editor_atualizar_botoes();
+}
+
+function editor_definir_localizacao(lat, lng, digitadas, aviso) {
+    if (editorMapa.marcador) {
+        editorMapa.map.removeLayer(editorMapa.marcador);
+    }
+
+    editorMapa.marcador = L.circleMarker([lat, lng], {
+        radius: 9, color: '#ffeb3b', weight: 3, fillColor: '#128cb8', fillOpacity: 0.9, interactive: false
+    }).addTo(editorMapa.map);
+
+    editorMapa.map.setView([lat, lng], 15);
+
+    editorMapa.coordOk = true;
+    editorMapa.coordenadas = { lat: lat, lng: lng, digitadas: digitadas };
+    editorMapa.coordenadasAnteriores = null;
+
+    $("#editor_painel_coord").hide();
+    $("#editor_mapa").removeClass('editor-escolhendo-coord');
+    editor_ajustar_altura();
+    editor_atualizar_botoes();
+
+    editor_aviso('info', 'Mapa novo: clique em <strong>Novo pasto</strong> e comece pelos pastos ENTRADA e SAIDA.' +
+        (aviso ? '<br>' + aviso : ''));
+}
+
+function editor_aplicar_coordenadas() {
+    var lat = editor_numero($("#editor_lat").val());
+    var lng = editor_numero($("#editor_lng").val());
+
+    if (isNaN(lat) || isNaN(lng)) {
+        $("#editor_texto_coord").text('Digite números na latitude e na longitude (exemplo: -19,9611 e -42,5952).');
+        return;
+    }
+
+    if (!editor_coordenada_valida(lat, lng)) {
+        $("#editor_texto_coord").text('Latitude precisa estar entre -90 e 90, e longitude entre -180 e 180 (e não podem ser 0 e 0).');
+        return;
+    }
+
+    var local = editorMapa.local;
+
+    $("#editor_btn_coord").prop('disabled', true).text('Verificando...');
+
+    editor_verificar_terra(lat, lng, function(res) {
+        $("#editor_btn_coord").prop('disabled', false).text('Aplicar');
+
+        if (editorMapa.local != local) {
+            return;
+        }
+
+        if (!res.ok) {
+            $("#editor_texto_coord").text('Coordenada recusada: ' + res.motivo + ' Confira a latitude e a longitude.');
+            return;
+        }
+
+        editor_definir_localizacao(lat, lng, true, res.aviso);
+    });
+}
+
+// Desistiu de informar as coordenadas: volta o editor ao inicio, sem fazenda selecionada. Se estava
+// refazendo a localizacao (ver editor_refazer_localizacao), volta para a localizacao que ja tinha.
+function editor_cancelar_coordenadas() {
+    var anterior = editorMapa.coordenadasAnteriores;
+
+    if (anterior) {
+        editor_definir_localizacao(anterior.lat, anterior.lng, anterior.digitadas, '');
+        return;
+    }
+
+    editor_limpar_tudo();
+}
+
+// Novo Mapa: errou o lugar ao Aplicar? Reabre a escolha da localizacao (clicar no mapa ou digitar).
+// So enquanto nenhum pasto foi desenhado; Cancelar devolve a localizacao anterior.
+function editor_refazer_localizacao() {
+    editorMapa.coordenadasAnteriores = editorMapa.coordenadas;
+
+    if (editorMapa.marcador) {
+        editorMapa.map.removeLayer(editorMapa.marcador);
+        editorMapa.marcador = null;
+    }
+
+    editor_pedir_coordenadas('Refazendo a localização da fazenda: clique no mapa ou digite a latitude e a longitude.');
+}
+
+function editor_fazenda(id) {
+    for (var i = 0; i < editorFazendas.length; i++) {
+        if (editorFazendas[i].id == id) {
+            return editorFazendas[i];
+        }
+    }
+
+    return null;
+}
+
+// Editar Mapa: todas as fazendas do usuario. Novo Mapa: so as que ainda nao tem mapa desenhado.
+function editor_preencher_fazendas() {
+    var novo = (editorMapa.modo == 'novo');
+    var $select = $("#editor_local").empty().append($("<option>").attr("value", "").text("..."));
+    var disponiveis = 0;
+
+    editorFazendas.forEach(function(f) {
+        if (!novo || f.semMapa) {
+            $select.append($("<option>").attr("value", f.id).text(f.nome));
+            disponiveis++;
+        }
+    });
+
+    $("#editor_rotulo_fazenda").text(novo ? 'Fazenda (sem mapa)' : 'Fazenda');
+
+    if (novo && disponiveis == 0) {
+        editor_aviso('warning', 'Não há fazendas sem mapa desenhado liberadas para o seu usuário.');
+    }
+}
+
+// Este script e carregado antes do jQuery (rodape.php), entao o registro espera o load da pagina
+window.addEventListener('load', function() {
+    $(window).on('resize', editor_ajustar_altura);
+
+    // Modal de nome/modulo: vai para o body (no modo tela cheia o editor tem z-index 1030 e esconderia o modal
+    // atras do fundo escuro); foco no nome ao abrir, Enter confirma, e o erro some ao digitar
+    $('#modal_editor_nome').appendTo('body');
+
+    $(document).on('shown.bs.modal', '#modal_editor_nome', function() {
+        $('#editor_nome_pasto').trigger('focus');
+    });
+
+    $(document).on('keydown', '#editor_nome_pasto', function(ev) {
+        if (ev.key === 'Enter') {
+            ev.preventDefault();
+            editor_confirmar_nome();
+        }
+    });
+
+    $(document).on('input', '#editor_nome_pasto', function() {
+        $('#editor_erro_nome').hide();
+    });
+
+    // Ao digitar ENTRADA ou SAIDA num pasto novo, o modulo vai sozinho para 999 (ENTRADA/SAIDA) e trava
+    $(document).on('input', '#editor_nome_pasto', function() {
+        if (editorMapa.modoNome != 'novo') {
+            return;
+        }
+
+        var n = $(this).val().trim().toUpperCase();
+
+        editor_travar_modulo(n == 'ENTRADA' || n == 'SAIDA' || n == 'SAÍDA');
+    });
+
+    // Cola "latitude, longitude" (como o Google copia) no campo Latitude e separa nos dois campos
+    $(document).on('change blur', '#editor_lat', function() {
+        var par = $(this).val().match(/^\s*(-?\d+(?:[.,]\d+)?)\s*(?:;|\/|,\s+|\s+)\s*(-?\d+(?:[.,]\d+)?)\s*$/);
+
+        if (par) {
+            $("#editor_lat").val(par[1]);
+            $("#editor_lng").val(par[2]);
+        }
+    });
+
+    $(document).on('keydown', '#editor_lat, #editor_lng', function(ev) {
+        if (ev.which == 13) {
+            editor_aplicar_coordenadas();
+        }
+    });
+
+    // Mostra no mapa a cor do modulo escolhido para o pasto que esta sendo nomeado
+    $(document).on('change', '#editor_modulo_pasto', function() {
+        var m = editor_modulo($(this).val());
+
+        if (editorMapa.novoPendente && m) {
+            editorMapa.novoPendente.setStyle({ fillColor: m.cor, fillOpacity: 0.6 });
+        }
+    });
+});
+
+// Ultima barreira (fechar aba, digitar outro endereco): aviso nativo do navegador
+window.addEventListener('beforeunload', function(ev) {
+    if (!editorSaindo && editor_tem_alteracoes()) {
+        ev.preventDefault();
+        ev.returnValue = '';
+    }
+});
+
+// Cliques em links (menu, logotipo, etc.) que sairiam da tela com ajustes nao salvos
+document.addEventListener('click', function(ev) {
+    if (typeof $ == 'undefined' || !$("#editor_mapa_tela").is(':visible') || !editor_tem_alteracoes()) {
+        return;
+    }
+
+    var a = ev.target.closest ? ev.target.closest('a[href]') : null;
+
+    if (!a || a.closest('#editor_mapa_tela') || a.closest('.modal')) {
+        return;
+    }
+
+    var href = a.getAttribute('href');
+
+    if (!href || href.charAt(0) == '#' || href.indexOf('javascript:') === 0 ||
+        a.target == '_blank' || a.hasAttribute('data-toggle')) {
+        return;
+    }
+
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    editor_confirmar_saida(function() {
+        editorSaindo = true;
+        window.location.href = a.href;
+    });
+}, true);
+
+function editor_preparar_mapa(sucesso) {
+    editor_carregar_bibliotecas(function() {
+        // so a primeira vez: tenta carregar os nomes vetoriais e a biblioteca de sobreposicao antes de montar o mapa
+        editor_carregar_clipping(function() {
+            editor_carregar_rotulos_vetoriais(function() {
+                if (editorMapa.map === null) {
+                    editor_iniciar_mapa();
+                }
+
+                editorMapa.map.invalidateSize();
+                sucesso();
+            });
+        });
+    });
+}
+
+function editor_iniciar_mapa() {
+    var mapa = L.map('editor_mapa', { zoomSnap: 0.5, maxZoom: 21 }).setView([-15.8, -47.9], 4);
+
+    // No zoom 19 a Esri devolve "Map data not yet available" nessa regiao; 18 e o ultimo com imagem
+    var satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxNativeZoom: 18,
+        maxZoom: 21,
+        attribution: 'Imagens &copy; Esri, Maxar, Earthstar Geographics'
+    });
+
+    // Nomes de cidades, rios e estradas sobre o satelite (camadas de referencia da Esri, sem chave).
+    // Na regiao das fazendas so ha conteudo ate o zoom ~14; acima disso a camada e ampliada ate o 17/16.
+    mapa.createPane('rotulos');
+    mapa.getPane('rotulos').style.zIndex = 450;
+    mapa.getPane('rotulos').style.pointerEvents = 'none';
+
+    var lugares = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+        pane: 'rotulos',
+        maxNativeZoom: 15,
+        maxZoom: 17,
+        attribution: 'Nomes &copy; Esri'
+    });
+
+    var estradas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', {
+        pane: 'rotulos',
+        maxNativeZoom: 14,
+        maxZoom: 16
+    });
+
+    var ruas = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxNativeZoom: 19,
+        maxZoom: 21,
+        attribution: '&copy; OpenStreetMap'
+    });
+
+    satelite.addTo(mapa);
+
+    var camadasNomes;
+
+    if (editorRotulosVetoriais) {
+        // Nomes e estradas vetoriais (nitidos, mesmo tamanho em qualquer zoom); no lugar das imagens da Esri
+        var rotulos = L.maplibreGL({
+            pane: 'rotulos',
+            style: editor_estilo_rotulos(),
+            attribution: '<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> &copy; OpenMapTiles, dados &copy; OpenStreetMap'
+        });
+
+        rotulos.addTo(mapa);
+        camadasNomes = { 'Nomes e estradas': rotulos };
+    }
+    else {
+        lugares.addTo(mapa);
+        estradas.addTo(mapa);
+        camadasNomes = { 'Nomes de lugares': lugares, 'Estradas': estradas };
+    }
+
+    L.control.layers({ 'Satélite': satelite, 'Ruas': ruas }, camadasNomes, { position: 'topright' }).addTo(mapa);
+
+    editorMapa.grupo = L.featureGroup().addTo(mapa);
+    editorMapa.map = mapa;
+
+    var Legenda = L.Control.extend({
+        options: { position: 'bottomleft' },
+        onAdd: function() {
+            var div = L.DomUtil.create('div', 'editor-legenda');
+            L.DomEvent.disableClickPropagation(div);
+            L.DomEvent.disableScrollPropagation(div);
+            return div;
+        }
+    });
+
+    editorMapa.legenda = new Legenda();
+    editorMapa.legenda.addTo(mapa);
+
+    // Botao de tela cheia (abaixo do zoom): o editor cobre a pagina toda para tracar com mais precisao
+    var TelaCheia = L.Control.extend({
+        options: { position: 'topleft' },
+        onAdd: function() {
+            var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            var a = L.DomUtil.create('a', 'editor-btn-tela-cheia', div);
+
+            a.href = '#';
+            a.innerHTML = '<i class="fa fa-expand"></i>';
+
+            L.DomEvent.disableClickPropagation(div);
+            L.DomEvent.on(a, 'click', function(ev) {
+                L.DomEvent.preventDefault(ev);
+                editor_alternar_tela_cheia();
+            });
+
+            $(a).tooltip({ container: 'body', placement: 'right', title: 'Tela cheia', trigger: 'hover' });
+
+            return div;
+        }
+    });
+
+    new TelaCheia().addTo(mapa);
+
+    mapa.on(L.Draw.Event.CREATED, function(ev) {
+        editorMapa.desenho = null;
+        editor_novo_desenhado(ev.layer);
+    });
+
+    // Disparado ao terminar, cancelar (botao ou tecla Esc) ou interromper o desenho
+    mapa.on('draw:drawstop', function() {
+        editorMapa.desenho = null;
+
+        if (editorMapa.novoPendente === null) {
+            editor_mostrar_dica();
+        }
+
+        editor_atualizar_botoes();
+    });
+
+    // Rotulos so aparecem com zoom suficiente, para nao poluir o mapa
+    var ajustarRotulos = function() {
+        $("#editor_mapa").toggleClass('editor-sem-rotulos', mapa.getZoom() < 15);
+    };
+
+    mapa.on('zoomend', ajustarRotulos);
+    ajustarRotulos();
+
+    mapa.on('click', function(ev) {
+        editor_escolher_coordenada_no_mapa(ev.latlng);
+    });
+}
+
+// Novo Mapa: enquanto os campos de latitude e longitude estao na tela, clicar no mapa preenche os dois com o
+// ponto clicado (e marca o ponto); o usuario vai aproximando e clicando de novo ate achar o lugar certo
+// e entao clica em Aplicar.
+function editor_escolher_coordenada_no_mapa(latlng) {
+    if (editorMapa.modo != 'novo' || editorMapa.coordOk || editorMapa.local == '' || !$("#editor_painel_coord").is(':visible')) {
+        return;
+    }
+
+    var ponto = latlng.wrap();
+
+    $("#editor_lat").val(ponto.lat.toFixed(6).replace('.', ','));
+    $("#editor_lng").val(ponto.lng.toFixed(6).replace('.', ','));
+
+    if (editorMapa.marcador) {
+        editorMapa.map.removeLayer(editorMapa.marcador);
+    }
+
+    // marcador provisorio (laranja): o definitivo (amarelo/azul) so aparece depois de Aplicar
+    editorMapa.marcador = L.circleMarker(ponto, {
+        radius: 8, color: '#ffffff', weight: 2, fillColor: '#ff8f00', fillOpacity: 0.95, interactive: false
+    }).addTo(editorMapa.map);
+}
+
+function editor_ha(anel) {
+    var R = 6378137.0;
+    var soma = 0;
+    var rad = Math.PI / 180;
+
+    for (var i = 0; i < anel.length - 1; i++) {
+        soma += (anel[i + 1][0] - anel[i][0]) * rad *
+            (2 + Math.sin(anel[i][1] * rad) + Math.sin(anel[i + 1][1] * rad));
+    }
+
+    return Math.abs(soma * R * R / 2) / 10000;
+}
+
+function editor_carregar_mapa() {
+    var local = $("#editor_local").val();
+
+    if (local == '' || local == null) {
+        return;
+    }
+
+    if (editor_tem_alteracoes()) {
+        $("#editor_local").val(editorMapa.local);
+
+        editor_confirmar_saida(function() {
+            $("#editor_local").val(local);
+            editor_carregar_mapa_agora(local);
+        });
+        return;
+    }
+
+    editor_carregar_mapa_agora(local);
+}
+
+function editor_carregar_mapa_agora(local) {
+    editor_aviso('info', 'Carregando o mapa...');
+
+    editor_preparar_mapa(function() {
+        $.ajax({
+            type: 'post',
+            url: 'mapa_pastos_ler.php',
+            dataType: 'json',
+            data: { 'local': local },
+            success: function(data) {
+                if (data.error) {
+                    editor_aviso('danger', data.message);
+                    return;
+                }
+
+                // Novo Mapa: monta o mapa vazio e vai para a localizacao da fazenda
+                if (editorMapa.modo == 'novo' && data.geojson.features.length == 0) {
+                    editor_montar(data, local);
+                    editor_iniciar_localizacao(local);
+                    return;
+                }
+
+                // Editar Mapa em fazenda sem mapa desenhado: orienta a usar o Novo Mapa
+                if (data.geojson.features.length == 0) {
+                    var nomeFazenda = $("#editor_local option:selected").text();
+
+                    editor_limpar_tudo();
+                    editor_mostrar_erro('A fazenda <strong>' + nomeFazenda + '</strong> não tem mapa desenhado. Para incluir o mapa, clique no botão <strong>Novo Mapa</strong> na tela inicial.');
+
+                    // Garante o seletor na posicao inicial (sem fazenda) tambem ao fechar o modal
+                    $("#editor_local").val('');
+                    $("#mensagem_erro").one('hidden.bs.modal', function() {
+                        $("#editor_local").val('');
+                    });
+                    return;
+                }
+
+                editor_montar(data, local);
+            },
+            error: function() {
+                editor_aviso('danger', 'Não foi possível carregar o mapa. Tente novamente.');
+            }
+        });
+    });
+}
+
+function editor_montar(data, local) {
+    editor_parar_edicao();
+
+    if (editorMapa.desenho) {
+        editorMapa.desenho.disable();
+        editorMapa.desenho = null;
+    }
+
+    editorMapa.grupo.clearLayers();
+    editorMapa.itens = [];
+    editorMapa.pontos = [];
+    editorMapa.selecionado = null;
+    editorMapa.novoPendente = null;
+    editorMapa.local = local;
+    editorMapa.versao = data.versao;
+    editorMapa.pastosSistema = data.pastos;
+    editorMapa.modulos = data.modulos;
+    editor_preencher_modulos();
+
+    $("#modal_editor_nome").modal('hide');
+
+    var features = data.geojson.features;
+
+    for (var i = 0; i < features.length; i++) {
+        var f = features[i];
+
+        if (f.geometry.type == 'Point') {
+            editorMapa.pontos.push(f);
+            continue;
+        }
+
+        if (f.geometry.type != 'Polygon') {
+            continue;
+        }
+
+        var anel = f.geometry.coordinates[0];
+        var latlngs = [];
+
+        for (var j = 0; j < anel.length - 1; j++) {
+            latlngs.push([anel[j][1], anel[j][0]]);
+        }
+
+        var nome = f.properties.name;
+
+        editor_registrar_item({
+            layer: L.polygon(latlngs),
+            nome: nome,
+            nomeOriginal: nome,
+            novo: false,
+            modificado: false,
+            orig: f
+        });
+    }
+
+    var datalist = $("#editor_lista_pastos").empty();
+    var nomesComPoligono = {};
+
+    for (var k = 0; k < editorMapa.itens.length; k++) {
+        datalist.append($("<option>").attr("value", editorMapa.itens[k].nome));
+        nomesComPoligono[editorMapa.itens[k].nome.toUpperCase()] = true;
+    }
+
+    // Pastos ja cadastrados no sistema que ainda nao tem poligono: sugeridos ao criar um pasto novo
+    var sugestoes = $("#editor_lista_cadastrados").empty();
+
+    Object.keys(editorMapa.pastosSistema).forEach(function(nome) {
+        if (!nomesComPoligono[nome]) {
+            sugestoes.append($("<option>").attr("value", nome));
+        }
+    });
+
+    if (editorMapa.itens.length > 0) {
+        editorMapa.map.fitBounds(editorMapa.grupo.getBounds(), { maxZoom: 17 });
+    }
+
+    editorMapa.snapshot = JSON.stringify(editor_serializar());
+
+    $("#editor_busca").val('');
+    editor_atualizar_botoes();
+
+    var semCadastro = 0;
+    editorMapa.itens.forEach(function(it) {
+        if (editor_status(it) == 'sem') {
+            semCadastro++;
+        }
+    });
+
+    var dica = 'Clique em um pasto no mapa para selecioná-lo ou desmarcá-lo.';
+
+    if (editorMapa.itens.length == 0) {
+        editor_aviso('info', 'Essa fazenda ainda não tem mapa. Use <strong>Novo pasto</strong> para desenhar o primeiro (comece por ENTRADA e SAIDA).');
+    }
+    else if (semCadastro > 0) {
+        editor_aviso('info', dica + '<br><strong>' + semCadastro + '</strong> pasto(s) sem cadastro no sistema (contorno laranja tracejado) serão criados ao salvar.');
+    }
+    else {
+        editor_aviso('info', dica);
+        editorAvisoEhDica = true;
+    }
+}
+
+// Liga ao layer os eventos padrao (tooltip, clique, arraste de ponto). Reaproveitada tambem
+// quando o layer de um item e trocado por um novo (ver editor_cancelar_tracado).
+function editor_vincular_layer(item) {
+    item.layer.bindTooltip(item.nome, { permanent: true, direction: 'center', className: 'editor-pasto-label' });
+    item.layer.on('click', function(ev) {
+        L.DomEvent.stopPropagation(ev);
+        if (editorMapa.desenho === null && editorMapa.novoPendente === null) {
+            // clicar de novo no pasto ja selecionado desmarca (a menos que esteja editando o traçado dele)
+            if (editorMapa.selecionado === item && !editorMapa.editando) {
+                editor_selecionar(null);
+            }
+            else {
+                editor_selecionar(item);
+            }
+        }
+    });
+    item.layer.on('edit', function() {
+        item.modificado = true;
+        editor_atualizar_botoes();
+    });
+}
+
+function editor_registrar_item(item) {
+    item.layer.addTo(editorMapa.grupo);
+    editor_vincular_layer(item);
+
+    editorMapa.itens.push(item);
+    editor_estilizar(item);
+}
+
+function editor_status(item) {
+    if (item.novo) {
+        return 'novo';
+    }
+
+    var nome = item.nomeOriginal.toUpperCase();
+
+    return editorMapa.pastosSistema.hasOwnProperty(nome) ? 'ok' : 'sem';
+}
+
+// Id do modulo do pasto: o escolhido (novo) ou o gravado no sistema
+function editor_modulo_do_item(item) {
+    if (item.novo) {
+        return item.modulo;
+    }
+
+    if (item.moduloAlterado !== undefined && item.moduloAlterado !== null) {
+        return item.moduloAlterado;
+    }
+
+    return editor_modulo_original(item);
+}
+
+// Modulo gravado no sistema (ignora alteracao ainda nao salva)
+function editor_modulo_original(item) {
+    var nome = item.nomeOriginal.toUpperCase();
+
+    return editorMapa.pastosSistema.hasOwnProperty(nome) ? editorMapa.pastosSistema[nome] : null;
+}
+
+function editor_tem_modulo_alterado() {
+    return editorMapa.itens.some(function(it) {
+        return !it.novo && it.moduloAlterado !== undefined && it.moduloAlterado !== null &&
+            it.moduloAlterado !== editor_modulo_original(it);
+    });
+}
+
+function editor_modulo(id) {
+    for (var i = 0; i < editorMapa.modulos.length; i++) {
+        if (editorMapa.modulos[i].id == id) {
+            return editorMapa.modulos[i];
+        }
+    }
+
+    return null;
+}
+
+function editor_estilizar(item) {
+    var status = editor_status(item);
+    var modulo = editor_modulo(editor_modulo_do_item(item));
+    var selecionado = (editorMapa.selecionado === item);
+
+    if (status == 'sem' || modulo === null) {
+        // sem cadastro (ou modulo desconhecido): cinza com contorno laranja tracejado
+        item.layer.setStyle({
+            color: selecionado ? '#ffeb3b' : EDITOR_COR_SEM_CADASTRO,
+            weight: selecionado ? 4 : 3,
+            dashArray: selecionado ? null : '6 4',
+            fillColor: '#9E9E9E',
+            fillOpacity: selecionado ? 0.6 : 0.35
+        });
+    }
+    else {
+        item.layer.setStyle({
+            color: selecionado ? '#ffeb3b' : '#ffffff',
+            weight: selecionado ? 4 : 1.5,
+            dashArray: null,
+            fillColor: modulo.cor,
+            fillOpacity: selecionado ? 0.7 : 0.5
+        });
+    }
+
+    if (selecionado) {
+        item.layer.bringToFront();
+    }
+}
+
+function editor_preencher_modulos() {
+    var select = $("#editor_modulo_pasto").empty();
+
+    select.append($("<option>").attr("value", "").text("Selecione..."));
+
+    // O 999 (ENTRADA/SAIDA) aparece na lista, mas so fica liberado para os pastos ENTRADA e SAIDA
+    editorMapa.modulos.forEach(function(m) {
+        select.append($("<option>").attr("value", m.id).text(m.descricao).prop("disabled", m.id == 999));
+    });
+
+    select.selectpicker('refresh');
+}
+
+// reservado = ENTRADA/SAIDA: o seletor fica travado no 999. Para os demais pastos o 999 fica bloqueado.
+function editor_travar_modulo(reservado) {
+    var $select = $("#editor_modulo_pasto");
+
+    $select.find('option[value="999"]').prop('disabled', !reservado);
+
+    if (reservado) {
+        $select.val('999').prop('disabled', true);
+    }
+    else {
+        if ($select.val() == '999') {
+            $select.val('');
+        }
+
+        $select.prop('disabled', false);
+    }
+
+    $select.selectpicker('refresh');
+}
+
+// Legenda com as cores dos modulos que aparecem no mapa carregado
+function editor_atualizar_legenda() {
+    if (editorMapa.legenda === null) {
+        return;
+    }
+
+    var contagem = {};
+    var semCadastro = 0;
+
+    editorMapa.itens.forEach(function(it) {
+        var m = editor_modulo(editor_modulo_do_item(it));
+
+        if (editor_status(it) == 'sem' || m === null) {
+            semCadastro++;
+        }
+        else {
+            contagem[m.id] = (contagem[m.id] || 0) + 1;
+        }
+    });
+
+    var html = '';
+
+    editorMapa.modulos.forEach(function(m) {
+        if (contagem[m.id]) {
+            html += '<div><span class="editor-legenda-cor" style="background:' + m.cor + '"></span>' +
+                $('<div>').text(m.descricao).html() + ' (' + contagem[m.id] + ')</div>';
+        }
+    });
+
+    if (semCadastro > 0) {
+        html += '<div><span class="editor-legenda-cor editor-legenda-sem"></span>Sem cadastro (' + semCadastro + ')</div>';
+    }
+
+    $(editorMapa.legenda.getContainer()).html(html).toggle(html != '');
+}
+
+function editor_selecionar(item) {
+    editor_parar_edicao();
+
+    var anterior = editorMapa.selecionado;
+    editorMapa.selecionado = item;
+
+    if (anterior !== item) {
+        editor_cancelar_exclusao();
+    }
+
+    if (anterior) {
+        editor_estilizar(anterior);
+    }
+
+    if (item) {
+        editor_estilizar(item);
+    }
+
+    editor_atualizar_botoes();
+
+    // Sem outra mensagem na tela, mostra a dica (a mesma com ou sem pasto selecionado: marcar e desmarcar)
+    if (!$("#editor_mapa_aviso").is(':visible')) {
+        editor_mostrar_dica();
+    }
+}
+
+function editor_buscar_pasto() {
+    var nome = $("#editor_busca").val().trim().toUpperCase();
+
+    for (var i = 0; i < editorMapa.itens.length; i++) {
+        if (editorMapa.itens[i].nome.toUpperCase() == nome) {
+            editor_selecionar(editorMapa.itens[i]);
+            editorMapa.map.fitBounds(editorMapa.itens[i].layer.getBounds(), { maxZoom: 18 });
+            return;
+        }
+    }
+}
+
+// ---- Sobreposicao de pastos ----
+// Intersecao calculada com a biblioteca polygon-clipping (carregada de um CDN). Se ela nao carregar, a
+// verificacao e' ignorada (o editor continua funcionando, so' sem o alerta).
+var EDITOR_SOBREPOSICAO_MIN_HA = 0.1;      // ignora lascas de borda entre pastos vizinhos
+var EDITOR_SOBREPOSICAO_MIN_PERCENTUAL = 1; // e exige mais de 1% do menor dos dois pastos
+
+var editorClippingCarregado = null;
+
+function editor_carregar_clipping(depois) {
+    if (editorClippingCarregado !== null || window.polygonClipping) {
+        depois();
+        return;
+    }
+
+    editorClippingCarregado = false;
+    editor_carregar_script('https://cdn.jsdelivr.net/npm/polygon-clipping@0.15.7/dist/polygon-clipping.umd.min.js', function() {
+        editorClippingCarregado = !!window.polygonClipping;
+        depois();
+    }, depois);
+}
+
+function editor_anel_de_latlngs(latlngs) {
+    var anel = latlngs.map(function(p) { return [p.lng, p.lat]; });
+    anel.push(anel[0]);
+    return anel;
+}
+
+// Area (ha) de um resultado do polygon-clipping (MultiPolygon: lista de [anelExterno, ...furos])
+function editor_ha_multipoligono(multi) {
+    var total = 0;
+
+    multi.forEach(function(poligono) {
+        total += editor_ha(poligono[0]);
+
+        for (var i = 1; i < poligono.length; i++) {
+            total -= editor_ha(poligono[i]);
+        }
+    });
+
+    return total;
+}
+
+// Sobreposicoes de um contorno (lista de LatLng) com os outros pastos do mapa: [{item, ha}], so' as relevantes
+function editor_sobreposicoes_de(latlngs, ignorar) {
+    var resultado = [];
+
+    if (!window.polygonClipping) {
+        return resultado;
+    }
+
+    var anelA = editor_anel_de_latlngs(latlngs);
+    var haA = editor_ha(anelA);
+    var limitesA = L.latLngBounds(latlngs);
+
+    editorMapa.itens.forEach(function(outro) {
+        if (outro === ignorar || !limitesA.intersects(outro.layer.getBounds())) {
+            return;
+        }
+
+        var anelB = editor_anel_de_latlngs(outro.layer.getLatLngs()[0]);
+
+        try {
+            var inter = polygonClipping.intersection([anelA], [anelB]);
+            var ha = editor_ha_multipoligono(inter);
+            var menor = Math.min(haA, editor_ha(anelB));
+
+            if (ha > EDITOR_SOBREPOSICAO_MIN_HA && ha > menor * EDITOR_SOBREPOSICAO_MIN_PERCENTUAL / 100) {
+                resultado.push({ item: outro, ha: ha });
+            }
+        }
+        catch (e) {}
+    });
+
+    return resultado;
+}
+
+// Texto do alerta: quais pastos estao sobrepostos e quantos hectares
+function editor_texto_sobreposicao(nome, lista) {
+    var partes = lista.map(function(o) {
+        return '<strong>' + $('<div>').text(o.item.nome).html() + '</strong> (cerca de ' + o.ha.toFixed(2).replace('.', ',') + ' ha)';
+    });
+
+    return 'O pasto <strong>' + $('<div>').text(nome).html() + '</strong> está sobre ' + partes.join(', ') + '.';
+}
+
+// Pasto em edicao de tracado: sobreposicoes NOVAS (alem das que ja existiam antes da edicao, para nao
+// travar mapas antigos que ja tinham pastos encostados)
+function editor_sobreposicoes_novas(item) {
+    var agora = editor_sobreposicoes_de(item.layer.getLatLngs()[0], item);
+    var antes = {};
+
+    if (editorMapa.tracadoAntes && editorMapa.tracadoAntes.item === item && agora.length) {
+        editor_sobreposicoes_de(editorMapa.tracadoAntes.latlngs, item).forEach(function(o) {
+            antes[editorMapa.itens.indexOf(o.item)] = o.ha;
+        });
+    }
+
+    return agora.filter(function(o) {
+        var anterior = antes[editorMapa.itens.indexOf(o.item)] || 0;
+        return o.ha - anterior > EDITOR_SOBREPOSICAO_MIN_HA;
+    });
+}
+
+function editor_coordenadas(item) {
+    var latlngs = item.layer.getLatLngs()[0];
+    var anel = [];
+
+    for (var i = 0; i < latlngs.length; i++) {
+        anel.push([latlngs[i].lng, latlngs[i].lat, 0]);
+    }
+
+    anel.push(anel[0]);
+
+    return anel;
+}
+
+function editor_serializar() {
+    var features = editorMapa.itens.map(function(it) {
+        var geometria;
+
+        if (it.modificado || it.novo) {
+            var aneis = [editor_coordenadas(it)];
+
+            if (it.orig) {
+                aneis = aneis.concat(it.orig.geometry.coordinates.slice(1));
+            }
+
+            geometria = { type: 'Polygon', coordinates: aneis };
+        }
+        else {
+            geometria = it.orig.geometry;
+        }
+
+        return { type: 'Feature', properties: { name: it.nome }, geometry: geometria };
+    });
+
+    return { type: 'FeatureCollection', features: features.concat(editorMapa.pontos) };
+}
+
+function editor_tem_alteracoes() {
+    if (editorMapa.map === null || editorMapa.local == '') {
+        return false;
+    }
+
+    return JSON.stringify(editor_serializar()) !== editorMapa.snapshot || editor_tem_modulo_alterado();
+}
+
+function editor_atualizar_botoes() {
+    var item = editorMapa.selecionado;
+    // No Novo Mapa, so libera o desenho depois de definida a localizacao da fazenda
+    var pronto = editorMapa.local != '' && (editorMapa.modo != 'novo' || editorMapa.coordOk);
+    var ocupado = editorMapa.desenho !== null || editorMapa.novoPendente !== null;
+
+    $("#editor_total_pastos").text(pronto ? editorMapa.itens.length + ' pasto(s) no mapa' : '');
+    editor_atualizar_legenda();
+
+    // As ferramentas (Novo pasto, Editar tracado, Renomear, Excluir, Localizar e Salvar) so aparecem depois de
+    // escolhida a fazenda; no Novo Mapa, so depois de informada tambem a localizacao (Aplicar), e antes disso
+    // a tela mostra so os campos de latitude e longitude
+    var ferramentasVisiveis = editorMapa.local != '' && (editorMapa.modo != 'novo' || editorMapa.coordOk);
+
+    $("#editor_barra_ferramentas").toggle(ferramentasVisiveis);
+
+    var alteracoes = editor_tem_alteracoes();
+
+    // Editar tracado, Renomear e Excluir so aparecem com um pasto selecionado (clicando nele ou buscando no
+    // Localizar pasto) e nunca durante a inclusao de um pasto novo (desenhando ou escolhendo nome e modulo).
+    // O Salvar aparece com um pasto selecionado ou com ajustes pendentes (ex.: pasto novo ja confirmado),
+    // tambem nunca durante a inclusao.
+    $("#editor_btn_tracado, #editor_btn_renomear, #editor_btn_excluir").toggle(ferramentasVisiveis && !!item && !ocupado);
+    $("#editor_btn_salvar").toggle(ferramentasVisiveis && !ocupado && (!!item || alteracoes));
+
+    // Refazer a localizacao: so no Novo Mapa, depois de aplicada e antes de desenhar qualquer pasto
+    $("#editor_btn_refazer_local").toggle(editorMapa.modo == 'novo' && editorMapa.coordOk && editorMapa.itens.length === 0 && !ocupado);
+
+    $("#editor_btn_novo").prop('disabled', !pronto || ocupado || editorMapa.editando);
+    $("#editor_btn_tracado").prop('disabled', !item || ocupado);
+    $("#editor_btn_renomear").prop('disabled', !item || ocupado || editorMapa.editando);
+    // Só faz sentido enquanto o pasto selecionado for um desenho novo ainda nao salvo
+    $("#editor_btn_remover").toggle(!!item && item.novo)
+        .prop('disabled', !item || !item.novo || ocupado || editorMapa.editando);
+
+    $("#editor_btn_excluir").prop('disabled', !item || item.novo || ocupado || editorMapa.editando);
+    $("#editor_btn_salvar").prop('disabled', !pronto || ocupado || editorMapa.editando || !alteracoes);
+
+    if (item) {
+        var ha = editor_ha(editor_coordenadas(item));
+        var status = editor_status(item);
+        var textoStatus = status == 'novo' ? 'novo (será criado ao salvar)' :
+            (status == 'sem' ? 'sem cadastro no sistema (será criado ao salvar)' : 'cadastrado no sistema');
+
+        var moduloItem = editor_modulo(editor_modulo_do_item(item));
+        var textoModulo = moduloItem ? moduloItem.descricao + ' — ' : '';
+
+        $("#editor_info").text(item.nome + ' — ' + textoModulo + ha.toFixed(2).replace('.', ',') + ' ha — ' + textoStatus).show();
+    }
+    else {
+        $("#editor_info").hide().text('');
+    }
+}
+
+function editor_novo_pasto() {
+    editor_parar_edicao();
+    editor_selecionar(null);
+
+    editorMapa.desenho = new L.Draw.Polygon(editorMapa.map, {
+        allowIntersection: true,
+        showArea: false,
+        shapeOptions: { color: '#ffffff', fillColor: EDITOR_COR_NOVO, fillOpacity: 0.3, weight: 2 }
+    });
+    editorMapa.desenho.enable();
+
+    editor_atualizar_botoes();
+    editor_aviso('info', 'Clique no mapa para marcar cada ponto do pasto. Para terminar, clique no primeiro ponto (ou dê duplo clique no último). Clique em <strong>Esc</strong> para sair do modo Novo Pasto.');
+}
+
+function editor_novo_desenhado(layer) {
+    // O contorno fica visivel no mapa enquanto o nome e digitado
+    layer.setStyle({ color: '#ffeb3b', weight: 3, fillColor: EDITOR_COR_NOVO, fillOpacity: 0.4 });
+    layer.addTo(editorMapa.grupo);
+
+    editorMapa.novoPendente = layer;
+    editorMapa.modoNome = 'novo';
+
+    editor_abrir_painel_nome('', 'Nome do novo pasto');
+}
+
+function editor_renomear() {
+    if (!editorMapa.selecionado) {
+        return;
+    }
+
+    editorMapa.modoNome = 'renomear';
+    editor_abrir_painel_nome(editorMapa.selecionado.nome, 'Novo nome do pasto');
+}
+
+function editor_abrir_painel_nome(valor, titulo) {
+    clearTimeout(editorTemporizadorAviso);
+    editorAvisoEhDica = false;
+    $("#editor_mapa_aviso").hide();
+
+    // titulo = rotulo do campo; o titulo do modal diz se e' pasto novo ou renomear
+    $("#editor_label_nome").text(titulo);
+    $("#editor_titulo_modal_nome").text(editorMapa.modoNome == 'renomear' ? 'Renomear pasto' : 'Novo pasto');
+    $("#editor_erro_nome").hide().text('');
+    var moduloAtual = '';
+    var reservado = false;
+
+    // Ao renomear, o modulo tambem pode ser alterado (ENTRADA/SAIDA ficam travadas no 999)
+    if (editorMapa.modoNome == 'renomear' && editorMapa.selecionado) {
+        var atualId = editor_modulo_do_item(editorMapa.selecionado);
+
+        reservado = (atualId === 999);
+        moduloAtual = (atualId === null || atualId === undefined) ? '' : String(atualId);
+    }
+
+    $("#editor_grupo_modulo").show();
+    editor_travar_modulo(reservado);
+
+    if (!reservado) {
+        $("#editor_modulo_pasto").selectpicker('val', moduloAtual);
+    }
+
+    $("#editor_nome_pasto").val(valor);
+    $("#modal_editor_nome").modal('show');
+    editor_ajustar_altura();
+    editor_atualizar_botoes();
+}
+
+// Erro de validacao do nome/modulo: aparece dentro do modal (as mensagens sobre o mapa ficam atras dele)
+function editor_erro_nome(mensagem) {
+    $("#editor_erro_nome").text(mensagem).show();
+}
+
+function editor_confirmar_nome() {
+    var nome = $("#editor_nome_pasto").val().trim().replace(/\s+/g, ' ');
+
+    if (nome == '') {
+        editor_erro_nome('Informe o nome do pasto.');
+        return;
+    }
+
+    if (nome.length > 60) {
+        editor_erro_nome('O nome do pasto pode ter no máximo 60 caracteres.');
+        return;
+    }
+
+    var atual = editorMapa.modoNome == 'renomear' ? editorMapa.selecionado : null;
+
+    for (var i = 0; i < editorMapa.itens.length; i++) {
+        if (editorMapa.itens[i] !== atual && editorMapa.itens[i].nome.toUpperCase() == nome.toUpperCase()) {
+            editor_erro_nome('Já existe um pasto chamado "' + nome + '" nesse mapa.');
+            return;
+        }
+    }
+
+    if (editorMapa.modoNome == 'novo' && editorMapa.novoPendente) {
+        var sobrepostosNovo = editor_sobreposicoes_de(editorMapa.novoPendente.getLatLngs()[0], null);
+
+        if (sobrepostosNovo.length) {
+            editor_erro_nome(editor_texto_sobreposicao(nome, sobrepostosNovo).replace(/<[^>]+>/g, '') +
+                ' Clique em Cancelar e desenhe de novo sem ficar por cima de outro pasto.');
+            return;
+        }
+    }
+
+    if (editorMapa.modoNome == 'novo') {
+        var nomeMaiusculo = nome.toUpperCase();
+        var reservado = (nomeMaiusculo == 'ENTRADA' || nomeMaiusculo == 'SAIDA' || nomeMaiusculo == 'SAÍDA');
+        var cadastrado = editorMapa.pastosSistema.hasOwnProperty(nomeMaiusculo);
+        var moduloEscolhido;
+
+        if (reservado) {
+            moduloEscolhido = 999;
+        }
+        else if (cadastrado) {
+            // ja existe no sistema: o desenho se liga ao pasto cadastrado, mantendo o modulo dele
+            moduloEscolhido = editorMapa.pastosSistema[nomeMaiusculo];
+        }
+        else {
+            moduloEscolhido = parseInt($("#editor_modulo_pasto").val(), 10);
+        }
+
+        if (!reservado && !cadastrado && isNaN(moduloEscolhido)) {
+            editor_erro_nome('Selecione o módulo do novo pasto.');
+            return;
+        }
+
+        var item = {
+            layer: editorMapa.novoPendente,
+            nome: nome,
+            nomeOriginal: nome,
+            novo: true,
+            modulo: moduloEscolhido,
+            modificado: true,
+            orig: null
+        };
+
+        editorMapa.novoPendente = null;
+        editor_registrar_item(item);
+        editor_selecionar(item);
+        $("#editor_lista_pastos").append($("<option>").attr("value", nome));
+    }
+    else {
+        atual.nome = nome;
+        atual.layer.setTooltipContent(nome);
+
+        if (atual.novo) {
+            atual.nomeOriginal = nome;
+        }
+
+        var novoModulo = parseInt($("#editor_modulo_pasto").val(), 10);
+
+        if ($("#editor_grupo_modulo").is(':visible') && !isNaN(novoModulo)) {
+            if (atual.novo) {
+                atual.modulo = novoModulo;
+            }
+            else {
+                atual.moduloAlterado = (novoModulo === editor_modulo_original(atual)) ? null : novoModulo;
+            }
+        }
+
+        editor_estilizar(atual);
+    }
+
+    $("#modal_editor_nome").modal('hide');
+    editor_aviso('success', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 6);
+    editor_atualizar_botoes();
+}
+
+function editor_cancelar_nome() {
+    if (editorMapa.modoNome == 'novo' && editorMapa.novoPendente) {
+        editorMapa.grupo.removeLayer(editorMapa.novoPendente);
+        editorMapa.novoPendente = null;
+    }
+
+    $("#modal_editor_nome").modal('hide');
+    editor_ajustar_altura();
+    editor_atualizar_botoes();
+
+    editor_mostrar_dica();
+}
+
+function editor_alternar_tracado() {
+    var item = editorMapa.selecionado;
+
+    if (!item) {
+        return;
+    }
+
+    if (editorMapa.editando) {
+        var sobrepostos = editor_sobreposicoes_novas(item);
+
+        if (sobrepostos.length) {
+            editor_aviso('danger', editor_texto_sobreposicao(item.nome, sobrepostos) +
+                ' Ajuste o traçado para não ficar por cima de outro pasto, ou clique em <strong>Descartar edição do traçado</strong> para voltar como estava.');
+            return;
+        }
+
+        editor_parar_edicao();
+
+        // Concluiu o traçado: volta ao inicio (nenhum pasto selecionado). Os botoes que ajustam o pasto somem;
+        // Novo pasto, Localizar e Salvar (se houver ajustes) ficam. Com ajustes, avisa por alguns segundos que a
+        // alteracao so foi feita no mapa (ainda nao gravada) e depois volta a dica de marcar/desmarcar.
+        editor_selecionar(null);
+
+        if (editor_tem_alteracoes()) {
+            editor_aviso('success', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 8);
+        }
+        else {
+            editor_mostrar_dica();
+        }
+
+        return;
+    }
+
+    // Guarda o traçado e a situação atuais para poder descartar a edição depois
+    editorMapa.tracadoAntes = {
+        item: item,
+        latlngs: item.layer.getLatLngs()[0].map(function(p) { return L.latLng(p.lat, p.lng); }),
+        modificado: item.modificado
+    };
+
+    item.layer.editing.enable();
+    editorMapa.editando = true;
+    $("#editor_btn_tracado").addClass('btn-success').removeClass('btn-default')
+        .html('<i class="fa fa-check"></i> Concluir traçado');
+    $("#editor_btn_cancelar_tracado").show();
+    editor_aviso('info', 'Arraste os pontos brancos para mudar o traçado. Arraste os pontos menores do meio das linhas para criar um novo ponto. Clique em um ponto para removê-lo. Ao terminar, clique em <strong>Concluir traçado</strong>, ou em <strong>Descartar edição do traçado</strong> para voltar como estava.');
+    editor_atualizar_botoes();
+}
+
+// Descarta as mudancas feitas nesta sessao de edicao do tracado e volta ao formato de antes.
+// Em vez de tentar reaproveitar o layer que estava sendo editado (o plugin de edicao do Leaflet
+// pode deixar os pontos de arraste "soltos" do polígono depois de um setLatLngs no meio da edicao),
+// o layer editado e descartado e um novo e criado do zero com o tracado salvo.
+function editor_cancelar_tracado() {
+    var antes = editorMapa.tracadoAntes;
+
+    if (!antes || !editorMapa.editando) {
+        return;
+    }
+
+    var item = antes.item;
+
+    editorMapa.itens.forEach(function(it) {
+        if (it.layer.editing && it.layer.editing.enabled()) {
+            it.layer.editing.disable();
+        }
+
+        // seguranca extra: remove qualquer marcador de edicao que tenha ficado direto no mapa
+        if (it.layer.editing && it.layer.editing._markerGroup && editorMapa.map.hasLayer(it.layer.editing._markerGroup)) {
+            editorMapa.map.removeLayer(it.layer.editing._markerGroup);
+        }
+    });
+
+    editorMapa.grupo.removeLayer(item.layer);
+
+    item.layer = L.polygon(antes.latlngs);
+    item.layer.addTo(editorMapa.grupo);
+    editor_vincular_layer(item);
+    item.modificado = antes.modificado;
+
+    editorMapa.editando = false;
+    editorMapa.tracadoAntes = null;
+
+    $("#editor_btn_tracado").addClass('btn-default').removeClass('btn-success')
+        .html('<i class="fa fa-draw-polygon"></i> Editar traçado');
+    $("#editor_btn_cancelar_tracado").hide();
+
+    editor_estilizar(item);
+
+    if (editor_tem_alteracoes()) {
+        editor_aviso('success', 'Alteração feita no mapa. Clique em <strong>Salvar alterações</strong> para gravar.', 6);
+    }
+    else {
+        editor_mostrar_dica();
+    }
+
+    editor_atualizar_botoes();
+}
+
+function editor_parar_edicao() {
+    // Desliga a edicao em qualquer pasto que ainda esteja com os pontos de arraste visiveis,
+    // nao so no selecionado, para nunca sobrar marcador "fantasma" de uma edicao anterior
+    editorMapa.itens.forEach(function(it) {
+        if (it.layer.editing && it.layer.editing.enabled()) {
+            it.layer.editing.disable();
+        }
+    });
+
+    editorMapa.editando = false;
+    editorMapa.tracadoAntes = null;
+    $("#editor_btn_tracado").addClass('btn-default').removeClass('btn-success')
+        .html('<i class="fa fa-draw-polygon"></i> Editar traçado');
+    $("#editor_btn_cancelar_tracado").hide();
+}
+
+function editor_remover_novo() {
+    var item = editorMapa.selecionado;
+
+    if (!item || !item.novo) {
+        return;
+    }
+
+    editor_parar_edicao();
+    editorMapa.grupo.removeLayer(item.layer);
+    editorMapa.itens.splice(editorMapa.itens.indexOf(item), 1);
+    editorMapa.selecionado = null;
+    editor_atualizar_botoes();
+
+    // volta ao estado de "nenhum pasto selecionado": mostra de novo a dica de clicar em um pasto
+    editor_mostrar_dica();
+}
+
+function editor_pedir_exclusao() {
+    var item = editorMapa.selecionado;
+
+    if (!item || item.novo) {
+        return;
+    }
+
+    if (editor_tem_alteracoes()) {
+        editor_aviso('warning', 'Salve (ou descarte) as alterações do mapa antes de excluir um pasto.');
+        return;
+    }
+
+    // Antes de pedir a senha, confere no servidor se o pasto pode ser excluido (sem animais)
+    $.ajax({
+        type: 'post',
+        url: 'mapa_pastos_excluir.php',
+        dataType: 'json',
+        data: {
+            'verificar': '1',
+            'local': editorMapa.local,
+            'nome': item.nome
+        },
+        success: function(data) {
+            if (data.error) {
+                editor_mostrar_erro(data.message);
+                return;
+            }
+
+            $("#editor_texto_excluir").text('Excluir o pasto ' + item.nome + '? Digite sua senha para confirmar.');
+            $("#editor_senha_excluir").val('');
+            $("#editor_painel_excluir").show();
+            $("#editor_senha_excluir").trigger('focus');
+            editor_ajustar_altura();
+        },
+        error: function() {
+            editor_aviso('danger', 'Não foi possível verificar o pasto. Tente novamente.', 6);
+        }
+    });
+}
+
+function editor_cancelar_exclusao() {
+    $("#editor_senha_excluir").val('');
+    $("#editor_painel_excluir").hide();
+    editor_ajustar_altura();
+}
+
+function editor_confirmar_exclusao() {
+    var item = editorMapa.selecionado;
+    var senha = $("#editor_senha_excluir").val();
+
+    if (!item) {
+        return;
+    }
+
+    if (senha == '') {
+        editor_aviso('warning', 'Digite sua senha para confirmar a exclusão.');
+        return;
+    }
+
+    $.ajax({
+        type: 'post',
+        url: 'mapa_pastos_excluir.php',
+        dataType: 'json',
+        data: {
+            'local': editorMapa.local,
+            'versao': editorMapa.versao,
+            'nome': item.nome,
+            'senha': senha
+        },
+        success: function(data) {
+            // Senha errada: continua no painel para digitar de novo
+            if (data.error && data.senha) {
+                $("#editor_senha_excluir").val('').trigger('focus');
+                editor_aviso('danger', data.message, 6);
+                return;
+            }
+
+            // Com sucesso ou outro erro, fecha o painel da senha e limpa o campo
+            editor_cancelar_exclusao();
+
+            if (data.error) {
+                editor_aviso('danger', data.message, 6);
+                return;
+            }
+
+            var local = editorMapa.local;
+            $.ajax({
+                type: 'post',
+                url: 'mapa_pastos_ler.php',
+                dataType: 'json',
+                data: { 'local': local },
+                success: function(recarregado) {
+                    if (!recarregado.error) {
+                        editor_montar(recarregado, local);
+                    }
+
+                    editor_aviso('success', data.message);
+
+                    if (typeof listar_pastos == 'function' && $("#codigo_local_filtro").val() == local) {
+                        listar_pastos();
+                    }
+                }
+            });
+        },
+        error: function() {
+            editor_aviso('danger', 'Não foi possível excluir o pasto. Tente novamente.');
+        }
+    });
+}
+
+function editor_salvar() {
+    if (editorMapa.editando) {
+        var emEdicao = editorMapa.selecionado;
+        var sobrepostos = emEdicao ? editor_sobreposicoes_novas(emEdicao) : [];
+
+        if (sobrepostos.length) {
+            editor_aviso('danger', editor_texto_sobreposicao(emEdicao.nome, sobrepostos) +
+                ' Ajuste o traçado antes de salvar, ou clique em <strong>Descartar edição do traçado</strong>.');
+            return;
+        }
+
+        editor_parar_edicao();
+    }
+
+    // Mapa novo: o tabuleiro depende dos pastos ENTRADA e SAIDA
+    if (editorMapa.versao === 'novo') {
+        var temEntrada = false;
+        var temSaida = false;
+
+        editorMapa.itens.forEach(function(it) {
+            var n = it.nome.toUpperCase();
+
+            if (n == 'ENTRADA') {
+                temEntrada = true;
+            }
+
+            if (n == 'SAIDA' || n == 'SAÍDA') {
+                temSaida = true;
+            }
+        });
+
+        if (!temEntrada || !temSaida) {
+            editor_aviso('warning', 'Desenhe os pastos <strong>ENTRADA</strong> e <strong>SAIDA</strong> antes de salvar o mapa novo.');
+            return;
+        }
+    }
+
+    var renomeados = [];
+
+    editorMapa.itens.forEach(function(it) {
+        if (!it.novo && it.nome.toUpperCase() != it.nomeOriginal.toUpperCase()) {
+            renomeados.push({ de: it.nomeOriginal, para: it.nome });
+        }
+    });
+
+    // novos: pastos que serao criados; alterados: pastos ja cadastrados que mudaram de modulo
+    var novos = {};
+    var alterados = {};
+
+    editorMapa.itens.forEach(function(it) {
+        var chave = it.nome.toUpperCase();
+
+        if (it.novo) {
+            novos[chave] = it.modulo;
+        }
+        else if (it.moduloAlterado !== undefined && it.moduloAlterado !== null) {
+            if (editor_status(it) == 'ok') {
+                alterados[chave] = it.moduloAlterado;
+            }
+            else {
+                novos[chave] = it.moduloAlterado;
+            }
+        }
+    });
+
+    $("#editor_btn_salvar").prop('disabled', true);
+    editor_aviso('info', 'Gravando o mapa...');
+
+    $.ajax({
+        type: 'post',
+        url: 'mapa_pastos_gravar.php',
+        dataType: 'json',
+        data: {
+            'local': editorMapa.local,
+            'versao': editorMapa.versao,
+            'geojson': JSON.stringify(editor_serializar()),
+            'renomeados': JSON.stringify(renomeados),
+            'novos': JSON.stringify(novos),
+            'alterados': JSON.stringify(alterados)
+        },
+        success: function(data) {
+            if (data.error) {
+                editor_aviso('danger', data.message);
+                editor_atualizar_botoes();
+                return;
+            }
+
+            var linhas = ['Mapa gravado com sucesso.'];
+
+            if (data.criados.length > 0) {
+                linhas.push('Pastos criados: ' + data.criados.join(', '));
+            }
+
+            if (data.renomeados.length > 0) {
+                linhas.push('Renomeados: ' + data.renomeados.join(', '));
+            }
+
+            if (data.modulos.length > 0) {
+                linhas.push('Módulo alterado: ' + data.modulos.join(', '));
+            }
+
+            if (data.atualizados.length > 0) {
+                linhas.push('Área atualizada: ' + data.atualizados.join(', '));
+            }
+
+            var local = editorMapa.local;
+
+            // Mapa novo salvo: a fazenda deixa a lista do Novo Mapa e as coordenadas digitadas vao para o cadastro
+            var fazendaSalva = editor_fazenda(local);
+
+            if (fazendaSalva) {
+                fazendaSalva.semMapa = false;
+            }
+
+            if (editorMapa.coordenadas && editorMapa.coordenadas.digitadas) {
+                var coordenadasDigitadas = editorMapa.coordenadas;
+
+                $.post('mapa_pastos_coordenadas.php', {
+                    local: local,
+                    latitude: coordenadasDigitadas.lat,
+                    longitude: coordenadasDigitadas.lng
+                }, function(resp) {
+                    if (resp && resp.success && fazendaSalva) {
+                        fazendaSalva.lat = coordenadasDigitadas.lat;
+                        fazendaSalva.lng = coordenadasDigitadas.lng;
+                    }
+                }, 'json');
+
+                editorMapa.coordenadas.digitadas = false;
+            }
+            $.ajax({
+                type: 'post',
+                url: 'mapa_pastos_ler.php',
+                dataType: 'json',
+                data: { 'local': local },
+                success: function(recarregado) {
+                    if (!recarregado.error) {
+                        editor_montar(recarregado, local);
+                    }
+
+                    editor_aviso('success', linhas.join('<br>'));
+
+                    if (typeof listar_pastos == 'function' && $("#codigo_local_filtro").val() == local) {
+                        listar_pastos();
+                    }
+                }
+            });
+        },
+        error: function() {
+            editor_aviso('danger', 'Não foi possível gravar o mapa. Tente novamente.');
+            editor_atualizar_botoes();
+        }
+    });
+}
+
+function fechar_editor_mapa() {
+    editor_confirmar_saida(function() {
+        editor_limpar_tudo();
+        $("#editor_mapa_tela").hide();
+        $("#pastos_cabecalho, #pastos_conteudo").show();
+        window.scrollTo(0, 0);
+    });
+}
