@@ -275,7 +275,7 @@
                                 LIMIT 1";
             $res_menu_versao = @mysqli_query($conector, $sql_menu_versao);
             if ($res_menu_versao && ($row_menu_versao = mysqli_fetch_assoc($res_menu_versao))) {
-              $menu_versao_data = !empty($row_menu_versao['tbl_versao_data'])
+              $menu_versao_data = (!empty($row_menu_versao['tbl_versao_data']) && substr($row_menu_versao['tbl_versao_data'], 0, 10) !== '0000-00-00')
                 ? date('d/m/Y', strtotime($row_menu_versao['tbl_versao_data']))
                 : '';
               $menu_versao_texto = 'Versão ' . htmlspecialchars($row_menu_versao['tbl_versao_numero'], ENT_QUOTES, 'UTF-8')

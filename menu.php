@@ -70,7 +70,7 @@ if (empty($versoes)) {
 
 $atual = $versoes[0];
 
-$data_atual_br = date('d/m/Y', strtotime($atual['tbl_versao_data'])); 
+$data_atual_br = (!empty($atual['tbl_versao_data']) && substr($atual['tbl_versao_data'], 0, 10) !== '0000-00-00') ? date('d/m/Y', strtotime($atual['tbl_versao_data'])) : '';
 $exibir_historico = isset($_GET['view']) && $_GET['view'] == 'historico';
 
 // FUNÇÃO BLINDADA: Remove espaços e TABs no início de cada linha via REGEX
@@ -1497,7 +1497,7 @@ function tratarDescricaoVersao($texto) {
                                 <div id="v-historico" style="display: none;">
                                     <div class="timeline-wrapper">
                                         <?php foreach ($versoes as $index => $v): 
-                                            $data_v = date('d/m/Y', strtotime($v['tbl_versao_data']));
+                                            $data_v = (!empty($v['tbl_versao_data']) && substr($v['tbl_versao_data'], 0, 10) !== '0000-00-00') ? date('d/m/Y', strtotime($v['tbl_versao_data'])) : '';
                                         ?>
                                             <div class="card-historico <?php echo $index === 0 ? 'atual' : ''; ?>">
                                                 <div class="dot"></div>
@@ -1794,7 +1794,7 @@ function alternarVisaoVersao(tipo) {
         $('#v-historico').hide();
         $('#v-resumo').fadeIn();
         // Volta o título para o padrão da Versão Atual
-        $('#versao #titulo-modal-texto').text('Versão <?php echo $atual['tbl_versao_numero']; ?> - <?php echo $data_atual_br; ?>');
+        $('#versao #titulo-modal-texto').text('Versão <?php echo $atual['tbl_versao_numero']; ?><?php echo ($data_atual_br !== '' ? ' - ' . $data_atual_br : ''); ?>');
     }
 }
 
