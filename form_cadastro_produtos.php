@@ -173,7 +173,7 @@
                                             </div>
 
                                             <div class="form-group col-md-3 ativo" id="div_ativo" style="display: none;">
-                                                <label class="control-label">Mistura para Nutrição Ativa</label>
+                                                <label class="control-label">Registro Ativo</label>
                                                 <div class="clearfix"></div>
                                                 <label class="radio-inline">
                                                     <input type="radio" name="ativo" id="ativoS" value="S"> Sim
