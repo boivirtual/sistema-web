@@ -292,7 +292,7 @@
                     <th style="vertical-align: middle;text-align:center;">Descrição do Lote</th>
                     <th style="vertical-align: middle;text-align:center;">Nº de Cabeças</th>
                     <th style="vertical-align: middle;text-align:center;">Pasto</th>
-                    <th style="vertical-align: middle;text-align:center;">Produto</th>
+                    <th style="vertical-align: middle;text-align:center;">Mistura p/ Nutrição</th>
                     <th style="vertical-align: middle;text-align:center;">Quantidade Colocada no Cocho (Kg)</th>
                     <th style="vertical-align: middle;text-align:center;">Qtde/Cabeça</th>
                     <th style="vertical-align: middle;text-align:center;">Consumo Cabeça g/dia</th>

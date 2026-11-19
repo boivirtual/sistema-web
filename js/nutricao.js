@@ -360,10 +360,10 @@ function consultar_segundo_filtro() {
     });
 
     if (codigo_produto_filtro=='') {
-        codigo_produto_filtro = '->Produto:Todos';
+        codigo_produto_filtro = '->Mistura p/ Nutrição:Todos';
     }
     else {
-        codigo_produto_filtro = "->Produto:" + codigo_produto_filtro;
+        codigo_produto_filtro = "->Mistura p/ Nutrição:" + codigo_produto_filtro;
     }
 
     if (data_inicial!= '') {

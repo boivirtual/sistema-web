@@ -274,7 +274,7 @@
                                             </div>
 
                                             <div class="col-md-3">
-                                                <label for="codigo_produto" class="control-label">Produto</label>
+                                                <label for="codigo_produto" class="control-label">Mistura p/ Nutrição</label>
                                                 <select class="form-control" id="codigo_produto" name="codigo_produto" >
                                                 </select>
                                             </div>
@@ -360,7 +360,7 @@
                                             </div>
 
                                             <div class="form-group col-md-8">
-                                                <label for="descricao_produto" class="control-label">Produto</label>
+                                                <label for="descricao_produto" class="control-label">Mistura p/ Nutrição</label>
 
                                                 <input name="descricao_produto" type="text" class="form-control" id="descricao_produto" readonly>
                                             </div>
@@ -447,7 +447,7 @@
                             </div>
 
                             <div class="form-group col-md-12">
-                                <p><span class="label_weight">Produto:&nbsp;</span><span class="desc_produto"></span>&nbsp;&nbsp;
+                                <p><span class="label_weight">Mistura p/ Nutrição:&nbsp;</span><span class="desc_produto"></span>&nbsp;&nbsp;
                                       <span class="label_weight">Última Nutrição:&nbsp;</span><span class="desc_ultima"></span></p>
                             </div>
 
@@ -478,7 +478,7 @@
                         <div class="modal-body">
                             <div class="row">
                                 <div class="form-group col-md-12">
-                                    <p><span class="label_weight">Produto:&nbsp;</span><span class="desc_produto"></span>&nbsp;&nbsp;
+                                    <p><span class="label_weight">Mistura p/ Nutrição:&nbsp;</span><span class="desc_produto"></span>&nbsp;&nbsp;
                                       <span class="label_weight">Última Distribuição:&nbsp;</span><span class="desc_ultima"></span></p>
                                 </div>
 
