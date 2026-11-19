@@ -91,11 +91,11 @@
     <section id="main-content">
         <section class="wrapper" style="margin-left: 5px;">
             <span class="caminho-programa">Cadastros <i class="fa fa-angle-right seta-direita"></i>
-            <span class="titulo">Produtos</span></span>
+            <span class="titulo">Mistura para Nutrição</span></span>
 
            <div class="row">
                 <div class="col-lg-12">
-                    <h3 class="page-header"><i class="fa fa-tags"></i> Cadastro de Produtos</h3>
+                    <h3 class="page-header"><i class="fa fa-tags"></i> Cadastro de Mistura para Nutrição</h3>
                 </div>
             </div>
 
@@ -121,7 +121,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="modal_incluirLabel">Produtos - Incluir</h4>
+                            <h4 class="modal-title" id="modal_incluirLabel">Mistura para Nutrição - Incluir</h4>
                         </div>
 
                         <div class="modal-body" >
@@ -173,7 +173,7 @@
                                             </div>
 
                                             <div class="form-group col-md-3 ativo" id="div_ativo" style="display: none;">
-                                                <label class="control-label">Produto Ativo</label>
+                                                <label class="control-label">Mistura para Nutrição Ativa</label>
                                                 <div class="clearfix"></div>
                                                 <label class="radio-inline">
                                                     <input type="radio" name="ativo" id="ativoS" value="S"> Sim
@@ -372,7 +372,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Produtos </h4>
+                            <h4 class="modal-title">Mistura para Nutrição </h4>
                         </div>
                         <div class="modal-body"></div>
                         <div class="modal-footer">
@@ -388,7 +388,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Produtos </h4>
+                            <h4 class="modal-title">Mistura para Nutrição </h4>
                         </div>
                         <div class="modal-body"></div>
                         <div class="modal-footer">
@@ -404,7 +404,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Produtos - Mensagem</h4>
+                            <h4 class="modal-title">Mistura para Nutrição - Mensagem</h4>
                         </div>
                         <div class="modal-body"></div>
                         <div class="modal-footer">
@@ -421,7 +421,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Produtos - Mensagem</h4>
+                            <h4 class="modal-title">Mistura para Nutrição - Mensagem</h4>
                         </div>
                         <div class="modal-body"></div>
                         <div class="modal-footer">

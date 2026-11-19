@@ -787,7 +787,7 @@
 
                                         <div class='row'>
                                             <div class='form-group col-md-5'> 
-                                                <label class='control-label' for='nomeProduto'><span class='required'>*</span>Produto</label>
+                                                <label class='control-label' for='nomeProduto'><span class='required'>*</span>Mistura para Nutrição</label>
 
                                                 <select name='nomeProduto' id='nomeProduto' class='form-control custom-select' onchange='selecionouProduto()'>
                                                     <option value='000000000'>...</option>

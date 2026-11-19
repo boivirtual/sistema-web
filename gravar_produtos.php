@@ -69,7 +69,7 @@ if ($tipo_gravacao==0 || $tipo_gravacao==1) {
 	if ($num_rows!=0){
 		if ($tipo_gravacao==0) {
 			header('Content-type: application/json');
-			echo json_encode(array('error' => true, 'message' => 'Já existe produto cadastrado com essa Descrição, Apresentação, Quantidade/Apresentação e Unidade.'));
+			echo json_encode(array('error' => true, 'message' => 'Já existe mistura para nutrição cadastrada com essa Descrição, Apresentação, Quantidade/Apresentação e Unidade.'));
 				exit;
 		}
 		else {
@@ -89,7 +89,7 @@ if ($tipo_gravacao==0 || $tipo_gravacao==1) {
 			    $qtd_ant != $qtd_apresentacao_produto ||
 			    $unidade_ant != $unidade_produto) {
 					header('Content-type: application/json');
-					echo json_encode(array('error' => true, 'message' => 'Já existe produto cadastrado com essa Descrição, Apresentação, Quantidade/Apresentação e Unidade.'));
+					echo json_encode(array('error' => true, 'message' => 'Já existe mistura para nutrição cadastrada com essa Descrição, Apresentação, Quantidade/Apresentação e Unidade.'));
 						exit;
 			}
 		}

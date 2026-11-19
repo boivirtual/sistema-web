@@ -387,7 +387,7 @@
 
                                         <div class="form-group col-md-12">
                                             <label class="checkbox-inline">
-                                            <input type="checkbox" id="opc705" name="opc705" value=""> Produtos
+                                            <input type="checkbox" id="opc705" name="opc705" value=""> Mistura para Nutrição
                                             </label>
                                         </div>
 
@@ -519,13 +519,13 @@
 
                                         <div class="form-group col-md-12">
                                             <label class="checkbox-inline">
-                                            <input type="checkbox" id="opc816" name="opc816" value=""> Descrição Padrão de Produtos
+                                            <input type="checkbox" id="opc816" name="opc816" value=""> Descrição Padrão de Misturas p/ Nutrição
                                             </label>
                                         </div>
 
                                         <div class="form-group col-md-12">
                                             <label class="checkbox-inline">
-                                            <input type="checkbox" id="opc817" name="opc817" value=""> Unidade de Produtos
+                                            <input type="checkbox" id="opc817" name="opc817" value=""> Unidade de Medidas
                                             </label>
                                         </div>
 
@@ -812,7 +812,7 @@
 
                                         <div class="form-group col-md-12">
                                             <label class="checkbox-inline">
-                                            <input type="checkbox" id="opc705" name="opc705" value="" onclick=" destrava_alteracao()"> Produtos
+                                            <input type="checkbox" id="opc705" name="opc705" value="" onclick=" destrava_alteracao()"> Mistura para Nutrição
                                             </label>
                                         </div>
 
@@ -944,13 +944,13 @@
 
                                         <div class="form-group col-md-12">
                                             <label class="checkbox-inline">
-                                            <input type="checkbox" id="opc816" name="opc816" value="" onclick=" destrava_alteracao()"> Descrição Padrão de Produtos
+                                            <input type="checkbox" id="opc816" name="opc816" value="" onclick=" destrava_alteracao()"> Descrição Padrão de Misturas p/ Nutrição
                                             </label>
                                         </div>
 
                                         <div class="form-group col-md-12">
                                             <label class="checkbox-inline">
-                                            <input type="checkbox" id="opc817" name="opc817" value="" onclick=" destrava_alteracao()"> Unidade de Produtos
+                                            <input type="checkbox" id="opc817" name="opc817" value="" onclick=" destrava_alteracao()"> Unidade de Medidas
                                             </label>
                                         </div>
 

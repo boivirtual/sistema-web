@@ -122,7 +122,7 @@ function incluir_novo() {
     var und_estoque_atual = $('#unidade').find(":selected").text();
     $('.apresentacao_estoque_atual').html(und_estoque_atual);
 
-    $('#modal_incluir .modal-title').html('Produto - Incluir');
+    $('#modal_incluir .modal-title').html('Mistura para Nutrição - Incluir');
     $('.confirma_gravar').html('Confirmar Inclusão').removeClass('btn-danger').addClass('btn-primary');
     $('.confirma_gravar').show();
     $('#modal_incluir').modal('show');
@@ -216,7 +216,7 @@ function editar_animal(array_animal) {
 
     $("#tipo_gravacao").val(1);
 
-    $('#modal_incluir .modal-title').html('Produto - Editar');
+    $('#modal_incluir .modal-title').html('Mistura para Nutrição - Editar');
     $('.confirma_gravar').html('Confirmar Edição').removeClass('btn-danger').addClass('btn-primary');
 
     $('#modal_incluir').modal('show');

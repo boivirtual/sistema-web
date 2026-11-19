@@ -39,7 +39,7 @@ function incluir_novo() {
     $("#modalidade").val('').selectpicker('refresh');
     $("#tipo_gravacao").val(0);
 
-    $('#modal_incluir .modal-title').html('Descrição Padrão de Produtos - Incluir');
+    $('#modal_incluir .modal-title').html('Descrição Padrão de Misturas p/ Nutrição - Incluir');
     $('.confirma_gravar').html('Confirmar Inclusão').removeClass('btn-danger').addClass('btn-primary');
     $('.confirma_gravar').show();
     $('.voltar_inclusao').show();
@@ -55,7 +55,7 @@ function editar_produto_generico(array_registro) {
 
     $("#tipo_gravacao").val(1);
 
-    $('#modal_incluir .modal-title').html('Descrição Padrão de Produtos - Editar');
+    $('#modal_incluir .modal-title').html('Descrição Padrão de Misturas p/ Nutrição - Editar');
     $('.confirma_gravar').html('Confirmar Edição').removeClass('btn-danger').addClass('btn-primary');
     $('.confirma_gravar').show();
     $('.voltar_inclusao').hide();
@@ -73,11 +73,11 @@ function enviar_lixeira(array_registro, opcao) {
     $("#tipo_gravacao").val(opcao);
 
     if (opcao==2) {
-        $('#modal_incluir .modal-title').html('Descrição Padrão de Produtos - Enviar para Lixeira');
+        $('#modal_incluir .modal-title').html('Descrição Padrão de Misturas p/ Nutrição - Enviar para Lixeira');
         $(".confirma_gravar").html('Enviar para Lixeira').removeClass('btn-primary').addClass('btn-danger');
     }
     else {
-        $('#modal_incluir .modal-title').html('Descrição Padrão de Produtos - Remover da Lixeira');
+        $('#modal_incluir .modal-title').html('Descrição Padrão de Misturas p/ Nutrição - Remover da Lixeira');
         $(".confirma_gravar").html('Remover da Lixeira').removeClass('btn-primary').addClass('btn-danger');
     }
 

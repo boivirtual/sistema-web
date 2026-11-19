@@ -96,10 +96,10 @@ $('#modal_excluir').on('show.bs.modal', function (event) {
     var tipo_gravacao = button.data('whatevertipo')
     var modal = $(this)
     if (tipo_gravacao==3){
-        modal.find('.modal-title').text('Unidade de Produtos - Remover da lixeira ')
+        modal.find('.modal-title').text('Unidade de Medidas - Remover da lixeira ')
     }
     else if (tipo_gravacao==2){
-        modal.find('.modal-title').text('Unidade de Produtos - Enviar para lixeira ')
+        modal.find('.modal-title').text('Unidade de Medidas - Enviar para lixeira ')
     }
     //modal.find('.modal-title').text('Edição da raça - código: ' + recipient)
    // modal.find('.modal-title').text('Edição da raça')

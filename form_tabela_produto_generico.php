@@ -69,11 +69,11 @@
     <section id="main-content">
         <section class="wrapper" style="margin-left: 5px;">
             <span class="caminho-programa">Parametros <i class="fa fa-angle-right seta-direita"></i>
-            <span class="titulo">Descrição Padrão de Produtos</span></span>
+            <span class="titulo">Descrição Padrão de Misturas p/ Nutrição</span></span>
 
             <div class="row">
                 <div class="col-lg-12">
-                    <h3 class="page-header"><i class="fa fa-map-o"></i> Descrição Padrão de Produtos</h3>
+                    <h3 class="page-header"><i class="fa fa-map-o"></i> Descrição Padrão de Misturas p/ Nutrição</h3>
                 </div>
             </div>
             <div class="row">
@@ -100,7 +100,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="modal_incluirLabel">Descrição Padrão de Produtos - Incluir</h4>
+                            <h4 class="modal-title" id="modal_incluirLabel">Descrição Padrão de Misturas p/ Nutrição - Incluir</h4>
                         </div>
 
                         <div class="modal-body">
@@ -157,7 +157,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Descrição Padrão de Produtos </h4>
+                            <h4 class="modal-title">Descrição Padrão de Misturas p/ Nutrição </h4>
                         </div>
                         <div class="modal-body"></div>
                         <div class="modal-footer">
@@ -173,7 +173,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Descrição Padrão de Produtos </h4>
+                            <h4 class="modal-title">Descrição Padrão de Misturas p/ Nutrição </h4>
                         </div>
                         <div class="modal-body"></div>
                         <div class="modal-footer">
@@ -189,7 +189,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Descrição Padrão de Produtos - Erro</h4>
+                            <h4 class="modal-title">Descrição Padrão de Misturas p/ Nutrição - Erro</h4>
                         </div>
                         <div class="modal-body"></div>
                         <div class="modal-footer">

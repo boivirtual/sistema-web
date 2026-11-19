@@ -327,13 +327,13 @@
                                                 </div>
 
                                                 <div class="form-group col-md-3">
-                                                    <label for="codigo_produto" class="control-label">Produto</label>
+                                                    <label for="codigo_produto" class="control-label">Mistura p/ Nutrição</label>
                                                     <select class="form-control selectpicker" multiple id="codigo_produto" name="codigo_produto" data-live-search="true">
                                                     </select>
                                                 </div>
 
-                                                <div class="form-group col-md-3 agrupar_produtos_grupo" data-toggle="tooltip" data-placement="top" title="Sim soma os produtos numa única linha. Não lista cada produto separadamente, com seu próprio consumo.">
-                                                    <label class="control-label">Agrupar Produtos</label>
+                                                <div class="form-group col-md-3 agrupar_produtos_grupo" data-toggle="tooltip" data-placement="top" title="Sim soma as misturas numa única linha. Não lista cada mistura separadamente, com seu próprio consumo.">
+                                                    <label class="control-label">Agrupar Mistura</label>
 
                                                     <div class="clearfix"></div>
 

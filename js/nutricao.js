@@ -1199,10 +1199,10 @@ function listar_consumo_nutricao(opcao){
     });
 
     if (codigo_produto_filtro=='') {
-        codigo_produto_filtro = '->Produto:Todos';
+        codigo_produto_filtro = '->Mistura p/ Nutrição:Todos';
     }
     else {
-        codigo_produto_filtro = "->Produto:" + codigo_produto_filtro;
+        codigo_produto_filtro = "->Mistura p/ Nutrição:" + codigo_produto_filtro;
     }
 
     if (data_inicial!= '') {
@@ -1246,7 +1246,7 @@ function listar_consumo_nutricao(opcao){
         var tipo_rel_filtro = '->Tipo Relatório: Por Lote';
     }
 
-    var agrupar_produtos_filtro = '->Agrupar Produtos: ' + (agrupar_produtos=='S' ? 'Sim' : 'Não');
+    var agrupar_produtos_filtro = '->Agrupar Mistura: ' + (agrupar_produtos=='S' ? 'Sim' : 'Não');
     var descricao_filtro =
         codigo_local_filtro +
         periodo +

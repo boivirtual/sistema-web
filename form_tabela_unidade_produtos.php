@@ -77,7 +77,7 @@
 
            <div class="row">
                 <div class="col-lg-12">
-                    <h3 class="page-header"><i class="fa fa-file-text-o"></i> Unidade de Produtos</h3>
+                    <h3 class="page-header"><i class="fa fa-file-text-o"></i> Unidade de Medidas</h3>
                 </div>
             </div>
 
@@ -174,7 +174,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="modal_incluirLabel">Unidade de Produtos - Incluir</h4>
+                            <h4 class="modal-title" id="modal_incluirLabel">Unidade de Medidas - Incluir</h4>
                         </div>
 
                         <div class="modal-body">
@@ -214,7 +214,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="exampleModalLabel">Unidade de Produtos - Editar</h4>
+                            <h4 class="modal-title" id="exampleModalLabel">Unidade de Medidas - Editar</h4>
                         </div>
 
                         <div class="modal-body">
@@ -254,7 +254,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="modal_excluirLabel">Unidade de Produtos - Excluir</h4>
+                            <h4 class="modal-title" id="modal_excluirLabel">Unidade de Medidas - Excluir</h4>
                         </div>
 
                         <div class="modal-body">
@@ -289,7 +289,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Unidade de Produtos</h4>
+                            <h4 class="modal-title">Unidade de Medidas</h4>
                         </div>
                         <div class="modal-body">
 
@@ -309,7 +309,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Unidade de Produtos</h4>
+                            <h4 class="modal-title">Unidade de Medidas</h4>
                         </div>
                         <div class="modal-body">
 
@@ -328,7 +328,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Unidade de Produtos</h4>
+                            <h4 class="modal-title">Unidade de Medidas</h4>
                         </div>
                         <div class="modal-body">
 
@@ -347,7 +347,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Unidade de Produtos</h4>
+                            <h4 class="modal-title">Unidade de Medidas</h4>
                         </div>
                         <div class="modal-body">
 
@@ -365,7 +365,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Unidade de Produtos - Mensagem</h4>
+                            <h4 class="modal-title">Unidade de Medidas - Mensagem</h4>
                         </div>
                         <div class="modal-body" id="erro_mysql">
                         </div>

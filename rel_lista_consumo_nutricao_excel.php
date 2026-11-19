@@ -229,7 +229,7 @@ if ($tipo_periodo_lote=='P') {
         ->setCellValue("B4","Lote")
         ->setCellValue("C4","Nº de Cabeças")
         ->setCellValue("D4","Pasto Atual")
-        ->setCellValue("E4","Tipo de Nutrição")
+        ->setCellValue("E4","Mistura p/ Nutrição")
         ->setCellValue("F4","Quandidade em gramas por cabeça ao longo do mês");
 
     $spreadsheet->setActiveSheetIndex(0)
@@ -339,7 +339,7 @@ else {
         ->setCellValue("B4","Descrição do Lote")
         ->setCellValue("C4","Nº de Cabeças")
         ->setCellValue("D4","Pasto")
-        ->setCellValue("E4","Produto")
+        ->setCellValue("E4","Mistura p/ Nutrição")
         ->setCellValue("F4","Quantidade Colocada no Cocho")
         ->setCellValue("G4","Qtde/Cabeça")
         ->setCellValue("H4","Consumo Cabeça g/dia");
