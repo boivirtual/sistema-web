@@ -31,7 +31,7 @@ include "conecta_mysql.inc";
             echo "<thead>
                         <tr>
                             <th> Data</th>
-                            <th> Produto</th>
+                            <th> Mistura para Nutrição</th>
                             <th> Quantidade</th>
                             <th> Und</th>
                             <th> Qtd Animais</th>
