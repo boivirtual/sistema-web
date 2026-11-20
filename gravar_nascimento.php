@@ -515,6 +515,10 @@ else {
 	}
 
 	$data_movimentacao=date("Y-m-d");
+	// pelo Resumo Diário do aplicativo: o dia do resumo (ver $data_sistema)
+	if (isset($data_resumo_app) && $data_resumo_app !== '') {
+		$data_movimentacao = $data_resumo_app;
+	}
 
 	if ($controle_estoque=='I') {
 		$sql = ("UPDATE tbl_item_cobertura SET 
