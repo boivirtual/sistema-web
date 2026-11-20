@@ -20,6 +20,13 @@
     $classes = so_codigos(isset($_POST['classe']) ? $_POST['classe'] : '');
     $fazendas = so_codigos(isset($_POST['fazenda']) ? $_POST['fazenda'] : '');
 
+    // Ativo: "S" e/ou "N". Só um marcado filtra; os dois (ou nenhum) trazem todos.
+    $ativo = array();
+    foreach (explode(',', isset($_POST['ativo']) ? (string)$_POST['ativo'] : '') as $valor) {
+        if ($valor === 'S' || $valor === 'N') { $ativo[] = $valor; }
+    }
+    $ativo = array_values(array_unique($ativo));
+
     // Guarda o filtro para remontar a consulta ao voltar da edição/inclusão.
     $_SESSION['pessoas_filtro_classe'] = implode(',', $classes);
     $_SESSION['pessoas_filtro_fazenda'] = implode(',', $fazendas);
