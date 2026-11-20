@@ -187,10 +187,8 @@
                                                 </select>
 
                                                 </div>
-                                            </div>
 
-                                            <div class="row" id="div_fazenda_funcionario" <?php if ($classe_cliente != 5) { echo 'style="display:none;"'; } ?>>
-                                                <div class="form-group col-md-6 col-md-offset-6">
+                                                <div class="form-group col-md-6" id="div_fazenda_funcionario" <?php if ($classe_cliente != 5) { echo 'style="display:none;"'; } ?>>
                                                 <label for="id_fazenda" class="control-label">Fazenda</label>
                                                 <select class="form-control" id="id_fazenda" name="id_fazenda">
                                                   <option value="" selected="selected">...</option>
