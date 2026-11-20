@@ -98,7 +98,12 @@
 
         $tab_estados = mysqli_query($conector, "select * from tabela_estados"); 
         $tab_municipios = mysqli_query($conector, "select * from tabela_municipios 
-            where mun_estado='MG'"); 
+            where mun_estado='MG'");
+
+        // Fazendas (classe 04 - Meus Locais) para o select "Fazenda" dos funcionários (classe 05).
+        $tab_fazendas = mysqli_query($conector, "SELECT tbl_pessoa_id, tbl_pessoa_nome FROM tbl_pessoa
+                                                  WHERE tbl_pessoa_classe=4 AND tbl_pessoa_lixeira=0
+                                                  ORDER BY tbl_pessoa_nome");
     ?>
     <!--sidebar end-->
 
