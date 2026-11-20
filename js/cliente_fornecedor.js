@@ -144,10 +144,10 @@ function mostrar_fazenda_filtro() {
     var tem_funcionario = classes.some(function (c) { return parseInt(c, 10) === 5; });
 
     if (tem_funcionario) {
-        $('#div_fazenda_filtro').css('visibility', 'visible');
+        $('#div_fazenda_filtro').show();
     }
     else {
-        $('#div_fazenda_filtro').css('visibility', 'hidden');
+        $('#div_fazenda_filtro').hide();
         if (($('#fazenda_filtro').val() || []).length) {
             $('#fazenda_filtro').selectpicker('deselectAll');
         }
