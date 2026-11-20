@@ -246,7 +246,7 @@
                                             </div>
 
                                             <div class="row esconde_classe">
-                                                <div class="form-group col-md-12">
+                                                <div class="form-group col-md-6">
                                                 <label for="classe_pessoa" class="control-label"><span class="required">*</span>Classe de Pessoa</label>
                                                 <select class="form-control" id="classe_pessoa" name="classe_pessoa" required="">
 
