@@ -171,8 +171,8 @@
                                         </div>
 
                                         <!-- Fazenda: só aparece quando Funcionário (05) está entre as classes escolhidas.
-                                             Usa visibility para o botão Consultar não mudar de lugar. -->
-                                        <div class="form-group col-md-4" id="div_fazenda_filtro" style="visibility:hidden;">
+                                             Escondida, o filtro Ativo encosta na Classe; o Consultar fica sempre à direita. -->
+                                        <div class="form-group col-md-4" id="div_fazenda_filtro" style="display:none;">
                                             <label for="fazenda_filtro" class="control-label">Fazenda</label>
                                             <select class="form-control selectpicker filtro_pessoas" multiple id="fazenda_filtro" name="fazenda_filtro" title="Todas">
                                             <?php while ($reg_fazenda = mysqli_fetch_object($tab_fazendas)) { ?>
