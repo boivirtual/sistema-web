@@ -25,6 +25,12 @@ $ocorrencia = $_POST['opcao_nascimento'];
 $data_ocorrencia = $_POST['nascimento_animal'];
 $codigo_mae = $_POST['codigo_mae_animal'];
 $data_sistema = date("Y-m-d");
+// Gravado pelo Resumo Diário do aplicativo (MapaGadoNascimentoService::gravarPeloWeb):
+// a data do registro é o dia do resumo (hoje ou ontem). Pelo web essa
+// variável não existe e nada muda.
+if (isset($data_resumo_app) && $data_resumo_app !== '') {
+	$data_sistema = $data_resumo_app;
+}
 
 $cobertura_id = $_POST['cobertura_id'];
 $item_cobertura = $_POST['item_cobertura'];
