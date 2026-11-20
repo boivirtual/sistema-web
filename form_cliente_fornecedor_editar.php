@@ -160,7 +160,7 @@
         $tab_fazendas = mysqli_query($conector, "SELECT tbl_pessoa_id, tbl_pessoa_nome FROM tbl_pessoa
                                                   WHERE tbl_pessoa_classe=4
                                                     AND (tbl_pessoa_lixeira=0 OR tbl_pessoa_id='$id_fazenda_sql')
-                                                  ORDER BY tbl_pessoa_nome");
+                                                  ORDER BY tbl_pessoa_id");
 
     ?>
     <!--sidebar end-->
