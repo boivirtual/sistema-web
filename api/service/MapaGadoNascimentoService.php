@@ -85,6 +85,11 @@ class MapaGadoNascimentoService{
             }
         }
 
+        // Aberto pelo Resumo Diário: o script do web grava a data do
+        // registro com o dia do resumo (lê $data_resumo_app; pelo web ela
+        // não existe e nada muda).
+        $data_resumo_app = $this->dataDoResumo($dados) ?? '';
+
         chdir(__DIR__ . '/../..');
         include $script === 'nascimento'
             ? 'gravar_nascimento.php'
