@@ -113,6 +113,12 @@ else {
 }
 
 $data_sistema = date("Y-m-d H:i:s");
+// Gravado pelo Resumo Diário do aplicativo (MapaGadoNascimentoService::gravarPeloWeb):
+// a data do registro é o dia do resumo (hoje ou ontem), com a hora atual.
+// Pelo web essa variável não existe e nada muda.
+if (isset($data_resumo_app) && $data_resumo_app !== '') {
+	$data_sistema = $data_resumo_app . date(" H:i:s");
+}
 
 if ($local=='000000000'){
 	header('Content-type: application/json');
