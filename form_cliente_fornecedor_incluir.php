@@ -188,8 +188,13 @@
                                                 </select>
 
                                                 </div>
+                                                </div>
+                                            </div>
 
-                                                <div class="form-group col-md-6" id="div_fazenda_funcionario" <?php if ($classe_cliente != 5) { echo 'style="display:none;"'; } ?>>
+                                            <div class="row" id="linha_classe_fazenda" style="display:none;">
+                                                <div class="col-md-6" id="slot_classe_baixo"></div>
+
+                                                <div class="form-group col-md-6" id="div_fazenda_funcionario">
                                                 <label for="id_fazenda" class="control-label">Fazenda</label>
                                                 <select class="form-control" id="id_fazenda" name="id_fazenda">
                                                   <option value="" selected="selected">...</option>
