@@ -187,6 +187,20 @@
                                                 </div>
                                             </div>
 
+                                            <div class="row" id="div_fazenda_funcionario" <?php if ($classe_cliente != 5) { echo 'style="display:none;"'; } ?>>
+                                                <div class="form-group col-md-6 col-md-offset-6">
+                                                <label for="id_fazenda" class="control-label">Fazenda</label>
+                                                <select class="form-control" id="id_fazenda" name="id_fazenda">
+                                                  <option value="" selected="selected">...</option>
+                                                  <?php while($registro_fazenda = mysqli_fetch_object($tab_fazendas)) { ?>
+                                                  <option value="<?php echo $registro_fazenda->tbl_pessoa_id; ?>">
+                                                    <?php echo $registro_fazenda->tbl_pessoa_nome; ?>
+                                                  </option>
+                                                  <?php } ?>
+                                                </select>
+                                                </div>
+                                            </div>
+
                                             <div class="row">
                                                 <div class="form-group col-md-6">
                                                     <label for="tipo_pessoa" class="control-label"><span class="required">*</span>Pessoa</label>
