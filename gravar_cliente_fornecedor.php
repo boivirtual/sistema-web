@@ -165,6 +165,7 @@
 	} else if ($codigo) {
 	    $sql = "UPDATE tbl_pessoa SET
 				tbl_pessoa_classe='$classe',
+				tbl_pessoa_id_fazenda=$id_fazenda_sql,
 				tbl_pessoa_cpf_cnpj='$cnpj_cpf',
 				tbl_pessoa_tipo_pessoa='$tipo_pessoa',
 				tbl_pessoa_insc_estadual='$insc_estadual',
