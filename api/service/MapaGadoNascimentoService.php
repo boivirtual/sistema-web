@@ -25,6 +25,23 @@ class MapaGadoNascimentoService{
         ];
     }
 
+    /**
+     * "data_resumo" (Y-m-d) enviada pelo app quando o programa foi aberto
+     * pelo Resumo Diário (hoje ou ontem). Só vale uma data válida dos
+     * últimos dias e não futura (folga de 1 dia para o fuso); sem ela ou
+     * inválida, null (grava como sempre).
+     */
+    private function dataDoResumo($dados){
+        $texto = (string) ($dados['data_resumo'] ?? '');
+        $d = DateTime::createFromFormat('!Y-m-d', $texto);
+        if (!$d || $d->format('Y-m-d') !== $texto) {
+            return null;
+        }
+        $minimo = date('Y-m-d', strtotime('-3 days'));
+        $maximo = date('Y-m-d', strtotime('+1 day'));
+        return ($texto < $minimo || $texto > $maximo) ? null : $texto;
+    }
+
     /** Campos do formulário #form_gravar_animal do web (o que o
      *  $('#form_gravar_animal').serialize() envia). */
     const CAMPOS_FORMULARIO = [
