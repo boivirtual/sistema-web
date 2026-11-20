@@ -71,6 +71,12 @@
 	//    exit;
     //}
 
+    // Fazenda (classe 04) do funcionário: só vale para a classe 05 e não é obrigatória.
+    $id_fazenda_sql = 'NULL';
+    if ($classe == 5 && !empty($_POST['id_fazenda'])) {
+        $id_fazenda_sql = "'" . mysqli_real_escape_string($conector, sonumero($_POST['id_fazenda'])) . "'";
+    }
+
     if (empty($cep)){$cep=0;}
     if (empty($ddd)){$ddd=0;}
     if (empty($telefone)){$telefone=0;}
