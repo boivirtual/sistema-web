@@ -159,7 +159,9 @@
                                                     <label for="nome_pessoa" class="control-label"><span class="required">*</span>Razão Social/Nome</label>
                                                     <input name="nome_pessoa" type="text" class="form-control" id="nome_pessoa" required="" onkeyup="maiuscula(this)">
                                                 </div>
+                                            </div>
 
+                                            <div class="row">
                                                 <div class="form-group col-md-6">
                                                 <label for="classe_pessoa" class="control-label"><span class="required">*</span>Classe de Pessoa</label>
                                                 <select class="form-control" id="classe_pessoa" name="classe_pessoa" required="">
