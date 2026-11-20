@@ -39,6 +39,36 @@
   <link href="DataTables-1.10.18/css/dataTables.bootstrap4.min.css"rel="stylesheet" >
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
   <link href="css/style-busca.css?<?php echo Versao; ?>" rel="stylesheet">
+  <link href="css/select-1.13.14.css" rel="stylesheet" >
+
+  <style type="text/css">
+    /* Filtros múltiplos (mesmo visual do Cadastro de Animais) */
+    .bootstrap-select > .dropdown-toggle:hover,
+    .bootstrap-select > .dropdown-toggle:focus,
+    .bootstrap-select.open > .dropdown-toggle,
+    .bootstrap-select.btn-group .dropdown-toggle:hover {
+        background-color: #fff !important;
+        color: #333 !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    .bootstrap-select .bs-actionsbox {
+        text-align: right;
+        padding: 5px 5px 5px 5px;
+    }
+
+    .bootstrap-select .bs-actionsbox .bs-deselect-all {
+        display: inline-block;
+        float: none;
+        padding: 0;
+        border: none;
+        color: #007aff;
+        background: transparent;
+        font-size: 13px;
+        font-weight: 500;
+    }
+  </style>
 
 </head>
 
