@@ -30,9 +30,16 @@
     // Guarda o filtro para remontar a consulta ao voltar da edição/inclusão.
     $_SESSION['pessoas_filtro_classe'] = implode(',', $classes);
     $_SESSION['pessoas_filtro_fazenda'] = implode(',', $fazendas);
+    $_SESSION['pessoas_filtro_ativo'] = implode(',', $ativo);
     $_SESSION['pessoas_consultou'] = 1;
 
     $where = "";
+    if ($ativo === array('S')) {
+        $where .= " AND tbl_pessoa_ativo = 'S'";
+    }
+    else if ($ativo === array('N')) {
+        $where .= " AND (tbl_pessoa_ativo <> 'S' OR tbl_pessoa_ativo IS NULL)";
+    }
     if (count($classes) > 0) {
         $where .= " AND tbl_pessoa_classe IN (" . implode(',', $classes) . ")";
 
