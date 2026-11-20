@@ -98,7 +98,8 @@
                      
         $registro_cliente = mysqli_fetch_object($cli_for);
         $razao = $registro_cliente->tbl_pessoa_nome; 
-        $classe = $registro_cliente->tbl_pessoa_classe; 
+        $classe = $registro_cliente->tbl_pessoa_classe;
+        $id_fazenda = $registro_cliente->tbl_pessoa_id_fazenda;
         $tipo_pessoa = $registro_cliente->tbl_pessoa_tipo_pessoa; 
         $email = $registro_cliente->tbl_pessoa_email; 
         $contato = $registro_cliente->tbl_pessoa_contato; 
