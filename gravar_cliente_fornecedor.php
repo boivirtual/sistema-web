@@ -205,6 +205,7 @@
 	} else {
 	    $sql = "INSERT INTO tbl_pessoa (
 				tbl_pessoa_classe,
+				tbl_pessoa_id_fazenda,
 				tbl_pessoa_cpf_cnpj,
 				tbl_pessoa_tipo_pessoa,
 				tbl_pessoa_insc_estadual,
