@@ -34,11 +34,12 @@
     $_SESSION['pessoas_consultou'] = 1;
 
     $where = "";
+    // Quem está na lixeira (excluído) conta como inativo.
     if ($ativo === array('S')) {
-        $where .= " AND tbl_pessoa_ativo = 'S'";
+        $where .= " AND tbl_pessoa_ativo = 'S' AND (tbl_pessoa_lixeira = 0 OR tbl_pessoa_lixeira IS NULL)";
     }
     else if ($ativo === array('N')) {
-        $where .= " AND (tbl_pessoa_ativo <> 'S' OR tbl_pessoa_ativo IS NULL)";
+        $where .= " AND (tbl_pessoa_ativo <> 'S' OR tbl_pessoa_ativo IS NULL OR tbl_pessoa_lixeira = 1)";
     }
     if (count($classes) > 0) {
         $where .= " AND tbl_pessoa_classe IN (" . implode(',', $classes) . ")";
