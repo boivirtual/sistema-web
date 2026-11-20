@@ -159,10 +159,11 @@
                                                     <label for="nome_pessoa" class="control-label"><span class="required">*</span>Razão Social/Nome</label>
                                                     <input name="nome_pessoa" type="text" class="form-control" id="nome_pessoa" required="" onkeyup="maiuscula(this)">
                                                 </div>
-                                            </div>
 
-                                            <div class="row">
-                                                <div class="form-group col-md-6">
+                                                <!-- A Classe fica aqui ao lado da Razão Social; quando for Funcionário (05)
+                                                     o js/cliente_fornecedor.js move o bloco para #slot_classe_baixo, ao lado da Fazenda. -->
+                                                <div class="col-md-6" id="slot_classe_topo">
+                                                <div class="form-group" id="grupo_classe_pessoa">
                                                 <label for="classe_pessoa" class="control-label"><span class="required">*</span>Classe de Pessoa</label>
                                                 <select class="form-control" id="classe_pessoa" name="classe_pessoa" required="">
 
