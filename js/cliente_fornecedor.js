@@ -156,11 +156,15 @@ function mostrar_fazenda_filtro() {
 
 function consultar_pessoas() {
     var classes = $('#classe_filtro').val() || [];
-    var fazendas = ($('#div_fazenda_filtro').css('visibility') === 'visible') ? ($('#fazenda_filtro').val() || []) : [];
+    var fazendas = $('#div_fazenda_filtro').is(':visible') ? ($('#fazenda_filtro').val() || []) : [];
+
+    var ativo = [];
+    if ($('#ativo_sim_filtro').is(':checked')) { ativo.push('S'); }
+    if ($('#ativo_nao_filtro').is(':checked')) { ativo.push('N'); }
 
     $('#lista_pessoas').html('<p class="text-center" style="padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Consultando...</p>');
 
-    $.post("ler_lista_pessoas.php", {classe: classes.join(','), fazenda: fazendas.join(',')}, function (html) {
+    $.post("ler_lista_pessoas.php", {classe: classes.join(','), fazenda: fazendas.join(','), ativo: ativo.join(',')}, function (html) {
         $('#lista_pessoas').html(html);
         iniciar_tabela_pessoas();
     });
