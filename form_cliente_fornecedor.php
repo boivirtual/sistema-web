@@ -146,8 +146,55 @@
                                   <input type="button" class="btn btn-primary" aria-label="Left Align" 
                                   value="Incluir Novo"/>
                               </a>
-                        </div> 
+                        </div>
 
+                        <section class="panel">
+                            <div class="panel-body">
+                                <input type="hidden" id="pessoas_consultou" value="<?php echo $pessoas_consultou; ?>">
+
+                                <fieldset class="scheduler-border" id="dados_consulta">
+                                    <legend class="scheduler-border fonte-legend">Dados para Consultar</legend>
+
+                                    <div class="row">
+                                        <div class="form-group col-md-4">
+                                            <label for="classe_filtro" class="control-label">Classe</label>
+                                            <select class="form-control selectpicker filtro_pessoas" multiple id="classe_filtro" name="classe_filtro" title="Todas">
+                                            <?php while ($reg_classe = mysqli_fetch_object($tab_classe)) { ?>
+                                                <option value="<?php echo $reg_classe->tab_codigo_tipo_pessoa; ?>"
+                                                    <?php if (in_array((int)$reg_classe->tab_codigo_tipo_pessoa, array_map('intval', $filtro_classe), true)) { echo "selected"; } ?>>
+                                                    <?php echo $reg_classe->tab_descricao_tipo_pessoa; ?>
+                                                </option>
+                                            <?php } ?>
+                                            </select>
+                                        </div>
+
+                                        <!-- Fazenda: só aparece quando Funcionário (05) está entre as classes escolhidas.
+                                             Usa visibility para o botão Consultar não mudar de lugar. -->
+                                        <div class="form-group col-md-4" id="div_fazenda_filtro" style="visibility:hidden;">
+                                            <label for="fazenda_filtro" class="control-label">Fazenda</label>
+                                            <select class="form-control selectpicker filtro_pessoas" multiple id="fazenda_filtro" name="fazenda_filtro" title="Todas">
+                                            <?php while ($reg_fazenda = mysqli_fetch_object($tab_fazendas)) { ?>
+                                                <option value="<?php echo $reg_fazenda->tbl_pessoa_id; ?>"
+                                                    <?php if (in_array((int)$reg_fazenda->tbl_pessoa_id, array_map('intval', $filtro_fazenda), true)) { echo "selected"; } ?>>
+                                                    <?php echo $reg_fazenda->tbl_pessoa_nome; ?>
+                                                </option>
+                                            <?php } ?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-md-2 col-md-offset-2">
+                                            <label class="control-label">&nbsp;</label>
+                                            <button type="button" class="form-control btn btn-primary pull-right" onclick="consultar_pessoas()">Consultar</button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </section>
+
+                        <div id="lista_pessoas"></div>
+                        <?php mysqli_close($conector); ?>
+
+                        <?php /* A lista agora vem de ler_lista_pessoas.php (botão Consultar).
 		       		<section class="panel">
                         <table class="table table-striped table-advance table-hover"  id="tabela_clientes" width="100%">
 
