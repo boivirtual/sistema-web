@@ -176,6 +176,35 @@ class ResumoDiarioDao{
         return $animais;
     }
 
+    // Funcionários (classe 05) ativos da fazenda (tbl_pessoa_id_fazenda),
+    // sem os excluídos, em ordem de nome: [{ id, nome }]. null se a
+    // consulta falhar.
+    public function funcionariosDaFazenda($fazenda){
+        $fazenda = (int) $fazenda;
+        $st = mysqli_prepare(
+            $this->con,
+            "SELECT tbl_pessoa_id, tbl_pessoa_nome
+               FROM tbl_pessoa
+              WHERE tbl_pessoa_classe = 5
+                AND tbl_pessoa_id_fazenda = ?
+                AND tbl_pessoa_lixeira = 0
+                AND tbl_pessoa_ativo = 'S'
+              ORDER BY tbl_pessoa_nome"
+        );
+        if (!$st) {
+            return null;
+        }
+        mysqli_stmt_bind_param($st, 'i', $fazenda);
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $id, $nome);
+        $lista = [];
+        while (mysqli_stmt_fetch($st)) {
+            $lista[] = ["id" => (int) $id, "nome" => trim((string) $nome)];
+        }
+        mysqli_stmt_close($st);
+        return $lista;
+    }
+
     // Nutrições da fazenda no dia (AAAA-MM-DD; sem as excluídas), por pasto
     // e produto: [{ pasto, produto, quantidade, unidade }], na ordem do
     // pasto e do produto. null se a consulta falhar.
