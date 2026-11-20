@@ -116,7 +116,8 @@ class MapaGadoNascimentoService{
             }
             return trim((string) $alfa) !== '' ? trim($alfa) . '-' . $numero : $numero;
         };
-        $hoje = date('Y-m-d');
+        // aberto pelo Resumo Diário: os registros do dia do resumo
+        $hoje = $this->dataDoResumo($dados) ?? date('Y-m-d');
         $registros = [];
         foreach ((new NascimentoDao($bd))->registrosDoDia($local, $hoje) as $r) {
             if ($r['tipo'] === 'A') {
