@@ -45,7 +45,7 @@
 			die("Erro ao excluir o registro da lixeira"  . "\n" . mysql_error($conector) );
 		}
 		else {
-			echo "<script> alert ('Registro excluido da lixeira!'); location.href='form_cliente_fornecedor.php'</script>";
+			echo "<script> alert ('Registro excluido da lixeira!'); location.href='form_cliente_fornecedor.php?manter=1'</script>";
 		}
         break;
     case 2:   

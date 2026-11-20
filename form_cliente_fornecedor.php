@@ -106,7 +106,14 @@
 
         include "conecta_mysql.inc";
 
-        // Filtro da última consulta (para remontar a lista ao voltar da edição/inclusão)
+        // Filtro da última consulta: só é mantido quando a tela é reaberta de dentro do próprio
+        // programa (Voltar da edição/inclusão, caminho "Pessoas", exclusão), que chamam com ?manter=1.
+        // Aberta pelo menu (ou recarregada sem ?manter), começa do zero: Classe Todas e Ativo Sim.
+        if (!isset($_GET['manter'])) {
+            unset($_SESSION['pessoas_filtro_classe'], $_SESSION['pessoas_filtro_fazenda'],
+                  $_SESSION['pessoas_filtro_ativo'], $_SESSION['pessoas_consultou']);
+        }
+
         $filtro_classe = isset($_SESSION['pessoas_filtro_classe']) ? explode(',', $_SESSION['pessoas_filtro_classe']) : array();
         $filtro_fazenda = isset($_SESSION['pessoas_filtro_fazenda']) ? explode(',', $_SESSION['pessoas_filtro_fazenda']) : array();
         $pessoas_consultou = isset($_SESSION['pessoas_consultou']) ? 1 : 0;
@@ -219,7 +226,7 @@
                         </div>
                         <div class="modal-body"></div>
                         <div class="modal-footer">
-                            <button data-dismiss="modal" class="btn btn-default" type="button" onclick="location.reload();">Fechar</button>
+                            <button data-dismiss="modal" class="btn btn-default" type="button" onclick="consultar_pessoas();">Fechar</button>
                         </div>
                     </div>
                 </div>

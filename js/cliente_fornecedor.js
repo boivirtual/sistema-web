@@ -112,7 +112,7 @@ function enviar_lixeira($id,$opcao){
 }
 
 function recarregar_tela() {
-    location.href= "form_cliente_fornecedor.php";
+    location.href= "form_cliente_fornecedor.php?manter=1";
 }
 
 /** LISTA DE PESSOAS COM FILTROS (form_cliente_fornecedor.php) */
@@ -201,7 +201,7 @@ $(document).ready(function(){
         var voltar = $("#voltar").val();
 
         if (voltar == 0) {
-            location.href='form_cliente_fornecedor.php';
+            location.href='form_cliente_fornecedor.php?manter=1';
         }
         else if (voltar == 1) {
             location.href='form_contas_receber_incluir.php';

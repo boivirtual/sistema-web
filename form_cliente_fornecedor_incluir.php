@@ -110,7 +110,7 @@
     <!--main content start-->
     <section id="main-content">
         <section class="wrapper" style="margin-left: 5px;">
-            <span class="caminho-programa">Cadastro <i class="fa fa-angle-right seta-direita"></i><a class="voltar-menu" href="form_cliente_fornecedor.php"> Pessoas</a> <i class="fa fa-angle-right seta-direita"></i>
+            <span class="caminho-programa">Cadastro <i class="fa fa-angle-right seta-direita"></i><a class="voltar-menu" href="form_cliente_fornecedor.php?manter=1"> Pessoas</a> <i class="fa fa-angle-right seta-direita"></i>
             <span class="titulo">Pessoas Incluir</span></span>
 
             <div class="row">
