@@ -220,6 +220,15 @@ $(document).ready(function(){
         else {
             $('#dados_meus_locais').hide();
         }
+
+        // Fazenda só para Funcionário (classe 05); não é obrigatória.
+        if (classe_pessoa == 05) {
+            $('#div_fazenda_funcionario').show();
+        }
+        else {
+            $('#div_fazenda_funcionario').hide();
+            $('#id_fazenda').val('');
+        }
     });
 
     $("select[name=estado_pessoa]").change(function(){
