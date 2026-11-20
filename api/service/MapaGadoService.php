@@ -1095,6 +1095,22 @@ class MapaGadoService{
         return $campos;
     }
 
+    /**
+     * "data_resumo" (Y-m-d) enviada pelo app quando a tela foi aberta pelo
+     * Resumo Diário (hoje ou ontem). Só vale uma data válida dos últimos
+     * dias e não futura (folga de 1 dia para o fuso); sem ela, null.
+     */
+    private function dataDoResumo($dados){
+        $texto = (string) ($dados['data_resumo'] ?? '');
+        $d = DateTime::createFromFormat('!Y-m-d', $texto);
+        if (!$d || $d->format('Y-m-d') !== $texto) {
+            return null;
+        }
+        $minimo = date('Y-m-d', strtotime('-3 days'));
+        $maximo = date('Y-m-d', strtotime('+1 day'));
+        return ($texto < $minimo || $texto > $maximo) ? null : $texto;
+    }
+
     /** data_hora enviada pelo app (Y-m-d H:i:s); sem ela, agora. */
     private function dataHoraDaAcao($dados){
         $d = DateTime::createFromFormat('Y-m-d H:i:s', (string) ($dados['data_hora'] ?? ''));
