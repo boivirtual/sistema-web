@@ -243,7 +243,8 @@
 				tbl_pessoa_descricao_atv_agricola,
 				tbl_pessoa_descricao_atv_outra
         ) VALUES (
-			'$classe', 
+			'$classe',
+			$id_fazenda_sql,
 	        '$cnpj_cpf',
 	        '$tipo_pessoa',
 	        '$insc_estadual',
