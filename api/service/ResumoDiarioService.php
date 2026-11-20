@@ -151,6 +151,24 @@ class ResumoDiarioService{
     }
 
     /**
+     * Seção 9 do Resumo ("Equipe do Dia"): funcionários (classe 05) ativos
+     * da fazenda, em ordem de nome.
+     *
+     * Devolve { success, funcionarios: [{ id, nome }] }
+     */
+    public function funcionariosDaFazenda($bd, $fazenda){
+        $dao = new ResumoDiarioDao($bd);
+        if (!$dao->conectado()) {
+            return ["success" => false, "message" => "Não foi possível conectar ao banco."];
+        }
+        $lista = $dao->funcionariosDaFazenda($fazenda);
+        if ($lista === null) {
+            return ["success" => false, "message" => "Erro ao consultar os funcionários da fazenda."];
+        }
+        return ["success" => true, "funcionarios" => $lista];
+    }
+
+    /**
      * "Registrar Folga" do modal do dia sem resumo: grava o dia $dia
      * (DateTime) da fazenda como Folga, com o usuário que registrou.
      * Data futura não pode. Se a fazenda já tem registro nesse dia (ex.:
