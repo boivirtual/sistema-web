@@ -184,7 +184,18 @@
                                             </select>
                                         </div>
 
-                                        <div class="form-group col-md-2 col-md-offset-2">
+                                        <div class="form-group col-md-2">
+                                            <label class="control-label">Ativo</label>
+                                            <div class="clearfix"></div>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" id="ativo_sim_filtro" value="S" <?php if (in_array('S', $filtro_ativo)) { echo "checked"; } ?>> Sim
+                                            </label>
+                                            <label class="checkbox-inline">
+                                                <input type="checkbox" id="ativo_nao_filtro" value="N" <?php if (in_array('N', $filtro_ativo)) { echo "checked"; } ?>> Não
+                                            </label>
+                                        </div>
+
+                                        <div class="form-group col-md-2 pull-right">
                                             <label class="control-label">&nbsp;</label>
                                             <button type="button" class="form-control btn btn-primary pull-right" onclick="consultar_pessoas()">Consultar</button>
                                         </div>
