@@ -103,6 +103,26 @@
     <?php
         include "cabecalho.php"; include "limpar_secao_ctp_aceite.php";
         include "opcoes_menu.php"; include "limpar_secao_selecao_matrizes.php"; include "limpar_secao_compra_venda.php"; include "limpar_secao_ctp.php"; include "limpar_secao_ctr.php"; include "limpar_secao_pesagem.php"; include "limpar_secao_movimentacao.php"; include "limpar_secao_nutricao.php"; include "limpar_secao_nascimento.php";
+
+        include "conecta_mysql.inc";
+
+        // Filtro da última consulta (para remontar a lista ao voltar da edição/inclusão)
+        $filtro_classe = isset($_SESSION['pessoas_filtro_classe']) ? explode(',', $_SESSION['pessoas_filtro_classe']) : array();
+        $filtro_fazenda = isset($_SESSION['pessoas_filtro_fazenda']) ? explode(',', $_SESSION['pessoas_filtro_fazenda']) : array();
+        $pessoas_consultou = isset($_SESSION['pessoas_consultou']) ? 1 : 0;
+
+        if ($cnpj_cliente==97174041604 || $cnpj_cliente==71746307668){
+            $tab_classe = mysqli_query($conector, "SELECT tab_codigo_tipo_pessoa, tab_descricao_tipo_pessoa FROM tabela_tipo_pessoas
+                                                    WHERE tab_registro_lixeira_tipo_pessoa=0 ORDER BY tab_codigo_tipo_pessoa");
+        }
+        else {
+            $tab_classe = mysqli_query($conector, "SELECT tab_codigo_tipo_pessoa, tab_descricao_tipo_pessoa FROM tabela_tipo_pessoas
+                                                    WHERE tab_codigo_tipo_pessoa!=4 AND tab_registro_lixeira_tipo_pessoa=0 ORDER BY tab_codigo_tipo_pessoa");
+        }
+
+        $tab_fazendas = mysqli_query($conector, "SELECT tbl_pessoa_id, tbl_pessoa_nome FROM tbl_pessoa
+                                                  WHERE tbl_pessoa_classe=4 AND tbl_pessoa_lixeira=0
+                                                  ORDER BY tbl_pessoa_id");
     ?>
     <!--sidebar end-->
 
