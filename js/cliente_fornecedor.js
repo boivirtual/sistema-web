@@ -249,6 +249,8 @@ $(document).ready(function(){
             $('#div_fazenda_funcionario').hide();
             $('#id_fazenda').val('');
         }
+
+        posicionar_classe_inclusao();
     });
 
     $("select[name=estado_pessoa]").change(function(){
