@@ -16,7 +16,27 @@ window.addEventListener("load", function(event) {
     else {
         $('#dados_meus_locais').hide();
     }
-});        
+
+    posicionar_classe_inclusao();
+});
+
+// Só na inclusão de Pessoas: a Classe fica ao lado da Razão Social; se for
+// Funcionário (05) ela desce para a linha de baixo, ao lado da Fazenda.
+// Mover o próprio bloco mantém o valor selecionado e os eventos do select.
+function posicionar_classe_inclusao() {
+    if (!$('#linha_classe_fazenda').length) {
+        return;
+    }
+
+    if ($('#classe_pessoa').val() == 05) {
+        $('#grupo_classe_pessoa').appendTo('#slot_classe_baixo');
+        $('#linha_classe_fazenda').show();
+    }
+    else {
+        $('#grupo_classe_pessoa').appendTo('#slot_classe_topo');
+        $('#linha_classe_fazenda').hide();
+    }
+}
 
 function ler_busca() {
     var digitado = $("#nome_pesquisa").val();
