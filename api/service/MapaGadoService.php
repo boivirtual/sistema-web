@@ -720,7 +720,8 @@ class MapaGadoService{
         if ($bd === '' || $local <= 0) {
             return ["success" => false, "message" => "Informe bd e fazenda."];
         }
-        $hoje = date('Y-m-d');
+        // aberto pelo Resumo Diário: os registros do dia do resumo
+        $hoje = $this->dataDoResumo($dados) ?? date('Y-m-d');
         $registros = [];
         foreach ((new MorteDao($bd))->registrosDoDia($local, $hoje) as $r) {
             if ($r['numerico'] !== null) {
