@@ -110,6 +110,8 @@
         $filtro_classe = isset($_SESSION['pessoas_filtro_classe']) ? explode(',', $_SESSION['pessoas_filtro_classe']) : array();
         $filtro_fazenda = isset($_SESSION['pessoas_filtro_fazenda']) ? explode(',', $_SESSION['pessoas_filtro_fazenda']) : array();
         $pessoas_consultou = isset($_SESSION['pessoas_consultou']) ? 1 : 0;
+        // Ativo: "Sim" já entra marcado na primeira vez
+        $filtro_ativo = isset($_SESSION['pessoas_filtro_ativo']) ? explode(',', $_SESSION['pessoas_filtro_ativo']) : array('S');
 
         if ($cnpj_cliente==97174041604 || $cnpj_cliente==71746307668){
             $tab_classe = mysqli_query($conector, "SELECT tab_codigo_tipo_pessoa, tab_descricao_tipo_pessoa FROM tabela_tipo_pessoas
