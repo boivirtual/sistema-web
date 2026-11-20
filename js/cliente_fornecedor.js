@@ -115,7 +115,8 @@ function recarregar_tela() {
     location.href= "form_cliente_fornecedor.php";
 }
 
-$(document).ready(function(){
+/** LISTA DE PESSOAS COM FILTROS (form_cliente_fornecedor.php) */
+function iniciar_tabela_pessoas() {
     $('#tabela_clientes').DataTable({
         "paging":   false,
         "ordering": true,
@@ -133,6 +134,64 @@ $(document).ready(function(){
             $("table.dataTable").css("width", "100%");
         },
     });
+
+    $('#lista_pessoas [data-toggle="tooltip"]').tooltip();
+}
+
+// Fazenda só aparece quando Funcionário (05) está entre as classes escolhidas.
+function mostrar_fazenda_filtro() {
+    var classes = $('#classe_filtro').val() || [];
+    var tem_funcionario = classes.some(function (c) { return parseInt(c, 10) === 5; });
+
+    if (tem_funcionario) {
+        $('#div_fazenda_filtro').css('visibility', 'visible');
+    }
+    else {
+        $('#div_fazenda_filtro').css('visibility', 'hidden');
+        if (($('#fazenda_filtro').val() || []).length) {
+            $('#fazenda_filtro').selectpicker('deselectAll');
+        }
+    }
+}
+
+function consultar_pessoas() {
+    var classes = $('#classe_filtro').val() || [];
+    var fazendas = ($('#div_fazenda_filtro').css('visibility') === 'visible') ? ($('#fazenda_filtro').val() || []) : [];
+
+    $('#lista_pessoas').html('<p class="text-center" style="padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Consultando...</p>');
+
+    $.post("ler_lista_pessoas.php", {classe: classes.join(','), fazenda: fazendas.join(',')}, function (html) {
+        $('#lista_pessoas').html(html);
+        iniciar_tabela_pessoas();
+    });
+}
+
+$(document).ready(function(){
+    if ($('#classe_filtro').length) {
+        // Mesmo comportamento dos filtros do Cadastro de Animais: só "Limpar Seleção",
+        // visível apenas quando há algo selecionado; sem nada = "Todas" (title do select).
+        $('.filtro_pessoas').each(function () {
+            var $select = $(this);
+            $select.selectpicker({ actionsBox: true, deselectAllText: 'Limpar Seleção' });
+
+            var $actionsBox = $select.closest('.bootstrap-select').find('.bs-actionsbox');
+            $actionsBox.find('.bs-select-all').remove();
+
+            var atualizar = function () {
+                if (($select.val() || []).length) { $actionsBox.show(); } else { $actionsBox.hide(); }
+            };
+            atualizar();
+            $select.on('changed.bs.select', atualizar);
+        });
+
+        $('#classe_filtro').on('changed.bs.select', mostrar_fazenda_filtro);
+        mostrar_fazenda_filtro();
+
+        // Voltando da edição/inclusão: refaz a última consulta.
+        if ($('#pessoas_consultou').val() == 1) {
+            consultar_pessoas();
+        }
+    }
 
     $(".fecha_editar_dados").click(function(){
         var voltar = $("#voltar").val();
