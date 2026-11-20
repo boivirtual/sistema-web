@@ -103,7 +103,7 @@
         // Fazendas (classe 04 - Meus Locais) para o select "Fazenda" dos funcionários (classe 05).
         $tab_fazendas = mysqli_query($conector, "SELECT tbl_pessoa_id, tbl_pessoa_nome FROM tbl_pessoa
                                                   WHERE tbl_pessoa_classe=4 AND tbl_pessoa_lixeira=0
-                                                  ORDER BY tbl_pessoa_nome");
+                                                  ORDER BY tbl_pessoa_id");
     ?>
     <!--sidebar end-->
 
