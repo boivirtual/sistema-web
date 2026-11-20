@@ -151,8 +151,16 @@
             $tab_classe = mysqli_query($conector, "select * from tabela_tipo_pessoas where tab_registro_lixeira_tipo_pessoa=0"); 
         }
         else {
-            $tab_classe = mysqli_query($conector, "select * from tabela_tipo_pessoas where tab_codigo_tipo_pessoa!=4 and tab_registro_lixeira_tipo_pessoa=0"); 
+            $tab_classe = mysqli_query($conector, "select * from tabela_tipo_pessoas where tab_codigo_tipo_pessoa!=4 and tab_registro_lixeira_tipo_pessoa=0");
         }
+
+        // Fazendas (classe 04 - Meus Locais) para o select "Fazenda" dos funcionários (classe 05).
+        // A fazenda já gravada no funcionário entra na lista mesmo se estiver na lixeira.
+        $id_fazenda_sql = mysqli_real_escape_string($conector, (string)$id_fazenda);
+        $tab_fazendas = mysqli_query($conector, "SELECT tbl_pessoa_id, tbl_pessoa_nome FROM tbl_pessoa
+                                                  WHERE tbl_pessoa_classe=4
+                                                    AND (tbl_pessoa_lixeira=0 OR tbl_pessoa_id='$id_fazenda_sql')
+                                                  ORDER BY tbl_pessoa_nome");
 
     ?>
     <!--sidebar end-->
