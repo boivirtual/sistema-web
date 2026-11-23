@@ -151,6 +151,136 @@ class ResumoDiarioService{
     }
 
     /**
+     * Finalizar da Seção 9: grava o Resumo (tipo 'R') da fazenda no dia
+     * $dia (DateTime) com os dados das 9 seções ($resumo, ver
+     * ResumoDiarioDao::CAMPOS_RESUMO). Listas e seleções múltiplas chegam
+     * como listas e são guardadas em JSON.
+     *
+     * Data futura não pode. Dia já com Resumo (ex.: o app reenviou com a
+     * internet caindo): não grava de novo e responde sucesso com
+     * "ja_registrado": true. Dia de Folga: recusa. Resumo do dia na lixeira:
+     * reaproveita o mesmo registro.
+     *
+     * Devolve { success, message?, ja_registrado? }
+     */
+    public function gravarResumo($bd, $fazenda, $usuario, DateTime $dia, array $resumo){
+        // horário de Brasília para o "hoje" e o incluido_em (igual à Folga)
+        date_default_timezone_set('America/Sao_Paulo');
+        if ($dia > new DateTime('today')) {
+            return ["success" => false, "message" => "Não é possível gravar o resumo de uma data futura."];
+        }
+
+        $dao = new ResumoDiarioDao($bd);
+        if (!$dao->conectado()) {
+            return ["success" => false, "message" => "Não foi possível conectar ao banco."];
+        }
+
+        $data = $dia->format('Y-m-d');
+        $existente = $dao->registroDoDia($fazenda, $data);
+        if ($existente === false) {
+            return ["success" => false, "message" => "Erro ao consultar os resumos."];
+        }
+        $idLixeira = null;
+        if ($existente !== null) {
+            if ($existente['lixeira'] === 0) {
+                if ($existente['tipo'] === ResumoDiario::TIPO_FOLGA) {
+                    return ["success" => false, "message" =>
+                        "O dia " . $dia->format('d/m/Y') . " já está registrado como Folga desta fazenda."];
+                }
+                return ["success" => true, "ja_registrado" => true];
+            }
+            $idLixeira = $existente['id'];
+        }
+
+        $r = $dao->gravarResumo(
+            $fazenda,
+            $data,
+            $usuario,
+            date('Y-m-d H:i:s'),
+            $this->camposDoResumo($resumo),
+            $idLixeira
+        );
+        if ($r === 'erro') {
+            return ["success" => false, "message" => "Não foi possível gravar o Resumo Diário."];
+        }
+        return ["success" => true, "ja_registrado" => $r === 'duplicado'];
+    }
+
+    /**
+     * Converte o que o app mandou em valores das colunas: S/N, números,
+     * horas (HH:MM), textos e listas (JSON). O que não vier ou vier fora do
+     * formato fica NULL.
+     */
+    private function camposDoResumo(array $r){
+        $sn = function ($v) {
+            if ($v === true || $v === 'S') return 'S';
+            if ($v === false || $v === 'N') return 'N';
+            return null;
+        };
+        $inteiro = function ($v) {
+            return is_numeric($v) ? (int) $v : null;
+        };
+        $texto = function ($v, $max = 5000) {
+            $v = trim((string) ($v ?? ''));
+            return $v === '' ? null : mb_substr($v, 0, $max);
+        };
+        $lista = function ($v) {
+            return (is_array($v) && count($v) > 0)
+                ? json_encode($v, JSON_UNESCAPED_UNICODE)
+                : null;
+        };
+        $hora = function ($v) {
+            $v = (string) ($v ?? '');
+            return preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $v) ? $v . ':00' : null;
+        };
+        $gado = (string) ($r['conferiu_gado'] ?? '');
+
+        return [
+            // Seção 1
+            'chuva_mm'    => is_numeric($r['chuva_mm'] ?? null) ? (float) $r['chuva_mm'] : null,
+            'mudou_pasto' => $sn($r['mudou_pasto'] ?? null),
+            'nutricao'    => $sn($r['nutricao'] ?? null),
+            'nascimentos' => $inteiro($r['nascimentos'] ?? null),
+            'abortos'     => $inteiro($r['abortos'] ?? null),
+            'mortes'      => $inteiro($r['mortes'] ?? null),
+            'pesados'     => $inteiro($r['pesados'] ?? null),
+            // Seção 2
+            'confirmou_nao_registradas' => $sn($r['confirmou_nao_registradas'] ?? null),
+            // Seção 3
+            'conferiu_gado'       => in_array($gado, ['T', 'P', 'N'], true) ? $gado : null,
+            'pastos_conferidos'   => $lista($r['pastos_conferidos'] ?? null),
+            'animais_esperados'   => $inteiro($r['animais_esperados'] ?? null),
+            'animais_encontrados' => $inteiro($r['animais_encontrados'] ?? null),
+            'pastos_diferenca'    => $lista($r['pastos_diferenca'] ?? null),
+            'vacas_prenhas'       => $inteiro($r['vacas_prenhas'] ?? null),
+            'conferiu_prenhas'    => $sn($r['conferiu_prenhas'] ?? null),
+            'obs_rebanho'         => $texto($r['obs_rebanho'] ?? null),
+            // Seção 4
+            'curral_atividades' => $lista($r['curral_atividades'] ?? null),
+            'remedios'          => $lista($r['remedios'] ?? null),
+            'curral_outras'     => $texto($r['curral_outras'] ?? null),
+            // Seções 5 a 8
+            'nenhuma_mistura'       => $sn($r['nenhuma_mistura'] ?? null),
+            'misturas'              => $lista($r['misturas'] ?? null),
+            'nenhum_servico'        => $sn($r['nenhum_servico'] ?? null),
+            'servicos'              => $lista($r['servicos'] ?? null),
+            'nenhuma_solicitacao'   => $sn($r['nenhuma_solicitacao'] ?? null),
+            'pedidos'               => $lista($r['pedidos'] ?? null),
+            'nenhuma_chegada_saida' => $sn($r['nenhuma_chegada_saida'] ?? null),
+            'chegadas_saidas'       => $lista($r['chegadas_saidas'] ?? null),
+            // Seção 9
+            'trator_inicio'         => $hora($r['trator_inicio'] ?? null),
+            'trator_termino'        => $hora($r['trator_termino'] ?? null),
+            'trator_motivos'        => $lista($r['trator_motivos'] ?? null),
+            'trator_outros_motivos' => $texto($r['trator_outros_motivos'] ?? null, 255),
+            'bomba_inicio'          => $hora($r['bomba_inicio'] ?? null),
+            'bomba_termino'         => $hora($r['bomba_termino'] ?? null),
+            'equipe'                => $lista($r['equipe'] ?? null),
+            'obs_gerais'            => $texto($r['obs_gerais'] ?? null),
+        ];
+    }
+
+    /**
      * Seção 9 do Resumo ("Equipe do Dia"): funcionários (classe 05) ativos
      * da fazenda, em ordem de nome.
      *
