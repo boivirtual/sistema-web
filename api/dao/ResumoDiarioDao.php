@@ -364,7 +364,7 @@ class ResumoDiarioDao{
     public function incluir(ResumoDiario $r){
         $st = mysqli_prepare(
             $this->con,
-            "INSERT INTO tbl_resumo_diario (tbl_resumo_diario_fazenda, tbl_resumo_diario_usuario,
+            "INSERT INTO tbl_resumo_diario (tbl_resumo_diario_fazenda, tbl_resumo_diario_incluido_por,
                 tbl_resumo_diario_data, tbl_resumo_diario_tipo, tbl_resumo_diario_incluido_em)
              VALUES (?, ?, ?, ?, ?)"
         );
