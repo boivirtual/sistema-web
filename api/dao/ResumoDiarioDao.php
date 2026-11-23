@@ -51,7 +51,8 @@ class ResumoDiarioDao{
     public function contarNoDia($fazenda, $dia){
         return $this->contar(
             "SELECT COUNT(tbl_resumo_diario_id) FROM tbl_resumo_diario
-              WHERE tbl_resumo_diario_fazenda = ? AND tbl_resumo_diario_data = ?",
+              WHERE tbl_resumo_diario_fazenda = ? AND tbl_resumo_diario_data = ?
+                AND tbl_resumo_diario_lixeira = 0",
             $fazenda,
             $dia
         );
@@ -63,7 +64,8 @@ class ResumoDiarioDao{
         $st = mysqli_prepare(
             $this->con,
             "SELECT COUNT(tbl_resumo_diario_id) FROM tbl_resumo_diario
-              WHERE tbl_resumo_diario_data <= ?"
+              WHERE tbl_resumo_diario_data <= ?
+                AND tbl_resumo_diario_lixeira = 0"
         );
         if (!$st) {
             return null;
@@ -84,6 +86,7 @@ class ResumoDiarioDao{
             $this->con,
             "SELECT tbl_resumo_diario_tipo FROM tbl_resumo_diario
               WHERE tbl_resumo_diario_fazenda = ? AND tbl_resumo_diario_data = ?
+                AND tbl_resumo_diario_lixeira = 0
               LIMIT 1"
         );
         if (!$st) {
@@ -356,6 +359,104 @@ class ResumoDiarioDao{
         mysqli_stmt_fetch($st);
         mysqli_stmt_close($st);
         return (int) $total;
+    }
+
+    // Campos do Resumo (Finalizar da Seção 9) que o serviço pode gravar,
+    // com o tipo do bind ('s' texto/data/hora, 'i' inteiro, 'd' decimal).
+    const CAMPOS_RESUMO = [
+        'chuva_mm' => 'd', 'mudou_pasto' => 's', 'nutricao' => 's',
+        'nascimentos' => 'i', 'abortos' => 'i', 'mortes' => 'i', 'pesados' => 'i',
+        'confirmou_nao_registradas' => 's',
+        'conferiu_gado' => 's', 'pastos_conferidos' => 's',
+        'animais_esperados' => 'i', 'animais_encontrados' => 'i',
+        'pastos_diferenca' => 's', 'vacas_prenhas' => 'i',
+        'conferiu_prenhas' => 's', 'obs_rebanho' => 's',
+        'curral_atividades' => 's', 'remedios' => 's', 'curral_outras' => 's',
+        'nenhuma_mistura' => 's', 'misturas' => 's',
+        'nenhum_servico' => 's', 'servicos' => 's',
+        'nenhuma_solicitacao' => 's', 'pedidos' => 's',
+        'nenhuma_chegada_saida' => 's', 'chegadas_saidas' => 's',
+        'trator_inicio' => 's', 'trator_termino' => 's', 'trator_motivos' => 's',
+        'trator_outros_motivos' => 's', 'bomba_inicio' => 's', 'bomba_termino' => 's',
+        'equipe' => 's', 'obs_gerais' => 's',
+    ];
+
+    // Registro da fazenda no dia (AAAA-MM-DD), mesmo na lixeira:
+    // ['id', 'tipo', 'lixeira'], null se não há, false se a consulta falhar.
+    public function registroDoDia($fazenda, $dia){
+        $fazenda = (int) $fazenda;
+        $st = mysqli_prepare(
+            $this->con,
+            "SELECT tbl_resumo_diario_id, tbl_resumo_diario_tipo, tbl_resumo_diario_lixeira
+               FROM tbl_resumo_diario
+              WHERE tbl_resumo_diario_fazenda = ? AND tbl_resumo_diario_data = ?
+              LIMIT 1"
+        );
+        if (!$st) {
+            return false;
+        }
+        mysqli_stmt_bind_param($st, 'is', $fazenda, $dia);
+        mysqli_stmt_execute($st);
+        mysqli_stmt_bind_result($st, $id, $tipo, $lixeira);
+        $achou = mysqli_stmt_fetch($st);
+        mysqli_stmt_close($st);
+        return $achou
+            ? ['id' => (int) $id, 'tipo' => (string) $tipo, 'lixeira' => (int) $lixeira]
+            : null;
+    }
+
+    // Grava o Resumo (tipo 'R') da fazenda no dia com os $campos das seções
+    // (chaves de CAMPOS_RESUMO; as outras são ignoradas). $id = registro na
+    // lixeira desse mesmo dia: é reaproveitado (o índice único fazenda +
+    // data não deixa criar outro) — volta da lixeira com os dados novos.
+    // Devolve 'ok', 'duplicado' (já existe registro no dia) ou 'erro'.
+    public function gravarResumo($fazenda, $dia, $usuario, $agora, array $campos, $id = null){
+        $nomes = [];
+        $tipos = '';
+        $valores = [];
+        foreach (self::CAMPOS_RESUMO as $campo => $tipo) {
+            $nomes[] = 'tbl_resumo_diario_' . $campo;
+            $tipos .= $tipo;
+            $valores[] = $campos[$campo] ?? null;
+        }
+        $usuario = mb_substr((string) $usuario, 0, 30);
+
+        if ($id === null) {
+            $sql = "INSERT INTO tbl_resumo_diario (tbl_resumo_diario_fazenda,
+                        tbl_resumo_diario_data, tbl_resumo_diario_tipo, "
+                . implode(', ', $nomes) . ",
+                        tbl_resumo_diario_incluido_em, tbl_resumo_diario_incluido_por,
+                        tbl_resumo_diario_lixeira)
+                    VALUES (?, ?, 'R', " . implode(', ', array_fill(0, count($nomes), '?')) . ", ?, ?, 0)";
+            $tipos = 'is' . $tipos . 'ss';
+            $valores = array_merge([(int) $fazenda, $dia], $valores, [$agora, $usuario]);
+        } else {
+            $sql = "UPDATE tbl_resumo_diario SET tbl_resumo_diario_tipo = 'R', "
+                . implode(' = ?, ', $nomes) . " = ?,
+                        tbl_resumo_diario_incluido_em = ?, tbl_resumo_diario_incluido_por = ?,
+                        tbl_resumo_diario_alterado_em = NULL, tbl_resumo_diario_alterado_por = NULL,
+                        tbl_resumo_diario_lixeira = 0, tbl_resumo_diario_lixeira_em = NULL,
+                        tbl_resumo_diario_lixeira_por = NULL
+                    WHERE tbl_resumo_diario_id = ? AND tbl_resumo_diario_lixeira = 1";
+            $tipos .= 'ssi';
+            $valores = array_merge($valores, [$agora, $usuario, (int) $id]);
+        }
+
+        $st = mysqli_prepare($this->con, $sql);
+        if (!$st) {
+            return 'erro';
+        }
+        mysqli_stmt_bind_param($st, $tipos, ...$valores);
+        $ok = mysqli_stmt_execute($st);
+        $codigoErro = mysqli_stmt_errno($st);
+        $linhas = mysqli_stmt_affected_rows($st);
+        mysqli_stmt_close($st);
+        if (!$ok) {
+            // 1062 = Duplicate entry
+            return $codigoErro === 1062 ? 'duplicado' : 'erro';
+        }
+        // reaproveitar: outro gravou antes (já não está na lixeira)
+        return ($id !== null && $linhas < 1) ? 'duplicado' : 'ok';
     }
 
     // Grava um registro (Resumo ou Folga). Devolve 'ok', 'duplicado' (a
