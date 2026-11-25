@@ -4231,9 +4231,7 @@ $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 $writer->save('php://output');
 
 // Remove o arquivo temporário da barra de progresso
-if ($token_progresso != '') {
-    @unlink(sys_get_temp_dir() . '/boivirtual_progresso_' . $token_progresso . '.json');
-}
+remover_progresso();
 
 mysqli_close($conector);
 exit;
