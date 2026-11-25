@@ -4117,6 +4117,10 @@ function listar($conector, $animal, $peso_nasc_edi, $peso_desmama_edi, $peso_ult
 <?php 
   $javascript_file_name = 'relatorio_historico_animais.js';
   require 'rodape.php';
+
+  // Listagem pronta: remove o arquivo da barra de progresso e envia a página
+  remover_progresso();
+  ob_end_flush();
 ?>
 
 
