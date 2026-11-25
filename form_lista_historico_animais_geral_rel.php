@@ -1601,7 +1601,7 @@ $_SESSION['categoria_historico_animais']=$categoria_filtro;
     while ($reg_animal = mysqli_fetch_object($tbl_animais)){
         $animais_processados++;
         if ($animais_processados % 200 == 0) {
-            gravar_progresso(15 + 60 * $animais_processados / max($num_rows_animais, 1), 'Processando animais (' . $animais_processados . ' de ' . $num_rows_animais . ')...');
+            gravar_progresso(15 + 55 * $animais_processados / max($num_rows_animais, 1), 'Processando animais (' . $animais_processados . ' de ' . $num_rows_animais . ')...');
         }
 
         $codigo_fazenda = $reg_animal->tbl_animal_codigo_fazenda;
@@ -2403,12 +2403,15 @@ $_SESSION['categoria_historico_animais']=$categoria_filtro;
 
     $total_animais_tela = count($animais);
     $animais_tela = 0;
-    gravar_progresso(75, 'Montando a listagem...');
+    gravar_progresso(70, 'Montando a listagem...');
 
     foreach ($animais as $animal) {
         $animais_tela++;
         if ($animais_tela % 200 == 0) {
-            gravar_progresso(75 + 20 * $animais_tela / max($total_animais_tela, 1), 'Montando a listagem (' . $animais_tela . ' de ' . $total_animais_tela . ')...');
+            gravar_progresso(70 + 10 * $animais_tela / max($total_animais_tela, 1), 'Montando a listagem (' . $animais_tela . ' de ' . $total_animais_tela . ')...');
+
+            // Avança a barra da página nova enquanto o navegador desenha estas linhas (ver barra_tela no início do <body>)
+            echo '<script>barra_tela(' . (int) (80 + 20 * $animais_tela / max($total_animais_tela, 1)) . ', "Exibindo na tela (' . $animais_tela . ' de ' . $total_animais_tela . ')...");</script>';
         }
 
         if ($filtro_reproducao == 'S') {
