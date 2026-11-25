@@ -26,7 +26,7 @@ function sair_busca() {
     $("#tela_busca").hide();
 }
 
-$(document).ready(function(){
+function iniciar_tabela_produtos() {
     $('#tabela_produtos').DataTable({
         "paging":   false,
         "ordering": true,
