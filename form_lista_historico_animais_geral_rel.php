@@ -731,6 +731,30 @@ $_SESSION['categoria_historico_animais']=$categoria_filtro;
 </head>
 
 <body>
+    <!-- Barra de progresso enquanto o navegador desenha a listagem (continua a barra da tela de filtros).
+         JS puro: o jQuery só é carregado no rodapé. Avança por scripts emitidos junto com as linhas da tabela. -->
+    <div id="barra_tela_fundo" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 2000; background: rgba(0,0,0,0.5);">
+        <div style="width: 580px; max-width: 90%; margin: 120px auto 0; background: #fff; border-radius: 6px; padding: 15px; box-shadow: 0 3px 9px rgba(0,0,0,0.5);">
+            <p id="barra_tela_etapa" style="margin-bottom: 8px;">Exibindo na tela...</p>
+            <div class="progress" style="margin-bottom: 0;">
+                <div id="barra_tela" class="progress-bar progress-bar-striped active" role="progressbar" style="width: 80%; min-width: 2em;">80%</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function barra_tela(percentual, etapa) {
+            var barra = document.getElementById('barra_tela');
+            barra.style.width = percentual + '%';
+            barra.innerHTML = percentual + '%';
+            document.getElementById('barra_tela_etapa').innerHTML = etapa;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var fundo = document.getElementById('barra_tela_fundo');
+            fundo.parentNode.removeChild(fundo);
+        });
+    </script>
+
     <section id="container" class="">
         <?php
             include "cabecalho.php"; 
