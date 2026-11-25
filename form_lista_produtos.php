@@ -88,7 +88,7 @@
                           
             echo '<tbody>';
           
-                $sql = "SELECT * from tbl_produto
+                $sql = "SELECT * from tbl_produto $where_produtos
                              ORDER BY tbl_produto_ativo DESC, tbl_produto_descricao ASC";
                 $rs = mysqli_query($conector, $sql); 
 
