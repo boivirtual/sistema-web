@@ -1,7 +1,9 @@
 <?php
-// Devolve o andamento da geração de um Excel (gravado por gravar_progresso() no script do relatório).
-// Não abre sessão de propósito: a sessão fica travada pelo script que está gerando o Excel,
+// Devolve o andamento de um relatório (gravado por gravar_progresso() no script do relatório).
+// Não abre sessão de propósito: a sessão fica travada pelo script que está gerando o relatório,
 // e esta consulta precisa responder enquanto ele ainda está rodando.
+
+include_once "funcao_progresso_relatorio.php";
 
 header('Content-Type: application/json');
 header('Cache-Control: no-cache, must-revalidate');
@@ -13,7 +15,7 @@ if (!ctype_digit($token)) {
     exit;
 }
 
-$arquivo = sys_get_temp_dir() . '/boivirtual_progresso_' . $token . '.json';
+$arquivo = arquivo_progresso($token);
 
 if (is_file($arquivo)) {
     echo file_get_contents($arquivo);
