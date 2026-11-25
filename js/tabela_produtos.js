@@ -1,7 +1,10 @@
 /**TABELA DE ANIMAIS*/
 window.addEventListener("load", function(event) {
-    consultar();
-});        
+    // Cadastro de Mistura para Nutrição: já abre consultando com o filtro padrão (Nutrição + Ativo Sim).
+    if ($('#modalidade_filtro').length) {
+        consultar();
+    }
+});
 
 function ler_busca() {
     var digitado = $("#nome_pesquisa").val();
