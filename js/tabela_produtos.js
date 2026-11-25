@@ -115,9 +115,32 @@ function atualiza_cor_descricao_padrao() {
 }
 
 function consultar() {
-	$.post("form_lista_produtos.php", {}, function(valor){
-        $("div[id=lista_produtos]").html(valor); 
+    var modalidades = $('#modalidade_filtro').val() || [];
+
+    var ativo = [];
+    if ($('#ativo_sim_filtro').is(':checked')) { ativo.push('S'); }
+    if ($('#ativo_nao_filtro').is(':checked')) { ativo.push('N'); }
+
+    // Com a lista na tela, o Consultar some; volta quando algum filtro for alterado.
+    $('#btn_consultar_produtos').hide();
+    $('#lista_produtos').html('<p class="text-center" style="padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Consultando...</p>');
+
+    $.post("form_lista_produtos.php", {modalidade: modalidades.join(','), ativo: ativo.join(',')}, function(valor){
+        $("div[id=lista_produtos]").html(valor);
+        iniciar_tabela_produtos();
+    }).fail(function () {
+        $('#lista_produtos').html('');
+        $('#btn_consultar_produtos').show();
     });
+}
+
+// Filtro alterado: descarta a lista da consulta anterior e mostra o Consultar de novo.
+function filtro_produtos_alterado() {
+    if ($.fn.DataTable.isDataTable('#tabela_produtos')) {
+        $('#tabela_produtos').DataTable().destroy();
+    }
+    $('#lista_produtos').html('');
+    $('#btn_consultar_produtos').show();
 }
 
 function incluir_novo() {
