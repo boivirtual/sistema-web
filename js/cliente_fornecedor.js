@@ -205,6 +205,9 @@ $(document).ready(function(){
         $('#classe_filtro').on('changed.bs.select', mostrar_fazenda_filtro);
         mostrar_fazenda_filtro();
 
+        $('.filtro_pessoas').on('changed.bs.select', filtro_pessoas_alterado);
+        $('#ativo_sim_filtro, #ativo_nao_filtro').on('change', filtro_pessoas_alterado);
+
         // Voltando da edição/inclusão: refaz a última consulta.
         if ($('#pessoas_consultou').val() == 1) {
             consultar_pessoas();
