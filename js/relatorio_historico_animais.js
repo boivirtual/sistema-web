@@ -2053,7 +2053,7 @@ function listar_historico_animais(opcao){
             '&origem_relatorio=' + origem_relatorio;
         }
         else {
-            location.href='form_lista_historico_animais_geral_rel.php?descricao_filtro=' + descricao_filtro + 
+            location.href='form_lista_historico_animais_geral_rel.php?download_token=' + iniciar_aguarde_relatorio(true) + '&descricao_filtro=' + descricao_filtro + 
             '&tipo_rel=' + tipo_rel + 
             '&local=' + array_local + 
             '&origem=' + array_origem + 
@@ -2103,11 +2103,11 @@ function listar_historico_animais(opcao){
     }
     else {
         if (tipo_rel=='I') {
-            location.href='rel_lista_historico_animais_individual_excel.php?download_token=' + iniciar_aguarde_excel() + '&codigo_alfa_numerico=' + codigo_alfa_numerico;
+            location.href='rel_lista_historico_animais_individual_excel.php?download_token=' + iniciar_aguarde_relatorio() + '&codigo_alfa_numerico=' + codigo_alfa_numerico;
             limpar_filtros();
         }
         else {
-            location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_excel(true) + '&descricao_filtro=' + descricao_filtro + 
+            location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_relatorio(true) + '&descricao_filtro=' + descricao_filtro + 
             '&tipo_rel=' + tipo_rel + 
             '&local=' + array_local + 
             '&origem=' + array_origem + 
@@ -2164,7 +2164,7 @@ function lista_historico_animais_individual_excel() {
 
     $("#aguardar").modal();
 
-    location.href='rel_lista_historico_animais_individual_excel.php?download_token=' + iniciar_aguarde_excel() + '&codigo_alfa_numerico=' + codigo_alfa_numerico;
+    location.href='rel_lista_historico_animais_individual_excel.php?download_token=' + iniciar_aguarde_relatorio() + '&codigo_alfa_numerico=' + codigo_alfa_numerico;
     
 }
 
@@ -2221,7 +2221,7 @@ function lista_historico_animais_excel(){
 
     $("#aguardar").modal();
 
-    location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_excel(true) + '&descricao_filtro=' + descricao_filtro + 
+    location.href='rel_lista_historico_animais_geral_excel.php?download_token=' + iniciar_aguarde_relatorio(true) + '&descricao_filtro=' + descricao_filtro + 
             '&tipo_rel=' + tipo_rel + 
             '&local=' + array_local + 
             '&origem=' + array_origem + 
@@ -2287,18 +2287,30 @@ function limpar_tela(){
     $('#aguardar').modal('hide');
 }
 
-// Mantém o "Aguarde" aberto até o Excel ficar pronto.
-// O PHP devolve o cookie download_token=<token> junto com o arquivo; quando ele aparece, fecha o aguarde.
-// Com com_progresso=true, troca a bolinha do aguarde por uma barra de progresso alimentada por ler_progresso_excel.php.
-var timer_aguarde_excel = null;
+// Mantém o "Aguarde" aberto até o relatório ficar pronto.
+// Excel: o PHP devolve o cookie download_token=<token> junto com o arquivo; quando ele aparece, fecha o aguarde.
+// Listagem na tela: a página nova substitui esta quando fica pronta (o PHP segura a saída até o fim).
+// Com com_progresso=true, troca a bolinha do aguarde por uma barra de progresso alimentada por ler_progresso_relatorio.php.
+var timer_aguarde_relatorio = null;
 var html_original_aguardar = null;
 
-function iniciar_aguarde_excel(com_progresso) {
+// Se o usuário voltar a esta tela pelo botão "voltar" do navegador, não deixa o aguarde aberto
+window.addEventListener('pageshow', function(evento) {
+    if (evento.persisted) {
+        clearInterval(timer_aguarde_relatorio);
+        if (html_original_aguardar !== null) {
+            $("#aguardar .modal-body").html(html_original_aguardar);
+        }
+        limpar_tela();
+    }
+});
+
+function iniciar_aguarde_relatorio(com_progresso) {
     var token = new Date().getTime();
     var tentativas = 0;
 
     document.cookie = 'download_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-    clearInterval(timer_aguarde_excel);
+    clearInterval(timer_aguarde_relatorio);
 
     if (com_progresso) {
         if (html_original_aguardar === null) {
@@ -2315,12 +2327,12 @@ function iniciar_aguarde_excel(com_progresso) {
 
     $("#aguardar").modal();
 
-    timer_aguarde_excel = setInterval(function() {
+    timer_aguarde_relatorio = setInterval(function() {
         tentativas++;
 
         // Fecha quando o arquivo chegou, ou após 10 minutos como segurança
         if (document.cookie.indexOf('download_token=' + token) >= 0 || tentativas > 1200) {
-            clearInterval(timer_aguarde_excel);
+            clearInterval(timer_aguarde_relatorio);
             document.cookie = 'download_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
 
             if (com_progresso) {
@@ -2338,7 +2350,7 @@ function iniciar_aguarde_excel(com_progresso) {
 
         // Consulta o andamento a cada 1 segundo
         if (com_progresso && tentativas % 2 == 0) {
-            $.getJSON('ler_progresso_excel.php', { token: token }, function(progresso) {
+            $.getJSON('ler_progresso_relatorio.php', { token: token }, function(progresso) {
                 var percentual = Math.min(parseInt(progresso.percentual, 10) || 0, 100);
                 $("#progresso_excel_barra").css('width', percentual + '%').text(percentual + '%');
                 if (progresso.etapa) {
