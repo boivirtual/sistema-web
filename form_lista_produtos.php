@@ -249,13 +249,6 @@
     echo '</section>';
 ?>
 
-    <script src="js/tabela_produtos.js" charset="utf-8" type="text/javascript" ></script>
-
-    <script>
-    $(document).ready(function(){
-      $('[data-toggle="tooltip"]').tooltip();
-    });
-    </script>
 
 </body>
 </html> 
