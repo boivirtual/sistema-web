@@ -4210,6 +4210,11 @@ $spreadsheet->getActiveSheet()->setTitle('Simple');
 // Set active sheet index to the first sheet, so Excel opens this as the first sheet
 $spreadsheet->setActiveSheetIndex(0);
 
+gravar_progresso(90, 'Formatando a planilha...');
+
+// Formatação das linhas de animais (7 até a última), de uma vez só
+aplicar_formatos_excel($spreadsheet, 7, $linha);
+
 gravar_progresso(95, 'Gerando o arquivo Excel...');
 
 // Redirect output to a client’s web browser (Xlsx)
