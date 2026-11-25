@@ -162,12 +162,26 @@ function consultar_pessoas() {
     if ($('#ativo_sim_filtro').is(':checked')) { ativo.push('S'); }
     if ($('#ativo_nao_filtro').is(':checked')) { ativo.push('N'); }
 
+    // Com a lista na tela, o Consultar some; volta quando algum filtro for alterado.
+    $('#btn_consultar_pessoas').hide();
     $('#lista_pessoas').html('<p class="text-center" style="padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Consultando...</p>');
 
     $.post("ler_lista_pessoas.php", {classe: classes.join(','), fazenda: fazendas.join(','), ativo: ativo.join(',')}, function (html) {
         $('#lista_pessoas').html(html);
         iniciar_tabela_pessoas();
+    }).fail(function () {
+        $('#lista_pessoas').html('');
+        $('#btn_consultar_pessoas').show();
     });
+}
+
+// Filtro alterado: descarta a lista da consulta anterior e mostra o Consultar de novo.
+function filtro_pessoas_alterado() {
+    if ($.fn.DataTable.isDataTable('#lista_pessoas table')) {
+        $('#lista_pessoas table').DataTable().destroy();
+    }
+    $('#lista_pessoas').html('');
+    $('#btn_consultar_pessoas').show();
 }
 
 $(document).ready(function(){
