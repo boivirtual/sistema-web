@@ -959,6 +959,8 @@ $_SESSION['categoria_historico_animais']=$categoria_filtro;
     $tbl_animais = mysqli_query($conector, $sql); 
     $num_rows_animais = mysqli_num_rows($tbl_animais);
 
+    gravar_progresso(5, 'Consultando dados de reprodução...');
+
     $codigos_pais = [];
     $codigos_maes = [];
     $codigos_racas = [];
