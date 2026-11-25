@@ -204,7 +204,7 @@
 
                                         <div class="form-group col-md-2 pull-right">
                                             <label class="control-label">&nbsp;</label>
-                                            <button type="button" class="form-control btn btn-primary pull-right" onclick="consultar_pessoas()">Consultar</button>
+                                            <button type="button" class="form-control btn btn-primary pull-right" id="btn_consultar_pessoas" onclick="consultar_pessoas()">Consultar</button>
                                         </div>
                                     </div>
                                 </fieldset>
