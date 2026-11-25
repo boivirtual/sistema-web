@@ -2,6 +2,13 @@
     // Relatório pode trazer milhares de animais; 128M (padrão) não é suficiente
     ini_set('memory_limit', '512M');
     set_time_limit(600);
+
+    // Barra de progresso (ver funcao_progresso_relatorio.php). A página inteira fica retida (ob_start)
+    // e só é enviada no fim: assim a tela de filtros continua aberta mostrando a barra até a listagem ficar pronta.
+    include_once "funcao_progresso_relatorio.php";
+    ob_start();
+    gravar_progresso(2, 'Consultando animais...');
+
     include "valida_sessao.inc";
     include "conecta_mysql.inc";
 
