@@ -135,7 +135,45 @@
                         <a href="#">
                             <input type="button" class="btn btn-primary" aria-label="Left Align" value="Incluir Novo" onclick="incluir_novo()"/>
                         </a>
-                    </div> 
+                    </div>
+
+                    <section class="panel">
+                        <div class="panel-body">
+                            <fieldset class="scheduler-border" id="dados_consulta_produtos">
+                                <legend class="scheduler-border fonte-legend">Dados para Consultar</legend>
+
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label for="modalidade_filtro" class="control-label">Modalidade</label>
+                                        <select class="form-control selectpicker filtro_produtos" multiple id="modalidade_filtro" name="modalidade_filtro" title="Todas">
+                                            <?php while ($reg_mod = mysqli_fetch_object($tab_modalidades_filtro)) { ?>
+                                                <option value="<?php echo htmlspecialchars($reg_mod->tbl_codigo_modalidade); ?>"
+                                                    <?php if (in_array((string)$reg_mod->tbl_codigo_modalidade, array_map('strval', $filtro_modalidade), true)) { echo "selected"; } ?>>
+                                                    <?php echo htmlspecialchars($reg_mod->tbl_descricao_modalidade); ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-3">
+                                        <label class="control-label">Ativo</label>
+                                        <div class="clearfix"></div>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" id="ativo_sim_filtro" value="S" <?php if (in_array('S', $filtro_ativo)) { echo "checked"; } ?>> Sim
+                                        </label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" id="ativo_nao_filtro" value="N" <?php if (in_array('N', $filtro_ativo)) { echo "checked"; } ?>> Não
+                                        </label>
+                                    </div>
+
+                                    <div class="form-group col-md-2 pull-right">
+                                        <label class="control-label">&nbsp;</label>
+                                        <button type="button" class="form-control btn btn-primary pull-right" id="btn_consultar_produtos" onclick="consultar()" style="display: none;">Consultar</button>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </section>
 
                     <div id="lista_produtos">
                     </div>
