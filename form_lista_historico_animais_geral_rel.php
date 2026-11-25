@@ -861,6 +861,9 @@ $_SESSION['categoria_historico_animais']=$categoria_filtro;
                                                 <input type="hidden" id="num_natimorto_ate_filtro"
                                                     <?php echo "value='".$_REQUEST['num_natimorto_ate']."'";?>>
 
+                                                <input type="hidden" id="filtro_num_parto"
+                                                    <?php echo "value='".$_REQUEST['filtro_num_parto']."'";?>>
+
                                                 <input type="hidden" id="filtro_num_natimorto"
                                                     <?php echo "value='".$_REQUEST['filtro_num_natimorto']."'";?>>
 
