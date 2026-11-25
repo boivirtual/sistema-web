@@ -142,6 +142,9 @@ $spreadsheet->getActiveSheet()->getStyle('A6:P6')->getAlignment()->setVertical($
 
 $linha = 6;
 
+// Linhas com formatação própria, anotadas em listar() e aplicadas em aplicar_formatos_excel()
+$linhas_formato_excel = ['numero' => [], 'azul' => [], 'vermelho' => []];
+
     $num_parto_de = $_REQUEST['num_parto_de'];
     $num_parto_ate = $_REQUEST['num_parto_ate'];
     $num_aborto_de = $_REQUEST['num_aborto_de'];
