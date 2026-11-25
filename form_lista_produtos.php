@@ -1,6 +1,37 @@
 <?php
+    // Lista do Cadastro de Mistura para Nutrição (form_cadastro_produtos.php), carregada pelo Consultar.
+    // Filtros: modalidade -> códigos de tbl_modalidade_produto separados por vírgula (vazio = Todas)
+    //          ativo      -> "S" e/ou "N" (só um marcado filtra; os dois ou nenhum trazem todos)
+    @ session_start();
     include "conecta_mysql.inc";
-    
+
+    $modalidades = array();
+    foreach (explode(',', isset($_POST['modalidade']) ? (string)$_POST['modalidade'] : '') as $valor) {
+        $valor = trim($valor);
+        if ($valor !== '') { $modalidades[] = "'" . mysqli_real_escape_string($conector, $valor) . "'"; }
+    }
+    $modalidades = array_values(array_unique($modalidades));
+
+    $ativo = array();
+    foreach (explode(',', isset($_POST['ativo']) ? (string)$_POST['ativo'] : '') as $valor) {
+        if ($valor === 'S' || $valor === 'N') { $ativo[] = $valor; }
+    }
+    $ativo = array_values(array_unique($ativo));
+
+    // Guarda o filtro para remontar a consulta ao recarregar a tela (Voltar/Fechar da inclusão/edição).
+    $_SESSION['produtos_filtro_modalidade'] = isset($_POST['modalidade']) ? (string)$_POST['modalidade'] : '';
+    $_SESSION['produtos_filtro_ativo'] = implode(',', $ativo);
+
+    $where_produtos = "WHERE 1=1";
+    if (count($modalidades) > 0) {
+        $where_produtos .= " AND tbl_produto_codigo_modalidade IN (" . implode(',', $modalidades) . ")";
+    }
+    if ($ativo === array('S')) {
+        $where_produtos .= " AND tbl_produto_ativo = 'S'";
+    }
+    else if ($ativo === array('N')) {
+        $where_produtos .= " AND (tbl_produto_ativo <> 'S' OR tbl_produto_ativo IS NULL)";
+    }
 ?>
 
 <!DOCTYPE html>
