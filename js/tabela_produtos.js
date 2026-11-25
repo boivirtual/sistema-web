@@ -101,7 +101,8 @@ $(document).ready(function(){
 });
 
 function sair_inclusao() {
-    location.href='form_cadastro_produtos.php';
+    // ?manter=1: ao recarregar, mantém o filtro da última consulta.
+    location.href='form_cadastro_produtos.php?manter=1';
 }
 
 function atualiza_cor_descricao_padrao() {
