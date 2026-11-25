@@ -4281,36 +4281,24 @@ function listar($conector, $animal, $peso_nasc, $peso_desmama, $peso_ultimo, $da
     $observacao = ltrim(utf8_encode($animal['observacao'])); 
     $observacao = rtrim($observacao); 
 
+    global $linhas_formato_excel;
+
     $linha++;
-    $celulas = 'A' . $linha;
-    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-    $celulas = 'G' . $linha;
-    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-    $celulas = 'L' . $linha . ':N' . $linha;
-    $spreadsheet->getActiveSheet()->getStyle($celulas)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2);
-
-    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
-
-    $celulas = 'C' . $linha . ':D' . $linha;
-    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-    $spreadsheet->getActiveSheet()->getStyle('P'.$linha)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-    $celulas = 'K' . $linha;
-    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setWrapText(true);
-
-    $celulas = 'A' . $linha . ':P' . $linha;
-    $align = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
-    $spreadsheet->getActiveSheet()->getStyle($celulas)->getAlignment()->setVertical($align);
-
+    // A formatação comum a todas as linhas é aplicada de uma vez só, por coluna, em aplicar_formatos_excel()
+    // (formatar linha a linha deixava o Excel muito lento). Aqui só se anota o que varia de animal para animal.
     if ($codigo_alfa == '') {
-        $celulas = 'A' . $linha;
-        $spreadsheet->getActiveSheet()->getStyle($celulas)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
+        $linhas_formato_excel['numero'][] = $linha;
     }
 
-    $spreadsheet->getActiveSheet()->getStyle('D'.$linha)->getNumberFormat()->setFormatCode('DD/MM/YYYY');
+    if ($ativo=='N') {
+        if ($situacao=='Vendido') {
+            $linhas_formato_excel['azul'][] = $linha;
+        }
+        else {
+            $linhas_formato_excel['vermelho'][] = $linha;
+        }
+    }
 
     $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(1, $linha, $codigo_edi);
     $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(2, $linha, $desc_local);
