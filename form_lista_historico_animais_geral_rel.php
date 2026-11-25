@@ -2377,7 +2377,16 @@ $_SESSION['categoria_historico_animais']=$categoria_filtro;
     $total_peso_desmama = 0;
     $qtd_peso_desmama = 0;
 
+    $total_animais_tela = count($animais);
+    $animais_tela = 0;
+    gravar_progresso(75, 'Montando a listagem...');
+
     foreach ($animais as $animal) {
+        $animais_tela++;
+        if ($animais_tela % 200 == 0) {
+            gravar_progresso(75 + 20 * $animais_tela / max($total_animais_tela, 1), 'Montando a listagem (' . $animais_tela . ' de ' . $total_animais_tela . ')...');
+        }
+
         if ($filtro_reproducao == 'S') {
             if ($filtro_negativas=='S' && $filtro_positivas=='S') {
                 if ($filtro_vacas_paridas=='N' && $filtro_vacas_solteiras=='N' && 
