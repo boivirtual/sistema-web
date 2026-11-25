@@ -4140,8 +4140,10 @@ function listar($conector, $animal, $peso_nasc_edi, $peso_desmama_edi, $peso_ult
         </section> <!-- wrapper -->
     </section><!--main-content -->
 
+    <!-- Linhas desenhadas; a barra some quando os scripts do rodapé terminarem de carregar (DOMContentLoaded) -->
+    <script>barra_tela(100, 'Finalizando...');</script>
 
-<?php 
+<?php
   $javascript_file_name = 'relatorio_historico_animais.js';
   require 'rodape.php';
 
