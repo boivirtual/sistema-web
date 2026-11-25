@@ -2210,9 +2210,11 @@ function lista_historico_animais_excel(){
     var filtro_vacas_prenhas=  $("#filtro_vacas_prenhas").val();
     var filtro_descarte=  $("#filtro_descarte").val();
     var filtro_monta_natural= $("#filtro_monta_natural").val();
-    var situacao_vendido = $("#situacao_vendido").val();
-    var situacao_morte = $("#situacao_morte").val();
-    var situacao_outra = $("#situacao_outra").val();
+    // Na página da listagem os campos ocultos das situações se chamam vendido/morte/outro
+    var situacao_vendido = $("#vendido").val();
+    var situacao_morte = $("#morte").val();
+    var situacao_outra = $("#outro").val();
+    var origem_relatorio = $("#origem_relatorio").val();
     var descricao_filtro_codificada = $("#filtro_aplicado").val();
     var descricao_filtro = descricao_filtro_codificada
     .replace(/&gt;/g, '>')  // Substitui todas as ocorrências de '&gt;' por '>'
