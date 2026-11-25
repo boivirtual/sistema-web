@@ -4317,19 +4317,60 @@ function listar($conector, $animal, $peso_nasc, $peso_desmama, $peso_ultimo, $da
     $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(15, $linha, $data_ultimo_edi);
     $spreadsheet->getActiveSheet()->setCellValueByColumnAndRow(16, $linha, $descarte);
 
-    $celulas = 'O' . $linha;
-    $spreadsheet->getActiveSheet()->getStyle($celulas)->getNumberFormat()->setFormatCode('DD/MM/YYYY');
-    $spreadsheet->getActiveSheet()->getStyle('P'.$linha)->getFont()->setColor(new Color(Color::COLOR_RED));
-    $celulas = 'A' . $linha . ':P' . $linha;
+    return $linha;
+}
 
-    if ($ativo=='N') {
-        if ($situacao=='Vendido') {
-            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setColor(new Color(Color::COLOR_BLUE));
+// Transforma uma lista de linhas em faixas contínuas (ex.: 7,8,9,12 -> [[7,9],[12,12]])
+function faixas_de_linhas($linhas) {
+    $faixas = [];
+
+    foreach ($linhas as $l) {
+        $ultima = count($faixas) - 1;
+        if ($ultima >= 0 && $faixas[$ultima][1] == $l - 1) {
+            $faixas[$ultima][1] = $l;
         }
         else {
-            $spreadsheet->getActiveSheet()->getStyle($celulas)->getFont()->setColor(new Color(Color::COLOR_RED));
+            $faixas[] = [$l, $l];
         }
     }
 
-    return $linha;
+    return $faixas;
+}
+
+// Aplica de uma vez, nas linhas $primeira..$ultima, a mesma formatação que listar() fazia linha a linha
+function aplicar_formatos_excel($spreadsheet, $primeira, $ultima) {
+    global $linhas_formato_excel;
+
+    if ($ultima < $primeira) {
+        return;
+    }
+
+    $planilha = $spreadsheet->getActiveSheet();
+    $centro = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER;
+
+    $planilha->getStyle("A$primeira:A$ultima")->getAlignment()->setHorizontal($centro);
+    $planilha->getStyle("G$primeira:G$ultima")->getAlignment()->setHorizontal($centro);
+    $planilha->getStyle("L$primeira:N$ultima")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2);
+    $planilha->getStyle("L$primeira:N$ultima")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+    $planilha->getStyle("C$primeira:D$ultima")->getAlignment()->setHorizontal($centro);
+    $planilha->getStyle("P$primeira:P$ultima")->getAlignment()->setHorizontal($centro);
+    $planilha->getStyle("K$primeira:K$ultima")->getAlignment()->setWrapText(true);
+    $planilha->getStyle("A$primeira:P$ultima")->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+    $planilha->getStyle("D$primeira:D$ultima")->getNumberFormat()->setFormatCode('DD/MM/YYYY');
+    $planilha->getStyle("O$primeira:O$ultima")->getNumberFormat()->setFormatCode('DD/MM/YYYY');
+    $planilha->getStyle("P$primeira:P$ultima")->getFont()->setColor(new Color(Color::COLOR_RED));
+
+    // Código só numérico: coluna A como número
+    foreach (faixas_de_linhas($linhas_formato_excel['numero']) as $f) {
+        $planilha->getStyle("A{$f[0]}:A{$f[1]}")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER);
+    }
+
+    // Inativos: vendidos em azul, mortes/outras saídas em vermelho (por último, como antes, cobrindo o vermelho da coluna P)
+    foreach (faixas_de_linhas($linhas_formato_excel['azul']) as $f) {
+        $planilha->getStyle("A{$f[0]}:P{$f[1]}")->getFont()->setColor(new Color(Color::COLOR_BLUE));
+    }
+
+    foreach (faixas_de_linhas($linhas_formato_excel['vermelho']) as $f) {
+        $planilha->getStyle("A{$f[0]}:P{$f[1]}")->getFont()->setColor(new Color(Color::COLOR_RED));
+    }
 }
