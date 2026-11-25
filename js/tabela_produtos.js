@@ -43,8 +43,37 @@ function iniciar_tabela_produtos() {
         initComplete: function () {
             $("table.dataTable").css("width", "100%");
         },
-        
+
     });
+
+    $('#tabela_produtos [data-toggle="tooltip"]').tooltip();
+}
+
+$(document).ready(function(){
+    if ($('#modalidade_filtro').length) {
+        // Mesmo comportamento dos filtros do Cadastro de Pessoas: só "Limpar Seleção",
+        // visível apenas quando há algo selecionado; sem nada = "Todas" (title do select).
+        $('.filtro_produtos').each(function () {
+            var $select = $(this);
+            $select.selectpicker({ actionsBox: true, deselectAllText: 'Limpar Seleção' });
+
+            var $actionsBox = $select.closest('.bootstrap-select').find('.bs-actionsbox');
+            $actionsBox.find('.bs-select-all').remove();
+
+            var atualizar = function () {
+                if (($select.val() || []).length) { $actionsBox.show(); } else { $actionsBox.hide(); }
+            };
+            atualizar();
+            $select.on('changed.bs.select', atualizar);
+        });
+
+        $('.filtro_produtos').on('changed.bs.select', filtro_produtos_alterado);
+        $('#ativo_sim_filtro, #ativo_nao_filtro').on('change', filtro_produtos_alterado);
+    }
+    else {
+        // form_tabela_produtos.php: a tabela já vem pronta na página.
+        iniciar_tabela_produtos();
+    }
 
     $('#grupo').change(function(){
         var codigo_modalidade = $("#grupo").val();
