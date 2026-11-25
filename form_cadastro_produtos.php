@@ -75,6 +75,35 @@
         $array_locais_usuario='';
     }
 
+    // Filtro da última consulta: só é mantido quando a tela é recarregada de dentro do próprio
+    // programa (Voltar/Fechar da inclusão/edição), que chama com ?manter=1.
+    // Aberta pelo menu, começa do padrão: Modalidade Nutrição e Ativo Sim.
+    if (!isset($_GET['manter'])) {
+        unset($_SESSION['produtos_filtro_modalidade'], $_SESSION['produtos_filtro_ativo']);
+    }
+
+    $tab_modalidades_filtro = mysqli_query($conector, "SELECT tbl_codigo_modalidade, tbl_descricao_modalidade
+                                                         FROM tbl_modalidade_produto
+                                                        WHERE tbl_modalidade_lixeira=0
+                                                        ORDER BY tbl_descricao_modalidade");
+
+    if (isset($_SESSION['produtos_filtro_modalidade'])) {
+        $filtro_modalidade = $_SESSION['produtos_filtro_modalidade'] === '' ? array() : explode(',', $_SESSION['produtos_filtro_modalidade']);
+    }
+    else {
+        // Padrão: a(s) modalidade(s) de Nutrição
+        $filtro_modalidade = array();
+        while ($reg_mod = mysqli_fetch_object($tab_modalidades_filtro)) {
+            if (strpos(strtoupper($reg_mod->tbl_descricao_modalidade), 'NUTRI') === 0) {
+                $filtro_modalidade[] = $reg_mod->tbl_codigo_modalidade;
+            }
+        }
+        mysqli_data_seek($tab_modalidades_filtro, 0);
+    }
+
+    // Ativo: "Sim" já entra marcado na primeira vez
+    $filtro_ativo = isset($_SESSION['produtos_filtro_ativo']) ? explode(',', $_SESSION['produtos_filtro_ativo']) : array('S');
+
 ?>
 
 <!-- container section start -->
