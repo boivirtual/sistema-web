@@ -221,17 +221,27 @@
                     <div class="relfaz-body-flex">
                         <div class="relfaz-sidebar">
                             <div class="relfaz-filtro-titulo">Fazendas</div>
-                            <select class="form-control selectpicker" id="relfaz_fazenda" data-live-search="true" data-width="100%"
-                                    title="Selecione a Fazenda" data-none-selected-text="Selecione a Fazenda">
+                            <div class="relfaz-fazenda-lista">
                                 <?php
+                                    // Mesmo layout e mesma paleta de cores da Agenda (seleção única: radio)
+                                    $paleta_cores_fazenda = array('#378ADD', '#1D9E75', '#D85A30', '#993556', '#BA7517', '#7F77DD', '#639922', '#4A90A4');
+                                    $indice_cor_fazenda = 0;
+
                                     while ($reg_local = mysqli_fetch_object($tbl_local)) {
                                         if (in_array((string) $reg_local->tbl_pessoa_id, $array_locais_usuario)) {
-                                            echo '<option value="' . (int) $reg_local->tbl_pessoa_id . '">'
-                                                 . htmlspecialchars($reg_local->tbl_pessoa_nome) . '</option>';
+                                            $cor_fazenda = $paleta_cores_fazenda[$indice_cor_fazenda % count($paleta_cores_fazenda)];
+                                            $indice_cor_fazenda++;
+                                ?>
+                                            <label class="relfaz-fazenda-item">
+                                                <input type="radio" name="relfaz_fazenda" class="relfaz-fazenda-radio" value="<?php echo (int) $reg_local->tbl_pessoa_id; ?>">
+                                                <span class="relfaz-fazenda-dot" style="background: <?php echo $cor_fazenda; ?>;"></span>
+                                                <?php echo htmlspecialchars($reg_local->tbl_pessoa_nome); ?>
+                                            </label>
+                                <?php
                                         }
                                     }
                                 ?>
-                            </select>
+                            </div>
                         </div>
 
                         <div class="relfaz-main">
