@@ -1,5 +1,5 @@
 // Relatórios da Fazenda
-// Filtros: Fazenda (select simples) + período (Diário / Semanal / Mensal) com navegação igual à Agenda.
+// Filtros: Fazenda (lista de seleção única, mesmo layout da Agenda) + período (Diário / Semanal / Mensal) com navegação igual à Agenda.
 
 var relfazPeriodo = 'D';          // D = Diário, S = Semanal, M = Mensal
 var relfazDataBase = relfazHoje(); // data de referência do período exibido
@@ -34,7 +34,7 @@ $(document).ready(function() {
         relfazAtualizar();
     });
 
-    $(document).on('change', '#relfaz_fazenda', function() {
+    $(document).on('change', '.relfaz-fazenda-radio', function() {
         relfazAtualizar();
     });
 });
@@ -124,7 +124,7 @@ function relfazAtualizar() {
 // Área de dados: por enquanto só trata a mensagem de "Selecione uma Fazenda".
 // Os relatórios em si serão incluídos nas próximas etapas.
 function relfazCarregarDados() {
-    var fazenda = $('#relfaz_fazenda').val();
+    var fazenda = $('.relfaz-fazenda-radio:checked').val();
 
     if (!fazenda) {
         $('#relfaz_dados').html('<div class="relfaz-mensagem-vazia">Selecione uma Fazenda</div>');
