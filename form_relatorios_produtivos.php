@@ -206,6 +206,11 @@
                                             <input type="button" class="btn btn-primary " aria-label="Left Align" 
                                               value="Chuvas"/>
                                         </a>
+
+                                        <a href="form_rel_fazenda.php">
+                                            <input type="button" class="btn btn-primary " aria-label="Left Align"
+                                              value="Relatórios da Fazenda"/>
+                                        </a>
                                     </div> 
                                 </div>
                             </div>
