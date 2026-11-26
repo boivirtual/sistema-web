@@ -184,6 +184,10 @@ function relfazMontarDados(retorno, periodo) {
     if (!retorno.registros.length) {
         html += '<div class="relfaz-mensagem-vazia">Nenhum registro encontrado para este período.</div>';
     }
+    // Diário com o dia lançado como Folga no app (tipo 'F'): só o aviso no centro
+    else if (periodo == 'D' && retorno.registros[0].tipo == 'F') {
+        html += '<div class="relfaz-mensagem-vazia">Dia de folga.</div>';
+    }
 
     $('#relfaz_dados').html(html);
 }
