@@ -121,15 +121,69 @@ function relfazAtualizar() {
     relfazCarregarDados();
 }
 
-// Área de dados: por enquanto só trata a mensagem de "Selecione uma Fazenda".
-// Os relatórios em si serão incluídos nas próximas etapas.
+var relfazRequisicao = null; // consulta em andamento (cancelada se o filtro mudar)
+
+function relfazEscapar(texto) {
+    return $('<div>').text(texto == null ? '' : texto).html();
+}
+
+// Área de dados: a cada troca de filtro limpa tudo e consulta a tbl_resumo_diario do período.
 function relfazCarregarDados() {
     var fazenda = $('.relfaz-fazenda-radio:checked').val();
+
+    if (relfazRequisicao) {
+        relfazRequisicao.abort();
+        relfazRequisicao = null;
+    }
+
+    $('#relfaz_dados').html('');
 
     if (!fazenda) {
         $('#relfaz_dados').html('<div class="relfaz-mensagem-vazia">Selecione uma Fazenda</div>');
         return;
     }
 
-    $('#relfaz_dados').html('');
+    var intervalo = relfazIntervalo();
+    var periodo = relfazPeriodo;
+
+    $('#relfaz_dados').html('<p class="text-center" style="padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Consultando...</p>');
+
+    relfazRequisicao = $.post('ler_rel_fazenda.php', {
+        fazenda: fazenda,
+        inicio: relfazDataISO(intervalo.inicio),
+        fim: relfazDataISO(intervalo.fim)
+    }, function(retorno) {
+        relfazRequisicao = null;
+
+        if (!retorno || !retorno.ok) {
+            $('#relfaz_dados').html('<div class="relfaz-mensagem-vazia">'
+                + relfazEscapar(retorno && retorno.erro ? retorno.erro : 'Não foi possível consultar os dados.') + '</div>');
+            return;
+        }
+
+        relfazMontarDados(retorno, periodo);
+    }, 'json').fail(function(xhr, status) {
+        if (status === 'abort') {
+            return;
+        }
+        relfazRequisicao = null;
+        $('#relfaz_dados').html('<div class="relfaz-mensagem-vazia">Não foi possível consultar os dados.</div>');
+    });
+}
+
+function relfazMontarDados(retorno, periodo) {
+    var titulo = relfazEscapar(retorno.fazenda_nome);
+
+    // Diário: nome do usuário responsável pelo resumo na mesma linha da fazenda
+    if (periodo == 'D' && retorno.registros.length && retorno.registros[0].usuario) {
+        titulo += ' - ' + relfazEscapar(retorno.registros[0].usuario);
+    }
+
+    var html = '<h4 class="relfaz-fazenda-titulo">' + titulo + '</h4>';
+
+    if (!retorno.registros.length) {
+        html += '<div class="relfaz-mensagem-vazia">Nenhum registro encontrado para este período.</div>';
+    }
+
+    $('#relfaz_dados').html(html);
 }
