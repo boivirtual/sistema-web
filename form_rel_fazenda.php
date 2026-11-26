@@ -136,6 +136,14 @@
         min-height: 450px;
     }
 
+    .relfaz-fazenda-titulo {
+        margin: 0 0 10px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        text-align: left;
+    }
+
     .relfaz-mensagem-vazia {
         display: flex;
         align-items: center;
