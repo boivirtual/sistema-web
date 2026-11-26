@@ -46,6 +46,34 @@
         margin: 0 0 6px;
     }
 
+    .relfaz-fazenda-lista {
+        max-height: 180px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+
+    .relfaz-fazenda-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: normal;
+        padding: 6px 2px;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .relfaz-fazenda-item input {
+        margin: 0;
+    }
+
+    .relfaz-fazenda-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
     .relfaz-main {
         flex: 1 1 320px;
         min-width: 0;
