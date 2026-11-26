@@ -56,7 +56,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 13px;
+        font-size: 11px;
         font-weight: normal;
         padding: 6px 2px;
         margin: 0;
@@ -217,7 +217,7 @@
 
     $tbl_local = mysqli_query($conector, "SELECT tbl_pessoa_id, tbl_pessoa_nome FROM tbl_pessoa
                                           WHERE tbl_pessoa_classe = 4 AND tbl_pessoa_lixeira = 0
-                                          ORDER BY tbl_pessoa_nome");
+                                          ORDER BY tbl_pessoa_id");
 ?>
 
 <!-- container section start -->
