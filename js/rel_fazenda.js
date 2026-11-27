@@ -214,6 +214,78 @@ function relfazMontarDados(retorno, periodo) {
     else if (periodo == 'D' && retorno.registros[0].tipo == 'F') {
         html += '<div class="relfaz-mensagem-vazia">Dia de folga.</div>';
     }
+    // Diário com Resumo: cards lado a lado
+    else if (periodo == 'D') {
+        html += relfazCardsDiario(retorno.registros[0]);
+    }
 
     $('#relfaz_dados').html(html);
+}
+
+// Número no padrão brasileiro, sem casas decimais sobrando (12.5 -> "12,5"; 10 -> "10")
+function relfazNumero(valor) {
+    return Number(valor).toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+}
+
+function relfazItem(texto, inativo) {
+    return '<li class="relfaz-item' + (inativo ? ' relfaz-item-inativo' : '') + '">' + texto + '</li>';
+}
+
+function relfazCard(titulo, itens) {
+    return '<div class="col-md-6">'
+         +   '<div class="relfaz-card">'
+         +     '<div class="relfaz-card-titulo">' + titulo + '</div>'
+         +     '<ul class="relfaz-card-lista">' + itens + '</ul>'
+         +   '</div>'
+         + '</div>';
+}
+
+function relfazCardsDiario(r) {
+    // Card 1 - Atividades Registradas
+    var atividades = '';
+
+    if (r.chuva_mm !== null && r.chuva_mm > 0) {
+        atividades += relfazItem('Choveu ' + relfazNumero(r.chuva_mm) + ' mm', false);
+    }
+    else {
+        atividades += relfazItem('Não Choveu', true);
+    }
+
+    // Card 2 - Conferência do Rebanho
+    var conferencia = '';
+
+    if (r.conferiu_prenhas == 'S') {
+        conferencia += relfazItem('Conferiu Vacas Prenhas', false);
+    }
+    else {
+        conferencia += relfazItem('Não Conferiu Vacas Prenhas', true);
+    }
+
+    var esperadoEncontrado = '';
+    if (r.animais_esperados !== null || r.animais_encontrados !== null) {
+        esperadoEncontrado = '<span class="relfaz-item-detalhe">'
+            + 'Esperado ' + (r.animais_esperados !== null ? relfazNumero(r.animais_esperados) : '-')
+            + ' &nbsp;Encontrado ' + (r.animais_encontrados !== null ? relfazNumero(r.animais_encontrados) : '-')
+            + '</span>';
+    }
+
+    if (r.conferiu_gado == 'T') {
+        conferencia += relfazItem('Conferiu o Gado Todo' + esperadoEncontrado, false);
+    }
+    else if (r.conferiu_gado == 'P') {
+        var pastos = '';
+        if (r.pastos_conferidos && r.pastos_conferidos.length) {
+            pastos = '<span class="relfaz-item-detalhe">Pastos '
+                   + $.map(r.pastos_conferidos, relfazEscapar).join(', ') + '</span>';
+        }
+        conferencia += relfazItem('Conferiu Parte do Gado' + pastos + esperadoEncontrado, false);
+    }
+    else {
+        conferencia += relfazItem('Não Conferiu', true);
+    }
+
+    return '<div class="row relfaz-cards">'
+         + relfazCard('Atividades Registradas', atividades)
+         + relfazCard('Conferência do Rebanho', conferencia)
+         + '</div>';
 }
