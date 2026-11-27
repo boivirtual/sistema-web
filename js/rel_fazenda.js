@@ -320,7 +320,7 @@ function relfazCardsDiario(r, retorno) {
         atividades += relfazItem('fas fa-cloud-showers-heavy', 'cinza', 'Choveu', 'Não');
     }
 
-    atividades += relfazItemSimNao('fas fa-exchange-alt', 'roxo', 'Mudou pasto', r.mudou_pasto, relfazListaPastos(retorno.pastos_alterados));
+    atividades += relfazItemSimNao('fas fa-exchange-alt', 'azul', 'Mudou pasto', r.mudou_pasto, relfazListaPastos(retorno.pastos_alterados));
     atividades += relfazItemSimNao('fas fa-seedling', 'verde', 'Nutrição', r.nutricao, relfazListaNutricao(retorno.nutricoes));
     atividades += relfazItemQuantidade('fas fa-baby', 'verde', 'Nascimentos', r.nascimentos);
     atividades += relfazItemQuantidade('fas fa-heart-broken', 'amarelo', 'Aborto / Natimorto', r.abortos);
@@ -341,9 +341,16 @@ function relfazCardsDiario(r, retorno) {
         }
     }
 
+    // Pastos onde o encontrado não bateu com o esperado (em vermelho, abaixo do item)
+    var diferenca = '';
+    if (r.pastos_diferenca && r.pastos_diferenca.length) {
+        diferenca = '<span class="relfaz-detalhe-diferenca"><i class="fas fa-map-marker-alt"></i> Diferença: '
+                  + $.map(r.pastos_diferenca, relfazEscapar).join(', ') + '</span>';
+    }
+
     if (r.conferiu_gado == 'T') {
         conferencia += relfazItem(corGado == 'verde' ? 'fas fa-check' : 'fas fa-exclamation-triangle',
-                                  corGado, 'Conferiu o gado todo', badgeGado);
+                                  corGado, 'Conferiu o gado todo', badgeGado, corGado, diferenca);
     }
     else if (r.conferiu_gado == 'P') {
         var pastos = '';
@@ -351,7 +358,7 @@ function relfazCardsDiario(r, retorno) {
             pastos = 'Pastos ' + $.map(r.pastos_conferidos, relfazEscapar).join(', ');
         }
         conferencia += relfazItem(corGado == 'verde' ? 'fas fa-check' : 'fas fa-exclamation-triangle',
-                                  corGado, 'Conferiu parte do gado', badgeGado, corGado, pastos);
+                                  corGado, 'Conferiu parte do gado', badgeGado, corGado, pastos + diferenca);
     }
     else {
         conferencia += relfazItem('fas fa-exclamation-triangle', 'amarelo', 'Gado', 'Não conferiu');
@@ -362,6 +369,12 @@ function relfazCardsDiario(r, retorno) {
     }
     else {
         conferencia += relfazItem('fas fa-exclamation-triangle', 'amarelo', 'Vacas prenhas', 'Não conferiu');
+    }
+
+    // Observação da conferência do rebanho (digitada no app)
+    if (r.obs_rebanho) {
+        conferencia += relfazItem('fas fa-comment-alt', 'azul', 'Observação', null, null,
+                                  '<span class="relfaz-detalhe-obs">' + relfazEscapar(r.obs_rebanho) + '</span>');
     }
 
     return '<div class="row relfaz-cards">'

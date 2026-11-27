@@ -60,7 +60,8 @@
                                             tbl_resumo_diario_nascimentos, tbl_resumo_diario_abortos, tbl_resumo_diario_mortes,
                                             tbl_resumo_diario_conferiu_gado, tbl_resumo_diario_pastos_conferidos,
                                             tbl_resumo_diario_animais_esperados, tbl_resumo_diario_animais_encontrados,
-                                            tbl_resumo_diario_conferiu_prenhas
+                                            tbl_resumo_diario_conferiu_prenhas, tbl_resumo_diario_pastos_diferenca,
+                                            tbl_resumo_diario_obs_rebanho
                                        FROM tbl_resumo_diario
                                       WHERE tbl_resumo_diario_fazenda = ?
                                         AND tbl_resumo_diario_data BETWEEN ? AND ?
@@ -72,18 +73,23 @@
     mysqli_stmt_bind_param($st, 'iss', $fazenda, $inicio, $fim);
     mysqli_stmt_execute($st);
     mysqli_stmt_bind_result($st, $data, $tipo, $usuario, $chuva_mm, $mudou_pasto, $nutricao, $nascimentos, $abortos, $mortes, $conferiu_gado, $pastos_conferidos,
-                            $animais_esperados, $animais_encontrados, $conferiu_prenhas);
-    while (mysqli_stmt_fetch($st)) {
-        // pastos_conferidos: JSON gravado pelo app [{id, nome}, ...] -> só os nomes
-        $nomes_pastos = array();
-        $lista_pastos = json_decode((string) $pastos_conferidos, true);
-        if (is_array($lista_pastos)) {
-            foreach ($lista_pastos as $pasto) {
+                            $animais_esperados, $animais_encontrados, $conferiu_prenhas, $pastos_diferenca, $obs_rebanho);
+    // Listas de pastos gravadas pelo app em JSON [{id, nome}, ...] -> só os nomes
+    function nomes_dos_pastos($json) {
+        $nomes = array();
+        $lista = json_decode((string) $json, true);
+        if (is_array($lista)) {
+            foreach ($lista as $pasto) {
                 if (is_array($pasto) && isset($pasto['nome']) && trim($pasto['nome']) !== '') {
-                    $nomes_pastos[] = trim($pasto['nome']);
+                    $nomes[] = trim($pasto['nome']);
                 }
             }
         }
+        return $nomes;
+    }
+
+    while (mysqli_stmt_fetch($st)) {
+        $nomes_pastos = nomes_dos_pastos($pastos_conferidos);
 
         $registros[] = array(
             'data'                => $data,
@@ -99,7 +105,9 @@
             'pastos_conferidos'   => $nomes_pastos,
             'animais_esperados'   => $animais_esperados === null ? null : (int) $animais_esperados,
             'animais_encontrados' => $animais_encontrados === null ? null : (int) $animais_encontrados,
-            'conferiu_prenhas'    => $conferiu_prenhas === null ? null : (string) $conferiu_prenhas // S, N
+            'conferiu_prenhas'    => $conferiu_prenhas === null ? null : (string) $conferiu_prenhas, // S, N
+            'pastos_diferenca'    => nomes_dos_pastos($pastos_diferenca), // pastos onde o encontrado não bateu
+            'obs_rebanho'         => trim((string) $obs_rebanho)
         );
     }
     mysqli_stmt_close($st);

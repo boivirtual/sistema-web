@@ -193,7 +193,7 @@
 
     .relfaz-card-titulo {
         font-size: 14px;
-        font-weight: 500;
+        font-weight: 700;
         color: #333;
         margin-bottom: 6px;
     }
@@ -295,6 +295,20 @@
         font-size: 11px;
         color: #6c757d;
         margin-top: 2px;
+    }
+
+    .relfaz-detalhe-diferenca {
+        display: block;
+        color: #A32D2D;
+        margin-top: 2px;
+    }
+
+    .relfaz-detalhe-obs {
+        display: block;
+        white-space: pre-line;
+        word-wrap: break-word;
+        font-size: 12px;
+        color: #555;
     }
 
     .relfaz-badge {
