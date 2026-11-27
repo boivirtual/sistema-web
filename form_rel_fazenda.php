@@ -313,7 +313,7 @@
     }
 
     .relfaz-valor {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 700;
     }
 
