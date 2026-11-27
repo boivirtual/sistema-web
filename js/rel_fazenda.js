@@ -243,7 +243,7 @@ function relfazNumero(valor) {
 }
 
 // Modelo B (igual ao desenho sugerido): ícone redondo colorido + texto + marcador à direita.
-// Item sem atividade: ícone e texto apagados (cinza) e marcador "Não".
+// Item sem atividade: ícone e texto apagados (cinza claro), sem marcador.
 // cor: azul | roxo | verde | amarelo | vermelho | cinza
 // lista (opcional): HTML exibido abaixo do item ao clicar na seta (pastos trocados, nutrição)
 // lista (opcional) abre pelo ícone do olho; olho = { titulo: texto do tooltip, alerta: true deixa o olho vermelho }
@@ -300,7 +300,7 @@ function relfazItemQuantidade(icone, cor, texto, quantidade) {
     if (quantidade !== null && quantidade > 0) {
         return relfazItem(icone, cor, texto, relfazValor(relfazNumero(quantidade)));
     }
-    return relfazItem(icone, 'cinza', texto, 'Não');
+    return relfazItem(icone, 'cinza', texto);
 }
 
 // Atividade Sim/Não (mudou pasto, nutrição)
@@ -308,7 +308,7 @@ function relfazItemSimNao(icone, cor, texto, valor, lista, tituloOlho) {
     if (valor == 'S') {
         return relfazItem(icone, cor, texto, 'Sim', null, null, lista, { titulo: tituloOlho });
     }
-    return relfazItem(icone, 'cinza', texto, 'Não');
+    return relfazItem(icone, 'cinza', texto);
 }
 
 function relfazCard(icone, cor, titulo, itens) {
@@ -328,7 +328,7 @@ function relfazCardsDiario(r, retorno) {
         atividades += relfazItem('fas fa-cloud-showers-heavy', 'azul', 'Choveu', relfazValor(relfazNumero(r.chuva_mm) + ' mm'));
     }
     else {
-        atividades += relfazItem('fas fa-cloud-showers-heavy', 'cinza', 'Choveu', 'Não');
+        atividades += relfazItem('fas fa-cloud-showers-heavy', 'cinza', 'Choveu');
     }
 
     atividades += relfazItemSimNao('fas fa-exchange-alt', 'azul', 'Mudou pasto', r.mudou_pasto, relfazListaPastos(retorno.pastos_alterados), 'Ver pastos');

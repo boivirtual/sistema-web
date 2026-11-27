@@ -302,7 +302,7 @@
     }
 
     .relfaz-item-inativo .relfaz-item-texto {
-        color: #a0a6ab;
+        color: #c4c9cd;
     }
 
     .relfaz-item-detalhe {
@@ -348,7 +348,7 @@
     .relfaz-cor-verde    { background: #E1F5EE; color: #0F6E56; }
     .relfaz-cor-amarelo  { background: #FAEEDA; color: #854F0B; }
     .relfaz-cor-vermelho { background: #FCEBEB; color: #A32D2D; }
-    .relfaz-cor-cinza    { background: #f1f2f4; color: #a0a6ab; }
+    .relfaz-cor-cinza    { background: #f5f6f7; color: #c4c9cd; }
 
     .relfaz-badge.relfaz-cor-cinza { color: #6c757d; }
 
