@@ -104,4 +104,64 @@
     }
     mysqli_stmt_close($st);
 
-    responder(array('ok' => true, 'fazenda_nome' => (string) $fazenda_nome, 'registros' => $registros));
+    // Diário: listas que o app mostra na Seção 1 do Resumo (mesmas consultas de
+    // ResumoDiarioDao::pastosAlteradosNoDia e ::nutricoesDoDia, aqui com a conexão do sistema web)
+    $pastos_alterados = array();
+    $nutricoes = array();
+
+    if ($inicio === $fim && count($registros) > 0) {
+        $dia_inicio = $inicio . ' 00:00:00';
+        $dia_fim    = $inicio . ' 23:59:59';
+
+        // Pastos com troca de animais no dia
+        $st = mysqli_prepare($conector, "SELECT DISTINCT tbl_pasto_descricao
+                                           FROM tbl_pasto
+                                          WHERE tbl_pasto_codigo_local = ? AND tbl_pasto_lixeira = 0
+                                            AND (tbl_pasto_data_sem_animais BETWEEN ? AND ?
+                                                 OR tbl_pasto_data_com_animais BETWEEN ? AND ?
+                                                 OR tbl_pasto_id IN (
+                                                    SELECT tbl_animal_pasto_id FROM tbl_animal_pasto
+                                                     WHERE tbl_animal_pasto_local = ?
+                                                       AND tbl_animal_pasto_alterado_em BETWEEN ? AND ?))
+                                          ORDER BY tbl_pasto_descricao");
+        if ($st) {
+            mysqli_stmt_bind_param($st, 'issssiss', $fazenda, $dia_inicio, $dia_fim, $dia_inicio, $dia_fim,
+                                   $fazenda, $dia_inicio, $dia_fim);
+            mysqli_stmt_execute($st);
+            mysqli_stmt_bind_result($st, $nome_pasto);
+            while (mysqli_stmt_fetch($st)) {
+                $pastos_alterados[] = (string) $nome_pasto;
+            }
+            mysqli_stmt_close($st);
+        }
+
+        // Nutrição distribuída no dia, por pasto e produto
+        $st = mysqli_prepare($conector, "SELECT tbl_pasto_descricao, tbl_produto_descricao,
+                                                SUM(tbl_nutricao_quantidade_produto), tab_codigo_unidade_produtos
+                                           FROM tbl_nutricao
+                                           JOIN tbl_pasto ON tbl_pasto_id = tbl_nutricao_codigo_pasto
+                                           JOIN tbl_produto ON tbl_produto_codigo_id = tbl_nutricao_codigo_produto
+                                           LEFT JOIN tabela_unidade_produtos
+                                                  ON tab_codigo_unidade_id = tbl_produto_unidade
+                                          WHERE tbl_nutricao_codigo_local = ? AND tbl_nutricao_data = ?
+                                            AND tbl_nutricao_lixeira = 0
+                                          GROUP BY tbl_pasto_descricao, tbl_produto_descricao, tab_codigo_unidade_produtos
+                                          ORDER BY tbl_pasto_descricao, tbl_produto_descricao");
+        if ($st) {
+            mysqli_stmt_bind_param($st, 'is', $fazenda, $inicio);
+            mysqli_stmt_execute($st);
+            mysqli_stmt_bind_result($st, $nut_pasto, $nut_produto, $nut_quantidade, $nut_unidade);
+            while (mysqli_stmt_fetch($st)) {
+                $nutricoes[] = array(
+                    'pasto'      => (string) $nut_pasto,
+                    'produto'    => (string) $nut_produto,
+                    'quantidade' => (float) $nut_quantidade,
+                    'unidade'    => (string) $nut_unidade
+                );
+            }
+            mysqli_stmt_close($st);
+        }
+    }
+
+    responder(array('ok' => true, 'fazenda_nome' => (string) $fazenda_nome, 'registros' => $registros,
+                    'pastos_alterados' => $pastos_alterados, 'nutricoes' => $nutricoes));
