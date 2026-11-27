@@ -37,6 +37,16 @@ $(document).ready(function() {
     $(document).on('change', '.relfaz-fazenda-radio', function() {
         relfazAtualizar();
     });
+
+    // Diário: data escolhida no calendário
+    $(document).on('change', '#relfaz_data_dia', function() {
+        var partes = (this.value || '').split('-');
+        if (partes.length != 3) {
+            return;
+        }
+        relfazDataBase = new Date(+partes[0], +partes[1] - 1, +partes[2]);
+        relfazAtualizar();
+    });
 });
 
 function relfazHoje() {
