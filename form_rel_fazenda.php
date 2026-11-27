@@ -167,6 +167,48 @@
         text-align: left;
     }
 
+    .relfaz-cards > div {
+        margin-bottom: 15px;
+    }
+
+    .relfaz-card {
+        height: 100%;
+        border: 1px solid #e3e6e8;
+        border-radius: 4px;
+        background: #fff;
+        padding: 12px 14px;
+    }
+
+    .relfaz-card-titulo {
+        font-size: 13px;
+        font-weight: 600;
+        color: #555;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #e3e6e8;
+    }
+
+    .relfaz-card-lista {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .relfaz-item {
+        font-size: 13px;
+        color: #333;
+        padding: 4px 0;
+    }
+
+    .relfaz-item-inativo {
+        color: #999;
+    }
+
+    .relfaz-item-detalhe {
+        color: #6c757d;
+        margin-left: 10px;
+    }
+
     .relfaz-mensagem-vazia {
         display: flex;
         align-items: center;
