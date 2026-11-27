@@ -56,7 +56,8 @@
     // Resumos do período
     $registros = array();
     $st = mysqli_prepare($conector, "SELECT tbl_resumo_diario_data, tbl_resumo_diario_tipo, tbl_resumo_diario_incluido_por,
-                                            tbl_resumo_diario_chuva_mm,
+                                            tbl_resumo_diario_chuva_mm, tbl_resumo_diario_mudou_pasto, tbl_resumo_diario_nutricao,
+                                            tbl_resumo_diario_nascimentos, tbl_resumo_diario_abortos, tbl_resumo_diario_mortes,
                                             tbl_resumo_diario_conferiu_gado, tbl_resumo_diario_pastos_conferidos,
                                             tbl_resumo_diario_animais_esperados, tbl_resumo_diario_animais_encontrados,
                                             tbl_resumo_diario_conferiu_prenhas
@@ -70,7 +71,7 @@
     }
     mysqli_stmt_bind_param($st, 'iss', $fazenda, $inicio, $fim);
     mysqli_stmt_execute($st);
-    mysqli_stmt_bind_result($st, $data, $tipo, $usuario, $chuva_mm, $conferiu_gado, $pastos_conferidos,
+    mysqli_stmt_bind_result($st, $data, $tipo, $usuario, $chuva_mm, $mudou_pasto, $nutricao, $nascimentos, $abortos, $mortes, $conferiu_gado, $pastos_conferidos,
                             $animais_esperados, $animais_encontrados, $conferiu_prenhas);
     while (mysqli_stmt_fetch($st)) {
         // pastos_conferidos: JSON gravado pelo app [{id, nome}, ...] -> só os nomes
@@ -89,7 +90,12 @@
             'tipo'                => $tipo,
             'usuario'             => (string) $usuario,
             'chuva_mm'            => $chuva_mm === null ? null : (float) $chuva_mm,
-            'conferiu_gado'       => $conferiu_gado === null ? null : (string) $conferiu_gado, // T, P, N
+            'mudou_pasto'         => $mudou_pasto === null ? null : (string) $mudou_pasto, // S, N
+            'nutricao'            => $nutricao === null ? null : (string) $nutricao,       // S, N
+            'nascimentos'         => $nascimentos === null ? null : (int) $nascimentos,
+            'abortos'             => $abortos === null ? null : (int) $abortos,
+            'mortes'              => $mortes === null ? null : (int) $mortes,
+            'conferiu_gado'     => $conferiu_gado === null ? null : (string) $conferiu_gado, // T, P, N
             'pastos_conferidos'   => $nomes_pastos,
             'animais_esperados'   => $animais_esperados === null ? null : (int) $animais_esperados,
             'animais_encontrados' => $animais_encontrados === null ? null : (int) $animais_encontrados,
