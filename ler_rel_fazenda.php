@@ -70,9 +70,31 @@
     }
     mysqli_stmt_bind_param($st, 'iss', $fazenda, $inicio, $fim);
     mysqli_stmt_execute($st);
-    mysqli_stmt_bind_result($st, $data, $tipo, $usuario);
+    mysqli_stmt_bind_result($st, $data, $tipo, $usuario, $chuva_mm, $conferiu_gado, $pastos_conferidos,
+                            $animais_esperados, $animais_encontrados, $conferiu_prenhas);
     while (mysqli_stmt_fetch($st)) {
-        $registros[] = array('data' => $data, 'tipo' => $tipo, 'usuario' => (string) $usuario);
+        // pastos_conferidos: JSON gravado pelo app [{id, nome}, ...] -> só os nomes
+        $nomes_pastos = array();
+        $lista_pastos = json_decode((string) $pastos_conferidos, true);
+        if (is_array($lista_pastos)) {
+            foreach ($lista_pastos as $pasto) {
+                if (is_array($pasto) && isset($pasto['nome']) && trim($pasto['nome']) !== '') {
+                    $nomes_pastos[] = trim($pasto['nome']);
+                }
+            }
+        }
+
+        $registros[] = array(
+            'data'                => $data,
+            'tipo'                => $tipo,
+            'usuario'             => (string) $usuario,
+            'chuva_mm'            => $chuva_mm === null ? null : (float) $chuva_mm,
+            'conferiu_gado'       => $conferiu_gado === null ? null : (string) $conferiu_gado, // T, P, N
+            'pastos_conferidos'   => $nomes_pastos,
+            'animais_esperados'   => $animais_esperados === null ? null : (int) $animais_esperados,
+            'animais_encontrados' => $animais_encontrados === null ? null : (int) $animais_encontrados,
+            'conferiu_prenhas'    => $conferiu_prenhas === null ? null : (string) $conferiu_prenhas // S, N
+        );
     }
     mysqli_stmt_close($st);
 
