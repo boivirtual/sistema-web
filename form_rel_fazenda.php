@@ -318,7 +318,7 @@
                                     <i class="fas fa-chevron-left" id="relfaz_anterior" data-toggle="tooltip" data-placement="bottom" title="Período anterior"></i>
                                     <i class="fas fa-chevron-right" id="relfaz_proximo" data-toggle="tooltip" data-placement="bottom" title="Próximo período"></i>
                                     <span id="relfaz_periodo_titulo"></span>
-                                    <span class="relfaz-calendario" id="relfaz_calendario" data-toggle="tooltip" data-placement="bottom" title="Escolher data">
+                                    <span class="relfaz-calendario" id="relfaz_calendario">
                                         <i class="far fa-calendar-alt"></i>
                                         <input type="date" id="relfaz_data_dia">
                                     </span>
