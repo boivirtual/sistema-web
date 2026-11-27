@@ -38,6 +38,16 @@ $(document).ready(function() {
         relfazAtualizar();
     });
 
+    // Diário: clique no ícone abre o seletor de data do navegador
+    $(document).on('click', '#relfaz_calendario i', function() {
+        var campo = document.getElementById('relfaz_data_dia');
+        if (typeof campo.showPicker === 'function') {
+            try { campo.showPicker(); return; } catch (e) {}
+        }
+        campo.focus();
+        campo.click();
+    });
+
     // Diário: data escolhida no calendário
     $(document).on('change', '#relfaz_data_dia', function() {
         var partes = (this.value || '').split('-');
