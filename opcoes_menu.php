@@ -278,8 +278,12 @@
               $menu_versao_data = (!empty($row_menu_versao['tbl_versao_data']) && substr($row_menu_versao['tbl_versao_data'], 0, 10) !== '0000-00-00')
                 ? date('d/m/Y', strtotime($row_menu_versao['tbl_versao_data']))
                 : '';
+              // Sem data = versão ainda não liberada: "em testes" em vermelho
               $menu_versao_texto = 'Versão ' . htmlspecialchars($row_menu_versao['tbl_versao_numero'], ENT_QUOTES, 'UTF-8')
-                . ($menu_versao_data !== '' ? ' - ' . $menu_versao_data : '');
+                . ($menu_versao_data !== '' ? ' - ' . $menu_versao_data : ' em testes');
+              if ($menu_versao_data === '') {
+                $menu_versao_texto = '<span style="color: #d9534f;">' . $menu_versao_texto . '</span>';
+              }
             }
           }
           if ($menu_versao_texto !== '') :
