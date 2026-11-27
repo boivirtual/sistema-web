@@ -227,8 +227,9 @@ function relfazNumero(valor) {
     return Number(valor).toLocaleString('pt-BR', { maximumFractionDigits: 2 });
 }
 
-// Modelo B: cada linha tem ícone redondo colorido, texto, detalhe opcional e marcador (badge) à direita.
-// cor: azul | verde | amarelo | vermelho | cinza  (cinza = atividade não realizada)
+// Modelo B (igual ao desenho sugerido): ícone redondo colorido + texto + marcador à direita.
+// Item sem atividade: ícone e texto apagados (cinza) e marcador "Não".
+// cor: azul | roxo | verde | amarelo | vermelho | cinza
 function relfazItem(icone, cor, texto, badge, corBadge, detalhe) {
     var inativo = (cor == 'cinza');
 
@@ -241,6 +242,22 @@ function relfazItem(icone, cor, texto, badge, corBadge, detalhe) {
          + '</li>';
 }
 
+// Atividade com quantidade (nascimentos, abortos, mortes): mostra o número; sem ocorrência = "Não"
+function relfazItemQuantidade(icone, cor, texto, quantidade) {
+    if (quantidade !== null && quantidade > 0) {
+        return relfazItem(icone, cor, texto, relfazNumero(quantidade));
+    }
+    return relfazItem(icone, 'cinza', texto, 'Não');
+}
+
+// Atividade Sim/Não (mudou pasto, nutrição)
+function relfazItemSimNao(icone, cor, texto, valor) {
+    if (valor == 'S') {
+        return relfazItem(icone, cor, texto, 'Sim');
+    }
+    return relfazItem(icone, 'cinza', texto, 'Não');
+}
+
 function relfazCard(icone, cor, titulo, itens) {
     return '<div class="col-md-6">'
          +   '<div class="relfaz-card">'
@@ -251,32 +268,31 @@ function relfazCard(icone, cor, titulo, itens) {
 }
 
 function relfazCardsDiario(r) {
-    // Card 1 - Atividades Registradas
+    // Card 1 - Atividades registradas
     var atividades = '';
 
     if (r.chuva_mm !== null && r.chuva_mm > 0) {
         atividades += relfazItem('fas fa-cloud-showers-heavy', 'azul', 'Choveu', relfazNumero(r.chuva_mm) + ' mm');
     }
     else {
-        atividades += relfazItem('fas fa-cloud', 'cinza', 'Não Choveu');
+        atividades += relfazItem('fas fa-cloud-showers-heavy', 'cinza', 'Choveu', 'Não');
     }
 
-    // Card 2 - Conferência do Rebanho
+    atividades += relfazItemSimNao('fas fa-exchange-alt', 'roxo', 'Mudou pasto', r.mudou_pasto);
+    atividades += relfazItemSimNao('fas fa-seedling', 'verde', 'Nutrição', r.nutricao);
+    atividades += relfazItemQuantidade('fas fa-baby', 'verde', 'Nascimentos', r.nascimentos);
+    atividades += relfazItemQuantidade('fas fa-heart-broken', 'amarelo', 'Aborto / Natimorto', r.abortos);
+    atividades += relfazItemQuantidade('fas fa-skull-crossbones', 'vermelho', 'Morreu', r.mortes);
+
+    // Card 2 - Conferência do rebanho
     var conferencia = '';
 
-    if (r.conferiu_prenhas == 'S') {
-        conferencia += relfazItem('fas fa-check', 'verde', 'Conferiu Vacas Prenhas');
-    }
-    else {
-        conferencia += relfazItem('fas fa-minus', 'cinza', 'Não Conferiu Vacas Prenhas');
-    }
-
-    // Marcador Esperado / Encontrado: verde quando bate, vermelho quando há diferença
+    // Encontrado / Esperado: verde quando bate, vermelho quando há diferença
     var badgeGado = '';
     var corGado = 'verde';
     if (r.animais_esperados !== null || r.animais_encontrados !== null) {
-        badgeGado = 'Esperado ' + (r.animais_esperados !== null ? relfazNumero(r.animais_esperados) : '-')
-                  + ' &middot; Encontrado ' + (r.animais_encontrados !== null ? relfazNumero(r.animais_encontrados) : '-');
+        badgeGado = (r.animais_encontrados !== null ? relfazNumero(r.animais_encontrados) : '-')
+                  + ' / ' + (r.animais_esperados !== null ? relfazNumero(r.animais_esperados) : '-');
 
         if (r.animais_esperados !== r.animais_encontrados) {
             corGado = 'vermelho';
@@ -285,22 +301,29 @@ function relfazCardsDiario(r) {
 
     if (r.conferiu_gado == 'T') {
         conferencia += relfazItem(corGado == 'verde' ? 'fas fa-check' : 'fas fa-exclamation-triangle',
-                                  corGado, 'Conferiu o Gado Todo', badgeGado, corGado);
+                                  corGado, 'Conferiu o gado todo', badgeGado);
     }
     else if (r.conferiu_gado == 'P') {
         var pastos = '';
         if (r.pastos_conferidos && r.pastos_conferidos.length) {
             pastos = 'Pastos ' + $.map(r.pastos_conferidos, relfazEscapar).join(', ');
         }
-        conferencia += relfazItem(corGado == 'verde' ? 'fas fa-tasks' : 'fas fa-exclamation-triangle',
-                                  corGado == 'verde' ? 'azul' : corGado, 'Conferiu Parte do Gado', badgeGado, corGado, pastos);
+        conferencia += relfazItem(corGado == 'verde' ? 'fas fa-check' : 'fas fa-exclamation-triangle',
+                                  corGado, 'Conferiu parte do gado', badgeGado, corGado, pastos);
     }
     else {
-        conferencia += relfazItem('fas fa-minus', 'cinza', 'Não Conferiu');
+        conferencia += relfazItem('fas fa-exclamation-triangle', 'amarelo', 'Gado', 'Não conferiu');
+    }
+
+    if (r.conferiu_prenhas == 'S') {
+        conferencia += relfazItem('fas fa-check', 'verde', 'Vacas prenhas', 'Conferiu');
+    }
+    else {
+        conferencia += relfazItem('fas fa-exclamation-triangle', 'amarelo', 'Vacas prenhas', 'Não conferiu');
     }
 
     return '<div class="row relfaz-cards">'
-         + relfazCard('fas fa-clipboard-list', 'azul', 'Atividades Registradas', atividades)
-         + relfazCard('fas fa-clipboard-check', 'verde', 'Conferência do Rebanho', conferencia)
+         + relfazCard('fas fa-clipboard-list', 'azul', 'Atividades registradas', atividades)
+         + relfazCard('fas fa-clipboard-check', 'verde', 'Conferência do rebanho', conferencia)
          + '</div>';
 }

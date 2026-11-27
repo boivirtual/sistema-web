@@ -167,25 +167,35 @@
         text-align: left;
     }
 
+    /* Cards do Diário: modelo B (igual ao desenho sugerido) */
+    .relfaz-cards {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .relfaz-cards:before,
+    .relfaz-cards:after {
+        display: none;
+    }
+
     .relfaz-cards > div {
+        display: flex;
         margin-bottom: 15px;
     }
 
     .relfaz-card {
-        height: 100%;
+        width: 100%;
         border: 1px solid #e3e6e8;
-        border-radius: 4px;
+        border-radius: 12px;
         background: #fff;
-        padding: 12px 14px;
+        padding: 14px 16px 8px;
     }
 
     .relfaz-card-titulo {
-        font-size: 13px;
-        font-weight: 600;
-        color: #555;
-        padding-bottom: 8px;
-        margin-bottom: 8px;
-        border-bottom: 1px solid #e3e6e8;
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 6px;
     }
 
     .relfaz-card-lista {
@@ -194,7 +204,6 @@
         padding: 0;
     }
 
-    /* Modelo B: ícone redondo colorido + texto + marcador à direita */
     .relfaz-item {
         display: flex;
         align-items: center;
@@ -204,18 +213,14 @@
         padding: 7px 0;
     }
 
-    .relfaz-item + .relfaz-item {
-        border-top: 1px solid #f0f2f4;
-    }
-
     .relfaz-item-icone {
-        width: 32px;
-        height: 32px;
+        width: 34px;
+        height: 34px;
         border-radius: 50%;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 15px;
         flex-shrink: 0;
     }
 
@@ -225,7 +230,7 @@
     }
 
     .relfaz-item-inativo .relfaz-item-texto {
-        color: #999;
+        color: #a0a6ab;
     }
 
     .relfaz-item-detalhe {
@@ -238,16 +243,19 @@
     .relfaz-badge {
         font-size: 11px;
         padding: 3px 9px;
-        border-radius: 10px;
+        border-radius: 8px;
         white-space: nowrap;
         flex-shrink: 0;
     }
 
     .relfaz-cor-azul     { background: #E6F1FB; color: #185FA5; }
+    .relfaz-cor-roxo     { background: #EEEDFE; color: #534AB7; }
     .relfaz-cor-verde    { background: #E1F5EE; color: #0F6E56; }
     .relfaz-cor-amarelo  { background: #FAEEDA; color: #854F0B; }
     .relfaz-cor-vermelho { background: #FCEBEB; color: #A32D2D; }
     .relfaz-cor-cinza    { background: #f1f2f4; color: #a0a6ab; }
+
+    .relfaz-badge.relfaz-cor-cinza { color: #6c757d; }
 
     .relfaz-texto-azul  { color: #378ADD; margin-right: 4px; }
     .relfaz-texto-verde { color: #1D9E75; margin-right: 4px; }
