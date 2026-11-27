@@ -232,6 +232,11 @@ function relfazMontarDados(retorno, periodo) {
     $('#relfaz_dados [data-toggle="tooltip"]').tooltip({ container: 'body' });
 }
 
+// Valor em destaque dentro do marcador (mm de chuva, quantidades, encontrado / esperado)
+function relfazValor(texto) {
+    return '<span class="relfaz-valor">' + texto + '</span>';
+}
+
 // Número no padrão brasileiro, sem casas decimais sobrando (12.5 -> "12,5"; 10 -> "10")
 function relfazNumero(valor) {
     return Number(valor).toLocaleString('pt-BR', { maximumFractionDigits: 2 });
@@ -293,7 +298,7 @@ function relfazListaNutricao(nutricoes) {
 // Atividade com quantidade (nascimentos, abortos, mortes): mostra o número; sem ocorrência = "Não"
 function relfazItemQuantidade(icone, cor, texto, quantidade) {
     if (quantidade !== null && quantidade > 0) {
-        return relfazItem(icone, cor, texto, relfazNumero(quantidade));
+        return relfazItem(icone, cor, texto, relfazValor(relfazNumero(quantidade)));
     }
     return relfazItem(icone, 'cinza', texto, 'Não');
 }
@@ -320,7 +325,7 @@ function relfazCardsDiario(r, retorno) {
     var atividades = '';
 
     if (r.chuva_mm !== null && r.chuva_mm > 0) {
-        atividades += relfazItem('fas fa-cloud-showers-heavy', 'azul', 'Choveu', relfazNumero(r.chuva_mm) + ' mm');
+        atividades += relfazItem('fas fa-cloud-showers-heavy', 'azul', 'Choveu', relfazValor(relfazNumero(r.chuva_mm) + ' mm'));
     }
     else {
         atividades += relfazItem('fas fa-cloud-showers-heavy', 'cinza', 'Choveu', 'Não');
@@ -345,6 +350,7 @@ function relfazCardsDiario(r, retorno) {
         if (r.animais_esperados !== r.animais_encontrados) {
             corGado = 'vermelho';
         }
+        badgeGado = relfazValor(badgeGado);
     }
 
     // Pastos onde o encontrado não bateu com o esperado (em vermelho, abaixo do item)
@@ -361,13 +367,17 @@ function relfazCardsDiario(r, retorno) {
                                   { titulo: 'Ver pastos com diferença', alerta: true });
     }
     else if (r.conferiu_gado == 'P') {
+        // Pastos conferidos (e a diferença, se houver) só aparecem ao clicar no olho
         var pastos = '';
         if (r.pastos_conferidos && r.pastos_conferidos.length) {
-            pastos = 'Pastos ' + $.map(r.pastos_conferidos, relfazEscapar).join(', ');
+            pastos = '<span class="relfaz-detalhe-pastos">Pastos conferidos: '
+                   + $.map(r.pastos_conferidos, relfazEscapar).join(', ') + '</span>';
         }
+        var temDiferenca = (diferenca !== '');
         conferencia += relfazItem(corGado == 'verde' ? 'fas fa-check' : 'fas fa-exclamation-triangle',
-                                  corGado, 'Conferiu parte do gado', badgeGado, corGado, pastos, diferenca,
-                                  { titulo: 'Ver pastos com diferença', alerta: true });
+                                  corGado, 'Conferiu parte do gado', badgeGado, corGado, null, pastos + diferenca,
+                                  { titulo: temDiferenca ? 'Ver pastos conferidos e com diferença' : 'Ver pastos conferidos',
+                                    alerta: temDiferenca });
     }
     else {
         conferencia += relfazItem('fas fa-exclamation-triangle', 'amarelo', 'Gado', 'Não conferiu');

@@ -312,6 +312,16 @@
         margin-top: 2px;
     }
 
+    .relfaz-valor {
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .relfaz-detalhe-pastos {
+        display: block;
+        margin-bottom: 4px;
+    }
+
     .relfaz-detalhe-diferenca {
         display: block;
         color: #A32D2D;
