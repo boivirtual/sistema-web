@@ -38,6 +38,13 @@ $(document).ready(function() {
         relfazAtualizar();
     });
 
+    // Mudou pasto / Nutrição: a seta abre e fecha a lista do item
+    $(document).on('click', '.relfaz-item-expansivel .relfaz-item-linha', function() {
+        var $item = $(this).closest('.relfaz-item');
+        $item.find('.relfaz-item-lista').stop(true, true).slideToggle(150);
+        $item.toggleClass('relfaz-item-aberto');
+    });
+
     // Diário: clique no ícone abre o seletor de data do navegador
     $(document).on('click', '#relfaz_calendario i', function() {
         var campo = document.getElementById('relfaz_data_dia');
@@ -216,7 +223,7 @@ function relfazMontarDados(retorno, periodo) {
     }
     // Diário com Resumo: cards lado a lado
     else if (periodo == 'D') {
-        html += relfazCardsDiario(retorno.registros[0]);
+        html += relfazCardsDiario(retorno.registros[0], retorno);
     }
 
     $('#relfaz_dados').html(html);
@@ -230,16 +237,51 @@ function relfazNumero(valor) {
 // Modelo B (igual ao desenho sugerido): ícone redondo colorido + texto + marcador à direita.
 // Item sem atividade: ícone e texto apagados (cinza) e marcador "Não".
 // cor: azul | roxo | verde | amarelo | vermelho | cinza
-function relfazItem(icone, cor, texto, badge, corBadge, detalhe) {
+// lista (opcional): HTML exibido abaixo do item ao clicar na seta (pastos trocados, nutrição)
+function relfazItem(icone, cor, texto, badge, corBadge, detalhe, lista) {
     var inativo = (cor == 'cinza');
 
-    return '<li class="relfaz-item' + (inativo ? ' relfaz-item-inativo' : '') + '">'
-         +   '<span class="relfaz-item-icone relfaz-cor-' + cor + '"><i class="' + icone + '"></i></span>'
-         +   '<span class="relfaz-item-texto">' + texto
-         +     (detalhe ? '<span class="relfaz-item-detalhe">' + detalhe + '</span>' : '')
-         +   '</span>'
-         +   (badge ? '<span class="relfaz-badge relfaz-cor-' + (corBadge || cor) + '">' + badge + '</span>' : '')
+    return '<li class="relfaz-item' + (inativo ? ' relfaz-item-inativo' : '') + (lista ? ' relfaz-item-expansivel' : '') + '">'
+         +   '<div class="relfaz-item-linha">'
+         +     '<span class="relfaz-item-icone relfaz-cor-' + cor + '"><i class="' + icone + '"></i></span>'
+         +     '<span class="relfaz-item-texto">' + texto
+         +       (lista ? ' <i class="fas fa-chevron-down relfaz-item-seta"></i>' : '')
+         +       (detalhe ? '<span class="relfaz-item-detalhe">' + detalhe + '</span>' : '')
+         +     '</span>'
+         +     (badge ? '<span class="relfaz-badge relfaz-cor-' + (corBadge || cor) + '">' + badge + '</span>' : '')
+         +   '</div>'
+         +   (lista ? '<div class="relfaz-item-lista">' + lista + '</div>' : '')
          + '</li>';
+}
+
+// Pastos com troca de animais no dia (um por linha)
+function relfazListaPastos(pastos) {
+    if (!pastos || !pastos.length) {
+        return '';
+    }
+    return '<ul class="relfaz-lista-pastos">'
+         + $.map(pastos, function(nome) { return '<li>' + relfazEscapar(nome) + '</li>'; }).join('')
+         + '</ul>';
+}
+
+// Nutrição do dia: Pasto | Produto | Quantidade (o pasto aparece só na 1ª linha do grupo, como no app)
+function relfazListaNutricao(nutricoes) {
+    if (!nutricoes || !nutricoes.length) {
+        return '';
+    }
+    var linhas = '';
+    var pastoAnterior = null;
+
+    $.each(nutricoes, function(i, n) {
+        linhas += '<tr' + (n.pasto !== pastoAnterior && i > 0 ? ' class="relfaz-nutricao-grupo"' : '') + '>'
+               +   '<td>' + (n.pasto !== pastoAnterior ? relfazEscapar(n.pasto) : '') + '</td>'
+               +   '<td>' + relfazEscapar(n.produto) + '</td>'
+               +   '<td class="text-right">' + relfazNumero(n.quantidade) + (n.unidade ? ' ' + relfazEscapar(n.unidade) : '') + '</td>'
+               + '</tr>';
+        pastoAnterior = n.pasto;
+    });
+
+    return '<table class="relfaz-lista-nutricao">' + linhas + '</table>';
 }
 
 // Atividade com quantidade (nascimentos, abortos, mortes): mostra o número; sem ocorrência = "Não"
@@ -251,9 +293,9 @@ function relfazItemQuantidade(icone, cor, texto, quantidade) {
 }
 
 // Atividade Sim/Não (mudou pasto, nutrição)
-function relfazItemSimNao(icone, cor, texto, valor) {
+function relfazItemSimNao(icone, cor, texto, valor, lista) {
     if (valor == 'S') {
-        return relfazItem(icone, cor, texto, 'Sim');
+        return relfazItem(icone, cor, texto, 'Sim', null, null, lista);
     }
     return relfazItem(icone, 'cinza', texto, 'Não');
 }
@@ -267,7 +309,7 @@ function relfazCard(icone, cor, titulo, itens) {
          + '</div>';
 }
 
-function relfazCardsDiario(r) {
+function relfazCardsDiario(r, retorno) {
     // Card 1 - Atividades registradas
     var atividades = '';
 
@@ -278,8 +320,8 @@ function relfazCardsDiario(r) {
         atividades += relfazItem('fas fa-cloud-showers-heavy', 'cinza', 'Choveu', 'Não');
     }
 
-    atividades += relfazItemSimNao('fas fa-exchange-alt', 'roxo', 'Mudou pasto', r.mudou_pasto);
-    atividades += relfazItemSimNao('fas fa-seedling', 'verde', 'Nutrição', r.nutricao);
+    atividades += relfazItemSimNao('fas fa-exchange-alt', 'roxo', 'Mudou pasto', r.mudou_pasto, relfazListaPastos(retorno.pastos_alterados));
+    atividades += relfazItemSimNao('fas fa-seedling', 'verde', 'Nutrição', r.nutricao, relfazListaNutricao(retorno.nutricoes));
     atividades += relfazItemQuantidade('fas fa-baby', 'verde', 'Nascimentos', r.nascimentos);
     atividades += relfazItemQuantidade('fas fa-heart-broken', 'amarelo', 'Aborto / Natimorto', r.abortos);
     atividades += relfazItemQuantidade('fas fa-skull-crossbones', 'vermelho', 'Morreu', r.mortes);

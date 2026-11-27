@@ -205,12 +205,69 @@
     }
 
     .relfaz-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
         font-size: 13px;
         color: #333;
         padding: 7px 0;
+    }
+
+    .relfaz-item-linha {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Mudou pasto / Nutrição: seta que abre a lista abaixo do item */
+    .relfaz-item-expansivel .relfaz-item-linha {
+        cursor: pointer;
+    }
+
+    .relfaz-item-seta {
+        font-size: 10px;
+        color: #8a9097;
+        margin-left: 4px;
+        transition: transform .15s;
+    }
+
+    .relfaz-item-aberto .relfaz-item-seta {
+        transform: rotate(180deg);
+    }
+
+    .relfaz-item-lista {
+        display: none;
+        margin: 6px 0 2px 44px;
+        padding: 8px 12px;
+        background: #f7f8f9;
+        border-radius: 8px;
+        font-size: 12px;
+        color: #555;
+    }
+
+    .relfaz-lista-pastos {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .relfaz-lista-pastos li {
+        padding: 2px 0;
+    }
+
+    .relfaz-lista-nutricao {
+        width: 100%;
+    }
+
+    .relfaz-lista-nutricao td {
+        padding: 2px 8px 2px 0;
+        vertical-align: top;
+    }
+
+    .relfaz-lista-nutricao td:last-child {
+        padding-right: 0;
+        white-space: nowrap;
+    }
+
+    .relfaz-lista-nutricao tr.relfaz-nutricao-grupo td {
+        padding-top: 8px;
     }
 
     .relfaz-item-icone {
