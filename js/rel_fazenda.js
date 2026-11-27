@@ -241,16 +241,17 @@ function relfazNumero(valor) {
 // Item sem atividade: ícone e texto apagados (cinza) e marcador "Não".
 // cor: azul | roxo | verde | amarelo | vermelho | cinza
 // lista (opcional): HTML exibido abaixo do item ao clicar na seta (pastos trocados, nutrição)
-// olho (opcional): usa o ícone do olho no lugar da seta para abrir a lista (pastos com diferença)
+// lista (opcional) abre pelo ícone do olho; olho = { titulo: texto do tooltip, alerta: true deixa o olho vermelho }
 function relfazItem(icone, cor, texto, badge, corBadge, detalhe, lista, olho) {
+    olho = olho || {};
     var inativo = (cor == 'cinza');
 
     return '<li class="relfaz-item' + (inativo ? ' relfaz-item-inativo' : '') + (lista ? ' relfaz-item-expansivel' : '') + '">'
          +   '<div class="relfaz-item-linha">'
          +     '<span class="relfaz-item-icone relfaz-cor-' + cor + '"><i class="' + icone + '"></i></span>'
          +     '<span class="relfaz-item-texto">' + texto
-         +       (lista ? (olho ? ' <i class="fas fa-eye relfaz-item-olho" data-toggle="tooltip" data-placement="top" title="Ver pastos com diferença"></i>'
-                         : ' <i class="fas fa-chevron-down relfaz-item-seta"></i>') : '')
+         +       (lista ? ' <i class="fas fa-eye relfaz-item-olho' + (olho.alerta ? ' relfaz-item-olho-alerta' : '') + '"'
+                 + (olho.titulo ? ' data-toggle="tooltip" data-placement="top" title="' + olho.titulo + '"' : '') + '></i>' : '')
          +       (detalhe ? '<span class="relfaz-item-detalhe">' + detalhe + '</span>' : '')
          +     '</span>'
          +     (badge ? '<span class="relfaz-badge relfaz-cor-' + (corBadge || cor) + '">' + badge + '</span>' : '')
@@ -298,9 +299,9 @@ function relfazItemQuantidade(icone, cor, texto, quantidade) {
 }
 
 // Atividade Sim/Não (mudou pasto, nutrição)
-function relfazItemSimNao(icone, cor, texto, valor, lista) {
+function relfazItemSimNao(icone, cor, texto, valor, lista, tituloOlho) {
     if (valor == 'S') {
-        return relfazItem(icone, cor, texto, 'Sim', null, null, lista);
+        return relfazItem(icone, cor, texto, 'Sim', null, null, lista, { titulo: tituloOlho });
     }
     return relfazItem(icone, 'cinza', texto, 'Não');
 }
@@ -325,8 +326,8 @@ function relfazCardsDiario(r, retorno) {
         atividades += relfazItem('fas fa-cloud-showers-heavy', 'cinza', 'Choveu', 'Não');
     }
 
-    atividades += relfazItemSimNao('fas fa-exchange-alt', 'azul', 'Mudou pasto', r.mudou_pasto, relfazListaPastos(retorno.pastos_alterados));
-    atividades += relfazItemSimNao('fas fa-seedling', 'verde', 'Nutrição', r.nutricao, relfazListaNutricao(retorno.nutricoes));
+    atividades += relfazItemSimNao('fas fa-exchange-alt', 'azul', 'Mudou pasto', r.mudou_pasto, relfazListaPastos(retorno.pastos_alterados), 'Ver pastos');
+    atividades += relfazItemSimNao('fas fa-seedling', 'verde', 'Nutrição', r.nutricao, relfazListaNutricao(retorno.nutricoes), 'Ver nutrição');
     atividades += relfazItemQuantidade('fas fa-baby', 'verde', 'Nascimentos', r.nascimentos);
     atividades += relfazItemQuantidade('fas fa-heart-broken', 'amarelo', 'Aborto / Natimorto', r.abortos);
     atividades += relfazItemQuantidade('fas fa-skull-crossbones', 'vermelho', 'Morreu', r.mortes);
@@ -356,7 +357,8 @@ function relfazCardsDiario(r, retorno) {
 
     if (r.conferiu_gado == 'T') {
         conferencia += relfazItem(corGado == 'verde' ? 'fas fa-check' : 'fas fa-exclamation-triangle',
-                                  corGado, 'Conferiu o gado todo', badgeGado, corGado, null, diferenca, true);
+                                  corGado, 'Conferiu o gado todo', badgeGado, corGado, null, diferenca,
+                                  { titulo: 'Ver pastos com diferença', alerta: true });
     }
     else if (r.conferiu_gado == 'P') {
         var pastos = '';
@@ -364,7 +366,8 @@ function relfazCardsDiario(r, retorno) {
             pastos = 'Pastos ' + $.map(r.pastos_conferidos, relfazEscapar).join(', ');
         }
         conferencia += relfazItem(corGado == 'verde' ? 'fas fa-check' : 'fas fa-exclamation-triangle',
-                                  corGado, 'Conferiu parte do gado', badgeGado, corGado, pastos, diferenca, true);
+                                  corGado, 'Conferiu parte do gado', badgeGado, corGado, pastos, diferenca,
+                                  { titulo: 'Ver pastos com diferença', alerta: true });
     }
     else {
         conferencia += relfazItem('fas fa-exclamation-triangle', 'amarelo', 'Gado', 'Não conferiu');

@@ -230,8 +230,12 @@
 
     .relfaz-item-olho {
         font-size: 12px;
-        color: #A32D2D;
+        color: #8a9097;
         margin-left: 4px;
+    }
+
+    .relfaz-item-olho-alerta {
+        color: #A32D2D;
     }
 
     .relfaz-item-aberto .relfaz-item-seta {
