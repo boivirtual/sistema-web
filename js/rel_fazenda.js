@@ -43,6 +43,7 @@ $(document).ready(function() {
         var $item = $(this).closest('.relfaz-item');
         $item.find('.relfaz-item-lista').stop(true, true).slideToggle(150);
         $item.toggleClass('relfaz-item-aberto');
+        $item.find('.relfaz-item-olho').toggleClass('fa-eye fa-eye-slash');
     });
 
     // Diário: clique no ícone abre o seletor de data do navegador
@@ -169,6 +170,7 @@ function relfazCarregarDados() {
         relfazRequisicao = null;
     }
 
+    $('.tooltip').remove();
     $('#relfaz_dados').html('');
 
     if (!fazenda) {
@@ -227,6 +229,7 @@ function relfazMontarDados(retorno, periodo) {
     }
 
     $('#relfaz_dados').html(html);
+    $('#relfaz_dados [data-toggle="tooltip"]').tooltip({ container: 'body' });
 }
 
 // Número no padrão brasileiro, sem casas decimais sobrando (12.5 -> "12,5"; 10 -> "10")
@@ -238,14 +241,16 @@ function relfazNumero(valor) {
 // Item sem atividade: ícone e texto apagados (cinza) e marcador "Não".
 // cor: azul | roxo | verde | amarelo | vermelho | cinza
 // lista (opcional): HTML exibido abaixo do item ao clicar na seta (pastos trocados, nutrição)
-function relfazItem(icone, cor, texto, badge, corBadge, detalhe, lista) {
+// olho (opcional): usa o ícone do olho no lugar da seta para abrir a lista (pastos com diferença)
+function relfazItem(icone, cor, texto, badge, corBadge, detalhe, lista, olho) {
     var inativo = (cor == 'cinza');
 
     return '<li class="relfaz-item' + (inativo ? ' relfaz-item-inativo' : '') + (lista ? ' relfaz-item-expansivel' : '') + '">'
          +   '<div class="relfaz-item-linha">'
          +     '<span class="relfaz-item-icone relfaz-cor-' + cor + '"><i class="' + icone + '"></i></span>'
          +     '<span class="relfaz-item-texto">' + texto
-         +       (lista ? ' <i class="fas fa-chevron-down relfaz-item-seta"></i>' : '')
+         +       (lista ? (olho ? ' <i class="fas fa-eye relfaz-item-olho" data-toggle="tooltip" data-placement="top" title="Ver pastos com diferença"></i>'
+                         : ' <i class="fas fa-chevron-down relfaz-item-seta"></i>') : '')
          +       (detalhe ? '<span class="relfaz-item-detalhe">' + detalhe + '</span>' : '')
          +     '</span>'
          +     (badge ? '<span class="relfaz-badge relfaz-cor-' + (corBadge || cor) + '">' + badge + '</span>' : '')
@@ -344,13 +349,14 @@ function relfazCardsDiario(r, retorno) {
     // Pastos onde o encontrado não bateu com o esperado (em vermelho, abaixo do item)
     var diferenca = '';
     if (r.pastos_diferenca && r.pastos_diferenca.length) {
-        diferenca = '<span class="relfaz-detalhe-diferenca"><i class="fas fa-map-marker-alt"></i> Diferença: '
+        // fica escondida; o olho ao lado do texto abre a lista
+        diferenca = '<span class="relfaz-detalhe-diferenca"><i class="fas fa-map-marker-alt"></i> Diferença nos pastos: '
                   + $.map(r.pastos_diferenca, relfazEscapar).join(', ') + '</span>';
     }
 
     if (r.conferiu_gado == 'T') {
         conferencia += relfazItem(corGado == 'verde' ? 'fas fa-check' : 'fas fa-exclamation-triangle',
-                                  corGado, 'Conferiu o gado todo', badgeGado, corGado, diferenca);
+                                  corGado, 'Conferiu o gado todo', badgeGado, corGado, null, diferenca, true);
     }
     else if (r.conferiu_gado == 'P') {
         var pastos = '';
@@ -358,7 +364,7 @@ function relfazCardsDiario(r, retorno) {
             pastos = 'Pastos ' + $.map(r.pastos_conferidos, relfazEscapar).join(', ');
         }
         conferencia += relfazItem(corGado == 'verde' ? 'fas fa-check' : 'fas fa-exclamation-triangle',
-                                  corGado, 'Conferiu parte do gado', badgeGado, corGado, pastos + diferenca);
+                                  corGado, 'Conferiu parte do gado', badgeGado, corGado, pastos, diferenca, true);
     }
     else {
         conferencia += relfazItem('fas fa-exclamation-triangle', 'amarelo', 'Gado', 'Não conferiu');

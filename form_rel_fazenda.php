@@ -228,6 +228,12 @@
         transition: transform .15s;
     }
 
+    .relfaz-item-olho {
+        font-size: 12px;
+        color: #A32D2D;
+        margin-left: 4px;
+    }
+
     .relfaz-item-aberto .relfaz-item-seta {
         transform: rotate(180deg);
     }
@@ -305,7 +311,6 @@
     .relfaz-detalhe-diferenca {
         display: block;
         color: #A32D2D;
-        margin-top: 2px;
     }
 
     .relfaz-detalhe-obs {
