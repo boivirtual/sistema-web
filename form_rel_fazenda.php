@@ -138,7 +138,7 @@
 
     .relfaz-fazenda-titulo {
         margin: 0 0 10px;
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 400;
         color: #555;
         text-align: left;
