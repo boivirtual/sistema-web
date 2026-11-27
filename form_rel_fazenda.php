@@ -101,6 +101,37 @@
         cursor: pointer;
     }
 
+    /* Diário: ícone de calendário no lugar das setas; o input date fica invisível por cima do ícone */
+    .relfaz-calendario {
+        position: relative;
+        display: none;
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        text-align: center;
+    }
+
+    .relfaz-calendario input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        border: 0;
+        padding: 0;
+    }
+
+    .relfaz-calendario input::-webkit-calendar-picker-indicator {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
     #relfaz_periodo_titulo {
         font-size: 14px;
         font-weight: 600;
