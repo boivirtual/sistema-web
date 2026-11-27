@@ -242,6 +242,11 @@
         color: #555;
     }
 
+    .relfaz-lista-vazia {
+        font-style: italic;
+        color: #8a9097;
+    }
+
     .relfaz-lista-pastos {
         list-style: none;
         margin: 0;

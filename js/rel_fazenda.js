@@ -257,7 +257,7 @@ function relfazItem(icone, cor, texto, badge, corBadge, detalhe, lista) {
 // Pastos com troca de animais no dia (um por linha)
 function relfazListaPastos(pastos) {
     if (!pastos || !pastos.length) {
-        return '';
+        return '<span class="relfaz-lista-vazia">Nenhuma troca de pasto encontrada no sistema para este dia.</span>';
     }
     return '<ul class="relfaz-lista-pastos">'
          + $.map(pastos, function(nome) { return '<li>' + relfazEscapar(nome) + '</li>'; }).join('')
@@ -267,7 +267,7 @@ function relfazListaPastos(pastos) {
 // Nutrição do dia: Pasto | Produto | Quantidade (o pasto aparece só na 1ª linha do grupo, como no app)
 function relfazListaNutricao(nutricoes) {
     if (!nutricoes || !nutricoes.length) {
-        return '';
+        return '<span class="relfaz-lista-vazia">Nenhuma nutrição encontrada no sistema para este dia.</span>';
     }
     var linhas = '';
     var pastoAnterior = null;
