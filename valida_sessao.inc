@@ -1,5 +1,5 @@
 <?php
-   define("Versao", "8048");
+   define("Versao", "8049");
 
    //ob_start();
    //header('Content-7ype: text/html; charset=utf-8');
