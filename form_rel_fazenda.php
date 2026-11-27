@@ -194,20 +194,63 @@
         padding: 0;
     }
 
+    /* Modelo B: ícone redondo colorido + texto + marcador à direita */
     .relfaz-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
         font-size: 13px;
         color: #333;
-        padding: 4px 0;
+        padding: 7px 0;
     }
 
-    .relfaz-item-inativo {
+    .relfaz-item + .relfaz-item {
+        border-top: 1px solid #f0f2f4;
+    }
+
+    .relfaz-item-icone {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .relfaz-item-texto {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .relfaz-item-inativo .relfaz-item-texto {
         color: #999;
     }
 
     .relfaz-item-detalhe {
+        display: block;
+        font-size: 11px;
         color: #6c757d;
-        margin-left: 10px;
+        margin-top: 2px;
     }
+
+    .relfaz-badge {
+        font-size: 11px;
+        padding: 3px 9px;
+        border-radius: 10px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .relfaz-cor-azul     { background: #E6F1FB; color: #185FA5; }
+    .relfaz-cor-verde    { background: #E1F5EE; color: #0F6E56; }
+    .relfaz-cor-amarelo  { background: #FAEEDA; color: #854F0B; }
+    .relfaz-cor-vermelho { background: #FCEBEB; color: #A32D2D; }
+    .relfaz-cor-cinza    { background: #f1f2f4; color: #a0a6ab; }
+
+    .relfaz-texto-azul  { color: #378ADD; margin-right: 4px; }
+    .relfaz-texto-verde { color: #1D9E75; margin-right: 4px; }
 
     .relfaz-mensagem-vazia {
         display: flex;
