@@ -124,6 +124,12 @@ function relfazAtualizarTitulo() {
     }
 
     $('#relfaz_periodo_titulo').text(titulo);
+
+    // Diário: calendário depois da data no lugar das setas; Semanal/Mensal: setas
+    var diario = (relfazPeriodo == 'D');
+    $('#relfaz_anterior, #relfaz_proximo').toggle(!diario);
+    $('#relfaz_calendario').css('display', diario ? 'inline-block' : 'none');
+    $('#relfaz_data_dia').val(relfazDataISO(relfazDataBase));
 }
 
 function relfazAtualizar() {
