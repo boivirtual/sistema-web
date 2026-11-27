@@ -101,7 +101,8 @@
         cursor: pointer;
     }
 
-    /* Diário: ícone de calendário no lugar das setas; o input date fica invisível por cima do ícone */
+    /* Diário: ícone de calendário no lugar das setas; o input date fica escondido embaixo do ícone
+       (sem tooltip nativo do navegador) e é aberto pelo clique no ícone */
     .relfaz-calendario {
         position: relative;
         display: none;
@@ -113,23 +114,14 @@
 
     .relfaz-calendario input {
         position: absolute;
-        top: 0;
+        bottom: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        width: 1px;
+        height: 1px;
         opacity: 0;
-        cursor: pointer;
         border: 0;
         padding: 0;
-    }
-
-    .relfaz-calendario input::-webkit-calendar-picker-indicator {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
+        pointer-events: none;
     }
 
     #relfaz_periodo_titulo {
