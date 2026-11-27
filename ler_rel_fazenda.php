@@ -55,7 +55,11 @@
 
     // Resumos do período
     $registros = array();
-    $st = mysqli_prepare($conector, "SELECT tbl_resumo_diario_data, tbl_resumo_diario_tipo, tbl_resumo_diario_incluido_por
+    $st = mysqli_prepare($conector, "SELECT tbl_resumo_diario_data, tbl_resumo_diario_tipo, tbl_resumo_diario_incluido_por,
+                                            tbl_resumo_diario_chuva_mm,
+                                            tbl_resumo_diario_conferiu_gado, tbl_resumo_diario_pastos_conferidos,
+                                            tbl_resumo_diario_animais_esperados, tbl_resumo_diario_animais_encontrados,
+                                            tbl_resumo_diario_conferiu_prenhas
                                        FROM tbl_resumo_diario
                                       WHERE tbl_resumo_diario_fazenda = ?
                                         AND tbl_resumo_diario_data BETWEEN ? AND ?
